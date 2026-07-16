@@ -26,9 +26,12 @@ data class BaseResponse<T>(
     /** `result` yoki `data` — backend qaysi maydonда yuborsa. */
     val payload: T? get() = result ?: data
 
-    /** Muvaffaqiyatli javobmi (xato yo'q va status 2xx / success=true). */
+    /**
+     * Muvaffaqiyatli javobmi. `status` bor bo'lsa — 2xx bo'yicha; yo'q bo'lsa — [success]
+     * bayrog'i bo'yicha (shunda `{"success": false, "message": ...}` xato deb hisoblanadi).
+     */
     val isSuccessful: Boolean
-        get() = error == null && (success || (status ?: 200) in 200..299)
+        get() = error == null && (if (status != null) status in 200..299 else success)
 }
 
 /** Standart xato tanasi — kod, matn va (validatsiya) maydon-xatolari. */

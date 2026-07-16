@@ -52,10 +52,10 @@ private const val BUSINESS_EDIT = "business_edit"
 private const val SETTINGS = "settings"
 
 /**
- * Biznesmen karkasi — pastki navigatsiya YO'Q. Asosiy ekranda ikkita tur bor:
- * **Chegirma** va **E'lon**, tepadagi segment selektor bilan almashtiriladi. Har biri
- * o'z ro'yxatini va o'z yaratish oqimini ochadi. Yuqorida gradient profil tugmasi,
- * o'ng-past burchakda "Yangi" pill tugmasi. Talaba bo'limlari umuman yo'q.
+ * Biznesmen karkasi. Oqim: **Bizneslarim** (ro'yxat + "+") → biznesga bosilса uning
+ * **e'lonlari** (chegirma + oddiy — bitta ro'yxatда) → "+E'lon" bilan e'lon qo'shish.
+ * E'lon turi biznesdан meros olinadi (tur tanlash grid'i yo'q); chegirma/oddiy esa forma
+ * ichидаgi toggle. Talaba bo'limlari umuman yo'q.
  */
 @Composable
 fun BusinessShell(
@@ -157,7 +157,7 @@ fun BusinessShell(
     }
 }
 
-/** Yuqori panel: label + tur sarlavhasi + gradient profil tugmasi + segment selektor. */
+/** Yuqori panel: "E'lonlarim" sarlavhasi + gradient profil tugmasi. */
 @Composable
 private fun BusinessTopBar(
     onProfile: () -> Unit,

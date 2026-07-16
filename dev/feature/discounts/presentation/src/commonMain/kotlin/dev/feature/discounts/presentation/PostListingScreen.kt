@@ -1,7 +1,6 @@
 package dev.feature.discounts.presentation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,9 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,7 +38,6 @@ import dev.core.designsystem.components.PrimaryButton
 import dev.core.designsystem.theme.AppPalette
 import dev.core.designsystem.theme.appPalette
 import dev.feature.discounts.domain.model.BusinessType
-import dev.feature.discounts.domain.model.ListingCatalog
 import dev.feature.discounts.domain.model.ListingField
 import dev.feature.discounts.presentation.components.FormSection
 import dev.feature.discounts.presentation.components.IconSquareButton
@@ -53,14 +49,11 @@ import dev.feature.discounts.presentation.map.rememberUserLocation
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
- * Chegirma e'loni qo'yish.
+ * E'lon qo'yish. Tur biznesdan **meros** olinadi (tur tanlash grid'i yo'q) — forma darrov
+ * o'sha turga mos ochiladi (`form/TypeForms.kt`), kerak bo'lganda xarita. Yozuvlar turga
+ * qarab farq qiladi: kafeda "Taom nomi", game club'da "Sessiya".
  *
- * Uch ekran: **biznes turi** → **o'sha turning formasi** → (kerak bo'lganda) **xarita**.
- * Har bir turning o'z formasi bor (`form/TypeForms.kt`), chunki yozuvlari boshqacha:
- * kafeda "Taom nomi", game club'da "Sessiya", o'quv markazda "Kurs nomi".
- *
- * Forma ataylab qisqa: biznes nomi, chegirma nimaga amal qilishi, rasm, narx + chegirma,
- * muddat, filial. Qolgan tafsilotlar — erkin tavsifda.
+ * Chegirma/oddiy — forma ichидаgi toggle: chegirma bo'lsa 2 narx (oldingi + yangi), aks holda 1.
  */
 @Composable
 fun PostListingScreen(

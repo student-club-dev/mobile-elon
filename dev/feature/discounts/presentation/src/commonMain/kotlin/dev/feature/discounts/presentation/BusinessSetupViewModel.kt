@@ -55,6 +55,8 @@ class MyBusinessesViewModel(
 data class AddBusinessUiState(
     /** Tahrirlanayotgan biznes id'si (`null` — yangi biznes). */
     val editId: String? = null,
+    /** Tahrirlashда — biznesning asl yaratilgan vaqti (saqlashда qayta yozilmasligi uchun). */
+    val editCreatedAt: Long? = null,
     val name: String = "",
     val phone: String = "",
     val businessType: BusinessType? = null,
@@ -98,6 +100,7 @@ class AddBusinessViewModel(
             _state.update {
                 it.copy(
                     editId = biz.id,
+                    editCreatedAt = biz.createdAt,
                     name = biz.name,
                     phone = biz.phone.removePrefix("+998"),
                     businessType = biz.businessType,
@@ -167,7 +170,7 @@ class AddBusinessViewModel(
                 phone = "+998${s.phoneDigits}",
                 businessType = type,
                 branches = listOf(branch),
-                createdAt = now,
+                createdAt = s.editCreatedAt ?: now, // tahrirlashда asl vaqt saqlanadi
                 updatedAt = now,
             )
             when (val r = saveBusiness(business)) {

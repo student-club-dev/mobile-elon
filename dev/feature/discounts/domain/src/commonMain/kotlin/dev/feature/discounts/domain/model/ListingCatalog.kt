@@ -117,8 +117,15 @@ object ListingCatalog {
         else -> categories(type)
     }
 
-    fun category(type: BusinessType, key: String): ListingCategory? =
-        categories(type).firstOrNull { it.key == key }
+    fun category(type: BusinessType, key: String): ListingCategory? {
+        // Kiyim-kechakда kalitlar jinsли ro'yxatlardan keladi (SHIRTS, DRESSES...) — hammasида qidiramiz.
+        val all = if (type == BusinessType.CLOTHING) {
+            categories(type) + menClothingCategories + womenClothingCategories
+        } else {
+            categories(type)
+        }
+        return all.firstOrNull { it.key == key }
+    }
 
     /** Erkaklar kiyim kategoriyalari (jins = erkak bo'lganda). */
     private val menClothingCategories: List<ListingCategory> = cats(

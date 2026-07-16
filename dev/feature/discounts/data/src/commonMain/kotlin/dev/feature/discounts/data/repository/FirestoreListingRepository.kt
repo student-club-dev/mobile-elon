@@ -12,6 +12,7 @@ import dev.feature.discounts.domain.model.Listing
 import dev.feature.discounts.domain.model.ListingStatus
 import dev.feature.discounts.domain.repository.ListingRepository
 import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.auth.auth
 import dev.gitlive.firebase.firestore.firestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -39,17 +40,23 @@ class FirestoreListingRepository(
 ) : ListingRepository {
 
     private val db get() = Firebase.firestore
+    /** Egalik/qoidalar uchun haqiqiy Firebase uid (hash'langan domen id emas). */
+    private val uid: String? get() = Firebase.auth.currentUser?.uid
     private fun col() = db.collection(COLLECTION)
     private fun doc(id: String) = col().document(id)
 
-    override fun observeMyListings(ownerId: String): Flow<List<Listing>> =
-        col().snapshots.map { snap ->
+    // [ownerId] parametri e'tiborga olinmaydi — joriy Firebase uid ishlatiladi (Firestore
+    // qoidalari va yozuvdagi ownerId shu bilan bir xil bo'lishi shart).
+    override fun observeMyListings(ownerId: String): Flow<List<Listing>> {
+        val me = uid ?: return kotlinx.coroutines.flow.flowOf(emptyList())
+        return col().snapshots.map { snap ->
             snap.documents
                 .mapNotNull { runCatching { it.data(ListingFirestoreDto.serializer()) }.getOrNull() }
-                .filter { it.ownerId == ownerId }
+                .filter { it.ownerId == me }
                 .map { it.toDomain() }
                 .sortedByDescending { it.updatedAt }
         }
+    }
 
     override fun observeActive(): Flow<List<Listing>> =
         col().snapshots.map { snap ->
@@ -111,9 +118,12 @@ class FirestoreListingRepository(
     private suspend fun write(listing: Listing): Resource<Listing> {
         // Internet yo'q bo'lsa — so'rov qilmasdan aniq xato (UI retry ko'rsatadi).
         if (!connectivity.isOnline()) return errorOf(AppException.NoInternet())
+        // ownerId har doim haqiqiy Firebase uid — ViewModel bergan hash'langan/bo'sh id emas
+        // (aks holda Firestore qoidalari rad etadi va e'lon "Mening e'lonlarim"да ko'rinmaydi).
+        val stamped = listing.copy(ownerId = uid ?: listing.ownerId)
         return try {
-            doc(listing.id).set(ListingFirestoreDto.serializer(), listing.toFirestoreDto())
-            Resource.Success(listing)
+            doc(stamped.id).set(ListingFirestoreDto.serializer(), stamped.toFirestoreDto())
+            Resource.Success(stamped)
         } catch (e: Exception) {
             errorOf(e.toAppException(connectivity.isOnline()))
         }
