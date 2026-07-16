@@ -1,0 +1,18 @@
+-- Ilova sozlamalari — kalit/qiymat (mavzu, til, bildirishnoma bayroqlari...).
+-- Foydalanuvchi sessiyasidan mustaqil: chiqib ketilса ham saqlanadi.
+CREATE TABLE AppSettingEntity (
+    key TEXT NOT NULL PRIMARY KEY,
+    value TEXT NOT NULL
+);
+
+selectAll:
+SELECT * FROM AppSettingEntity;
+
+selectByKey:
+SELECT value FROM AppSettingEntity WHERE key = ?;
+
+upsert:
+INSERT OR REPLACE INTO AppSettingEntity(key, value) VALUES (?, ?);
+
+deleteByKey:
+DELETE FROM AppSettingEntity WHERE key = ?;

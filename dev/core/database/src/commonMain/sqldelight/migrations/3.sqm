@@ -1,0 +1,3 @@
+-- Migratsiya v3 -> v4
+-- ClubEntity'ga "joined" (a'zolik) ustunini qo'shadi.
+ALTER TABLE ClubEntity ADD COLUMN joined INTEGER NOT NULL DEFAULT 0;

@@ -1,0 +1,54 @@
+CREATE TABLE JobEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    title TEXT NOT NULL,
+    company TEXT NOT NULL,
+    companyMonogram TEXT NOT NULL,
+    location TEXT NOT NULL,
+    category TEXT NOT NULL,
+    tags TEXT NOT NULL,
+    salary TEXT NOT NULL,
+    remote INTEGER NOT NULL,
+    partTime INTEGER NOT NULL,
+    postedAgo TEXT NOT NULL,
+    field TEXT NOT NULL,
+    bookmarked INTEGER NOT NULL
+);
+
+CREATE TABLE JobApplicationEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    jobId TEXT NOT NULL,
+    jobTitle TEXT NOT NULL,
+    company TEXT NOT NULL,
+    status TEXT NOT NULL,
+    appliedAgo TEXT NOT NULL
+);
+
+selectAllJobs:
+SELECT * FROM JobEntity;
+
+selectBookmarked:
+SELECT * FROM JobEntity WHERE bookmarked = 1;
+
+countJobs:
+SELECT count(*) FROM JobEntity;
+
+upsertJob:
+INSERT OR REPLACE INTO JobEntity(
+    id, title, company, companyMonogram, location, category, tags, salary, remote, partTime, postedAgo, field, bookmarked
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+setBookmark:
+UPDATE JobEntity SET bookmarked = ? WHERE id = ?;
+
+selectApplications:
+SELECT * FROM JobApplicationEntity;
+
+upsertApplication:
+INSERT OR REPLACE INTO JobApplicationEntity(id, jobId, jobTitle, company, status, appliedAgo)
+VALUES (?, ?, ?, ?, ?, ?);
+
+clearJobs:
+DELETE FROM JobEntity;
+
+clearApplications:
+DELETE FROM JobApplicationEntity;

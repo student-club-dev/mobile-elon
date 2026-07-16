@@ -1,0 +1,3 @@
+-- Migratsiya v6 -> v7
+-- Profil rasmi (avatar): `POST /v1/profile/me/avatar` qaytargan URL manzili.
+ALTER TABLE ProfileEntity ADD COLUMN avatarUrl TEXT;

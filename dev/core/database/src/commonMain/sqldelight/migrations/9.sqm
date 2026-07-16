@@ -1,0 +1,5 @@
+-- Migratsiya v9 -> v10
+-- Biznes egasi profili: rol BUSINESS bo'lganda biznes nomi va turi saqlanadi
+-- (universitet/kurs o'rniga).
+ALTER TABLE ProfileEntity ADD COLUMN businessName TEXT;
+ALTER TABLE ProfileEntity ADD COLUMN businessType TEXT;

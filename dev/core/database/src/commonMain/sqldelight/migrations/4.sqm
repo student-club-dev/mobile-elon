@@ -1,0 +1,3 @@
+-- Migratsiya v4 -> v5
+-- ConversationEntity'ga "archived" (arxivlangan) ustunini qo'shadi.
+ALTER TABLE ConversationEntity ADD COLUMN archived INTEGER NOT NULL DEFAULT 0;

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <compositeConfiguration>
+          <compositeBuild compositeDefinitionSource="SCRIPT">
+            <builds>
+              <build path="$PROJECT_DIR$/build-logic" name="build-logic">
+                <projects>
+                  <project path="$PROJECT_DIR$/build-logic" />
+                </projects>
+              </build>
+            </builds>
+          </compositeBuild>
+        </compositeConfiguration>
+        <option name="testRunner" value="CHOOSE_PER_TEST" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/build-logic" />
+            <option value="$PROJECT_DIR$/dev" />
+            <option value="$PROJECT_DIR$/dev/api-client" />
+            <option value="$PROJECT_DIR$/dev/api-client-generator" />
+            <option value="$PROJECT_DIR$/dev/core" />
+            <option value="$PROJECT_DIR$/dev/core/common" />
+            <option value="$PROJECT_DIR$/dev/core/data" />
+            <option value="$PROJECT_DIR$/dev/core/database" />
+            <option value="$PROJECT_DIR$/dev/core/designsystem" />
+            <option value="$PROJECT_DIR$/dev/core/di" />
+            <option value="$PROJECT_DIR$/dev/core/domain" />
+            <option value="$PROJECT_DIR$/dev/core/network" />
+            <option value="$PROJECT_DIR$/dev/feature" />
+            <option value="$PROJECT_DIR$/dev/feature/auth" />
+            <option value="$PROJECT_DIR$/dev/feature/business" />
+            <option value="$PROJECT_DIR$/dev/feature/discounts" />
+            <option value="$PROJECT_DIR$/dev/feature/discounts/data" />
+            <option value="$PROJECT_DIR$/dev/feature/discounts/domain" />
+            <option value="$PROJECT_DIR$/dev/feature/discounts/presentation" />
+            <option value="$PROJECT_DIR$/dev/feature/profile" />
+            <option value="$PROJECT_DIR$/dev/feature/profile/data" />
+            <option value="$PROJECT_DIR$/dev/feature/profile/domain" />
+            <option value="$PROJECT_DIR$/dev/feature/profile/presentation" />
+            <option value="$PROJECT_DIR$/dev/shared" />
+            <option value="$PROJECT_DIR$/elonUzApp" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>

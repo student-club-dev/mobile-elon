@@ -1,0 +1,27 @@
+CREATE TABLE AdEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    type TEXT NOT NULL,
+    title TEXT NOT NULL,
+    category TEXT NOT NULL,
+    price TEXT NOT NULL,
+    description TEXT NOT NULL,
+    images TEXT NOT NULL,
+    ownerId TEXT NOT NULL,
+    createdAgo TEXT NOT NULL
+);
+
+selectAll:
+SELECT * FROM AdEntity;
+
+selectByOwner:
+SELECT * FROM AdEntity WHERE ownerId = ?;
+
+upsert:
+INSERT OR REPLACE INTO AdEntity(id, type, title, category, price, description, images, ownerId, createdAgo)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+deleteById:
+DELETE FROM AdEntity WHERE id = ?;
+
+clear:
+DELETE FROM AdEntity;

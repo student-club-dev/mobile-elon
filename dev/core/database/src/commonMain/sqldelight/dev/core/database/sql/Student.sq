@@ -1,0 +1,35 @@
+CREATE TABLE StudentEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    firstName TEXT NOT NULL,
+    lastName TEXT NOT NULL,
+    initial TEXT NOT NULL,
+    universityId TEXT NOT NULL,
+    universityMonogram TEXT NOT NULL,
+    course INTEGER NOT NULL,
+    faculty TEXT NOT NULL,
+    friendStatus TEXT NOT NULL,
+    interests TEXT NOT NULL,
+    friendsCount INTEGER NOT NULL,
+    adsCount INTEGER NOT NULL,
+    rating REAL NOT NULL
+);
+
+selectAll:
+SELECT * FROM StudentEntity;
+
+selectByUniversity:
+SELECT * FROM StudentEntity WHERE universityId = ?;
+
+countStudents:
+SELECT count(*) FROM StudentEntity;
+
+upsert:
+INSERT OR REPLACE INTO StudentEntity(
+    id, firstName, lastName, initial, universityId, universityMonogram, course, faculty, friendStatus, interests, friendsCount, adsCount, rating
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+setFriendStatus:
+UPDATE StudentEntity SET friendStatus = ? WHERE id = ?;
+
+clear:
+DELETE FROM StudentEntity;

@@ -1,0 +1,11 @@
+-- Migratsiya v2 -> v3
+-- Mavjud o'rnatilган bazalarga Notification jadvalini qo'shadi.
+CREATE TABLE NotificationEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    title TEXT NOT NULL,
+    body TEXT NOT NULL,
+    type TEXT NOT NULL,
+    timeLabel TEXT NOT NULL,
+    sortOrder INTEGER NOT NULL,
+    read INTEGER NOT NULL
+);

@@ -1,0 +1,86 @@
+-- Migratsiya v8 -> v9
+-- E'lon endi BIR NECHTA filialda amal qiladi. Bitta lokatsiya ustunlari
+-- (regionId/districtId/address/landmark/lat/lng) o'rniga `branchesJson` keldi:
+-- har bir filial xaritadan tanlanadi, shuning uchun koordinatasi majburiy.
+
+CREATE TABLE ListingEntityNew (
+    id TEXT NOT NULL PRIMARY KEY,
+    ownerId TEXT NOT NULL,
+    businessId TEXT,
+    businessType TEXT NOT NULL,
+    businessName TEXT NOT NULL,
+    categoryKey TEXT NOT NULL,
+    customCategoryName TEXT,
+
+    title TEXT NOT NULL,
+    description TEXT,
+    imagesJson TEXT NOT NULL DEFAULT '[]',
+
+    priceUnit TEXT NOT NULL,
+    originalPrice INTEGER NOT NULL,
+    currency TEXT NOT NULL DEFAULT 'UZS',
+
+    discountType TEXT NOT NULL,
+    discountValue INTEGER NOT NULL,
+    finalPrice INTEGER NOT NULL,
+    discountConditions TEXT,
+
+    redemptionMethod TEXT NOT NULL,
+    promoCode TEXT,
+    perUserLimit INTEGER,
+    totalLimit INTEGER,
+    usedCount INTEGER NOT NULL DEFAULT 0,
+
+    branchesJson TEXT NOT NULL DEFAULT '[]',
+
+    validFrom INTEGER NOT NULL,
+    validTo INTEGER NOT NULL,
+
+    attributesJson TEXT NOT NULL DEFAULT '{}',
+    optionGroupsJson TEXT NOT NULL DEFAULT '[]',
+
+    status TEXT NOT NULL,
+    rejectionReason TEXT,
+    viewsCount INTEGER NOT NULL DEFAULT 0,
+    createdAt INTEGER NOT NULL,
+    updatedAt INTEGER NOT NULL
+);
+
+-- Eski e'lonlarning yagona manzili bitta filialga aylanadi. Koordinata yo'q bo'lsa
+-- (v8 da u ixtiyoriy edi) filial yaratilmaydi — egasi uni xaritadan qayta belgilaydi,
+-- aks holda talabaga masofa ko'rsatib bo'lmaydi.
+INSERT INTO ListingEntityNew(
+    id, ownerId, businessId, businessType, businessName, categoryKey, customCategoryName,
+    title, description, imagesJson,
+    priceUnit, originalPrice, currency,
+    discountType, discountValue, finalPrice, discountConditions,
+    redemptionMethod, promoCode, perUserLimit, totalLimit, usedCount,
+    branchesJson,
+    validFrom, validTo, attributesJson, optionGroupsJson,
+    status, rejectionReason, viewsCount, createdAt, updatedAt
+)
+SELECT
+    id, ownerId, businessId, businessType, businessName, categoryKey, customCategoryName,
+    title, description, imagesJson,
+    priceUnit, originalPrice, currency,
+    discountType, discountValue, finalPrice, discountConditions,
+    redemptionMethod, promoCode, perUserLimit, totalLimit, usedCount,
+    CASE
+        WHEN lat IS NULL OR lng IS NULL THEN '[]'
+        ELSE '[{"id":"' || id || '-br1"' ||
+             ',"lat":' || lat ||
+             ',"lng":' || lng ||
+             ',"address":"' || replace(replace(COALESCE(address, ''), '\', '\\'), '"', '\"') || '"' ||
+             ',"regionId":' || CASE WHEN regionId IS NULL THEN 'null' ELSE '"' || regionId || '"' END ||
+             ',"districtId":' || CASE WHEN districtId IS NULL THEN 'null' ELSE '"' || districtId || '"' END ||
+             '}]'
+    END,
+    validFrom, validTo, attributesJson, optionGroupsJson,
+    status, rejectionReason, viewsCount, createdAt, updatedAt
+FROM ListingEntity;
+
+DROP TABLE ListingEntity;
+ALTER TABLE ListingEntityNew RENAME TO ListingEntity;
+
+CREATE INDEX listing_owner_idx ON ListingEntity(ownerId, updatedAt);
+CREATE INDEX listing_status_idx ON ListingEntity(status, validTo);

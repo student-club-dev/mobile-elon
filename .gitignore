@@ -1,0 +1,41 @@
+# ---- IDE ----
+*.iml
+.idea/caches
+.idea/libraries
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+.idea/deploymentTargetDropDown.xml
+.idea/deploymentTargetSelector.xml
+
+# ---- OS ----
+.DS_Store
+
+# ---- Gradle / build ----
+.gradle
+.kotlin
+build/
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# ---- Android ----
+*.apk
+*.aab
+*.keystore
+!debug.keystore
+
+# ---- iOS / Xcode ----
+xcuserdata/
+*.xcuserstate
+iosApp/Pods/
+iosApp/*.xcworkspace
+DerivedData/
+
+# ---- Firebase / maxfiy kalitlar (haqiqiylarini commit QILMANG) ----
+# Repo'da faqat *.template versiyalari saqlanadi — nusxa olib nomini o'zgartiring.
+google-services.json
+GoogleService-Info.plist
+!*.template

@@ -1,0 +1,63 @@
+CREATE TABLE DiscountCategoryEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    emoji TEXT NOT NULL,
+    offerCount INTEGER NOT NULL,
+    accent INTEGER NOT NULL
+);
+
+CREATE TABLE DiscountOfferEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    categoryId TEXT NOT NULL,
+    merchant TEXT NOT NULL,
+    title TEXT NOT NULL,
+    discountPercent INTEGER NOT NULL,
+    tag TEXT NOT NULL,
+    promoCode TEXT,
+    location TEXT,
+    expiry TEXT,
+    emoji TEXT NOT NULL,
+    bannerAccent INTEGER NOT NULL,
+    featured INTEGER NOT NULL
+);
+
+CREATE TABLE SavedDiscountEntity (
+    offerId TEXT NOT NULL PRIMARY KEY
+);
+
+selectCategories:
+SELECT * FROM DiscountCategoryEntity;
+
+selectOffersByCategory:
+SELECT * FROM DiscountOfferEntity WHERE categoryId = ?;
+
+selectFeaturedOffers:
+SELECT * FROM DiscountOfferEntity WHERE featured = 1;
+
+selectSavedOffers:
+SELECT o.* FROM DiscountOfferEntity o
+INNER JOIN SavedDiscountEntity s ON s.offerId = o.id;
+
+countCategories:
+SELECT count(*) FROM DiscountCategoryEntity;
+
+upsertCategory:
+INSERT OR REPLACE INTO DiscountCategoryEntity(id, name, emoji, offerCount, accent)
+VALUES (?, ?, ?, ?, ?);
+
+upsertOffer:
+INSERT OR REPLACE INTO DiscountOfferEntity(
+    id, categoryId, merchant, title, discountPercent, tag, promoCode, location, expiry, emoji, bannerAccent, featured
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+saveOffer:
+INSERT OR REPLACE INTO SavedDiscountEntity(offerId) VALUES (?);
+
+unsaveOffer:
+DELETE FROM SavedDiscountEntity WHERE offerId = ?;
+
+clearCategories:
+DELETE FROM DiscountCategoryEntity;
+
+clearOffers:
+DELETE FROM DiscountOfferEntity;

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Chucker (Debug HTTP inspektori) ekrani Android 15 (API 35) edge-to-edge majburlashi
+  tufayli status bar bilan ustma-ust tushardi. Chucker'ning `Chucker.Theme` sini shu yerda
+  (app moduli, faqat debug + API 35) override qilib, edge-to-edge enforcement'ni o'chiramiz —
+  shunda uning toolbar'i status bar ostida to'g'ri joylashadi.
+
+  Bu faqat Chucker activity'lariga ta'sir qiladi (ular `@style/Chucker.Theme` ni ishlatadi);
+  ilovaning o'z `Theme.ElonUz` mavzusiga tegmaydi.
+-->
+<resources>
+    <style name="Chucker.Theme" parent="Chucker.BaseTheme">
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
+    </style>
+</resources>

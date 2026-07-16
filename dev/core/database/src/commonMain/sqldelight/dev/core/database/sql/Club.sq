@@ -1,0 +1,21 @@
+CREATE TABLE ClubEntity (
+    id INTEGER NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT NOT NULL,
+    membersCount INTEGER NOT NULL,
+    imageUrl TEXT,
+    joined INTEGER NOT NULL DEFAULT 0
+);
+
+selectAll:
+SELECT * FROM ClubEntity;
+
+upsert:
+INSERT OR REPLACE INTO ClubEntity(id, name, description, membersCount, imageUrl)
+VALUES (?, ?, ?, ?, ?);
+
+setJoined:
+UPDATE ClubEntity SET joined = ? WHERE id = ?;
+
+deleteAll:
+DELETE FROM ClubEntity;

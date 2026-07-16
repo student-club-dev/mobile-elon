@@ -1,0 +1,30 @@
+-- Foydalanuvchi bildirishnomalari (Home qo'ng'iroq → Notifications ekrani).
+-- Backend kelганда API'dan sinxronlanadi; tuzilma bir xil.
+CREATE TABLE NotificationEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    title TEXT NOT NULL,
+    body TEXT NOT NULL,
+    type TEXT NOT NULL,          -- JOB | DISCOUNT | AD | CHAT | SYSTEM
+    timeLabel TEXT NOT NULL,     -- "2 soat oldin"
+    sortOrder INTEGER NOT NULL,  -- kichik = yangiroq (tepada)
+    read INTEGER NOT NULL        -- 0/1
+);
+
+selectAll:
+SELECT * FROM NotificationEntity ORDER BY sortOrder ASC;
+
+countUnread:
+SELECT COUNT(*) FROM NotificationEntity WHERE read = 0;
+
+count:
+SELECT COUNT(*) FROM NotificationEntity;
+
+insert:
+INSERT OR REPLACE INTO NotificationEntity(id, title, body, type, timeLabel, sortOrder, read)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+markRead:
+UPDATE NotificationEntity SET read = 1 WHERE id = ?;
+
+markAllRead:
+UPDATE NotificationEntity SET read = 1;

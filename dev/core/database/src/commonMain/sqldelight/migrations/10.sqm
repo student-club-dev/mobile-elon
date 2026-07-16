@@ -1,0 +1,3 @@
+-- Migratsiya v10 -> v11
+-- Biznes/aloqa emaili (gmail) — profilда tahrirlanadi.
+ALTER TABLE ProfileEntity ADD COLUMN email TEXT;

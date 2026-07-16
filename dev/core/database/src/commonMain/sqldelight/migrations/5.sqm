@@ -1,0 +1,47 @@
+-- Migratsiya v5 -> v6
+-- Profil ma'lumoti UserEntity'dan ajratildi: endi unga `:dev:feature:profile` moduli
+-- egalik qiladi (ProfileEntity). UserEntity faqat sessiya ma'lumotini saqlaydi.
+
+CREATE TABLE ProfileEntity (
+    uid TEXT NOT NULL PRIMARY KEY,
+    firstName TEXT,
+    lastName TEXT,
+    phoneNumber TEXT,
+    role TEXT,
+    universityId TEXT,
+    universityEmail TEXT,
+    birthYear INTEGER,
+    courseYear TEXT
+);
+
+-- Mavjud o'rnatishlardagi profilni ko'chiramiz. Faqat haqiqiy ma'lumot bor qatorlar —
+-- aks holda bo'sh profil qatori paydo bo'lib, `hasProfile()` noto'g'ri `true` qaytarardi.
+INSERT INTO ProfileEntity(
+    uid, firstName, lastName, phoneNumber, role, universityId, universityEmail, birthYear, courseYear
+)
+SELECT uid, firstName, lastName, phoneNumber, profileRole, universityId, universityEmail, birthYear, courseYear
+FROM UserEntity
+WHERE firstName IS NOT NULL
+   OR lastName IS NOT NULL
+   OR universityId IS NOT NULL
+   OR universityEmail IS NOT NULL
+   OR courseYear IS NOT NULL
+   OR profileRole IS NOT NULL;
+
+-- UserEntity'ni profil ustunlarisiz qayta quramiz (SQLite'da ustun o'chirish uchun
+-- standart "table rebuild" usuli — eski Android SQLite versiyalarida DROP COLUMN yo'q).
+CREATE TABLE UserEntityNew (
+    uid TEXT NOT NULL PRIMARY KEY,
+    userId INTEGER NOT NULL,
+    fullName TEXT NOT NULL,
+    email TEXT NOT NULL,
+    role TEXT NOT NULL,
+    phoneNumber TEXT,
+    photoUrl TEXT
+);
+
+INSERT INTO UserEntityNew(uid, userId, fullName, email, role, phoneNumber, photoUrl)
+SELECT uid, userId, fullName, email, role, phoneNumber, photoUrl FROM UserEntity;
+
+DROP TABLE UserEntity;
+ALTER TABLE UserEntityNew RENAME TO UserEntity;

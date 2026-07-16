@@ -1,0 +1,21 @@
+CREATE TABLE UniversityEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    city TEXT NOT NULL,
+    monogram TEXT NOT NULL,
+    faculty TEXT,
+    accent INTEGER NOT NULL
+);
+
+selectAll:
+SELECT * FROM UniversityEntity;
+
+count:
+SELECT count(*) FROM UniversityEntity;
+
+upsert:
+INSERT OR REPLACE INTO UniversityEntity(id, name, city, monogram, faculty, accent)
+VALUES (?, ?, ?, ?, ?, ?);
+
+clear:
+DELETE FROM UniversityEntity;

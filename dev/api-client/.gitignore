@@ -1,0 +1,5 @@
+# Generatsiya qilingan kod — build vaqtida `:dev:api-client-generator` qayta yaratadi.
+# Git'da saqlanmaydi (iym-native-business dagi api-client/.gitignore uslubi).
+/src/
+/.openapi-generator/
+/build/
