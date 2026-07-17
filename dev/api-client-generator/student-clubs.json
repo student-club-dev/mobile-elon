@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Student Clubs API",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "description": "Student Clubs super-app'ining v1 API spetsifikatsiyasi.\n\nBu fayl — API'ning YAGONA MANBASI. Har yangi feature moduli o'ziga kerak bo'lgan\nendpoint'larni shu yerga qo'shadi, so'ng `./gradlew :dev:core:network:openApiGenerate`\nishga tushiriladi va Kotlin klienti (`dev.core.network.generated.api.*`) avtomatik yaratiladi.\n\nBaza manzili `/v1` bilan tugaydi (`CoreModules.DEV_BASE_URL`), shuning uchun bu yerdagi\nyo'llar versiyasiz yoziladi: `/profile/me` -> `https://api.studentclubs.dev/v1/profile/me`.\n\nAvtorizatsiya: har so'rovga Firebase ID token `Authorization: Bearer <token>` sifatida\nqo'shiladi (Ktor `Auth` plagini, `FirebaseTokenProvider`)."
   },
   "servers": [
@@ -237,7 +237,7 @@
           "Business"
         ],
         "summary": "Biznes turlari ro'yxati",
-        "description": "7 ta tur va ularning odatiy narx birligi. Biznes yaratish formasida ishlatiladi.",
+        "description": "7 ta faol tur va ularning odatiy narx birligi. `gender` berilsa shaxsiylashtiriladi: MALE → BEAUTY_SALON chiqmaydi, FEMALE → BARBERSHOP chiqmaydi.",
         "responses": {
           "200": {
             "description": "OK",
@@ -252,7 +252,18 @@
               }
             }
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "gender",
+            "in": "query",
+            "required": false,
+            "description": "Foydalanuvchi jinsi — turlar ro'yxatini filtrlaydi. Berilmasa hammasi qaytadi.",
+            "schema": {
+              "$ref": "#/components/schemas/GenderDto"
+            }
+          }
+        ]
       }
     },
     "/business/types/{type}/categories": {
@@ -262,7 +273,7 @@
           "Business"
         ],
         "summary": "Biznes turi bo'yicha kategoriyalar",
-        "description": "Masalan CAFE_RESTAURANT uchun: NATIONAL, PIZZA, BURGER, ... Har turda OTHER ham bor.",
+        "description": "Masalan CAFE_RESTAURANT uchun: NATIONAL, PIZZA, BURGER, ... Har turda ALL va OTHER ham bor. CLOTHING uchun `gender` majburiy emas, lekin berilsa jinsga xos kategoriyalar qaytadi (MALE → SHIRTS/PANTS/SUITS..., FEMALE → DRESSES/SKIRTS/BLOUSES...).",
         "parameters": [
           {
             "name": "type",
@@ -270,6 +281,15 @@
             "required": true,
             "schema": {
               "$ref": "#/components/schemas/BusinessTypeDto"
+            }
+          },
+          {
+            "name": "gender",
+            "in": "query",
+            "required": false,
+            "description": "CLOTHING uchun jinsga xos kategoriyalar. Boshqa turlarда e'tiborga olinmaydi.",
+            "schema": {
+              "$ref": "#/components/schemas/GenderDto"
             }
           }
         ],
@@ -1523,6 +1543,9 @@
             "description": "E.164 formatда",
             "example": "+998901234567"
           },
+          "gender": {
+            "$ref": "#/components/schemas/GenderDto"
+          },
           "role": {
             "$ref": "#/components/schemas/ProfileRoleDto"
           },
@@ -1578,6 +1601,9 @@
           "phoneNumber": {
             "type": "string",
             "nullable": true
+          },
+          "gender": {
+            "$ref": "#/components/schemas/GenderDto"
           },
           "role": {
             "$ref": "#/components/schemas/ProfileRoleDto"
@@ -1654,15 +1680,15 @@
       },
       "BusinessTypeDto": {
         "type": "string",
-        "description": "Biznes turi. Biznes yaratilganda tanlanadi va KEYIN O'ZGARMAYDI — chunki kategoriyalar va `attributes` shunga bog'liq.",
+        "description": "Biznes turi. Biznes yaratilganda tanlanadi va KEYIN O'ZGARMAYDI — chunki kategoriyalar va `attributes` shunga bog'liq. BARBERSHOP/BEAUTY_SALON foydalanuvchi jinsiga qarab filtrlanadi (`GET /business/types?gender=`).",
         "enum": [
           "GAME_CLUB",
-          "GROCERY",
           "CLOTHING",
           "CAFE_RESTAURANT",
           "EDUCATION_CENTER",
           "ENTERTAINMENT",
-          "ELECTRONICS"
+          "BARBERSHOP",
+          "BEAUTY_SALON"
         ]
       },
       "BusinessTypeInfoDto": {
@@ -1689,6 +1715,24 @@
           },
           "defaultPriceUnit": {
             "$ref": "#/components/schemas/PriceUnitDto"
+          },
+          "emoji": {
+            "type": "string",
+            "nullable": true,
+            "example": "🎮"
+          },
+          "accentColor": {
+            "type": "string",
+            "nullable": true,
+            "description": "HEX rang",
+            "example": "#7C5CFF"
+          },
+          "priceUnits": {
+            "type": "array",
+            "description": "Turga mos narx birliklari (birinchisi — odatiy)",
+            "items": {
+              "$ref": "#/components/schemas/PriceUnitDto"
+            }
           }
         }
       },
@@ -2313,8 +2357,21 @@
           "sortOrder": {
             "type": "integer",
             "format": "int32"
+          },
+          "fields": {
+            "type": "array",
+            "description": "Shu kategoriya tanlanganда formaда chiqadigan maydonlar (tartib muhim).",
+            "items": {
+              "$ref": "#/components/schemas/AttributeFieldDto"
+            }
+          },
+          "requiresCustomName": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "OTHER uchun true — `customCategoryName` majburiy bo'ladi"
           }
-        }
+        },
+        "description": "Kategoriya va uning maydonlari. `fields[]` ичида `options[]` bo'ladi — ya'ni PlayStation → Model → PS5/PS4/PS3 bitta so'rovда keladi."
       },
       "DiscountTypeDto": {
         "type": "string",
@@ -3245,6 +3302,100 @@
           },
           "fullName": {
             "type": "string"
+          }
+        }
+      },
+      "GenderDto": {
+        "type": "string",
+        "description": "Foydalanuvchi jinsi — ro'yxatdan o'tishда tanlanadi. Biznes turlari va kiyim kategoriyalarini shaxsiylashtiradi.",
+        "enum": [
+          "MALE",
+          "FEMALE"
+        ]
+      },
+      "AttributeFieldTypeDto": {
+        "type": "string",
+        "description": "Maydon UI turi. SELECT — bittasi, MULTI_SELECT — bir nechtasi tanlanadi.",
+        "enum": [
+          "TEXT",
+          "NUMBER",
+          "BOOLEAN",
+          "SELECT",
+          "MULTI_SELECT",
+          "TAGS"
+        ]
+      },
+      "AttributeOptionDto": {
+        "type": "object",
+        "required": [
+          "value",
+          "label"
+        ],
+        "description": "SELECT/MULTI_SELECT varianti — masalan PS5.",
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "`attributes` да saqlanadigan qiymat",
+            "example": "PS5"
+          },
+          "label": {
+            "type": "string",
+            "description": "Ekranда ko'rinadigan matn",
+            "example": "PS5"
+          }
+        }
+      },
+      "AttributeFieldDto": {
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "type",
+          "required"
+        ],
+        "description": "E'lon formasining bitta maydoni. Klient `type` ga qarab UI'ni o'zi chizadi — yangi maydon qo'shish uchun ilova yangilanmaydi.",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "`Listing.attributes` кalitи",
+            "example": "model"
+          },
+          "label": {
+            "type": "string",
+            "example": "Model"
+          },
+          "type": {
+            "$ref": "#/components/schemas/AttributeFieldTypeDto"
+          },
+          "required": {
+            "type": "boolean",
+            "description": "To'ldirilmasa e'lon joylanmaydi",
+            "example": true
+          },
+          "hint": {
+            "type": "string",
+            "nullable": true,
+            "description": "TEXT/NUMBER uchun namuna",
+            "example": "60"
+          },
+          "suffix": {
+            "type": "string",
+            "nullable": true,
+            "description": "NUMBER o'lchovi",
+            "example": "daqiqa"
+          },
+          "multiple": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "MULTI_SELECT uchun true. Qiymat vergul bilan saqlanadi: \"S,M,L\""
+          },
+          "options": {
+            "type": "array",
+            "nullable": true,
+            "description": "Faqat SELECT/MULTI_SELECT uchun",
+            "items": {
+              "$ref": "#/components/schemas/AttributeOptionDto"
+            }
           }
         }
       }
