@@ -15,8 +15,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,25 +33,37 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.core.designsystem.components.AppFontFamily
 import dev.core.designsystem.theme.AppPalette
 import dev.core.designsystem.theme.appPalette
-import dev.feature.discounts.domain.model.Listing
+import dev.feature.discounts.domain.model.DiscountCard
+import dev.feature.discounts.domain.model.DiscountQuery
 import dev.feature.discounts.domain.model.formatSum
-import dev.feature.discounts.domain.usecase.ObserveActiveListingsUseCase
+import dev.feature.discounts.domain.usecase.GetNearbyDiscountsUseCase
 import dev.feature.discounts.presentation.components.ListingImage
 import dev.feature.discounts.presentation.map.rememberUserLocation
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
-/** Talabaga ko'rinadigan faol chegirmalar (biznes egalari yuklagan e'lonlar). */
+/**
+ * Talabaga ko'rinadigan faol chegirmalar — `GET /discounts`.
+ *
+ * Joylashuv ekrandan keladi va o'zgarganда ro'yxat qayta so'raladi: masofa va saralash
+ * shunga bog'liq. Ruxsat berilmasa `lat`/`lng` bo'sh ketadi — backend bunda masofasiz
+ * ro'yxat qaytaradi.
+ */
 class NearbyDiscountsViewModel(
-    observeActive: ObserveActiveListingsUseCase,
+    private val getNearbyDiscounts: GetNearbyDiscountsUseCase,
 ) : ViewModel() {
 
-    val state: StateFlow<List<Listing>> = observeActive()
-        .map { it }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    private val _state = MutableStateFlow<List<DiscountCard>>(emptyList())
+    val state: StateFlow<List<DiscountCard>> = _state.asStateFlow()
+
+    fun load(lat: Double?, lng: Double?) {
+        viewModelScope.launch {
+            _state.value = getNearbyDiscounts(DiscountQuery(lat = lat, lng = lng))
+        }
+    }
 }
 
 /**
@@ -66,17 +78,16 @@ fun NearbyDiscountsSection(
     vm: NearbyDiscountsViewModel = koinViewModel(),
 ) {
     val palette = appPalette
-    val listings by vm.state.collectAsStateWithLifecycle()
+    val cards by vm.state.collectAsStateWithLifecycle()
     val userLocation = rememberUserLocation()
 
-    if (listings.isEmpty()) return
-
-    // Eng yaqinlari yuqorida. Masofa noma'lum bo'lsa tartib o'zgarmaydi.
-    val sorted = remember(listings, userLocation) {
-        listings
-            .map { it to it.nearestBranch(userLocation?.lat, userLocation?.lng) }
-            .sortedBy { (_, nearest) -> nearest?.distanceMeters ?: Double.MAX_VALUE }
+    // Joylashuv aniqlanganда (yoki rad etilganда) ro'yxat so'raladi — tartib va masofa
+    // shunga bog'liq, shuning uchun u o'zgarsa qayta yuklanadi.
+    LaunchedEffect(userLocation) {
+        vm.load(userLocation?.lat, userLocation?.lng)
     }
+
+    if (cards.isEmpty()) return
 
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(9.dp)) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -93,20 +104,20 @@ fun NearbyDiscountsSection(
             }
         }
 
-        sorted.forEach { (listing, nearest) ->
-            NearbyDiscountCard(listing, nearest?.branch?.display(), nearest?.distanceLabel(), palette)
+        cards.forEach { card ->
+            NearbyDiscountCard(card, card.nearest?.branch?.display(), card.nearest?.distanceLabel(), palette)
         }
     }
 }
 
 @Composable
 private fun NearbyDiscountCard(
-    listing: Listing,
+    card: DiscountCard,
     branchLabel: String?,
     distanceLabel: String?,
     palette: AppPalette,
 ) {
-    val accent = Color(listing.businessType.accent)
+    val accent = Color(card.businessType.accent)
 
     Row(
         Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(palette.glass)
@@ -117,17 +128,17 @@ private fun NearbyDiscountCard(
             Modifier.size(58.dp).clip(RoundedCornerShape(13.dp)).background(accent.copy(alpha = 0.14f)),
             contentAlignment = Alignment.Center,
         ) {
-            val cover = listing.images.firstOrNull()
+            val cover = card.imageUrl
             if (cover != null) {
                 ListingImage(cover, Modifier.fillMaxSize().clip(RoundedCornerShape(13.dp)))
             } else {
-                Text(listing.businessType.emoji, style = TextStyle(fontSize = 22.sp))
+                Text(card.businessType.emoji, style = TextStyle(fontSize = 22.sp))
             }
         }
 
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
             Text(
-                "${listing.businessName} — ${listing.title}",
+                "${card.businessName} — ${card.title}",
                 style = TextStyle(fontFamily = AppFontFamily, fontSize = 13.sp, fontWeight = FontWeight.ExtraBold, color = palette.ink),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -135,11 +146,11 @@ private fun NearbyDiscountCard(
 
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(
-                    "${listing.finalPrice.formatSum()} so'm",
+                    "${card.finalPrice.formatSum()} so'm",
                     style = TextStyle(fontFamily = AppFontFamily, fontSize = 12.5f.sp, fontWeight = FontWeight.Black, color = palette.successDeep),
                 )
                 Text(
-                    listing.originalPrice.formatSum(),
+                    card.originalPrice.formatSum(),
                     style = TextStyle(
                         fontFamily = AppFontFamily,
                         fontSize = 11.sp,
@@ -169,7 +180,7 @@ private fun NearbyDiscountCard(
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                listing.discount.badge(),
+                card.discount.badge(),
                 style = TextStyle(fontFamily = AppFontFamily, fontSize = 12.sp, fontWeight = FontWeight.Black, color = Color.White),
             )
         }

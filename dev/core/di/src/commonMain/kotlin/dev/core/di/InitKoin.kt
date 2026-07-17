@@ -10,13 +10,13 @@ import org.koin.dsl.KoinAppDeclaration
 /**
  * Ilovaning barcha Koin modullari. Har yangi feature o'z modulini shu yerga qo'shadi.
  *
- * `profileModule` va `discountsModule` masofaviy manbani [REMOTE_SYNC_ENABLED] ga qarab
- * tanlaydi: REST (backend bor) yoki local/Firestore (backendsiz).
+ * `profileModule` va `discountsModule` har doim backend bilan ishlaydi; javob kelmasa
+ * har biri o'z zaxirasiga tushadi (Firestore faqat ilovaga kirish uchun qoladi).
  */
 fun appModules() = coreModules() +
     authFeatureModule +
-    profileModule(REMOTE_SYNC_ENABLED) +
-    discountsModule(REMOTE_SYNC_ENABLED, USE_FIRESTORE_DISCOUNTS)
+    profileModule() +
+    discountsModule()
 
 /** Umumiy Koin start (androidApp shu yerga androidContext qo'shadi). */
 fun initKoin(appDeclaration: KoinAppDeclaration = {}): KoinApplication =

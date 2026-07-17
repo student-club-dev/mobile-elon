@@ -73,14 +73,6 @@ const val DEFAULT_BASE_URL = DEV_BASE_URL
  */
 const val REMOTE_SYNC_ENABLED = false
 
-/**
- * Chegirma e'lonlari (discounts) manbasi Firebase (Firestore)mi.
- * - `true`  → e'lonlar `listings` kolleksiyasida (real-time, qurilmalararo) — **backend o'rniga Firebase**.
- * - `false` → backendsiz local rejim (e'lon faqat shu qurilmada).
- * [REMOTE_SYNC_ENABLED] dan mustaqil: REST backend kerak emas, faqat Firebase.
- */
-const val USE_FIRESTORE_DISCOUNTS = true
-
 val networkModule = module {
     single { NetworkConfig(baseUrl = if (USE_PROD_API) PROD_BASE_URL else DEV_BASE_URL) }
     // Firebase ID tokenni har so'rovga qo'shadi; haqiqiy AuthTokenProvider auth feature'da bog'lanadi.

@@ -4,11 +4,11 @@ import dev.core.common.Resource
 import dev.feature.profile.domain.model.UserProfile
 
 /**
- * Profilning masofaviy manbasi. Ikkita implementatsiyasi bor va DI qaysi birini
- * ulashni `REMOTE_SYNC_ENABLED` bayrog'iga qarab hal qiladi:
+ * Profilning masofaviy manbasi.
  *
- * - [ApiProfileRemoteDataSource] — real backend (`/v1/profile/me`, OpenAPI'dan generatsiya qilingan klient),
- * - [FirestoreProfileRemoteDataSource] — backendsiz rejim (Firestore `users/{uid}`).
+ * DI [FallbackProfileRemoteDataSource] ni ulaydi: u avval [ApiProfileRemoteDataSource]
+ * (`/profile/me`, OpenAPI'dan generatsiya qilingan klient) ga boradi, backend javob bermasa
+ * profil local keshда ishlaydi.
  *
  * Repository qaysi manba ulanganini bilmaydi — u faqat shu interfeys bilan ishlaydi.
  */

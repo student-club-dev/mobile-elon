@@ -16,11 +16,6 @@ class ObserveMyListingsUseCase(private val repository: ListingRepository) {
     operator fun invoke(ownerId: String): Flow<List<Listing>> = repository.observeMyListings(ownerId)
 }
 
-/** Talabaga ko'rinadigan faol e'lonlar — Chegirmalar ro'yxati. */
-class ObserveActiveListingsUseCase(private val repository: ListingRepository) {
-    operator fun invoke(): Flow<List<Listing>> = repository.observeActive()
-}
-
 /** Qoralama sifatida saqlaydi — validatsiyasiz (yarim to'ldirilgan forma ham saqlanadi). */
 class SaveDraftUseCase(private val repository: ListingRepository) {
     suspend operator fun invoke(listing: Listing): Resource<Listing> =

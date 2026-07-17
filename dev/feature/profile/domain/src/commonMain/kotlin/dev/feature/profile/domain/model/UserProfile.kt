@@ -5,7 +5,7 @@ package dev.feature.profile.domain.model
  *
  * Manba (offline-first):
  * - local kesh: SQLDelight `ProfileEntity` (yagona haqiqat UI uchun),
- * - masofaviy: REST `/v1/profile/me` (real API) yoki Firestore `users/{uid}` (backendsiz rejim).
+ * - masofaviy: REST `/profile/me` (backend javob bermasa profil local keshда qoladi).
  */
 data class UserProfile(
     val firstName: String? = null,

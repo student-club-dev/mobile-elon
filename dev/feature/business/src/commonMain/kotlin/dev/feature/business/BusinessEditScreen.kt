@@ -34,7 +34,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 /**
  * Biznes profilini tahrirlash — biznes nomi, telefon, email (gmail), biznes turi.
- * Saqlangач local DB + Firestore yangilanadi (ProfileViewModel.saveProfile).
+ * Saqlangач local DB + backend yangilanadi (ProfileViewModel.saveProfile).
  */
 @Composable
 fun BusinessEditScreen(

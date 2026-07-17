@@ -62,7 +62,7 @@ private val courseOptions = listOf(
 
 /**
  * Profilni tahrirlash ekrani (A2/C2). Local keshdagi profilni prefill qiladi,
- * o'zgarishlarni [ProfileViewModel.saveProfile] orqali Firestore + local keshga yozadi.
+ * o'zgarishlarni [ProfileViewModel.saveProfile] orqali backend + local keshga yozadi.
  */
 @Composable
 fun EditProfileScreen(onBack: () -> Unit, vm: ProfileViewModel = koinViewModel()) {

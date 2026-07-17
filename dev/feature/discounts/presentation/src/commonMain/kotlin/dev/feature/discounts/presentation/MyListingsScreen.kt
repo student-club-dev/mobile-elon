@@ -94,7 +94,7 @@ fun MyListingsScreen(
             Spacer(Modifier.height(14.dp))
         }
 
-        // Internet yo'q — ustki banner (offline'да Firestore cache'дан ko'rsatiladi).
+        // Internet yo'q — ustki banner (offline'да e'lonlar local bazadan ko'rsatiladi).
         if (!online) OfflineBanner(palette)
 
         when {

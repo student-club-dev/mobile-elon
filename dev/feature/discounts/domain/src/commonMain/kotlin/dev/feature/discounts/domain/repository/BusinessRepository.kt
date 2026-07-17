@@ -5,7 +5,7 @@ import dev.feature.discounts.domain.model.Business
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Foydalanuvchi bizneslariga egalik qiluvchi repository (Firestore `businesses/{id}`).
+ * Foydalanuvchi bizneslariga egalik qiluvchi repository (backend `/business`).
  *
  * Bir egaga **bir nechta biznes** bo'lishi mumkin. Bosh ekran [observeMine] ro'yxatini
  * ko'rsatadi; bir biznesga bosilгач — o'sha biznesning e'lonlari ochiladi.

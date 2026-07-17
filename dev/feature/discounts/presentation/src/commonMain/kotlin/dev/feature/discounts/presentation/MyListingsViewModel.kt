@@ -55,7 +55,7 @@ class MyListingsViewModel(
             // Foydalanuvchi almashsa (yoki retry) ro'yxat qaytadan kuzatiladi.
             .flatMapLatest { user -> observeMyListings((user?.id ?: 0L).toString()) }
             .map { MyListingsUiState(listings = it, loading = false) }
-            // Firestore oqimi xato bersa (ruxsat/tarmoq) — typed xatoga aylantirib ko'rsatamiz.
+            // Oqim xato bersa (ruxsat/tarmoq) — typed xatoga aylantirib ko'rsatamiz.
             .catch { e ->
                 emit(MyListingsUiState(loading = false, error = e.toAppException(connectivity.isOnline())))
             }
