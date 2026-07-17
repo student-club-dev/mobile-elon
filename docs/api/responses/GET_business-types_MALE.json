@@ -1,0 +1,78 @@
+{
+  "success": true,
+  "status": 200,
+  "code": null,
+  "message": null,
+  "result": [
+    {
+      "type": "GAME_CLUB",
+      "nameUz": "Game Club",
+      "emoji": "🎮",
+      "accentColor": "#7C5CFF",
+      "defaultPriceUnit": "PER_HOUR",
+      "priceUnits": [
+        "PER_HOUR",
+        "PER_SESSION",
+        "PER_PERSON"
+      ]
+    },
+    {
+      "type": "CLOTHING",
+      "nameUz": "Kiyim-kechak",
+      "emoji": "👕",
+      "accentColor": "#EC4899",
+      "defaultPriceUnit": "PER_ITEM",
+      "priceUnits": [
+        "PER_ITEM"
+      ]
+    },
+    {
+      "type": "CAFE_RESTAURANT",
+      "nameUz": "Kafe va Restoran",
+      "emoji": "🍕",
+      "accentColor": "#F97316",
+      "defaultPriceUnit": "PER_ITEM",
+      "priceUnits": [
+        "PER_ITEM",
+        "PER_KG"
+      ]
+    },
+    {
+      "type": "EDUCATION_CENTER",
+      "nameUz": "O'quv markaz",
+      "emoji": "📚",
+      "accentColor": "#3B82F6",
+      "defaultPriceUnit": "PER_MONTH",
+      "priceUnits": [
+        "PER_MONTH",
+        "PER_COURSE",
+        "PER_LESSON"
+      ]
+    },
+    {
+      "type": "ENTERTAINMENT",
+      "nameUz": "Kino va ko'ngilochar",
+      "emoji": "🎬",
+      "accentColor": "#EF4444",
+      "defaultPriceUnit": "PER_TICKET",
+      "priceUnits": [
+        "PER_TICKET",
+        "PER_PERSON",
+        "PER_SESSION"
+      ]
+    },
+    {
+      "type": "BARBERSHOP",
+      "nameUz": "Sartaroshxona",
+      "emoji": "💈",
+      "accentColor": "#14B8A6",
+      "defaultPriceUnit": "PER_ITEM",
+      "priceUnits": [
+        "PER_ITEM",
+        "PER_SESSION",
+        "PER_PERSON"
+      ]
+    }
+  ],
+  "error": null
+}

@@ -1,0 +1,1436 @@
+{
+  "success": true,
+  "status": 200,
+  "code": null,
+  "message": null,
+  "result": [
+    {
+      "key": "ALL",
+      "nameUz": "Barcha seanslarga",
+      "sortOrder": 0,
+      "fields": [
+        {
+          "key": "eventTitle",
+          "label": "Film / tadbir nomi",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Dune: Part Three"
+        },
+        {
+          "key": "format",
+          "label": "Format",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "2D",
+              "label": "2D"
+            },
+            {
+              "value": "3D",
+              "label": "3D"
+            },
+            {
+              "value": "IMAX",
+              "label": "IMAX"
+            },
+            {
+              "value": "4DX",
+              "label": "4DX"
+            },
+            {
+              "value": "VR",
+              "label": "VR"
+            }
+          ]
+        },
+        {
+          "key": "language",
+          "label": "Til",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "O'zbek",
+              "label": "O'zbek"
+            },
+            {
+              "value": "Rus",
+              "label": "Rus"
+            },
+            {
+              "value": "Ingliz",
+              "label": "Ingliz"
+            },
+            {
+              "value": "Original (subtitr)",
+              "label": "Original (subtitr)"
+            }
+          ]
+        },
+        {
+          "key": "ageLimit",
+          "label": "Yosh chegarasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "0+",
+              "label": "0+"
+            },
+            {
+              "value": "6+",
+              "label": "6+"
+            },
+            {
+              "value": "12+",
+              "label": "12+"
+            },
+            {
+              "value": "16+",
+              "label": "16+"
+            },
+            {
+              "value": "18+",
+              "label": "18+"
+            }
+          ]
+        },
+        {
+          "key": "sessionTimes",
+          "label": "Seans vaqtlari",
+          "type": "TAGS",
+          "required": false,
+          "hint": "12:30, 16:00, 19:40"
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "120",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "CINEMA",
+      "nameUz": "Kino seans",
+      "sortOrder": 1,
+      "fields": [
+        {
+          "key": "hallType",
+          "label": "Zal",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Standart",
+              "label": "Standart"
+            },
+            {
+              "value": "VIP",
+              "label": "VIP"
+            },
+            {
+              "value": "Lounge",
+              "label": "Lounge"
+            },
+            {
+              "value": "IMAX",
+              "label": "IMAX"
+            }
+          ]
+        },
+        {
+          "key": "seatType",
+          "label": "Joy",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Oddiy",
+              "label": "Oddiy"
+            },
+            {
+              "value": "Divan",
+              "label": "Divan"
+            },
+            {
+              "value": "Recliner",
+              "label": "Recliner"
+            }
+          ]
+        },
+        {
+          "key": "eventTitle",
+          "label": "Film / tadbir nomi",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Dune: Part Three"
+        },
+        {
+          "key": "format",
+          "label": "Format",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "2D",
+              "label": "2D"
+            },
+            {
+              "value": "3D",
+              "label": "3D"
+            },
+            {
+              "value": "IMAX",
+              "label": "IMAX"
+            },
+            {
+              "value": "4DX",
+              "label": "4DX"
+            },
+            {
+              "value": "VR",
+              "label": "VR"
+            }
+          ]
+        },
+        {
+          "key": "language",
+          "label": "Til",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "O'zbek",
+              "label": "O'zbek"
+            },
+            {
+              "value": "Rus",
+              "label": "Rus"
+            },
+            {
+              "value": "Ingliz",
+              "label": "Ingliz"
+            },
+            {
+              "value": "Original (subtitr)",
+              "label": "Original (subtitr)"
+            }
+          ]
+        },
+        {
+          "key": "ageLimit",
+          "label": "Yosh chegarasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "0+",
+              "label": "0+"
+            },
+            {
+              "value": "6+",
+              "label": "6+"
+            },
+            {
+              "value": "12+",
+              "label": "12+"
+            },
+            {
+              "value": "16+",
+              "label": "16+"
+            },
+            {
+              "value": "18+",
+              "label": "18+"
+            }
+          ]
+        },
+        {
+          "key": "sessionTimes",
+          "label": "Seans vaqtlari",
+          "type": "TAGS",
+          "required": false,
+          "hint": "12:30, 16:00, 19:40"
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "120",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "THEATER_CONCERT",
+      "nameUz": "Teatr va konsert",
+      "sortOrder": 2,
+      "fields": [
+        {
+          "key": "artist",
+          "label": "Ijrochi / truppa",
+          "type": "TEXT",
+          "required": true,
+          "hint": "Ozodbek Nazarbekov"
+        },
+        {
+          "key": "hasIntermission",
+          "label": "Tanaffus bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "eventTitle",
+          "label": "Film / tadbir nomi",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Dune: Part Three"
+        },
+        {
+          "key": "format",
+          "label": "Format",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "2D",
+              "label": "2D"
+            },
+            {
+              "value": "3D",
+              "label": "3D"
+            },
+            {
+              "value": "IMAX",
+              "label": "IMAX"
+            },
+            {
+              "value": "4DX",
+              "label": "4DX"
+            },
+            {
+              "value": "VR",
+              "label": "VR"
+            }
+          ]
+        },
+        {
+          "key": "language",
+          "label": "Til",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "O'zbek",
+              "label": "O'zbek"
+            },
+            {
+              "value": "Rus",
+              "label": "Rus"
+            },
+            {
+              "value": "Ingliz",
+              "label": "Ingliz"
+            },
+            {
+              "value": "Original (subtitr)",
+              "label": "Original (subtitr)"
+            }
+          ]
+        },
+        {
+          "key": "ageLimit",
+          "label": "Yosh chegarasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "0+",
+              "label": "0+"
+            },
+            {
+              "value": "6+",
+              "label": "6+"
+            },
+            {
+              "value": "12+",
+              "label": "12+"
+            },
+            {
+              "value": "16+",
+              "label": "16+"
+            },
+            {
+              "value": "18+",
+              "label": "18+"
+            }
+          ]
+        },
+        {
+          "key": "sessionTimes",
+          "label": "Seans vaqtlari",
+          "type": "TAGS",
+          "required": false,
+          "hint": "12:30, 16:00, 19:40"
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "120",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "ESCAPE_ROOM",
+      "nameUz": "Kvest (escape room)",
+      "sortOrder": 3,
+      "fields": [
+        {
+          "key": "players",
+          "label": "Nechta o'yinchi",
+          "type": "NUMBER",
+          "required": true,
+          "hint": "4",
+          "suffix": "kishi"
+        },
+        {
+          "key": "difficulty",
+          "label": "Qiyinlik",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Oson",
+              "label": "Oson"
+            },
+            {
+              "value": "O'rtacha",
+              "label": "O'rtacha"
+            },
+            {
+              "value": "Qiyin",
+              "label": "Qiyin"
+            }
+          ]
+        },
+        {
+          "key": "theme",
+          "label": "Mavzu",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Qo'rqinchli"
+        },
+        {
+          "key": "hasActor",
+          "label": "Aktyor bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "eventTitle",
+          "label": "Film / tadbir nomi",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Dune: Part Three"
+        },
+        {
+          "key": "format",
+          "label": "Format",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "2D",
+              "label": "2D"
+            },
+            {
+              "value": "3D",
+              "label": "3D"
+            },
+            {
+              "value": "IMAX",
+              "label": "IMAX"
+            },
+            {
+              "value": "4DX",
+              "label": "4DX"
+            },
+            {
+              "value": "VR",
+              "label": "VR"
+            }
+          ]
+        },
+        {
+          "key": "language",
+          "label": "Til",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "O'zbek",
+              "label": "O'zbek"
+            },
+            {
+              "value": "Rus",
+              "label": "Rus"
+            },
+            {
+              "value": "Ingliz",
+              "label": "Ingliz"
+            },
+            {
+              "value": "Original (subtitr)",
+              "label": "Original (subtitr)"
+            }
+          ]
+        },
+        {
+          "key": "ageLimit",
+          "label": "Yosh chegarasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "0+",
+              "label": "0+"
+            },
+            {
+              "value": "6+",
+              "label": "6+"
+            },
+            {
+              "value": "12+",
+              "label": "12+"
+            },
+            {
+              "value": "16+",
+              "label": "16+"
+            },
+            {
+              "value": "18+",
+              "label": "18+"
+            }
+          ]
+        },
+        {
+          "key": "sessionTimes",
+          "label": "Seans vaqtlari",
+          "type": "TAGS",
+          "required": false,
+          "hint": "12:30, 16:00, 19:40"
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "120",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "TRAMPOLINE_PARK",
+      "nameUz": "Batut park",
+      "sortOrder": 4,
+      "fields": [
+        {
+          "key": "minutes",
+          "label": "Vaqt",
+          "type": "NUMBER",
+          "required": true,
+          "hint": "60",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "ageGroup",
+          "label": "Yosh guruhi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Bolalar",
+              "label": "Bolalar"
+            },
+            {
+              "value": "Kattalar",
+              "label": "Kattalar"
+            },
+            {
+              "value": "Barchasi",
+              "label": "Barchasi"
+            }
+          ]
+        },
+        {
+          "key": "socksIncluded",
+          "label": "Paypoq beriladi",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "eventTitle",
+          "label": "Film / tadbir nomi",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Dune: Part Three"
+        },
+        {
+          "key": "format",
+          "label": "Format",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "2D",
+              "label": "2D"
+            },
+            {
+              "value": "3D",
+              "label": "3D"
+            },
+            {
+              "value": "IMAX",
+              "label": "IMAX"
+            },
+            {
+              "value": "4DX",
+              "label": "4DX"
+            },
+            {
+              "value": "VR",
+              "label": "VR"
+            }
+          ]
+        },
+        {
+          "key": "language",
+          "label": "Til",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "O'zbek",
+              "label": "O'zbek"
+            },
+            {
+              "value": "Rus",
+              "label": "Rus"
+            },
+            {
+              "value": "Ingliz",
+              "label": "Ingliz"
+            },
+            {
+              "value": "Original (subtitr)",
+              "label": "Original (subtitr)"
+            }
+          ]
+        },
+        {
+          "key": "ageLimit",
+          "label": "Yosh chegarasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "0+",
+              "label": "0+"
+            },
+            {
+              "value": "6+",
+              "label": "6+"
+            },
+            {
+              "value": "12+",
+              "label": "12+"
+            },
+            {
+              "value": "16+",
+              "label": "16+"
+            },
+            {
+              "value": "18+",
+              "label": "18+"
+            }
+          ]
+        },
+        {
+          "key": "sessionTimes",
+          "label": "Seans vaqtlari",
+          "type": "TAGS",
+          "required": false,
+          "hint": "12:30, 16:00, 19:40"
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "120",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "BOWLING",
+      "nameUz": "Bouling",
+      "sortOrder": 5,
+      "fields": [
+        {
+          "key": "lanes",
+          "label": "Yo'laklar",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "1",
+          "suffix": "ta"
+        },
+        {
+          "key": "players",
+          "label": "Nechta o'yinchi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "6",
+          "suffix": "kishi"
+        },
+        {
+          "key": "shoesIncluded",
+          "label": "Poyabzal beriladi",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "eventTitle",
+          "label": "Film / tadbir nomi",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Dune: Part Three"
+        },
+        {
+          "key": "format",
+          "label": "Format",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "2D",
+              "label": "2D"
+            },
+            {
+              "value": "3D",
+              "label": "3D"
+            },
+            {
+              "value": "IMAX",
+              "label": "IMAX"
+            },
+            {
+              "value": "4DX",
+              "label": "4DX"
+            },
+            {
+              "value": "VR",
+              "label": "VR"
+            }
+          ]
+        },
+        {
+          "key": "language",
+          "label": "Til",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "O'zbek",
+              "label": "O'zbek"
+            },
+            {
+              "value": "Rus",
+              "label": "Rus"
+            },
+            {
+              "value": "Ingliz",
+              "label": "Ingliz"
+            },
+            {
+              "value": "Original (subtitr)",
+              "label": "Original (subtitr)"
+            }
+          ]
+        },
+        {
+          "key": "ageLimit",
+          "label": "Yosh chegarasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "0+",
+              "label": "0+"
+            },
+            {
+              "value": "6+",
+              "label": "6+"
+            },
+            {
+              "value": "12+",
+              "label": "12+"
+            },
+            {
+              "value": "16+",
+              "label": "16+"
+            },
+            {
+              "value": "18+",
+              "label": "18+"
+            }
+          ]
+        },
+        {
+          "key": "sessionTimes",
+          "label": "Seans vaqtlari",
+          "type": "TAGS",
+          "required": false,
+          "hint": "12:30, 16:00, 19:40"
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "120",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "AQUAPARK",
+      "nameUz": "Akvapark",
+      "sortOrder": 6,
+      "fields": [
+        {
+          "key": "zones",
+          "label": "Zonalar",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Katta gorka, Bolalar zonasi, Jakuzi"
+        },
+        {
+          "key": "hasLocker",
+          "label": "Shkaf beriladi",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "allDay",
+          "label": "Kun bo'yi",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "eventTitle",
+          "label": "Film / tadbir nomi",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Dune: Part Three"
+        },
+        {
+          "key": "format",
+          "label": "Format",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "2D",
+              "label": "2D"
+            },
+            {
+              "value": "3D",
+              "label": "3D"
+            },
+            {
+              "value": "IMAX",
+              "label": "IMAX"
+            },
+            {
+              "value": "4DX",
+              "label": "4DX"
+            },
+            {
+              "value": "VR",
+              "label": "VR"
+            }
+          ]
+        },
+        {
+          "key": "language",
+          "label": "Til",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "O'zbek",
+              "label": "O'zbek"
+            },
+            {
+              "value": "Rus",
+              "label": "Rus"
+            },
+            {
+              "value": "Ingliz",
+              "label": "Ingliz"
+            },
+            {
+              "value": "Original (subtitr)",
+              "label": "Original (subtitr)"
+            }
+          ]
+        },
+        {
+          "key": "ageLimit",
+          "label": "Yosh chegarasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "0+",
+              "label": "0+"
+            },
+            {
+              "value": "6+",
+              "label": "6+"
+            },
+            {
+              "value": "12+",
+              "label": "12+"
+            },
+            {
+              "value": "16+",
+              "label": "16+"
+            },
+            {
+              "value": "18+",
+              "label": "18+"
+            }
+          ]
+        },
+        {
+          "key": "sessionTimes",
+          "label": "Seans vaqtlari",
+          "type": "TAGS",
+          "required": false,
+          "hint": "12:30, 16:00, 19:40"
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "120",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "AMUSEMENT_PARK",
+      "nameUz": "Attraksionlar",
+      "sortOrder": 7,
+      "fields": [
+        {
+          "key": "rideCount",
+          "label": "Attraksionlar",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "10",
+          "suffix": "ta"
+        },
+        {
+          "key": "isUnlimited",
+          "label": "Cheksiz",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "eventTitle",
+          "label": "Film / tadbir nomi",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Dune: Part Three"
+        },
+        {
+          "key": "format",
+          "label": "Format",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "2D",
+              "label": "2D"
+            },
+            {
+              "value": "3D",
+              "label": "3D"
+            },
+            {
+              "value": "IMAX",
+              "label": "IMAX"
+            },
+            {
+              "value": "4DX",
+              "label": "4DX"
+            },
+            {
+              "value": "VR",
+              "label": "VR"
+            }
+          ]
+        },
+        {
+          "key": "language",
+          "label": "Til",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "O'zbek",
+              "label": "O'zbek"
+            },
+            {
+              "value": "Rus",
+              "label": "Rus"
+            },
+            {
+              "value": "Ingliz",
+              "label": "Ingliz"
+            },
+            {
+              "value": "Original (subtitr)",
+              "label": "Original (subtitr)"
+            }
+          ]
+        },
+        {
+          "key": "ageLimit",
+          "label": "Yosh chegarasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "0+",
+              "label": "0+"
+            },
+            {
+              "value": "6+",
+              "label": "6+"
+            },
+            {
+              "value": "12+",
+              "label": "12+"
+            },
+            {
+              "value": "16+",
+              "label": "16+"
+            },
+            {
+              "value": "18+",
+              "label": "18+"
+            }
+          ]
+        },
+        {
+          "key": "sessionTimes",
+          "label": "Seans vaqtlari",
+          "type": "TAGS",
+          "required": false,
+          "hint": "12:30, 16:00, 19:40"
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "120",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "MUSEUM_EXPO",
+      "nameUz": "Muzey va ko'rgazma",
+      "sortOrder": 8,
+      "fields": [
+        {
+          "key": "expoTitle",
+          "label": "Ko'rgazma",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Zamonaviy san'at"
+        },
+        {
+          "key": "hasGuide",
+          "label": "Gid bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "eventTitle",
+          "label": "Film / tadbir nomi",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Dune: Part Three"
+        },
+        {
+          "key": "format",
+          "label": "Format",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "2D",
+              "label": "2D"
+            },
+            {
+              "value": "3D",
+              "label": "3D"
+            },
+            {
+              "value": "IMAX",
+              "label": "IMAX"
+            },
+            {
+              "value": "4DX",
+              "label": "4DX"
+            },
+            {
+              "value": "VR",
+              "label": "VR"
+            }
+          ]
+        },
+        {
+          "key": "language",
+          "label": "Til",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "O'zbek",
+              "label": "O'zbek"
+            },
+            {
+              "value": "Rus",
+              "label": "Rus"
+            },
+            {
+              "value": "Ingliz",
+              "label": "Ingliz"
+            },
+            {
+              "value": "Original (subtitr)",
+              "label": "Original (subtitr)"
+            }
+          ]
+        },
+        {
+          "key": "ageLimit",
+          "label": "Yosh chegarasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "0+",
+              "label": "0+"
+            },
+            {
+              "value": "6+",
+              "label": "6+"
+            },
+            {
+              "value": "12+",
+              "label": "12+"
+            },
+            {
+              "value": "16+",
+              "label": "16+"
+            },
+            {
+              "value": "18+",
+              "label": "18+"
+            }
+          ]
+        },
+        {
+          "key": "sessionTimes",
+          "label": "Seans vaqtlari",
+          "type": "TAGS",
+          "required": false,
+          "hint": "12:30, 16:00, 19:40"
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "120",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "KARAOKE",
+      "nameUz": "Karaoke",
+      "sortOrder": 9,
+      "fields": [
+        {
+          "key": "roomSize",
+          "label": "Xona",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Kichik (4)",
+              "label": "Kichik (4)"
+            },
+            {
+              "value": "O'rta (8)",
+              "label": "O'rta (8)"
+            },
+            {
+              "value": "Katta (15+)",
+              "label": "Katta (15+)"
+            }
+          ]
+        },
+        {
+          "key": "songLanguages",
+          "label": "Qo'shiq tillari",
+          "type": "TAGS",
+          "required": false,
+          "hint": "O'zbek, Rus, Ingliz"
+        },
+        {
+          "key": "eventTitle",
+          "label": "Film / tadbir nomi",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Dune: Part Three"
+        },
+        {
+          "key": "format",
+          "label": "Format",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "2D",
+              "label": "2D"
+            },
+            {
+              "value": "3D",
+              "label": "3D"
+            },
+            {
+              "value": "IMAX",
+              "label": "IMAX"
+            },
+            {
+              "value": "4DX",
+              "label": "4DX"
+            },
+            {
+              "value": "VR",
+              "label": "VR"
+            }
+          ]
+        },
+        {
+          "key": "language",
+          "label": "Til",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "O'zbek",
+              "label": "O'zbek"
+            },
+            {
+              "value": "Rus",
+              "label": "Rus"
+            },
+            {
+              "value": "Ingliz",
+              "label": "Ingliz"
+            },
+            {
+              "value": "Original (subtitr)",
+              "label": "Original (subtitr)"
+            }
+          ]
+        },
+        {
+          "key": "ageLimit",
+          "label": "Yosh chegarasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "0+",
+              "label": "0+"
+            },
+            {
+              "value": "6+",
+              "label": "6+"
+            },
+            {
+              "value": "12+",
+              "label": "12+"
+            },
+            {
+              "value": "16+",
+              "label": "16+"
+            },
+            {
+              "value": "18+",
+              "label": "18+"
+            }
+          ]
+        },
+        {
+          "key": "sessionTimes",
+          "label": "Seans vaqtlari",
+          "type": "TAGS",
+          "required": false,
+          "hint": "12:30, 16:00, 19:40"
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "120",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "OTHER",
+      "nameUz": "Boshqa",
+      "sortOrder": 10,
+      "fields": [
+        {
+          "key": "eventTitle",
+          "label": "Film / tadbir nomi",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Dune: Part Three"
+        },
+        {
+          "key": "format",
+          "label": "Format",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "2D",
+              "label": "2D"
+            },
+            {
+              "value": "3D",
+              "label": "3D"
+            },
+            {
+              "value": "IMAX",
+              "label": "IMAX"
+            },
+            {
+              "value": "4DX",
+              "label": "4DX"
+            },
+            {
+              "value": "VR",
+              "label": "VR"
+            }
+          ]
+        },
+        {
+          "key": "language",
+          "label": "Til",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "O'zbek",
+              "label": "O'zbek"
+            },
+            {
+              "value": "Rus",
+              "label": "Rus"
+            },
+            {
+              "value": "Ingliz",
+              "label": "Ingliz"
+            },
+            {
+              "value": "Original (subtitr)",
+              "label": "Original (subtitr)"
+            }
+          ]
+        },
+        {
+          "key": "ageLimit",
+          "label": "Yosh chegarasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "0+",
+              "label": "0+"
+            },
+            {
+              "value": "6+",
+              "label": "6+"
+            },
+            {
+              "value": "12+",
+              "label": "12+"
+            },
+            {
+              "value": "16+",
+              "label": "16+"
+            },
+            {
+              "value": "18+",
+              "label": "18+"
+            }
+          ]
+        },
+        {
+          "key": "sessionTimes",
+          "label": "Seans vaqtlari",
+          "type": "TAGS",
+          "required": false,
+          "hint": "12:30, 16:00, 19:40"
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "120",
+          "suffix": "daqiqa"
+        }
+      ],
+      "requiresCustomName": true
+    }
+  ],
+  "error": null
+}

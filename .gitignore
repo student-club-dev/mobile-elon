@@ -34,6 +34,12 @@ iosApp/Pods/
 iosApp/*.xcworkspace
 DerivedData/
 
+# Ichki modullardagi IDE papkalari — yuqoridagi qoidalar ildizga bog'langan,
+# shuning uchun `elonUzApp/.idea/` ni alohida chiqarib tashlaymiz.
+**/.idea/workspace.xml
+**/.idea/caches/
+elonUzApp/.idea/
+
 # ---- Firebase / maxfiy kalitlar (haqiqiylarini commit QILMANG) ----
 # Repo'da faqat *.template versiyalari saqlanadi — nusxa olib nomini o'zgartiring.
 google-services.json

@@ -1,0 +1,1075 @@
+{
+  "success": true,
+  "status": 200,
+  "code": null,
+  "message": null,
+  "result": [
+    {
+      "key": "ALL",
+      "nameUz": "Barcha xizmatlarga",
+      "sortOrder": 0,
+      "fields": [
+        {
+          "key": "master",
+          "label": "Usta",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Aziz aka"
+        },
+        {
+          "key": "masterLevel",
+          "label": "Usta darajasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Junior",
+              "label": "Junior"
+            },
+            {
+              "value": "Usta",
+              "label": "Usta"
+            },
+            {
+              "value": "Top-usta",
+              "label": "Top-usta"
+            }
+          ]
+        },
+        {
+          "key": "gender",
+          "label": "Kimlar uchun",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Erkaklar",
+              "label": "Erkaklar"
+            },
+            {
+              "value": "Ayollar",
+              "label": "Ayollar"
+            },
+            {
+              "value": "Bolalar",
+              "label": "Bolalar"
+            },
+            {
+              "value": "Barcha",
+              "label": "Barcha"
+            }
+          ]
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "40",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "byAppointment",
+          "label": "Oldindan yozilish",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasWashing",
+          "label": "Yuvish kiradi",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "HAIRCUT_MEN",
+      "nameUz": "Erkaklar soch olish",
+      "sortOrder": 1,
+      "fields": [
+        {
+          "key": "style",
+          "label": "Uslub",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Klassik",
+              "label": "Klassik"
+            },
+            {
+              "value": "Fade",
+              "label": "Fade"
+            },
+            {
+              "value": "Undercut",
+              "label": "Undercut"
+            },
+            {
+              "value": "Mashinka",
+              "label": "Mashinka"
+            },
+            {
+              "value": "Bolalar",
+              "label": "Bolalar"
+            }
+          ]
+        },
+        {
+          "key": "beardIncluded",
+          "label": "Soqol bilan",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "master",
+          "label": "Usta",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Aziz aka"
+        },
+        {
+          "key": "masterLevel",
+          "label": "Usta darajasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Junior",
+              "label": "Junior"
+            },
+            {
+              "value": "Usta",
+              "label": "Usta"
+            },
+            {
+              "value": "Top-usta",
+              "label": "Top-usta"
+            }
+          ]
+        },
+        {
+          "key": "gender",
+          "label": "Kimlar uchun",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Erkaklar",
+              "label": "Erkaklar"
+            },
+            {
+              "value": "Ayollar",
+              "label": "Ayollar"
+            },
+            {
+              "value": "Bolalar",
+              "label": "Bolalar"
+            },
+            {
+              "value": "Barcha",
+              "label": "Barcha"
+            }
+          ]
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "40",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "byAppointment",
+          "label": "Oldindan yozilish",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasWashing",
+          "label": "Yuvish kiradi",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "HAIRCUT_WOMEN",
+      "nameUz": "Ayollar soch olish",
+      "sortOrder": 2,
+      "fields": [
+        {
+          "key": "hairLength",
+          "label": "Soch uzunligi",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Kalta",
+              "label": "Kalta"
+            },
+            {
+              "value": "O'rta",
+              "label": "O'rta"
+            },
+            {
+              "value": "Uzun",
+              "label": "Uzun"
+            }
+          ]
+        },
+        {
+          "key": "style",
+          "label": "Uslub",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "To'g'ri",
+              "label": "To'g'ri"
+            },
+            {
+              "value": "Kaskad",
+              "label": "Kaskad"
+            },
+            {
+              "value": "Kare",
+              "label": "Kare"
+            },
+            {
+              "value": "Chelka",
+              "label": "Chelka"
+            }
+          ]
+        },
+        {
+          "key": "master",
+          "label": "Usta",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Aziz aka"
+        },
+        {
+          "key": "masterLevel",
+          "label": "Usta darajasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Junior",
+              "label": "Junior"
+            },
+            {
+              "value": "Usta",
+              "label": "Usta"
+            },
+            {
+              "value": "Top-usta",
+              "label": "Top-usta"
+            }
+          ]
+        },
+        {
+          "key": "gender",
+          "label": "Kimlar uchun",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Erkaklar",
+              "label": "Erkaklar"
+            },
+            {
+              "value": "Ayollar",
+              "label": "Ayollar"
+            },
+            {
+              "value": "Bolalar",
+              "label": "Bolalar"
+            },
+            {
+              "value": "Barcha",
+              "label": "Barcha"
+            }
+          ]
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "40",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "byAppointment",
+          "label": "Oldindan yozilish",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasWashing",
+          "label": "Yuvish kiradi",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "KIDS",
+      "nameUz": "Bolalar soch olish",
+      "sortOrder": 3,
+      "fields": [
+        {
+          "key": "ageGroup",
+          "label": "Yosh",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "0-3",
+              "label": "0-3"
+            },
+            {
+              "value": "4-7",
+              "label": "4-7"
+            },
+            {
+              "value": "8-12",
+              "label": "8-12"
+            }
+          ]
+        },
+        {
+          "key": "hasCartoon",
+          "label": "Multfilm bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "master",
+          "label": "Usta",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Aziz aka"
+        },
+        {
+          "key": "masterLevel",
+          "label": "Usta darajasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Junior",
+              "label": "Junior"
+            },
+            {
+              "value": "Usta",
+              "label": "Usta"
+            },
+            {
+              "value": "Top-usta",
+              "label": "Top-usta"
+            }
+          ]
+        },
+        {
+          "key": "gender",
+          "label": "Kimlar uchun",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Erkaklar",
+              "label": "Erkaklar"
+            },
+            {
+              "value": "Ayollar",
+              "label": "Ayollar"
+            },
+            {
+              "value": "Bolalar",
+              "label": "Bolalar"
+            },
+            {
+              "value": "Barcha",
+              "label": "Barcha"
+            }
+          ]
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "40",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "byAppointment",
+          "label": "Oldindan yozilish",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasWashing",
+          "label": "Yuvish kiradi",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "BEARD",
+      "nameUz": "Soqol / ustara",
+      "sortOrder": 4,
+      "fields": [
+        {
+          "key": "beardService",
+          "label": "Xizmat",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Qirqish",
+              "label": "Qirqish"
+            },
+            {
+              "value": "Ustara",
+              "label": "Ustara"
+            },
+            {
+              "value": "Shakl berish",
+              "label": "Shakl berish"
+            },
+            {
+              "value": "Bo'yash",
+              "label": "Bo'yash"
+            }
+          ]
+        },
+        {
+          "key": "master",
+          "label": "Usta",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Aziz aka"
+        },
+        {
+          "key": "masterLevel",
+          "label": "Usta darajasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Junior",
+              "label": "Junior"
+            },
+            {
+              "value": "Usta",
+              "label": "Usta"
+            },
+            {
+              "value": "Top-usta",
+              "label": "Top-usta"
+            }
+          ]
+        },
+        {
+          "key": "gender",
+          "label": "Kimlar uchun",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Erkaklar",
+              "label": "Erkaklar"
+            },
+            {
+              "value": "Ayollar",
+              "label": "Ayollar"
+            },
+            {
+              "value": "Bolalar",
+              "label": "Bolalar"
+            },
+            {
+              "value": "Barcha",
+              "label": "Barcha"
+            }
+          ]
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "40",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "byAppointment",
+          "label": "Oldindan yozilish",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasWashing",
+          "label": "Yuvish kiradi",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "HAIR_COLOR",
+      "nameUz": "Soch bo'yash",
+      "sortOrder": 5,
+      "fields": [
+        {
+          "key": "hairLength",
+          "label": "Soch uzunligi",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Kalta",
+              "label": "Kalta"
+            },
+            {
+              "value": "O'rta",
+              "label": "O'rta"
+            },
+            {
+              "value": "Uzun",
+              "label": "Uzun"
+            }
+          ]
+        },
+        {
+          "key": "colorBrand",
+          "label": "Bo'yoq brendi",
+          "type": "TEXT",
+          "required": false,
+          "hint": "L'Oréal"
+        },
+        {
+          "key": "technique",
+          "label": "Texnika",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "To'liq",
+              "label": "To'liq"
+            },
+            {
+              "value": "Ombre",
+              "label": "Ombre"
+            },
+            {
+              "value": "Balayaj",
+              "label": "Balayaj"
+            },
+            {
+              "value": "Melirovka",
+              "label": "Melirovka"
+            },
+            {
+              "value": "Ildiz",
+              "label": "Ildiz"
+            }
+          ]
+        },
+        {
+          "key": "master",
+          "label": "Usta",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Aziz aka"
+        },
+        {
+          "key": "masterLevel",
+          "label": "Usta darajasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Junior",
+              "label": "Junior"
+            },
+            {
+              "value": "Usta",
+              "label": "Usta"
+            },
+            {
+              "value": "Top-usta",
+              "label": "Top-usta"
+            }
+          ]
+        },
+        {
+          "key": "gender",
+          "label": "Kimlar uchun",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Erkaklar",
+              "label": "Erkaklar"
+            },
+            {
+              "value": "Ayollar",
+              "label": "Ayollar"
+            },
+            {
+              "value": "Bolalar",
+              "label": "Bolalar"
+            },
+            {
+              "value": "Barcha",
+              "label": "Barcha"
+            }
+          ]
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "40",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "byAppointment",
+          "label": "Oldindan yozilish",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasWashing",
+          "label": "Yuvish kiradi",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "STYLING",
+      "nameUz": "Ukladka / styling",
+      "sortOrder": 6,
+      "fields": [
+        {
+          "key": "occasion",
+          "label": "Tadbir",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Kundalik",
+              "label": "Kundalik"
+            },
+            {
+              "value": "To'y",
+              "label": "To'y"
+            },
+            {
+              "value": "Bayram",
+              "label": "Bayram"
+            },
+            {
+              "value": "Fotosessiya",
+              "label": "Fotosessiya"
+            }
+          ]
+        },
+        {
+          "key": "hairLength",
+          "label": "Soch uzunligi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Kalta",
+              "label": "Kalta"
+            },
+            {
+              "value": "O'rta",
+              "label": "O'rta"
+            },
+            {
+              "value": "Uzun",
+              "label": "Uzun"
+            }
+          ]
+        },
+        {
+          "key": "master",
+          "label": "Usta",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Aziz aka"
+        },
+        {
+          "key": "masterLevel",
+          "label": "Usta darajasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Junior",
+              "label": "Junior"
+            },
+            {
+              "value": "Usta",
+              "label": "Usta"
+            },
+            {
+              "value": "Top-usta",
+              "label": "Top-usta"
+            }
+          ]
+        },
+        {
+          "key": "gender",
+          "label": "Kimlar uchun",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Erkaklar",
+              "label": "Erkaklar"
+            },
+            {
+              "value": "Ayollar",
+              "label": "Ayollar"
+            },
+            {
+              "value": "Bolalar",
+              "label": "Bolalar"
+            },
+            {
+              "value": "Barcha",
+              "label": "Barcha"
+            }
+          ]
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "40",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "byAppointment",
+          "label": "Oldindan yozilish",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasWashing",
+          "label": "Yuvish kiradi",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "HAIR_CARE",
+      "nameUz": "Parvarish (spa)",
+      "sortOrder": 7,
+      "fields": [
+        {
+          "key": "procedure",
+          "label": "Muolaja",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Keratin",
+              "label": "Keratin"
+            },
+            {
+              "value": "Botoks",
+              "label": "Botoks"
+            },
+            {
+              "value": "Maska",
+              "label": "Maska"
+            },
+            {
+              "value": "Peeling",
+              "label": "Peeling"
+            }
+          ]
+        },
+        {
+          "key": "courseSessions",
+          "label": "Kurs",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "1",
+          "suffix": "seans"
+        },
+        {
+          "key": "master",
+          "label": "Usta",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Aziz aka"
+        },
+        {
+          "key": "masterLevel",
+          "label": "Usta darajasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Junior",
+              "label": "Junior"
+            },
+            {
+              "value": "Usta",
+              "label": "Usta"
+            },
+            {
+              "value": "Top-usta",
+              "label": "Top-usta"
+            }
+          ]
+        },
+        {
+          "key": "gender",
+          "label": "Kimlar uchun",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Erkaklar",
+              "label": "Erkaklar"
+            },
+            {
+              "value": "Ayollar",
+              "label": "Ayollar"
+            },
+            {
+              "value": "Bolalar",
+              "label": "Bolalar"
+            },
+            {
+              "value": "Barcha",
+              "label": "Barcha"
+            }
+          ]
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "40",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "byAppointment",
+          "label": "Oldindan yozilish",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasWashing",
+          "label": "Yuvish kiradi",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "MANICURE",
+      "nameUz": "Manikyur-pedikyur",
+      "sortOrder": 8,
+      "fields": [
+        {
+          "key": "coating",
+          "label": "Qoplama",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Oddiy",
+              "label": "Oddiy"
+            },
+            {
+              "value": "Gel-lak",
+              "label": "Gel-lak"
+            },
+            {
+              "value": "Kengaytma",
+              "label": "Kengaytma"
+            }
+          ]
+        },
+        {
+          "key": "withPedicure",
+          "label": "Pedikyur bilan",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "master",
+          "label": "Usta",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Aziz aka"
+        },
+        {
+          "key": "masterLevel",
+          "label": "Usta darajasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Junior",
+              "label": "Junior"
+            },
+            {
+              "value": "Usta",
+              "label": "Usta"
+            },
+            {
+              "value": "Top-usta",
+              "label": "Top-usta"
+            }
+          ]
+        },
+        {
+          "key": "gender",
+          "label": "Kimlar uchun",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Erkaklar",
+              "label": "Erkaklar"
+            },
+            {
+              "value": "Ayollar",
+              "label": "Ayollar"
+            },
+            {
+              "value": "Bolalar",
+              "label": "Bolalar"
+            },
+            {
+              "value": "Barcha",
+              "label": "Barcha"
+            }
+          ]
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "40",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "byAppointment",
+          "label": "Oldindan yozilish",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasWashing",
+          "label": "Yuvish kiradi",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "OTHER",
+      "nameUz": "Boshqa",
+      "sortOrder": 9,
+      "fields": [
+        {
+          "key": "master",
+          "label": "Usta",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Aziz aka"
+        },
+        {
+          "key": "masterLevel",
+          "label": "Usta darajasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Junior",
+              "label": "Junior"
+            },
+            {
+              "value": "Usta",
+              "label": "Usta"
+            },
+            {
+              "value": "Top-usta",
+              "label": "Top-usta"
+            }
+          ]
+        },
+        {
+          "key": "gender",
+          "label": "Kimlar uchun",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Erkaklar",
+              "label": "Erkaklar"
+            },
+            {
+              "value": "Ayollar",
+              "label": "Ayollar"
+            },
+            {
+              "value": "Bolalar",
+              "label": "Bolalar"
+            },
+            {
+              "value": "Barcha",
+              "label": "Barcha"
+            }
+          ]
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "40",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "byAppointment",
+          "label": "Oldindan yozilish",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasWashing",
+          "label": "Yuvish kiradi",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ],
+      "requiresCustomName": true
+    }
+  ],
+  "error": null
+}

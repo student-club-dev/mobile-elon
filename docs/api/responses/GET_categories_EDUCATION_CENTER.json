@@ -1,0 +1,1200 @@
+{
+  "success": true,
+  "status": 200,
+  "code": null,
+  "message": null,
+  "result": [
+    {
+      "key": "ALL",
+      "nameUz": "Barcha kurslarga",
+      "sortOrder": 0,
+      "fields": [
+        {
+          "key": "subject",
+          "label": "Yo'nalish",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Ingliz tili — IELTS 6.5+"
+        },
+        {
+          "key": "level",
+          "label": "Daraja",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Boshlang'ich",
+              "label": "Boshlang'ich"
+            },
+            {
+              "value": "O'rta",
+              "label": "O'rta"
+            },
+            {
+              "value": "Yuqori",
+              "label": "Yuqori"
+            }
+          ]
+        },
+        {
+          "key": "format",
+          "label": "Format",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Offline",
+              "label": "Offline"
+            },
+            {
+              "value": "Online",
+              "label": "Online"
+            },
+            {
+              "value": "Aralash",
+              "label": "Aralash"
+            }
+          ]
+        },
+        {
+          "key": "durationMonths",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "3",
+          "suffix": "oy"
+        },
+        {
+          "key": "lessonsPerWeek",
+          "label": "Haftada",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "3",
+          "suffix": "marta"
+        },
+        {
+          "key": "hasFreeTrialLesson",
+          "label": "Birinchi dars bepul",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "groupSize",
+          "label": "Guruhда nechta",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "12",
+          "suffix": "kishi"
+        },
+        {
+          "key": "hasCertificate",
+          "label": "Sertifikat beriladi",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "lessonMinutes",
+          "label": "Dars davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "90",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "FOREIGN_LANGUAGES",
+      "nameUz": "Chet tillari",
+      "sortOrder": 1,
+      "fields": [
+        {
+          "key": "language",
+          "label": "Til",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Ingliz",
+              "label": "Ingliz"
+            },
+            {
+              "value": "Rus",
+              "label": "Rus"
+            },
+            {
+              "value": "Koreys",
+              "label": "Koreys"
+            },
+            {
+              "value": "Nemis",
+              "label": "Nemis"
+            },
+            {
+              "value": "Fransuz",
+              "label": "Fransuz"
+            },
+            {
+              "value": "Arab",
+              "label": "Arab"
+            },
+            {
+              "value": "Xitoy",
+              "label": "Xitoy"
+            },
+            {
+              "value": "Turk",
+              "label": "Turk"
+            }
+          ]
+        },
+        {
+          "key": "hasNativeSpeaker",
+          "label": "Native speaker bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "subject",
+          "label": "Yo'nalish",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Ingliz tili — IELTS 6.5+"
+        },
+        {
+          "key": "level",
+          "label": "Daraja",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Boshlang'ich",
+              "label": "Boshlang'ich"
+            },
+            {
+              "value": "O'rta",
+              "label": "O'rta"
+            },
+            {
+              "value": "Yuqori",
+              "label": "Yuqori"
+            }
+          ]
+        },
+        {
+          "key": "format",
+          "label": "Format",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Offline",
+              "label": "Offline"
+            },
+            {
+              "value": "Online",
+              "label": "Online"
+            },
+            {
+              "value": "Aralash",
+              "label": "Aralash"
+            }
+          ]
+        },
+        {
+          "key": "durationMonths",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "3",
+          "suffix": "oy"
+        },
+        {
+          "key": "lessonsPerWeek",
+          "label": "Haftada",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "3",
+          "suffix": "marta"
+        },
+        {
+          "key": "hasFreeTrialLesson",
+          "label": "Birinchi dars bepul",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "groupSize",
+          "label": "Guruhда nechta",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "12",
+          "suffix": "kishi"
+        },
+        {
+          "key": "hasCertificate",
+          "label": "Sertifikat beriladi",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "lessonMinutes",
+          "label": "Dars davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "90",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "IELTS_CEFR",
+      "nameUz": "IELTS / CEFR",
+      "sortOrder": 2,
+      "fields": [
+        {
+          "key": "examType",
+          "label": "Imtihon",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "IELTS",
+              "label": "IELTS"
+            },
+            {
+              "value": "CEFR",
+              "label": "CEFR"
+            },
+            {
+              "value": "TOEFL",
+              "label": "TOEFL"
+            },
+            {
+              "value": "SAT",
+              "label": "SAT"
+            }
+          ]
+        },
+        {
+          "key": "targetScore",
+          "label": "Maqsad ball",
+          "type": "TEXT",
+          "required": false,
+          "hint": "6.5+"
+        },
+        {
+          "key": "hasMockExam",
+          "label": "Mock imtihon bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "subject",
+          "label": "Yo'nalish",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Ingliz tili — IELTS 6.5+"
+        },
+        {
+          "key": "level",
+          "label": "Daraja",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Boshlang'ich",
+              "label": "Boshlang'ich"
+            },
+            {
+              "value": "O'rta",
+              "label": "O'rta"
+            },
+            {
+              "value": "Yuqori",
+              "label": "Yuqori"
+            }
+          ]
+        },
+        {
+          "key": "format",
+          "label": "Format",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Offline",
+              "label": "Offline"
+            },
+            {
+              "value": "Online",
+              "label": "Online"
+            },
+            {
+              "value": "Aralash",
+              "label": "Aralash"
+            }
+          ]
+        },
+        {
+          "key": "durationMonths",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "3",
+          "suffix": "oy"
+        },
+        {
+          "key": "lessonsPerWeek",
+          "label": "Haftada",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "3",
+          "suffix": "marta"
+        },
+        {
+          "key": "hasFreeTrialLesson",
+          "label": "Birinchi dars bepul",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "groupSize",
+          "label": "Guruhда nechta",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "12",
+          "suffix": "kishi"
+        },
+        {
+          "key": "hasCertificate",
+          "label": "Sertifikat beriladi",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "lessonMinutes",
+          "label": "Dars davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "90",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "IT_PROGRAMMING",
+      "nameUz": "IT va dasturlash",
+      "sortOrder": 3,
+      "fields": [
+        {
+          "key": "stack",
+          "label": "Texnologiyalar",
+          "type": "TAGS",
+          "required": true,
+          "hint": "Python, Django, PostgreSQL"
+        },
+        {
+          "key": "hasProject",
+          "label": "Real loyiha bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasJobHelp",
+          "label": "Ishga joylashishда yordam",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "subject",
+          "label": "Yo'nalish",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Ingliz tili — IELTS 6.5+"
+        },
+        {
+          "key": "level",
+          "label": "Daraja",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Boshlang'ich",
+              "label": "Boshlang'ich"
+            },
+            {
+              "value": "O'rta",
+              "label": "O'rta"
+            },
+            {
+              "value": "Yuqori",
+              "label": "Yuqori"
+            }
+          ]
+        },
+        {
+          "key": "format",
+          "label": "Format",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Offline",
+              "label": "Offline"
+            },
+            {
+              "value": "Online",
+              "label": "Online"
+            },
+            {
+              "value": "Aralash",
+              "label": "Aralash"
+            }
+          ]
+        },
+        {
+          "key": "durationMonths",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "3",
+          "suffix": "oy"
+        },
+        {
+          "key": "lessonsPerWeek",
+          "label": "Haftada",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "3",
+          "suffix": "marta"
+        },
+        {
+          "key": "hasFreeTrialLesson",
+          "label": "Birinchi dars bepul",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "groupSize",
+          "label": "Guruhда nechta",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "12",
+          "suffix": "kishi"
+        },
+        {
+          "key": "hasCertificate",
+          "label": "Sertifikat beriladi",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "lessonMinutes",
+          "label": "Dars davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "90",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "DESIGN",
+      "nameUz": "Dizayn",
+      "sortOrder": 4,
+      "fields": [
+        {
+          "key": "tools",
+          "label": "Dasturlar",
+          "type": "TAGS",
+          "required": true,
+          "hint": "Figma, Photoshop"
+        },
+        {
+          "key": "hasPortfolio",
+          "label": "Portfolio yig'iladi",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "subject",
+          "label": "Yo'nalish",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Ingliz tili — IELTS 6.5+"
+        },
+        {
+          "key": "level",
+          "label": "Daraja",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Boshlang'ich",
+              "label": "Boshlang'ich"
+            },
+            {
+              "value": "O'rta",
+              "label": "O'rta"
+            },
+            {
+              "value": "Yuqori",
+              "label": "Yuqori"
+            }
+          ]
+        },
+        {
+          "key": "format",
+          "label": "Format",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Offline",
+              "label": "Offline"
+            },
+            {
+              "value": "Online",
+              "label": "Online"
+            },
+            {
+              "value": "Aralash",
+              "label": "Aralash"
+            }
+          ]
+        },
+        {
+          "key": "durationMonths",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "3",
+          "suffix": "oy"
+        },
+        {
+          "key": "lessonsPerWeek",
+          "label": "Haftada",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "3",
+          "suffix": "marta"
+        },
+        {
+          "key": "hasFreeTrialLesson",
+          "label": "Birinchi dars bepul",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "groupSize",
+          "label": "Guruhда nechta",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "12",
+          "suffix": "kishi"
+        },
+        {
+          "key": "hasCertificate",
+          "label": "Sertifikat beriladi",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "lessonMinutes",
+          "label": "Dars davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "90",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "MATH_SCIENCE",
+      "nameUz": "Matematika va fanlar",
+      "sortOrder": 5,
+      "fields": [
+        {
+          "key": "subjectName",
+          "label": "Fan",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Matematika",
+              "label": "Matematika"
+            },
+            {
+              "value": "Fizika",
+              "label": "Fizika"
+            },
+            {
+              "value": "Kimyo",
+              "label": "Kimyo"
+            },
+            {
+              "value": "Biologiya",
+              "label": "Biologiya"
+            }
+          ]
+        },
+        {
+          "key": "gradeLevel",
+          "label": "Sinf",
+          "type": "TEXT",
+          "required": false,
+          "hint": "9-11"
+        },
+        {
+          "key": "subject",
+          "label": "Yo'nalish",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Ingliz tili — IELTS 6.5+"
+        },
+        {
+          "key": "level",
+          "label": "Daraja",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Boshlang'ich",
+              "label": "Boshlang'ich"
+            },
+            {
+              "value": "O'rta",
+              "label": "O'rta"
+            },
+            {
+              "value": "Yuqori",
+              "label": "Yuqori"
+            }
+          ]
+        },
+        {
+          "key": "format",
+          "label": "Format",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Offline",
+              "label": "Offline"
+            },
+            {
+              "value": "Online",
+              "label": "Online"
+            },
+            {
+              "value": "Aralash",
+              "label": "Aralash"
+            }
+          ]
+        },
+        {
+          "key": "durationMonths",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "3",
+          "suffix": "oy"
+        },
+        {
+          "key": "lessonsPerWeek",
+          "label": "Haftada",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "3",
+          "suffix": "marta"
+        },
+        {
+          "key": "hasFreeTrialLesson",
+          "label": "Birinchi dars bepul",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "groupSize",
+          "label": "Guruhда nechta",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "12",
+          "suffix": "kishi"
+        },
+        {
+          "key": "hasCertificate",
+          "label": "Sertifikat beriladi",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "lessonMinutes",
+          "label": "Dars davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "90",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "UNIVERSITY_PREP",
+      "nameUz": "Abituriyent tayyorlash",
+      "sortOrder": 6,
+      "fields": [
+        {
+          "key": "targetUniversity",
+          "label": "Qaysi OTMga",
+          "type": "TEXT",
+          "required": false,
+          "hint": "TATU"
+        },
+        {
+          "key": "subjects",
+          "label": "Fanlar",
+          "type": "TAGS",
+          "required": true,
+          "hint": "Matematika, Fizika"
+        },
+        {
+          "key": "subject",
+          "label": "Yo'nalish",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Ingliz tili — IELTS 6.5+"
+        },
+        {
+          "key": "level",
+          "label": "Daraja",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Boshlang'ich",
+              "label": "Boshlang'ich"
+            },
+            {
+              "value": "O'rta",
+              "label": "O'rta"
+            },
+            {
+              "value": "Yuqori",
+              "label": "Yuqori"
+            }
+          ]
+        },
+        {
+          "key": "format",
+          "label": "Format",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Offline",
+              "label": "Offline"
+            },
+            {
+              "value": "Online",
+              "label": "Online"
+            },
+            {
+              "value": "Aralash",
+              "label": "Aralash"
+            }
+          ]
+        },
+        {
+          "key": "durationMonths",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "3",
+          "suffix": "oy"
+        },
+        {
+          "key": "lessonsPerWeek",
+          "label": "Haftada",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "3",
+          "suffix": "marta"
+        },
+        {
+          "key": "hasFreeTrialLesson",
+          "label": "Birinchi dars bepul",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "groupSize",
+          "label": "Guruhда nechta",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "12",
+          "suffix": "kishi"
+        },
+        {
+          "key": "hasCertificate",
+          "label": "Sertifikat beriladi",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "lessonMinutes",
+          "label": "Dars davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "90",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "BUSINESS_MARKETING",
+      "nameUz": "Biznes va marketing",
+      "sortOrder": 7,
+      "fields": [
+        {
+          "key": "topic",
+          "label": "Mavzu",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "SMM",
+              "label": "SMM"
+            },
+            {
+              "value": "Targeting",
+              "label": "Targeting"
+            },
+            {
+              "value": "Sotuv",
+              "label": "Sotuv"
+            },
+            {
+              "value": "Moliya",
+              "label": "Moliya"
+            },
+            {
+              "value": "Startap",
+              "label": "Startap"
+            }
+          ]
+        },
+        {
+          "key": "subject",
+          "label": "Yo'nalish",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Ingliz tili — IELTS 6.5+"
+        },
+        {
+          "key": "level",
+          "label": "Daraja",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Boshlang'ich",
+              "label": "Boshlang'ich"
+            },
+            {
+              "value": "O'rta",
+              "label": "O'rta"
+            },
+            {
+              "value": "Yuqori",
+              "label": "Yuqori"
+            }
+          ]
+        },
+        {
+          "key": "format",
+          "label": "Format",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Offline",
+              "label": "Offline"
+            },
+            {
+              "value": "Online",
+              "label": "Online"
+            },
+            {
+              "value": "Aralash",
+              "label": "Aralash"
+            }
+          ]
+        },
+        {
+          "key": "durationMonths",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "3",
+          "suffix": "oy"
+        },
+        {
+          "key": "lessonsPerWeek",
+          "label": "Haftada",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "3",
+          "suffix": "marta"
+        },
+        {
+          "key": "hasFreeTrialLesson",
+          "label": "Birinchi dars bepul",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "groupSize",
+          "label": "Guruhда nechta",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "12",
+          "suffix": "kishi"
+        },
+        {
+          "key": "hasCertificate",
+          "label": "Sertifikat beriladi",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "lessonMinutes",
+          "label": "Dars davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "90",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "MASTER_CLASS",
+      "nameUz": "Master-klass",
+      "sortOrder": 8,
+      "fields": [
+        {
+          "key": "speaker",
+          "label": "Spiker",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Aziz Karimov"
+        },
+        {
+          "key": "eventDate",
+          "label": "Sana",
+          "type": "TEXT",
+          "required": false,
+          "hint": "2026-08-01"
+        },
+        {
+          "key": "hours",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "4",
+          "suffix": "soat"
+        },
+        {
+          "key": "subject",
+          "label": "Yo'nalish",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Ingliz tili — IELTS 6.5+"
+        },
+        {
+          "key": "level",
+          "label": "Daraja",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Boshlang'ich",
+              "label": "Boshlang'ich"
+            },
+            {
+              "value": "O'rta",
+              "label": "O'rta"
+            },
+            {
+              "value": "Yuqori",
+              "label": "Yuqori"
+            }
+          ]
+        },
+        {
+          "key": "format",
+          "label": "Format",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Offline",
+              "label": "Offline"
+            },
+            {
+              "value": "Online",
+              "label": "Online"
+            },
+            {
+              "value": "Aralash",
+              "label": "Aralash"
+            }
+          ]
+        },
+        {
+          "key": "durationMonths",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "3",
+          "suffix": "oy"
+        },
+        {
+          "key": "lessonsPerWeek",
+          "label": "Haftada",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "3",
+          "suffix": "marta"
+        },
+        {
+          "key": "hasFreeTrialLesson",
+          "label": "Birinchi dars bepul",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "groupSize",
+          "label": "Guruhда nechta",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "12",
+          "suffix": "kishi"
+        },
+        {
+          "key": "hasCertificate",
+          "label": "Sertifikat beriladi",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "lessonMinutes",
+          "label": "Dars davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "90",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "OTHER",
+      "nameUz": "Boshqa",
+      "sortOrder": 9,
+      "fields": [
+        {
+          "key": "subject",
+          "label": "Yo'nalish",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Ingliz tili — IELTS 6.5+"
+        },
+        {
+          "key": "level",
+          "label": "Daraja",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Boshlang'ich",
+              "label": "Boshlang'ich"
+            },
+            {
+              "value": "O'rta",
+              "label": "O'rta"
+            },
+            {
+              "value": "Yuqori",
+              "label": "Yuqori"
+            }
+          ]
+        },
+        {
+          "key": "format",
+          "label": "Format",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Offline",
+              "label": "Offline"
+            },
+            {
+              "value": "Online",
+              "label": "Online"
+            },
+            {
+              "value": "Aralash",
+              "label": "Aralash"
+            }
+          ]
+        },
+        {
+          "key": "durationMonths",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "3",
+          "suffix": "oy"
+        },
+        {
+          "key": "lessonsPerWeek",
+          "label": "Haftada",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "3",
+          "suffix": "marta"
+        },
+        {
+          "key": "hasFreeTrialLesson",
+          "label": "Birinchi dars bepul",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "groupSize",
+          "label": "Guruhда nechta",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "12",
+          "suffix": "kishi"
+        },
+        {
+          "key": "hasCertificate",
+          "label": "Sertifikat beriladi",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "lessonMinutes",
+          "label": "Dars davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "90",
+          "suffix": "daqiqa"
+        }
+      ],
+      "requiresCustomName": true
+    }
+  ],
+  "error": null
+}

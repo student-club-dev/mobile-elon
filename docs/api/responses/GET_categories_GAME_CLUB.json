@@ -1,0 +1,601 @@
+{
+  "success": true,
+  "status": 200,
+  "code": null,
+  "message": null,
+  "result": [
+    {
+      "key": "ALL",
+      "nameUz": "Barcha zallarga",
+      "sortOrder": 0,
+      "fields": [
+        {
+          "key": "hallType",
+          "label": "Zal turi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Standart",
+              "label": "Standart"
+            },
+            {
+              "value": "VIP",
+              "label": "VIP"
+            },
+            {
+              "value": "Alohida xona",
+              "label": "Alohida xona"
+            }
+          ]
+        },
+        {
+          "key": "seatsCount",
+          "label": "Nechta o'yinchi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "4",
+          "suffix": "kishi"
+        },
+        {
+          "key": "sessionMinutes",
+          "label": "Sessiya davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "60",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "PLAYSTATION",
+      "nameUz": "PlayStation",
+      "sortOrder": 1,
+      "fields": [
+        {
+          "key": "model",
+          "label": "Model",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "PS5",
+              "label": "PS5"
+            },
+            {
+              "value": "PS4 Pro",
+              "label": "PS4 Pro"
+            },
+            {
+              "value": "PS4",
+              "label": "PS4"
+            },
+            {
+              "value": "PS3",
+              "label": "PS3"
+            }
+          ]
+        },
+        {
+          "key": "joysticks",
+          "label": "Joystiklar",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "2 ta",
+              "label": "2 ta"
+            },
+            {
+              "value": "4 ta",
+              "label": "4 ta"
+            }
+          ]
+        },
+        {
+          "key": "games",
+          "label": "Mashhur o'yinlar",
+          "type": "TAGS",
+          "required": false,
+          "hint": "FIFA 25, Mortal Kombat, UFC"
+        },
+        {
+          "key": "hallType",
+          "label": "Zal turi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Standart",
+              "label": "Standart"
+            },
+            {
+              "value": "VIP",
+              "label": "VIP"
+            },
+            {
+              "value": "Alohida xona",
+              "label": "Alohida xona"
+            }
+          ]
+        },
+        {
+          "key": "seatsCount",
+          "label": "Nechta o'yinchi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "4",
+          "suffix": "kishi"
+        },
+        {
+          "key": "sessionMinutes",
+          "label": "Sessiya davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "60",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "TABLE_TENNIS",
+      "nameUz": "Stol tennis",
+      "sortOrder": 2,
+      "fields": [
+        {
+          "key": "tables",
+          "label": "Stollar soni",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "2",
+          "suffix": "ta"
+        },
+        {
+          "key": "racketsIncluded",
+          "label": "Raketka va koptok beriladi",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hallType",
+          "label": "Zal turi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Standart",
+              "label": "Standart"
+            },
+            {
+              "value": "VIP",
+              "label": "VIP"
+            },
+            {
+              "value": "Alohida xona",
+              "label": "Alohida xona"
+            }
+          ]
+        },
+        {
+          "key": "seatsCount",
+          "label": "Nechta o'yinchi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "4",
+          "suffix": "kishi"
+        },
+        {
+          "key": "sessionMinutes",
+          "label": "Sessiya davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "60",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "TENNIS",
+      "nameUz": "Katta tennis",
+      "sortOrder": 3,
+      "fields": [
+        {
+          "key": "courtType",
+          "label": "Kort turi",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Ochiq",
+              "label": "Ochiq"
+            },
+            {
+              "value": "Yopiq",
+              "label": "Yopiq"
+            }
+          ]
+        },
+        {
+          "key": "surface",
+          "label": "Qoplama",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Gruntli",
+              "label": "Gruntli"
+            },
+            {
+              "value": "Sun'iy o't",
+              "label": "Sun'iy o't"
+            },
+            {
+              "value": "Qattiq (hard)",
+              "label": "Qattiq (hard)"
+            }
+          ]
+        },
+        {
+          "key": "gearIncluded",
+          "label": "Raketka beriladi",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hallType",
+          "label": "Zal turi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Standart",
+              "label": "Standart"
+            },
+            {
+              "value": "VIP",
+              "label": "VIP"
+            },
+            {
+              "value": "Alohida xona",
+              "label": "Alohida xona"
+            }
+          ]
+        },
+        {
+          "key": "seatsCount",
+          "label": "Nechta o'yinchi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "4",
+          "suffix": "kishi"
+        },
+        {
+          "key": "sessionMinutes",
+          "label": "Sessiya davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "60",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "PC_GAMING",
+      "nameUz": "Kompyuter o'yinlari",
+      "sortOrder": 4,
+      "fields": [
+        {
+          "key": "pcTier",
+          "label": "Kompyuter quvvati",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Standart",
+              "label": "Standart"
+            },
+            {
+              "value": "Gaming",
+              "label": "Gaming"
+            },
+            {
+              "value": "Pro / e-sport",
+              "label": "Pro / e-sport"
+            }
+          ]
+        },
+        {
+          "key": "games",
+          "label": "O'yinlar",
+          "type": "TAGS",
+          "required": false,
+          "hint": "CS2, Dota 2, Valorant"
+        },
+        {
+          "key": "gpu",
+          "label": "Videokarta",
+          "type": "TEXT",
+          "required": false,
+          "hint": "RTX 4060"
+        },
+        {
+          "key": "monitorHz",
+          "label": "Monitor",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "60Hz",
+              "label": "60Hz"
+            },
+            {
+              "value": "144Hz",
+              "label": "144Hz"
+            },
+            {
+              "value": "240Hz",
+              "label": "240Hz"
+            }
+          ]
+        },
+        {
+          "key": "hallType",
+          "label": "Zal turi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Standart",
+              "label": "Standart"
+            },
+            {
+              "value": "VIP",
+              "label": "VIP"
+            },
+            {
+              "value": "Alohida xona",
+              "label": "Alohida xona"
+            }
+          ]
+        },
+        {
+          "key": "seatsCount",
+          "label": "Nechta o'yinchi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "4",
+          "suffix": "kishi"
+        },
+        {
+          "key": "sessionMinutes",
+          "label": "Sessiya davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "60",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "BILLIARDS",
+      "nameUz": "Billiard",
+      "sortOrder": 5,
+      "fields": [
+        {
+          "key": "tableType",
+          "label": "Stol turi",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Pul (Amerika)",
+              "label": "Pul (Amerika)"
+            },
+            {
+              "value": "Rus",
+              "label": "Rus"
+            },
+            {
+              "value": "Snuker",
+              "label": "Snuker"
+            }
+          ]
+        },
+        {
+          "key": "tables",
+          "label": "Stollar soni",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "3",
+          "suffix": "ta"
+        },
+        {
+          "key": "hallType",
+          "label": "Zal turi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Standart",
+              "label": "Standart"
+            },
+            {
+              "value": "VIP",
+              "label": "VIP"
+            },
+            {
+              "value": "Alohida xona",
+              "label": "Alohida xona"
+            }
+          ]
+        },
+        {
+          "key": "seatsCount",
+          "label": "Nechta o'yinchi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "4",
+          "suffix": "kishi"
+        },
+        {
+          "key": "sessionMinutes",
+          "label": "Sessiya davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "60",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "POLYA",
+      "nameUz": "Polya",
+      "sortOrder": 6,
+      "fields": [
+        {
+          "key": "fieldType",
+          "label": "Maydon turi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Mini-futbol",
+              "label": "Mini-futbol"
+            },
+            {
+              "value": "Basketbol",
+              "label": "Basketbol"
+            },
+            {
+              "value": "Voleybol",
+              "label": "Voleybol"
+            },
+            {
+              "value": "Boshqa",
+              "label": "Boshqa"
+            }
+          ]
+        },
+        {
+          "key": "fields",
+          "label": "Maydonlar soni",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "2",
+          "suffix": "ta"
+        },
+        {
+          "key": "surface",
+          "label": "Qoplama",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Sun'iy o't",
+              "label": "Sun'iy o't"
+            },
+            {
+              "value": "Tabiiy o't",
+              "label": "Tabiiy o't"
+            },
+            {
+              "value": "Parket",
+              "label": "Parket"
+            },
+            {
+              "value": "Rezina",
+              "label": "Rezina"
+            }
+          ]
+        },
+        {
+          "key": "hasLighting",
+          "label": "Yoritish bor (kechqurun)",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hallType",
+          "label": "Zal turi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Standart",
+              "label": "Standart"
+            },
+            {
+              "value": "VIP",
+              "label": "VIP"
+            },
+            {
+              "value": "Alohida xona",
+              "label": "Alohida xona"
+            }
+          ]
+        },
+        {
+          "key": "seatsCount",
+          "label": "Nechta o'yinchi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "4",
+          "suffix": "kishi"
+        },
+        {
+          "key": "sessionMinutes",
+          "label": "Sessiya davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "60",
+          "suffix": "daqiqa"
+        }
+      ]
+    },
+    {
+      "key": "OTHER",
+      "nameUz": "Boshqa",
+      "sortOrder": 7,
+      "fields": [
+        {
+          "key": "hallType",
+          "label": "Zal turi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Standart",
+              "label": "Standart"
+            },
+            {
+              "value": "VIP",
+              "label": "VIP"
+            },
+            {
+              "value": "Alohida xona",
+              "label": "Alohida xona"
+            }
+          ]
+        },
+        {
+          "key": "seatsCount",
+          "label": "Nechta o'yinchi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "4",
+          "suffix": "kishi"
+        },
+        {
+          "key": "sessionMinutes",
+          "label": "Sessiya davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "60",
+          "suffix": "daqiqa"
+        }
+      ],
+      "requiresCustomName": true
+    }
+  ],
+  "error": null
+}

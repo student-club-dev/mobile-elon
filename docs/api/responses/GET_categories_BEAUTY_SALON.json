@@ -1,0 +1,888 @@
+{
+  "success": true,
+  "status": 200,
+  "code": null,
+  "message": null,
+  "result": [
+    {
+      "key": "ALL",
+      "nameUz": "Barcha xizmatlarga",
+      "sortOrder": 0,
+      "fields": [
+        {
+          "key": "master",
+          "label": "Usta",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Malika opa"
+        },
+        {
+          "key": "masterLevel",
+          "label": "Usta darajasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Junior",
+              "label": "Junior"
+            },
+            {
+              "value": "Usta",
+              "label": "Usta"
+            },
+            {
+              "value": "Top-usta",
+              "label": "Top-usta"
+            }
+          ]
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "60",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "byAppointment",
+          "label": "Oldindan yozilish",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasHomeService",
+          "label": "Uyга borish mumkin",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "HAIR",
+      "nameUz": "Soch turmagi / bo'yash",
+      "sortOrder": 1,
+      "fields": [
+        {
+          "key": "hairLength",
+          "label": "Soch uzunligi",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Kalta",
+              "label": "Kalta"
+            },
+            {
+              "value": "O'rta",
+              "label": "O'rta"
+            },
+            {
+              "value": "Uzun",
+              "label": "Uzun"
+            }
+          ]
+        },
+        {
+          "key": "service",
+          "label": "Xizmat",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Turmak",
+              "label": "Turmak"
+            },
+            {
+              "value": "Bo'yash",
+              "label": "Bo'yash"
+            },
+            {
+              "value": "Kesish",
+              "label": "Kesish"
+            },
+            {
+              "value": "Keratin",
+              "label": "Keratin"
+            },
+            {
+              "value": "Ombre",
+              "label": "Ombre"
+            }
+          ]
+        },
+        {
+          "key": "colorBrand",
+          "label": "Bo'yoq brendi",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Estel"
+        },
+        {
+          "key": "master",
+          "label": "Usta",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Malika opa"
+        },
+        {
+          "key": "masterLevel",
+          "label": "Usta darajasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Junior",
+              "label": "Junior"
+            },
+            {
+              "value": "Usta",
+              "label": "Usta"
+            },
+            {
+              "value": "Top-usta",
+              "label": "Top-usta"
+            }
+          ]
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "60",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "byAppointment",
+          "label": "Oldindan yozilish",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasHomeService",
+          "label": "Uyга borish mumkin",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "MAKEUP",
+      "nameUz": "Makiyaj",
+      "sortOrder": 2,
+      "fields": [
+        {
+          "key": "occasion",
+          "label": "Tadbir",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Kundalik",
+              "label": "Kundalik"
+            },
+            {
+              "value": "Kechki",
+              "label": "Kechki"
+            },
+            {
+              "value": "To'y",
+              "label": "To'y"
+            },
+            {
+              "value": "Fotosessiya",
+              "label": "Fotosessiya"
+            }
+          ]
+        },
+        {
+          "key": "cosmeticsBrand",
+          "label": "Kosmetika",
+          "type": "TEXT",
+          "required": false,
+          "hint": "MAC"
+        },
+        {
+          "key": "lashesIncluded",
+          "label": "Kiprik bilan",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "master",
+          "label": "Usta",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Malika opa"
+        },
+        {
+          "key": "masterLevel",
+          "label": "Usta darajasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Junior",
+              "label": "Junior"
+            },
+            {
+              "value": "Usta",
+              "label": "Usta"
+            },
+            {
+              "value": "Top-usta",
+              "label": "Top-usta"
+            }
+          ]
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "60",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "byAppointment",
+          "label": "Oldindan yozilish",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasHomeService",
+          "label": "Uyга borish mumkin",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "MANICURE",
+      "nameUz": "Manikyur",
+      "sortOrder": 3,
+      "fields": [
+        {
+          "key": "coating",
+          "label": "Qoplama",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Oddiy lak",
+              "label": "Oddiy lak"
+            },
+            {
+              "value": "Gel-lak",
+              "label": "Gel-lak"
+            },
+            {
+              "value": "Kengaytma (gel)",
+              "label": "Kengaytma (gel)"
+            },
+            {
+              "value": "Akril",
+              "label": "Akril"
+            }
+          ]
+        },
+        {
+          "key": "hasDesign",
+          "label": "Dizayn bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "removalIncluded",
+          "label": "Eskisini olish kiradi",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "master",
+          "label": "Usta",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Malika opa"
+        },
+        {
+          "key": "masterLevel",
+          "label": "Usta darajasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Junior",
+              "label": "Junior"
+            },
+            {
+              "value": "Usta",
+              "label": "Usta"
+            },
+            {
+              "value": "Top-usta",
+              "label": "Top-usta"
+            }
+          ]
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "60",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "byAppointment",
+          "label": "Oldindan yozilish",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasHomeService",
+          "label": "Uyга borish mumkin",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "PEDICURE",
+      "nameUz": "Pedikyur",
+      "sortOrder": 4,
+      "fields": [
+        {
+          "key": "coating",
+          "label": "Qoplama",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Oddiy lak",
+              "label": "Oddiy lak"
+            },
+            {
+              "value": "Gel-lak",
+              "label": "Gel-lak"
+            }
+          ]
+        },
+        {
+          "key": "pedicureType",
+          "label": "Turi",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Klassik",
+              "label": "Klassik"
+            },
+            {
+              "value": "Apparat",
+              "label": "Apparat"
+            },
+            {
+              "value": "SPA",
+              "label": "SPA"
+            }
+          ]
+        },
+        {
+          "key": "master",
+          "label": "Usta",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Malika opa"
+        },
+        {
+          "key": "masterLevel",
+          "label": "Usta darajasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Junior",
+              "label": "Junior"
+            },
+            {
+              "value": "Usta",
+              "label": "Usta"
+            },
+            {
+              "value": "Top-usta",
+              "label": "Top-usta"
+            }
+          ]
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "60",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "byAppointment",
+          "label": "Oldindan yozilish",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasHomeService",
+          "label": "Uyга borish mumkin",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "EYEBROWS_LASHES",
+      "nameUz": "Qosh / kiprik",
+      "sortOrder": 5,
+      "fields": [
+        {
+          "key": "procedure",
+          "label": "Muolaja",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Qosh shakl",
+              "label": "Qosh shakl"
+            },
+            {
+              "value": "Qosh bo'yash",
+              "label": "Qosh bo'yash"
+            },
+            {
+              "value": "Laminatsiya",
+              "label": "Laminatsiya"
+            },
+            {
+              "value": "Kiprik yopishtirish",
+              "label": "Kiprik yopishtirish"
+            },
+            {
+              "value": "Kiprik laminatsiya",
+              "label": "Kiprik laminatsiya"
+            }
+          ]
+        },
+        {
+          "key": "effect",
+          "label": "Effekt",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Klassik",
+              "label": "Klassik"
+            },
+            {
+              "value": "2D",
+              "label": "2D"
+            },
+            {
+              "value": "3D",
+              "label": "3D"
+            },
+            {
+              "value": "Volume",
+              "label": "Volume"
+            }
+          ]
+        },
+        {
+          "key": "master",
+          "label": "Usta",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Malika opa"
+        },
+        {
+          "key": "masterLevel",
+          "label": "Usta darajasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Junior",
+              "label": "Junior"
+            },
+            {
+              "value": "Usta",
+              "label": "Usta"
+            },
+            {
+              "value": "Top-usta",
+              "label": "Top-usta"
+            }
+          ]
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "60",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "byAppointment",
+          "label": "Oldindan yozilish",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasHomeService",
+          "label": "Uyга borish mumkin",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "COSMETOLOGY",
+      "nameUz": "Kosmetologiya",
+      "sortOrder": 6,
+      "fields": [
+        {
+          "key": "procedure",
+          "label": "Muolaja",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Tozalash",
+              "label": "Tozalash"
+            },
+            {
+              "value": "Peeling",
+              "label": "Peeling"
+            },
+            {
+              "value": "Mezoterapiya",
+              "label": "Mezoterapiya"
+            },
+            {
+              "value": "Biorevitalizatsiya",
+              "label": "Biorevitalizatsiya"
+            },
+            {
+              "value": "Maska",
+              "label": "Maska"
+            }
+          ]
+        },
+        {
+          "key": "isDeviceBased",
+          "label": "Apparatli",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "courseSessions",
+          "label": "Kurs",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "5",
+          "suffix": "seans"
+        },
+        {
+          "key": "master",
+          "label": "Usta",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Malika opa"
+        },
+        {
+          "key": "masterLevel",
+          "label": "Usta darajasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Junior",
+              "label": "Junior"
+            },
+            {
+              "value": "Usta",
+              "label": "Usta"
+            },
+            {
+              "value": "Top-usta",
+              "label": "Top-usta"
+            }
+          ]
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "60",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "byAppointment",
+          "label": "Oldindan yozilish",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasHomeService",
+          "label": "Uyга borish mumkin",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "SPA_MASSAGE",
+      "nameUz": "SPA / massaj",
+      "sortOrder": 7,
+      "fields": [
+        {
+          "key": "massageType",
+          "label": "Massaj turi",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Klassik",
+              "label": "Klassik"
+            },
+            {
+              "value": "Relaks",
+              "label": "Relaks"
+            },
+            {
+              "value": "Anticellulit",
+              "label": "Anticellulit"
+            },
+            {
+              "value": "Tosh bilan",
+              "label": "Tosh bilan"
+            },
+            {
+              "value": "Tay",
+              "label": "Tay"
+            }
+          ]
+        },
+        {
+          "key": "zones",
+          "label": "Zonalar",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Yelka, Bel, Oyoq"
+        },
+        {
+          "key": "forCouples",
+          "label": "Juftlik uchun",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "master",
+          "label": "Usta",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Malika opa"
+        },
+        {
+          "key": "masterLevel",
+          "label": "Usta darajasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Junior",
+              "label": "Junior"
+            },
+            {
+              "value": "Usta",
+              "label": "Usta"
+            },
+            {
+              "value": "Top-usta",
+              "label": "Top-usta"
+            }
+          ]
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "60",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "byAppointment",
+          "label": "Oldindan yozilish",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasHomeService",
+          "label": "Uyга borish mumkin",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "EPILATION",
+      "nameUz": "Epilyatsiya",
+      "sortOrder": 8,
+      "fields": [
+        {
+          "key": "method",
+          "label": "Usul",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Shakar (shugaring)",
+              "label": "Shakar (shugaring)"
+            },
+            {
+              "value": "Vosk",
+              "label": "Vosk"
+            },
+            {
+              "value": "Lazer",
+              "label": "Lazer"
+            },
+            {
+              "value": "Elektro",
+              "label": "Elektro"
+            }
+          ]
+        },
+        {
+          "key": "zones",
+          "label": "Zonalar",
+          "type": "TAGS",
+          "required": true,
+          "hint": "Oyoq, Qo'l, Qo'ltiq"
+        },
+        {
+          "key": "courseSessions",
+          "label": "Kurs",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "6",
+          "suffix": "seans"
+        },
+        {
+          "key": "master",
+          "label": "Usta",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Malika opa"
+        },
+        {
+          "key": "masterLevel",
+          "label": "Usta darajasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Junior",
+              "label": "Junior"
+            },
+            {
+              "value": "Usta",
+              "label": "Usta"
+            },
+            {
+              "value": "Top-usta",
+              "label": "Top-usta"
+            }
+          ]
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "60",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "byAppointment",
+          "label": "Oldindan yozilish",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasHomeService",
+          "label": "Uyга borish mumkin",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "OTHER",
+      "nameUz": "Boshqa",
+      "sortOrder": 9,
+      "fields": [
+        {
+          "key": "master",
+          "label": "Usta",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Malika opa"
+        },
+        {
+          "key": "masterLevel",
+          "label": "Usta darajasi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Junior",
+              "label": "Junior"
+            },
+            {
+              "value": "Usta",
+              "label": "Usta"
+            },
+            {
+              "value": "Top-usta",
+              "label": "Top-usta"
+            }
+          ]
+        },
+        {
+          "key": "durationMinutes",
+          "label": "Davomiyligi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "60",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "byAppointment",
+          "label": "Oldindan yozilish",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasHomeService",
+          "label": "Uyга borish mumkin",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ],
+      "requiresCustomName": true
+    }
+  ],
+  "error": null
+}

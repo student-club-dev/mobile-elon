@@ -1,0 +1,1091 @@
+{
+  "$schema": "https://elonuz.uz/schemas/catalog-seed-1.1.0.json",
+  "version": "1.2.0",
+  "description": "ElonUz katalogi — biznes turlari, kategoriyalar va atributlar. HOZIR bu ma'lumot klientда ListingCatalog.kt ичида qattiq kodlangan; backend shu seed'ni yuklab, GET /business/types, /business/types/{type}/categories va /business/types/{type}/attributes-schema orqali xuddi shu qiymatlarni qaytarishi kerak. Klient keyin katalogni serverdan oladi.",
+  "source": "dev/feature/discounts/domain/src/commonMain/kotlin/dev/feature/discounts/domain/model/ListingCatalog.kt",
+  "constants": {
+    "ALL_KEY": "ALL",
+    "OTHER_KEY": "OTHER",
+    "REGULAR_KEY": "_regular",
+    "PHONE_KEY": "_phone",
+    "GENDER_KEY": "_gender"
+  },
+  "notes": [
+    "ALL — 'butun menyuga/assortimentga' chegirmasi; OTHER — 'Boshqa' (customCategoryName to'ldiriladi).",
+    "attributes ичидаgi _regular='1' → oddiy e'lon (chegirmasiz); yo'q bo'lsa — chegirma e'loni.",
+    "_gender (MALE|FEMALE) — CLOTHING e'lonида sotuvchi tanlagan kiyim jinsi.",
+    "availableForGenders: BARBERSHOP faqat MALE'ga, BEAUTY_SALON faqat FEMALE'ga ko'rsatiladi; gender berilmasa — 9 tur ham qaytadi.",
+    "categoriesByGender faqat CLOTHING uchun: gender berilsa categories.CLOTHING o'rniga shu ishlatiladi.",
+    "categoryAttributes type-level attributes'ni ALMASHTIRADI (qo'shmaydi) — hozircha faqat GAME_CLUB'да."
+  ],
+  "businessTypes": [
+    {
+      "type": "GAME_CLUB",
+      "nameUz": "Game Club",
+      "emoji": "🎮",
+      "accentColor": "#7C5CFF",
+      "defaultPriceUnit": "PER_HOUR",
+      "priceUnits": [
+        "PER_HOUR",
+        "PER_SESSION",
+        "PER_PERSON"
+      ],
+      "availableForGenders": [
+        "MALE",
+        "FEMALE"
+      ],
+      "allCategoryLabel": "Barcha zallarga",
+      "optionGroupHint": "Zal turi, qo'shimcha joystik"
+    },
+    {
+      "type": "CLOTHING",
+      "nameUz": "Kiyim-kechak",
+      "emoji": "👕",
+      "accentColor": "#EC4899",
+      "defaultPriceUnit": "PER_ITEM",
+      "priceUnits": [
+        "PER_ITEM"
+      ],
+      "availableForGenders": [
+        "MALE",
+        "FEMALE"
+      ],
+      "allCategoryLabel": "Butun assortimentga",
+      "optionGroupHint": "O'lcham, rang"
+    },
+    {
+      "type": "CAFE_RESTAURANT",
+      "nameUz": "Kafe va Restoran",
+      "emoji": "🍕",
+      "accentColor": "#F97316",
+      "defaultPriceUnit": "PER_ITEM",
+      "priceUnits": [
+        "PER_ITEM",
+        "PER_KG"
+      ],
+      "availableForGenders": [
+        "MALE",
+        "FEMALE"
+      ],
+      "allCategoryLabel": "Butun menyuga",
+      "optionGroupHint": "Hajm, qo'shimchalar"
+    },
+    {
+      "type": "EDUCATION_CENTER",
+      "nameUz": "O'quv markaz",
+      "emoji": "📚",
+      "accentColor": "#3B82F6",
+      "defaultPriceUnit": "PER_MONTH",
+      "priceUnits": [
+        "PER_MONTH",
+        "PER_COURSE",
+        "PER_LESSON"
+      ],
+      "availableForGenders": [
+        "MALE",
+        "FEMALE"
+      ],
+      "allCategoryLabel": "Barcha kurslarga",
+      "optionGroupHint": "Guruh vaqti, format"
+    },
+    {
+      "type": "ENTERTAINMENT",
+      "nameUz": "Kino va ko'ngilochar",
+      "emoji": "🎬",
+      "accentColor": "#EF4444",
+      "defaultPriceUnit": "PER_TICKET",
+      "priceUnits": [
+        "PER_TICKET",
+        "PER_PERSON",
+        "PER_SESSION"
+      ],
+      "availableForGenders": [
+        "MALE",
+        "FEMALE"
+      ],
+      "allCategoryLabel": "Barcha seanslarga",
+      "optionGroupHint": "Seans vaqti, joy turi"
+    },
+    {
+      "type": "BARBERSHOP",
+      "nameUz": "Sartaroshxona",
+      "emoji": "💈",
+      "accentColor": "#14B8A6",
+      "defaultPriceUnit": "PER_ITEM",
+      "priceUnits": [
+        "PER_ITEM",
+        "PER_SESSION",
+        "PER_PERSON"
+      ],
+      "availableForGenders": [
+        "MALE"
+      ],
+      "allCategoryLabel": "Barcha xizmatlarga",
+      "optionGroupHint": "Usta darajasi, qo'shimcha xizmat"
+    },
+    {
+      "type": "BEAUTY_SALON",
+      "nameUz": "Go'zallik saloni",
+      "emoji": "💅",
+      "accentColor": "#F472B6",
+      "defaultPriceUnit": "PER_ITEM",
+      "priceUnits": [
+        "PER_ITEM",
+        "PER_SESSION",
+        "PER_PERSON"
+      ],
+      "availableForGenders": [
+        "FEMALE"
+      ],
+      "allCategoryLabel": "Barcha xizmatlarga",
+      "optionGroupHint": "Usta, qo'shimcha xizmat"
+    }
+  ],
+  "categories": {
+    "GAME_CLUB": [
+      {
+        "key": "ALL",
+        "nameUz": "Barcha zallarga",
+        "sortOrder": 0
+      },
+      {
+        "key": "PLAYSTATION",
+        "nameUz": "PlayStation",
+        "sortOrder": 1
+      },
+      {
+        "key": "TABLE_TENNIS",
+        "nameUz": "Stol tennis",
+        "sortOrder": 2
+      },
+      {
+        "key": "TENNIS",
+        "nameUz": "Katta tennis",
+        "sortOrder": 3
+      },
+      {
+        "key": "PC_GAMING",
+        "nameUz": "Kompyuter o'yinlari",
+        "sortOrder": 4
+      },
+      {
+        "key": "BILLIARDS",
+        "nameUz": "Billiard",
+        "sortOrder": 5
+      },
+      {
+        "key": "POLYA",
+        "nameUz": "Polya",
+        "sortOrder": 6
+      },
+      {
+        "key": "OTHER",
+        "nameUz": "Boshqa",
+        "sortOrder": 7
+      }
+    ],
+    "CLOTHING": [
+      {
+        "key": "ALL",
+        "nameUz": "Butun assortimentga",
+        "sortOrder": 0
+      },
+      {
+        "key": "MEN",
+        "nameUz": "Erkaklar",
+        "sortOrder": 1
+      },
+      {
+        "key": "WOMEN",
+        "nameUz": "Ayollar",
+        "sortOrder": 2
+      },
+      {
+        "key": "OUTERWEAR",
+        "nameUz": "Ustki kiyim",
+        "sortOrder": 3
+      },
+      {
+        "key": "SHOES",
+        "nameUz": "Poyabzal",
+        "sortOrder": 4
+      },
+      {
+        "key": "SPORTSWEAR",
+        "nameUz": "Sport kiyim",
+        "sortOrder": 5
+      },
+      {
+        "key": "BAGS",
+        "nameUz": "Sumkalar",
+        "sortOrder": 6
+      },
+      {
+        "key": "ACCESSORIES",
+        "nameUz": "Aksessuarlar",
+        "sortOrder": 7
+      },
+      {
+        "key": "OTHER",
+        "nameUz": "Boshqa",
+        "sortOrder": 8
+      }
+    ],
+    "CAFE_RESTAURANT": [
+      {
+        "key": "ALL",
+        "nameUz": "Butun menyuga",
+        "sortOrder": 0
+      },
+      {
+        "key": "NATIONAL",
+        "nameUz": "Milliy taomlar",
+        "sortOrder": 1
+      },
+      {
+        "key": "PIZZA",
+        "nameUz": "Pitsa",
+        "sortOrder": 2
+      },
+      {
+        "key": "BURGER",
+        "nameUz": "Burger",
+        "sortOrder": 3
+      },
+      {
+        "key": "LAVASH_SHAWARMA",
+        "nameUz": "Lavash / Shaurma",
+        "sortOrder": 4
+      },
+      {
+        "key": "SUSHI",
+        "nameUz": "Sushi",
+        "sortOrder": 5
+      },
+      {
+        "key": "FAST_FOOD",
+        "nameUz": "Fast food",
+        "sortOrder": 6
+      },
+      {
+        "key": "SOUPS",
+        "nameUz": "Sho'rvalar",
+        "sortOrder": 7
+      },
+      {
+        "key": "SALADS",
+        "nameUz": "Salatlar",
+        "sortOrder": 8
+      },
+      {
+        "key": "GRILL_BBQ",
+        "nameUz": "Kabob va grill",
+        "sortOrder": 9
+      },
+      {
+        "key": "BREAKFAST",
+        "nameUz": "Nonushta",
+        "sortOrder": 10
+      },
+      {
+        "key": "DESSERTS",
+        "nameUz": "Shirinliklar",
+        "sortOrder": 11
+      },
+      {
+        "key": "HOT_DRINKS",
+        "nameUz": "Choy va kofe",
+        "sortOrder": 12
+      },
+      {
+        "key": "COLD_DRINKS",
+        "nameUz": "Sovuq ichimliklar",
+        "sortOrder": 13
+      },
+      {
+        "key": "COMBO_SETS",
+        "nameUz": "Setlar (combo)",
+        "sortOrder": 14
+      },
+      {
+        "key": "OTHER",
+        "nameUz": "Boshqa",
+        "sortOrder": 15
+      }
+    ],
+    "EDUCATION_CENTER": [
+      {
+        "key": "ALL",
+        "nameUz": "Barcha kurslarga",
+        "sortOrder": 0
+      },
+      {
+        "key": "FOREIGN_LANGUAGES",
+        "nameUz": "Chet tillari",
+        "sortOrder": 1
+      },
+      {
+        "key": "IELTS_CEFR",
+        "nameUz": "IELTS / CEFR",
+        "sortOrder": 2
+      },
+      {
+        "key": "IT_PROGRAMMING",
+        "nameUz": "IT va dasturlash",
+        "sortOrder": 3
+      },
+      {
+        "key": "DESIGN",
+        "nameUz": "Dizayn",
+        "sortOrder": 4
+      },
+      {
+        "key": "MATH_SCIENCE",
+        "nameUz": "Matematika va fanlar",
+        "sortOrder": 5
+      },
+      {
+        "key": "UNIVERSITY_PREP",
+        "nameUz": "Abituriyent tayyorlash",
+        "sortOrder": 6
+      },
+      {
+        "key": "BUSINESS_MARKETING",
+        "nameUz": "Biznes va marketing",
+        "sortOrder": 7
+      },
+      {
+        "key": "MASTER_CLASS",
+        "nameUz": "Master-klass",
+        "sortOrder": 8
+      },
+      {
+        "key": "OTHER",
+        "nameUz": "Boshqa",
+        "sortOrder": 9
+      }
+    ],
+    "ENTERTAINMENT": [
+      {
+        "key": "ALL",
+        "nameUz": "Barcha seanslarga",
+        "sortOrder": 0
+      },
+      {
+        "key": "CINEMA",
+        "nameUz": "Kino seans",
+        "sortOrder": 1
+      },
+      {
+        "key": "THEATER_CONCERT",
+        "nameUz": "Teatr va konsert",
+        "sortOrder": 2
+      },
+      {
+        "key": "ESCAPE_ROOM",
+        "nameUz": "Kvest (escape room)",
+        "sortOrder": 3
+      },
+      {
+        "key": "TRAMPOLINE_PARK",
+        "nameUz": "Batut park",
+        "sortOrder": 4
+      },
+      {
+        "key": "BOWLING",
+        "nameUz": "Bouling",
+        "sortOrder": 5
+      },
+      {
+        "key": "AQUAPARK",
+        "nameUz": "Akvapark",
+        "sortOrder": 6
+      },
+      {
+        "key": "AMUSEMENT_PARK",
+        "nameUz": "Attraksionlar",
+        "sortOrder": 7
+      },
+      {
+        "key": "MUSEUM_EXPO",
+        "nameUz": "Muzey va ko'rgazma",
+        "sortOrder": 8
+      },
+      {
+        "key": "KARAOKE",
+        "nameUz": "Karaoke",
+        "sortOrder": 9
+      },
+      {
+        "key": "OTHER",
+        "nameUz": "Boshqa",
+        "sortOrder": 10
+      }
+    ],
+    "BARBERSHOP": [
+      {
+        "key": "ALL",
+        "nameUz": "Barcha xizmatlarga",
+        "sortOrder": 0
+      },
+      {
+        "key": "HAIRCUT_MEN",
+        "nameUz": "Erkaklar soch olish",
+        "sortOrder": 1
+      },
+      {
+        "key": "HAIRCUT_WOMEN",
+        "nameUz": "Ayollar soch olish",
+        "sortOrder": 2
+      },
+      {
+        "key": "KIDS",
+        "nameUz": "Bolalar soch olish",
+        "sortOrder": 3
+      },
+      {
+        "key": "BEARD",
+        "nameUz": "Soqol / ustara",
+        "sortOrder": 4
+      },
+      {
+        "key": "HAIR_COLOR",
+        "nameUz": "Soch bo'yash",
+        "sortOrder": 5
+      },
+      {
+        "key": "STYLING",
+        "nameUz": "Ukladka / styling",
+        "sortOrder": 6
+      },
+      {
+        "key": "HAIR_CARE",
+        "nameUz": "Parvarish (spa)",
+        "sortOrder": 7
+      },
+      {
+        "key": "MANICURE",
+        "nameUz": "Manikyur-pedikyur",
+        "sortOrder": 8
+      },
+      {
+        "key": "OTHER",
+        "nameUz": "Boshqa",
+        "sortOrder": 9
+      }
+    ],
+    "BEAUTY_SALON": [
+      {
+        "key": "ALL",
+        "nameUz": "Barcha xizmatlarga",
+        "sortOrder": 0
+      },
+      {
+        "key": "HAIR",
+        "nameUz": "Soch turmagi / bo'yash",
+        "sortOrder": 1
+      },
+      {
+        "key": "MAKEUP",
+        "nameUz": "Makiyaj",
+        "sortOrder": 2
+      },
+      {
+        "key": "MANICURE",
+        "nameUz": "Manikyur",
+        "sortOrder": 3
+      },
+      {
+        "key": "PEDICURE",
+        "nameUz": "Pedikyur",
+        "sortOrder": 4
+      },
+      {
+        "key": "EYEBROWS_LASHES",
+        "nameUz": "Qosh / kiprik",
+        "sortOrder": 5
+      },
+      {
+        "key": "COSMETOLOGY",
+        "nameUz": "Kosmetologiya",
+        "sortOrder": 6
+      },
+      {
+        "key": "SPA_MASSAGE",
+        "nameUz": "SPA / massaj",
+        "sortOrder": 7
+      },
+      {
+        "key": "EPILATION",
+        "nameUz": "Epilyatsiya",
+        "sortOrder": 8
+      },
+      {
+        "key": "OTHER",
+        "nameUz": "Boshqa",
+        "sortOrder": 9
+      }
+    ]
+  },
+  "categoriesByGender": {
+    "CLOTHING": {
+      "MALE": [
+        {
+          "key": "ALL",
+          "nameUz": "Butun assortimentga",
+          "sortOrder": 0
+        },
+        {
+          "key": "SHIRTS",
+          "nameUz": "Ko'ylak / futbolka",
+          "sortOrder": 1
+        },
+        {
+          "key": "PANTS",
+          "nameUz": "Shim / jinsi",
+          "sortOrder": 2
+        },
+        {
+          "key": "SUITS",
+          "nameUz": "Kostyum",
+          "sortOrder": 3
+        },
+        {
+          "key": "OUTERWEAR",
+          "nameUz": "Ustki kiyim",
+          "sortOrder": 4
+        },
+        {
+          "key": "SHOES",
+          "nameUz": "Poyabzal",
+          "sortOrder": 5
+        },
+        {
+          "key": "SPORTSWEAR",
+          "nameUz": "Sport kiyim",
+          "sortOrder": 6
+        },
+        {
+          "key": "ACCESSORIES",
+          "nameUz": "Aksessuar",
+          "sortOrder": 7
+        },
+        {
+          "key": "OTHER",
+          "nameUz": "Boshqa",
+          "sortOrder": 8
+        }
+      ],
+      "FEMALE": [
+        {
+          "key": "ALL",
+          "nameUz": "Butun assortimentga",
+          "sortOrder": 0
+        },
+        {
+          "key": "DRESSES",
+          "nameUz": "Ko'ylak / libos",
+          "sortOrder": 1
+        },
+        {
+          "key": "SKIRTS",
+          "nameUz": "Yubka",
+          "sortOrder": 2
+        },
+        {
+          "key": "BLOUSES",
+          "nameUz": "Bluzka",
+          "sortOrder": 3
+        },
+        {
+          "key": "OUTERWEAR",
+          "nameUz": "Ustki kiyim",
+          "sortOrder": 4
+        },
+        {
+          "key": "SHOES",
+          "nameUz": "Poyabzal",
+          "sortOrder": 5
+        },
+        {
+          "key": "BAGS",
+          "nameUz": "Sumka",
+          "sortOrder": 6
+        },
+        {
+          "key": "ACCESSORIES",
+          "nameUz": "Aksessuar",
+          "sortOrder": 7
+        },
+        {
+          "key": "OTHER",
+          "nameUz": "Boshqa",
+          "sortOrder": 8
+        }
+      ]
+    }
+  },
+  "attributes": {
+    "GAME_CLUB": [
+      {
+        "key": "hallType",
+        "label": "Zal turi",
+        "kind": "SELECT",
+        "options": [
+          "Standart",
+          "VIP",
+          "Alohida xona"
+        ]
+      },
+      {
+        "key": "deviceModel",
+        "label": "Qurilma",
+        "kind": "TEXT",
+        "hint": "PlayStation 5 Slim"
+      },
+      {
+        "key": "seatsCount",
+        "label": "Nechta o'yinchi",
+        "kind": "NUMBER",
+        "hint": "4",
+        "suffix": "kishi"
+      },
+      {
+        "key": "sessionMinutes",
+        "label": "Sessiya davomiyligi",
+        "kind": "NUMBER",
+        "hint": "60",
+        "suffix": "daqiqa"
+      },
+      {
+        "key": "gamesList",
+        "label": "O'yinlar",
+        "kind": "TAGS",
+        "hint": "FIFA 25, Mortal Kombat"
+      }
+    ],
+    "CLOTHING": [
+      {
+        "key": "brand",
+        "label": "Brend",
+        "kind": "TEXT",
+        "hint": "Zara"
+      },
+      {
+        "key": "gender",
+        "label": "Kimlar uchun",
+        "kind": "SELECT",
+        "options": [
+          "Erkaklar",
+          "Ayollar",
+          "Uniseks",
+          "Bolalar"
+        ]
+      },
+      {
+        "key": "material",
+        "label": "Material",
+        "kind": "TEXT",
+        "hint": "100% paxta"
+      },
+      {
+        "key": "season",
+        "label": "Mavsum",
+        "kind": "SELECT",
+        "options": [
+          "Qish",
+          "Bahor",
+          "Yoz",
+          "Kuz",
+          "Barcha mavsum"
+        ]
+      }
+    ],
+    "CAFE_RESTAURANT": [
+      {
+        "key": "portionGrams",
+        "label": "Porsiya",
+        "kind": "NUMBER",
+        "hint": "550",
+        "suffix": "gramm"
+      },
+      {
+        "key": "ingredients",
+        "label": "Tarkibi",
+        "kind": "TAGS",
+        "hint": "Mozzarella, Pepperoni, Tomat sousi"
+      },
+      {
+        "key": "spicyLevel",
+        "label": "O'tkirlik",
+        "kind": "SELECT",
+        "options": [
+          "Yo'q",
+          "Yengil",
+          "O'rtacha",
+          "O'tkir"
+        ]
+      },
+      {
+        "key": "isHalal",
+        "label": "Halol",
+        "kind": "BOOLEAN"
+      },
+      {
+        "key": "hasDelivery",
+        "label": "Yetkazib berish bor",
+        "kind": "BOOLEAN"
+      }
+    ],
+    "EDUCATION_CENTER": [
+      {
+        "key": "subject",
+        "label": "Yo'nalish",
+        "kind": "TEXT",
+        "hint": "Ingliz tili — IELTS 6.5+"
+      },
+      {
+        "key": "level",
+        "label": "Daraja",
+        "kind": "SELECT",
+        "options": [
+          "Boshlang'ich",
+          "O'rta",
+          "Yuqori"
+        ]
+      },
+      {
+        "key": "format",
+        "label": "Format",
+        "kind": "SELECT",
+        "options": [
+          "Offline",
+          "Online",
+          "Aralash"
+        ]
+      },
+      {
+        "key": "durationMonths",
+        "label": "Davomiyligi",
+        "kind": "NUMBER",
+        "hint": "3",
+        "suffix": "oy"
+      },
+      {
+        "key": "lessonsPerWeek",
+        "label": "Haftada",
+        "kind": "NUMBER",
+        "hint": "3",
+        "suffix": "marta"
+      },
+      {
+        "key": "hasFreeTrialLesson",
+        "label": "Birinchi dars bepul",
+        "kind": "BOOLEAN"
+      }
+    ],
+    "ENTERTAINMENT": [
+      {
+        "key": "eventTitle",
+        "label": "Film / tadbir nomi",
+        "kind": "TEXT",
+        "hint": "Dune: Part Three"
+      },
+      {
+        "key": "format",
+        "label": "Format",
+        "kind": "SELECT",
+        "options": [
+          "2D",
+          "3D",
+          "IMAX",
+          "4DX",
+          "VR"
+        ]
+      },
+      {
+        "key": "language",
+        "label": "Til",
+        "kind": "SELECT",
+        "options": [
+          "O'zbek",
+          "Rus",
+          "Ingliz",
+          "Original (subtitr)"
+        ]
+      },
+      {
+        "key": "ageLimit",
+        "label": "Yosh chegarasi",
+        "kind": "SELECT",
+        "options": [
+          "0+",
+          "6+",
+          "12+",
+          "16+",
+          "18+"
+        ]
+      },
+      {
+        "key": "sessionTimes",
+        "label": "Seans vaqtlari",
+        "kind": "TAGS",
+        "hint": "12:30, 16:00, 19:40"
+      }
+    ],
+    "BARBERSHOP": [
+      {
+        "key": "master",
+        "label": "Usta",
+        "kind": "TEXT",
+        "hint": "Aziz aka"
+      },
+      {
+        "key": "masterLevel",
+        "label": "Usta darajasi",
+        "kind": "SELECT",
+        "options": [
+          "Junior",
+          "Usta",
+          "Top-usta"
+        ]
+      },
+      {
+        "key": "gender",
+        "label": "Kimlar uchun",
+        "kind": "SELECT",
+        "options": [
+          "Erkaklar",
+          "Ayollar",
+          "Bolalar",
+          "Barcha"
+        ]
+      },
+      {
+        "key": "durationMinutes",
+        "label": "Davomiyligi",
+        "kind": "NUMBER",
+        "hint": "40",
+        "suffix": "daqiqa"
+      },
+      {
+        "key": "byAppointment",
+        "label": "Oldindan yozilish",
+        "kind": "BOOLEAN"
+      }
+    ],
+    "BEAUTY_SALON": [
+      {
+        "key": "master",
+        "label": "Usta",
+        "kind": "TEXT",
+        "hint": "Malika opa"
+      },
+      {
+        "key": "masterLevel",
+        "label": "Usta darajasi",
+        "kind": "SELECT",
+        "options": [
+          "Junior",
+          "Usta",
+          "Top-usta"
+        ]
+      },
+      {
+        "key": "durationMinutes",
+        "label": "Davomiyligi",
+        "kind": "NUMBER",
+        "hint": "60",
+        "suffix": "daqiqa"
+      },
+      {
+        "key": "byAppointment",
+        "label": "Oldindan yozilish",
+        "kind": "BOOLEAN"
+      }
+    ]
+  },
+  "categoryAttributes": {
+    "GAME_CLUB": {
+      "PLAYSTATION": [
+        {
+          "key": "model",
+          "label": "Model",
+          "kind": "SELECT",
+          "options": [
+            "PS5",
+            "PS4 Pro",
+            "PS4",
+            "PS3"
+          ],
+          "required": true
+        },
+        {
+          "key": "joysticks",
+          "label": "Joystiklar",
+          "kind": "SELECT",
+          "options": [
+            "2 ta",
+            "4 ta"
+          ]
+        },
+        {
+          "key": "sessionMinutes",
+          "label": "Sessiya davomiyligi",
+          "kind": "NUMBER",
+          "hint": "60",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "games",
+          "label": "Mashhur o'yinlar",
+          "kind": "TAGS",
+          "hint": "FIFA 25, Mortal Kombat, UFC"
+        }
+      ],
+      "TABLE_TENNIS": [
+        {
+          "key": "tables",
+          "label": "Stollar soni",
+          "kind": "NUMBER",
+          "hint": "2",
+          "suffix": "ta"
+        },
+        {
+          "key": "sessionMinutes",
+          "label": "Sessiya davomiyligi",
+          "kind": "NUMBER",
+          "hint": "60",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "racketsIncluded",
+          "label": "Raketka va koptok beriladi",
+          "kind": "BOOLEAN"
+        }
+      ],
+      "TENNIS": [
+        {
+          "key": "courtType",
+          "label": "Kort turi",
+          "kind": "SELECT",
+          "options": [
+            "Ochiq",
+            "Yopiq"
+          ],
+          "required": true
+        },
+        {
+          "key": "surface",
+          "label": "Qoplama",
+          "kind": "SELECT",
+          "options": [
+            "Gruntli",
+            "Sun'iy o't",
+            "Qattiq (hard)"
+          ]
+        },
+        {
+          "key": "sessionMinutes",
+          "label": "Sessiya davomiyligi",
+          "kind": "NUMBER",
+          "hint": "60",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "gearIncluded",
+          "label": "Raketka beriladi",
+          "kind": "BOOLEAN"
+        }
+      ],
+      "PC_GAMING": [
+        {
+          "key": "pcTier",
+          "label": "Kompyuter quvvati",
+          "kind": "SELECT",
+          "options": [
+            "Standart",
+            "Gaming",
+            "Pro / e-sport"
+          ],
+          "required": true
+        },
+        {
+          "key": "sessionMinutes",
+          "label": "Sessiya davomiyligi",
+          "kind": "NUMBER",
+          "hint": "60",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "games",
+          "label": "O'yinlar",
+          "kind": "TAGS",
+          "hint": "CS2, Dota 2, Valorant"
+        }
+      ],
+      "BILLIARDS": [
+        {
+          "key": "tableType",
+          "label": "Stol turi",
+          "kind": "SELECT",
+          "options": [
+            "Pul (Amerika)",
+            "Rus",
+            "Snuker"
+          ],
+          "required": true
+        },
+        {
+          "key": "tables",
+          "label": "Stollar soni",
+          "kind": "NUMBER",
+          "hint": "3",
+          "suffix": "ta"
+        },
+        {
+          "key": "sessionMinutes",
+          "label": "Sessiya davomiyligi",
+          "kind": "NUMBER",
+          "hint": "60",
+          "suffix": "daqiqa"
+        }
+      ],
+      "POLYA": [
+        {
+          "key": "fieldType",
+          "label": "Maydon turi",
+          "kind": "SELECT",
+          "options": [
+            "Mini-futbol",
+            "Basketbol",
+            "Voleybol",
+            "Boshqa"
+          ]
+        },
+        {
+          "key": "fields",
+          "label": "Maydonlar soni",
+          "kind": "NUMBER",
+          "hint": "2",
+          "suffix": "ta"
+        },
+        {
+          "key": "sessionMinutes",
+          "label": "Sessiya davomiyligi",
+          "kind": "NUMBER",
+          "hint": "60",
+          "suffix": "daqiqa"
+        }
+      ]
+    }
+  },
+  "attributeKinds": [
+    "TEXT",
+    "NUMBER",
+    "BOOLEAN",
+    "SELECT",
+    "MULTI_SELECT",
+    "TAGS"
+  ]
+}

@@ -1,0 +1,1608 @@
+{
+  "success": true,
+  "status": 200,
+  "code": null,
+  "message": null,
+  "result": [
+    {
+      "key": "ALL",
+      "nameUz": "Butun menyuga",
+      "sortOrder": 0,
+      "fields": [
+        {
+          "key": "portionGrams",
+          "label": "Porsiya",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "550",
+          "suffix": "gramm"
+        },
+        {
+          "key": "ingredients",
+          "label": "Tarkibi",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Mozzarella, Pepperoni, Tomat sousi"
+        },
+        {
+          "key": "spicyLevel",
+          "label": "O'tkirlik",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Yo'q",
+              "label": "Yo'q"
+            },
+            {
+              "value": "Yengil",
+              "label": "Yengil"
+            },
+            {
+              "value": "O'rtacha",
+              "label": "O'rtacha"
+            },
+            {
+              "value": "O'tkir",
+              "label": "O'tkir"
+            }
+          ]
+        },
+        {
+          "key": "isHalal",
+          "label": "Halol",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasDelivery",
+          "label": "Yetkazib berish bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "cookMinutes",
+          "label": "Tayyorlanish vaqti",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "20",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "isVegetarian",
+          "label": "Vegetarian",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "NATIONAL",
+      "nameUz": "Milliy taomlar",
+      "sortOrder": 1,
+      "fields": [
+        {
+          "key": "dishType",
+          "label": "Taom",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Osh",
+              "label": "Osh"
+            },
+            {
+              "value": "Manti",
+              "label": "Manti"
+            },
+            {
+              "value": "Somsa",
+              "label": "Somsa"
+            },
+            {
+              "value": "Lag'mon",
+              "label": "Lag'mon"
+            },
+            {
+              "value": "Shashlik",
+              "label": "Shashlik"
+            },
+            {
+              "value": "Norin",
+              "label": "Norin"
+            },
+            {
+              "value": "Sho'rva",
+              "label": "Sho'rva"
+            }
+          ]
+        },
+        {
+          "key": "portionGrams",
+          "label": "Porsiya",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "550",
+          "suffix": "gramm"
+        },
+        {
+          "key": "ingredients",
+          "label": "Tarkibi",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Mozzarella, Pepperoni, Tomat sousi"
+        },
+        {
+          "key": "spicyLevel",
+          "label": "O'tkirlik",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Yo'q",
+              "label": "Yo'q"
+            },
+            {
+              "value": "Yengil",
+              "label": "Yengil"
+            },
+            {
+              "value": "O'rtacha",
+              "label": "O'rtacha"
+            },
+            {
+              "value": "O'tkir",
+              "label": "O'tkir"
+            }
+          ]
+        },
+        {
+          "key": "isHalal",
+          "label": "Halol",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasDelivery",
+          "label": "Yetkazib berish bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "cookMinutes",
+          "label": "Tayyorlanish vaqti",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "20",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "isVegetarian",
+          "label": "Vegetarian",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "PIZZA",
+      "nameUz": "Pitsa",
+      "sortOrder": 2,
+      "fields": [
+        {
+          "key": "sizes",
+          "label": "Mavjud razmerlar",
+          "type": "MULTI_SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "25 sm",
+              "label": "25 sm"
+            },
+            {
+              "value": "30 sm",
+              "label": "30 sm"
+            },
+            {
+              "value": "35 sm",
+              "label": "35 sm"
+            },
+            {
+              "value": "40 sm",
+              "label": "40 sm"
+            }
+          ],
+          "multiple": true,
+          "storedAs": "vergul bilan: \"S,M,L\""
+        },
+        {
+          "key": "dough",
+          "label": "Xamir",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Yupqa",
+              "label": "Yupqa"
+            },
+            {
+              "value": "Qalin",
+              "label": "Qalin"
+            },
+            {
+              "value": "To'ldirilgan chekka",
+              "label": "To'ldirilgan chekka"
+            }
+          ]
+        },
+        {
+          "key": "slices",
+          "label": "Bo'laklar",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "8",
+          "suffix": "ta"
+        },
+        {
+          "key": "portionGrams",
+          "label": "Porsiya",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "550",
+          "suffix": "gramm"
+        },
+        {
+          "key": "ingredients",
+          "label": "Tarkibi",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Mozzarella, Pepperoni, Tomat sousi"
+        },
+        {
+          "key": "spicyLevel",
+          "label": "O'tkirlik",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Yo'q",
+              "label": "Yo'q"
+            },
+            {
+              "value": "Yengil",
+              "label": "Yengil"
+            },
+            {
+              "value": "O'rtacha",
+              "label": "O'rtacha"
+            },
+            {
+              "value": "O'tkir",
+              "label": "O'tkir"
+            }
+          ]
+        },
+        {
+          "key": "isHalal",
+          "label": "Halol",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasDelivery",
+          "label": "Yetkazib berish bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "cookMinutes",
+          "label": "Tayyorlanish vaqti",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "20",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "isVegetarian",
+          "label": "Vegetarian",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "BURGER",
+      "nameUz": "Burger",
+      "sortOrder": 3,
+      "fields": [
+        {
+          "key": "pattyType",
+          "label": "Kotlet",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Mol",
+              "label": "Mol"
+            },
+            {
+              "value": "Tovuq",
+              "label": "Tovuq"
+            },
+            {
+              "value": "Baliq",
+              "label": "Baliq"
+            },
+            {
+              "value": "Vegetarian",
+              "label": "Vegetarian"
+            }
+          ]
+        },
+        {
+          "key": "pattyCount",
+          "label": "Kotlet soni",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "1",
+              "label": "1"
+            },
+            {
+              "value": "2",
+              "label": "2"
+            },
+            {
+              "value": "3",
+              "label": "3"
+            }
+          ]
+        },
+        {
+          "key": "hasFries",
+          "label": "Kartoshka bilan",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "portionGrams",
+          "label": "Porsiya",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "550",
+          "suffix": "gramm"
+        },
+        {
+          "key": "ingredients",
+          "label": "Tarkibi",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Mozzarella, Pepperoni, Tomat sousi"
+        },
+        {
+          "key": "spicyLevel",
+          "label": "O'tkirlik",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Yo'q",
+              "label": "Yo'q"
+            },
+            {
+              "value": "Yengil",
+              "label": "Yengil"
+            },
+            {
+              "value": "O'rtacha",
+              "label": "O'rtacha"
+            },
+            {
+              "value": "O'tkir",
+              "label": "O'tkir"
+            }
+          ]
+        },
+        {
+          "key": "isHalal",
+          "label": "Halol",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasDelivery",
+          "label": "Yetkazib berish bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "cookMinutes",
+          "label": "Tayyorlanish vaqti",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "20",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "isVegetarian",
+          "label": "Vegetarian",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "LAVASH_SHAWARMA",
+      "nameUz": "Lavash / Shaurma",
+      "sortOrder": 4,
+      "fields": [
+        {
+          "key": "meatType",
+          "label": "Go'sht",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Tovuq",
+              "label": "Tovuq"
+            },
+            {
+              "value": "Mol",
+              "label": "Mol"
+            },
+            {
+              "value": "Aralash",
+              "label": "Aralash"
+            }
+          ]
+        },
+        {
+          "key": "sizes",
+          "label": "Mavjud razmerlar",
+          "type": "MULTI_SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Standart",
+              "label": "Standart"
+            },
+            {
+              "value": "Katta",
+              "label": "Katta"
+            },
+            {
+              "value": "Mini",
+              "label": "Mini"
+            }
+          ],
+          "multiple": true,
+          "storedAs": "vergul bilan: \"S,M,L\""
+        },
+        {
+          "key": "portionGrams",
+          "label": "Porsiya",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "550",
+          "suffix": "gramm"
+        },
+        {
+          "key": "ingredients",
+          "label": "Tarkibi",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Mozzarella, Pepperoni, Tomat sousi"
+        },
+        {
+          "key": "spicyLevel",
+          "label": "O'tkirlik",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Yo'q",
+              "label": "Yo'q"
+            },
+            {
+              "value": "Yengil",
+              "label": "Yengil"
+            },
+            {
+              "value": "O'rtacha",
+              "label": "O'rtacha"
+            },
+            {
+              "value": "O'tkir",
+              "label": "O'tkir"
+            }
+          ]
+        },
+        {
+          "key": "isHalal",
+          "label": "Halol",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasDelivery",
+          "label": "Yetkazib berish bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "cookMinutes",
+          "label": "Tayyorlanish vaqti",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "20",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "isVegetarian",
+          "label": "Vegetarian",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "SUSHI",
+      "nameUz": "Sushi",
+      "sortOrder": 5,
+      "fields": [
+        {
+          "key": "piecesCount",
+          "label": "Bo'laklar",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "8",
+          "suffix": "ta"
+        },
+        {
+          "key": "fishType",
+          "label": "Baliq",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Losos",
+              "label": "Losos"
+            },
+            {
+              "value": "Tunes",
+              "label": "Tunes"
+            },
+            {
+              "value": "Ilon baliq",
+              "label": "Ilon baliq"
+            },
+            {
+              "value": "Krevetka",
+              "label": "Krevetka"
+            },
+            {
+              "value": "Vegetarian",
+              "label": "Vegetarian"
+            }
+          ]
+        },
+        {
+          "key": "isRaw",
+          "label": "Xom (raw)",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "portionGrams",
+          "label": "Porsiya",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "550",
+          "suffix": "gramm"
+        },
+        {
+          "key": "ingredients",
+          "label": "Tarkibi",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Mozzarella, Pepperoni, Tomat sousi"
+        },
+        {
+          "key": "spicyLevel",
+          "label": "O'tkirlik",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Yo'q",
+              "label": "Yo'q"
+            },
+            {
+              "value": "Yengil",
+              "label": "Yengil"
+            },
+            {
+              "value": "O'rtacha",
+              "label": "O'rtacha"
+            },
+            {
+              "value": "O'tkir",
+              "label": "O'tkir"
+            }
+          ]
+        },
+        {
+          "key": "isHalal",
+          "label": "Halol",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasDelivery",
+          "label": "Yetkazib berish bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "cookMinutes",
+          "label": "Tayyorlanish vaqti",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "20",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "isVegetarian",
+          "label": "Vegetarian",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "FAST_FOOD",
+      "nameUz": "Fast food",
+      "sortOrder": 6,
+      "fields": [
+        {
+          "key": "comboIncludes",
+          "label": "Tarkibida",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Burger, Kartoshka, Ichimlik"
+        },
+        {
+          "key": "portionGrams",
+          "label": "Porsiya",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "550",
+          "suffix": "gramm"
+        },
+        {
+          "key": "ingredients",
+          "label": "Tarkibi",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Mozzarella, Pepperoni, Tomat sousi"
+        },
+        {
+          "key": "spicyLevel",
+          "label": "O'tkirlik",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Yo'q",
+              "label": "Yo'q"
+            },
+            {
+              "value": "Yengil",
+              "label": "Yengil"
+            },
+            {
+              "value": "O'rtacha",
+              "label": "O'rtacha"
+            },
+            {
+              "value": "O'tkir",
+              "label": "O'tkir"
+            }
+          ]
+        },
+        {
+          "key": "isHalal",
+          "label": "Halol",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasDelivery",
+          "label": "Yetkazib berish bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "cookMinutes",
+          "label": "Tayyorlanish vaqti",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "20",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "isVegetarian",
+          "label": "Vegetarian",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "SOUPS",
+      "nameUz": "Sho'rvalar",
+      "sortOrder": 7,
+      "fields": [
+        {
+          "key": "volumeMl",
+          "label": "Hajm",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "400",
+          "suffix": "ml"
+        },
+        {
+          "key": "hasBread",
+          "label": "Non bilan",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "portionGrams",
+          "label": "Porsiya",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "550",
+          "suffix": "gramm"
+        },
+        {
+          "key": "ingredients",
+          "label": "Tarkibi",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Mozzarella, Pepperoni, Tomat sousi"
+        },
+        {
+          "key": "spicyLevel",
+          "label": "O'tkirlik",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Yo'q",
+              "label": "Yo'q"
+            },
+            {
+              "value": "Yengil",
+              "label": "Yengil"
+            },
+            {
+              "value": "O'rtacha",
+              "label": "O'rtacha"
+            },
+            {
+              "value": "O'tkir",
+              "label": "O'tkir"
+            }
+          ]
+        },
+        {
+          "key": "isHalal",
+          "label": "Halol",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasDelivery",
+          "label": "Yetkazib berish bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "cookMinutes",
+          "label": "Tayyorlanish vaqti",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "20",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "isVegetarian",
+          "label": "Vegetarian",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "SALADS",
+      "nameUz": "Salatlar",
+      "sortOrder": 8,
+      "fields": [
+        {
+          "key": "saladType",
+          "label": "Turi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Sabzavotli",
+              "label": "Sabzavotli"
+            },
+            {
+              "value": "Go'shtli",
+              "label": "Go'shtli"
+            },
+            {
+              "value": "Sezar",
+              "label": "Sezar"
+            },
+            {
+              "value": "Olivye",
+              "label": "Olivye"
+            },
+            {
+              "value": "Yunon",
+              "label": "Yunon"
+            }
+          ]
+        },
+        {
+          "key": "portionGrams",
+          "label": "Porsiya",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "550",
+          "suffix": "gramm"
+        },
+        {
+          "key": "ingredients",
+          "label": "Tarkibi",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Mozzarella, Pepperoni, Tomat sousi"
+        },
+        {
+          "key": "spicyLevel",
+          "label": "O'tkirlik",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Yo'q",
+              "label": "Yo'q"
+            },
+            {
+              "value": "Yengil",
+              "label": "Yengil"
+            },
+            {
+              "value": "O'rtacha",
+              "label": "O'rtacha"
+            },
+            {
+              "value": "O'tkir",
+              "label": "O'tkir"
+            }
+          ]
+        },
+        {
+          "key": "isHalal",
+          "label": "Halol",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasDelivery",
+          "label": "Yetkazib berish bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "cookMinutes",
+          "label": "Tayyorlanish vaqti",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "20",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "isVegetarian",
+          "label": "Vegetarian",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "GRILL_BBQ",
+      "nameUz": "Kabob va grill",
+      "sortOrder": 9,
+      "fields": [
+        {
+          "key": "meatType",
+          "label": "Go'sht",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Mol",
+              "label": "Mol"
+            },
+            {
+              "value": "Qo'y",
+              "label": "Qo'y"
+            },
+            {
+              "value": "Tovuq",
+              "label": "Tovuq"
+            },
+            {
+              "value": "Jigar",
+              "label": "Jigar"
+            },
+            {
+              "value": "Baliq",
+              "label": "Baliq"
+            }
+          ]
+        },
+        {
+          "key": "skewers",
+          "label": "Nechta sixda",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "2",
+          "suffix": "ta"
+        },
+        {
+          "key": "portionGrams",
+          "label": "Porsiya",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "550",
+          "suffix": "gramm"
+        },
+        {
+          "key": "ingredients",
+          "label": "Tarkibi",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Mozzarella, Pepperoni, Tomat sousi"
+        },
+        {
+          "key": "spicyLevel",
+          "label": "O'tkirlik",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Yo'q",
+              "label": "Yo'q"
+            },
+            {
+              "value": "Yengil",
+              "label": "Yengil"
+            },
+            {
+              "value": "O'rtacha",
+              "label": "O'rtacha"
+            },
+            {
+              "value": "O'tkir",
+              "label": "O'tkir"
+            }
+          ]
+        },
+        {
+          "key": "isHalal",
+          "label": "Halol",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasDelivery",
+          "label": "Yetkazib berish bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "cookMinutes",
+          "label": "Tayyorlanish vaqti",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "20",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "isVegetarian",
+          "label": "Vegetarian",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "BREAKFAST",
+      "nameUz": "Nonushta",
+      "sortOrder": 10,
+      "fields": [
+        {
+          "key": "servedUntil",
+          "label": "Nechagacha",
+          "type": "TEXT",
+          "required": false,
+          "hint": "11:00"
+        },
+        {
+          "key": "includes",
+          "label": "Tarkibida",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Tuxum, Non, Choy"
+        },
+        {
+          "key": "portionGrams",
+          "label": "Porsiya",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "550",
+          "suffix": "gramm"
+        },
+        {
+          "key": "ingredients",
+          "label": "Tarkibi",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Mozzarella, Pepperoni, Tomat sousi"
+        },
+        {
+          "key": "spicyLevel",
+          "label": "O'tkirlik",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Yo'q",
+              "label": "Yo'q"
+            },
+            {
+              "value": "Yengil",
+              "label": "Yengil"
+            },
+            {
+              "value": "O'rtacha",
+              "label": "O'rtacha"
+            },
+            {
+              "value": "O'tkir",
+              "label": "O'tkir"
+            }
+          ]
+        },
+        {
+          "key": "isHalal",
+          "label": "Halol",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasDelivery",
+          "label": "Yetkazib berish bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "cookMinutes",
+          "label": "Tayyorlanish vaqti",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "20",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "isVegetarian",
+          "label": "Vegetarian",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "DESSERTS",
+      "nameUz": "Shirinliklar",
+      "sortOrder": 11,
+      "fields": [
+        {
+          "key": "dessertType",
+          "label": "Turi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Tort",
+              "label": "Tort"
+            },
+            {
+              "value": "Pirojnoe",
+              "label": "Pirojnoe"
+            },
+            {
+              "value": "Muzqaymoq",
+              "label": "Muzqaymoq"
+            },
+            {
+              "value": "Chizkeyk",
+              "label": "Chizkeyk"
+            },
+            {
+              "value": "Vafli",
+              "label": "Vafli"
+            }
+          ]
+        },
+        {
+          "key": "sugarFree",
+          "label": "Shakarsiz",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "portionGrams",
+          "label": "Porsiya",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "550",
+          "suffix": "gramm"
+        },
+        {
+          "key": "ingredients",
+          "label": "Tarkibi",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Mozzarella, Pepperoni, Tomat sousi"
+        },
+        {
+          "key": "spicyLevel",
+          "label": "O'tkirlik",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Yo'q",
+              "label": "Yo'q"
+            },
+            {
+              "value": "Yengil",
+              "label": "Yengil"
+            },
+            {
+              "value": "O'rtacha",
+              "label": "O'rtacha"
+            },
+            {
+              "value": "O'tkir",
+              "label": "O'tkir"
+            }
+          ]
+        },
+        {
+          "key": "isHalal",
+          "label": "Halol",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasDelivery",
+          "label": "Yetkazib berish bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "cookMinutes",
+          "label": "Tayyorlanish vaqti",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "20",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "isVegetarian",
+          "label": "Vegetarian",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "HOT_DRINKS",
+      "nameUz": "Choy va kofe",
+      "sortOrder": 12,
+      "fields": [
+        {
+          "key": "volumeMl",
+          "label": "Hajm",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "200 ml",
+              "label": "200 ml"
+            },
+            {
+              "value": "300 ml",
+              "label": "300 ml"
+            },
+            {
+              "value": "400 ml",
+              "label": "400 ml"
+            }
+          ]
+        },
+        {
+          "key": "milkType",
+          "label": "Sut",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Oddiy",
+              "label": "Oddiy"
+            },
+            {
+              "value": "Bodom",
+              "label": "Bodom"
+            },
+            {
+              "value": "Soya",
+              "label": "Soya"
+            },
+            {
+              "value": "Sutsiz",
+              "label": "Sutsiz"
+            }
+          ]
+        },
+        {
+          "key": "portionGrams",
+          "label": "Porsiya",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "550",
+          "suffix": "gramm"
+        },
+        {
+          "key": "ingredients",
+          "label": "Tarkibi",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Mozzarella, Pepperoni, Tomat sousi"
+        },
+        {
+          "key": "spicyLevel",
+          "label": "O'tkirlik",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Yo'q",
+              "label": "Yo'q"
+            },
+            {
+              "value": "Yengil",
+              "label": "Yengil"
+            },
+            {
+              "value": "O'rtacha",
+              "label": "O'rtacha"
+            },
+            {
+              "value": "O'tkir",
+              "label": "O'tkir"
+            }
+          ]
+        },
+        {
+          "key": "isHalal",
+          "label": "Halol",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasDelivery",
+          "label": "Yetkazib berish bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "cookMinutes",
+          "label": "Tayyorlanish vaqti",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "20",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "isVegetarian",
+          "label": "Vegetarian",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "COLD_DRINKS",
+      "nameUz": "Sovuq ichimliklar",
+      "sortOrder": 13,
+      "fields": [
+        {
+          "key": "volumeMl",
+          "label": "Hajm",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "300 ml",
+              "label": "300 ml"
+            },
+            {
+              "value": "400 ml",
+              "label": "400 ml"
+            },
+            {
+              "value": "500 ml",
+              "label": "500 ml"
+            },
+            {
+              "value": "1 L",
+              "label": "1 L"
+            }
+          ]
+        },
+        {
+          "key": "hasIce",
+          "label": "Muz bilan",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "portionGrams",
+          "label": "Porsiya",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "550",
+          "suffix": "gramm"
+        },
+        {
+          "key": "ingredients",
+          "label": "Tarkibi",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Mozzarella, Pepperoni, Tomat sousi"
+        },
+        {
+          "key": "spicyLevel",
+          "label": "O'tkirlik",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Yo'q",
+              "label": "Yo'q"
+            },
+            {
+              "value": "Yengil",
+              "label": "Yengil"
+            },
+            {
+              "value": "O'rtacha",
+              "label": "O'rtacha"
+            },
+            {
+              "value": "O'tkir",
+              "label": "O'tkir"
+            }
+          ]
+        },
+        {
+          "key": "isHalal",
+          "label": "Halol",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasDelivery",
+          "label": "Yetkazib berish bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "cookMinutes",
+          "label": "Tayyorlanish vaqti",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "20",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "isVegetarian",
+          "label": "Vegetarian",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "COMBO_SETS",
+      "nameUz": "Setlar (combo)",
+      "sortOrder": 14,
+      "fields": [
+        {
+          "key": "comboIncludes",
+          "label": "Setда nima bor",
+          "type": "TAGS",
+          "required": true,
+          "hint": "2 pitsa, 2 ichimlik"
+        },
+        {
+          "key": "personCount",
+          "label": "Nechta kishiga",
+          "type": "NUMBER",
+          "required": true,
+          "hint": "2",
+          "suffix": "kishi"
+        },
+        {
+          "key": "portionGrams",
+          "label": "Porsiya",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "550",
+          "suffix": "gramm"
+        },
+        {
+          "key": "ingredients",
+          "label": "Tarkibi",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Mozzarella, Pepperoni, Tomat sousi"
+        },
+        {
+          "key": "spicyLevel",
+          "label": "O'tkirlik",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Yo'q",
+              "label": "Yo'q"
+            },
+            {
+              "value": "Yengil",
+              "label": "Yengil"
+            },
+            {
+              "value": "O'rtacha",
+              "label": "O'rtacha"
+            },
+            {
+              "value": "O'tkir",
+              "label": "O'tkir"
+            }
+          ]
+        },
+        {
+          "key": "isHalal",
+          "label": "Halol",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasDelivery",
+          "label": "Yetkazib berish bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "cookMinutes",
+          "label": "Tayyorlanish vaqti",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "20",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "isVegetarian",
+          "label": "Vegetarian",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ]
+    },
+    {
+      "key": "OTHER",
+      "nameUz": "Boshqa",
+      "sortOrder": 15,
+      "fields": [
+        {
+          "key": "portionGrams",
+          "label": "Porsiya",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "550",
+          "suffix": "gramm"
+        },
+        {
+          "key": "ingredients",
+          "label": "Tarkibi",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Mozzarella, Pepperoni, Tomat sousi"
+        },
+        {
+          "key": "spicyLevel",
+          "label": "O'tkirlik",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Yo'q",
+              "label": "Yo'q"
+            },
+            {
+              "value": "Yengil",
+              "label": "Yengil"
+            },
+            {
+              "value": "O'rtacha",
+              "label": "O'rtacha"
+            },
+            {
+              "value": "O'tkir",
+              "label": "O'tkir"
+            }
+          ]
+        },
+        {
+          "key": "isHalal",
+          "label": "Halol",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "hasDelivery",
+          "label": "Yetkazib berish bor",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "cookMinutes",
+          "label": "Tayyorlanish vaqti",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "20",
+          "suffix": "daqiqa"
+        },
+        {
+          "key": "isVegetarian",
+          "label": "Vegetarian",
+          "type": "BOOLEAN",
+          "required": false
+        }
+      ],
+      "requiresCustomName": true
+    }
+  ],
+  "error": null
+}

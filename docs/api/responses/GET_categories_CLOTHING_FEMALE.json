@@ -1,0 +1,978 @@
+{
+  "success": true,
+  "status": 200,
+  "code": null,
+  "message": null,
+  "result": [
+    {
+      "key": "ALL",
+      "nameUz": "Butun assortimentga",
+      "sortOrder": 0,
+      "fields": [
+        {
+          "key": "brand",
+          "label": "Brand nomi",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Zara"
+        },
+        {
+          "key": "material",
+          "label": "Material",
+          "type": "TEXT",
+          "required": false,
+          "hint": "100% paxta"
+        },
+        {
+          "key": "season",
+          "label": "Mavsum",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Qish",
+              "label": "Qish"
+            },
+            {
+              "value": "Bahor",
+              "label": "Bahor"
+            },
+            {
+              "value": "Yoz",
+              "label": "Yoz"
+            },
+            {
+              "value": "Kuz",
+              "label": "Kuz"
+            },
+            {
+              "value": "Barcha mavsum",
+              "label": "Barcha mavsum"
+            }
+          ]
+        },
+        {
+          "key": "colors",
+          "label": "Ranglar",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Qora, Oq, Bej"
+        },
+        {
+          "key": "returnDays",
+          "label": "Qaytarish muddati",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "14",
+          "suffix": "kun"
+        }
+      ]
+    },
+    {
+      "key": "DRESSES",
+      "nameUz": "Ko'ylak / libos",
+      "sortOrder": 1,
+      "fields": [
+        {
+          "key": "sizes",
+          "label": "Mavjud razmerlar",
+          "type": "MULTI_SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "XS",
+              "label": "XS"
+            },
+            {
+              "value": "S",
+              "label": "S"
+            },
+            {
+              "value": "M",
+              "label": "M"
+            },
+            {
+              "value": "L",
+              "label": "L"
+            },
+            {
+              "value": "XL",
+              "label": "XL"
+            },
+            {
+              "value": "XXL",
+              "label": "XXL"
+            }
+          ],
+          "multiple": true,
+          "storedAs": "vergul bilan: \"S,M,L\""
+        },
+        {
+          "key": "length",
+          "label": "Uzunligi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Mini",
+              "label": "Mini"
+            },
+            {
+              "value": "Midi",
+              "label": "Midi"
+            },
+            {
+              "value": "Maksi",
+              "label": "Maksi"
+            }
+          ]
+        },
+        {
+          "key": "occasion",
+          "label": "Uslub",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Kundalik",
+              "label": "Kundalik"
+            },
+            {
+              "value": "Ofis",
+              "label": "Ofis"
+            },
+            {
+              "value": "Kechki",
+              "label": "Kechki"
+            },
+            {
+              "value": "Milliy",
+              "label": "Milliy"
+            }
+          ]
+        },
+        {
+          "key": "brand",
+          "label": "Brand nomi",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Zara"
+        },
+        {
+          "key": "material",
+          "label": "Material",
+          "type": "TEXT",
+          "required": false,
+          "hint": "100% paxta"
+        },
+        {
+          "key": "season",
+          "label": "Mavsum",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Qish",
+              "label": "Qish"
+            },
+            {
+              "value": "Bahor",
+              "label": "Bahor"
+            },
+            {
+              "value": "Yoz",
+              "label": "Yoz"
+            },
+            {
+              "value": "Kuz",
+              "label": "Kuz"
+            },
+            {
+              "value": "Barcha mavsum",
+              "label": "Barcha mavsum"
+            }
+          ]
+        },
+        {
+          "key": "colors",
+          "label": "Ranglar",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Qora, Oq, Bej"
+        },
+        {
+          "key": "returnDays",
+          "label": "Qaytarish muddati",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "14",
+          "suffix": "kun"
+        }
+      ]
+    },
+    {
+      "key": "SKIRTS",
+      "nameUz": "Yubka",
+      "sortOrder": 2,
+      "fields": [
+        {
+          "key": "sizes",
+          "label": "Mavjud razmerlar",
+          "type": "MULTI_SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "XS",
+              "label": "XS"
+            },
+            {
+              "value": "S",
+              "label": "S"
+            },
+            {
+              "value": "M",
+              "label": "M"
+            },
+            {
+              "value": "L",
+              "label": "L"
+            },
+            {
+              "value": "XL",
+              "label": "XL"
+            },
+            {
+              "value": "XXL",
+              "label": "XXL"
+            }
+          ],
+          "multiple": true,
+          "storedAs": "vergul bilan: \"S,M,L\""
+        },
+        {
+          "key": "length",
+          "label": "Uzunligi",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Mini",
+              "label": "Mini"
+            },
+            {
+              "value": "Midi",
+              "label": "Midi"
+            },
+            {
+              "value": "Maksi",
+              "label": "Maksi"
+            }
+          ]
+        },
+        {
+          "key": "brand",
+          "label": "Brand nomi",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Zara"
+        },
+        {
+          "key": "material",
+          "label": "Material",
+          "type": "TEXT",
+          "required": false,
+          "hint": "100% paxta"
+        },
+        {
+          "key": "season",
+          "label": "Mavsum",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Qish",
+              "label": "Qish"
+            },
+            {
+              "value": "Bahor",
+              "label": "Bahor"
+            },
+            {
+              "value": "Yoz",
+              "label": "Yoz"
+            },
+            {
+              "value": "Kuz",
+              "label": "Kuz"
+            },
+            {
+              "value": "Barcha mavsum",
+              "label": "Barcha mavsum"
+            }
+          ]
+        },
+        {
+          "key": "colors",
+          "label": "Ranglar",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Qora, Oq, Bej"
+        },
+        {
+          "key": "returnDays",
+          "label": "Qaytarish muddati",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "14",
+          "suffix": "kun"
+        }
+      ]
+    },
+    {
+      "key": "BLOUSES",
+      "nameUz": "Bluzka",
+      "sortOrder": 3,
+      "fields": [
+        {
+          "key": "sizes",
+          "label": "Mavjud razmerlar",
+          "type": "MULTI_SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "XS",
+              "label": "XS"
+            },
+            {
+              "value": "S",
+              "label": "S"
+            },
+            {
+              "value": "M",
+              "label": "M"
+            },
+            {
+              "value": "L",
+              "label": "L"
+            },
+            {
+              "value": "XL",
+              "label": "XL"
+            },
+            {
+              "value": "XXL",
+              "label": "XXL"
+            }
+          ],
+          "multiple": true,
+          "storedAs": "vergul bilan: \"S,M,L\""
+        },
+        {
+          "key": "sleeve",
+          "label": "Yeng",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Kalta",
+              "label": "Kalta"
+            },
+            {
+              "value": "Uzun",
+              "label": "Uzun"
+            },
+            {
+              "value": "Yengsiz",
+              "label": "Yengsiz"
+            }
+          ]
+        },
+        {
+          "key": "brand",
+          "label": "Brand nomi",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Zara"
+        },
+        {
+          "key": "material",
+          "label": "Material",
+          "type": "TEXT",
+          "required": false,
+          "hint": "100% paxta"
+        },
+        {
+          "key": "season",
+          "label": "Mavsum",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Qish",
+              "label": "Qish"
+            },
+            {
+              "value": "Bahor",
+              "label": "Bahor"
+            },
+            {
+              "value": "Yoz",
+              "label": "Yoz"
+            },
+            {
+              "value": "Kuz",
+              "label": "Kuz"
+            },
+            {
+              "value": "Barcha mavsum",
+              "label": "Barcha mavsum"
+            }
+          ]
+        },
+        {
+          "key": "colors",
+          "label": "Ranglar",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Qora, Oq, Bej"
+        },
+        {
+          "key": "returnDays",
+          "label": "Qaytarish muddati",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "14",
+          "suffix": "kun"
+        }
+      ]
+    },
+    {
+      "key": "OUTERWEAR",
+      "nameUz": "Ustki kiyim",
+      "sortOrder": 4,
+      "fields": [
+        {
+          "key": "sizes",
+          "label": "Mavjud razmerlar",
+          "type": "MULTI_SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "XS",
+              "label": "XS"
+            },
+            {
+              "value": "S",
+              "label": "S"
+            },
+            {
+              "value": "M",
+              "label": "M"
+            },
+            {
+              "value": "L",
+              "label": "L"
+            },
+            {
+              "value": "XL",
+              "label": "XL"
+            },
+            {
+              "value": "XXL",
+              "label": "XXL"
+            }
+          ],
+          "multiple": true,
+          "storedAs": "vergul bilan: \"S,M,L\""
+        },
+        {
+          "key": "insulation",
+          "label": "Issiqlik",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Yengil",
+              "label": "Yengil"
+            },
+            {
+              "value": "O'rtacha",
+              "label": "O'rtacha"
+            },
+            {
+              "value": "Qishki",
+              "label": "Qishki"
+            }
+          ]
+        },
+        {
+          "key": "isWaterproof",
+          "label": "Suv o'tkazmaydi",
+          "type": "BOOLEAN",
+          "required": false
+        },
+        {
+          "key": "brand",
+          "label": "Brand nomi",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Zara"
+        },
+        {
+          "key": "material",
+          "label": "Material",
+          "type": "TEXT",
+          "required": false,
+          "hint": "100% paxta"
+        },
+        {
+          "key": "season",
+          "label": "Mavsum",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Qish",
+              "label": "Qish"
+            },
+            {
+              "value": "Bahor",
+              "label": "Bahor"
+            },
+            {
+              "value": "Yoz",
+              "label": "Yoz"
+            },
+            {
+              "value": "Kuz",
+              "label": "Kuz"
+            },
+            {
+              "value": "Barcha mavsum",
+              "label": "Barcha mavsum"
+            }
+          ]
+        },
+        {
+          "key": "colors",
+          "label": "Ranglar",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Qora, Oq, Bej"
+        },
+        {
+          "key": "returnDays",
+          "label": "Qaytarish muddati",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "14",
+          "suffix": "kun"
+        }
+      ]
+    },
+    {
+      "key": "SHOES",
+      "nameUz": "Poyabzal",
+      "sortOrder": 5,
+      "fields": [
+        {
+          "key": "shoeSizes",
+          "label": "Mavjud razmerlar",
+          "type": "MULTI_SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "36",
+              "label": "36"
+            },
+            {
+              "value": "37",
+              "label": "37"
+            },
+            {
+              "value": "38",
+              "label": "38"
+            },
+            {
+              "value": "39",
+              "label": "39"
+            },
+            {
+              "value": "40",
+              "label": "40"
+            },
+            {
+              "value": "41",
+              "label": "41"
+            },
+            {
+              "value": "42",
+              "label": "42"
+            },
+            {
+              "value": "43",
+              "label": "43"
+            },
+            {
+              "value": "44",
+              "label": "44"
+            },
+            {
+              "value": "45",
+              "label": "45"
+            },
+            {
+              "value": "46",
+              "label": "46"
+            }
+          ],
+          "multiple": true,
+          "storedAs": "vergul bilan: \"S,M,L\""
+        },
+        {
+          "key": "soleType",
+          "label": "Taglik",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Rezina",
+              "label": "Rezina"
+            },
+            {
+              "value": "Poliuretan",
+              "label": "Poliuretan"
+            },
+            {
+              "value": "Charm",
+              "label": "Charm"
+            }
+          ]
+        },
+        {
+          "key": "heelCm",
+          "label": "Poshna",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "5",
+          "suffix": "sm"
+        },
+        {
+          "key": "brand",
+          "label": "Brand nomi",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Zara"
+        },
+        {
+          "key": "material",
+          "label": "Material",
+          "type": "TEXT",
+          "required": false,
+          "hint": "100% paxta"
+        },
+        {
+          "key": "season",
+          "label": "Mavsum",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Qish",
+              "label": "Qish"
+            },
+            {
+              "value": "Bahor",
+              "label": "Bahor"
+            },
+            {
+              "value": "Yoz",
+              "label": "Yoz"
+            },
+            {
+              "value": "Kuz",
+              "label": "Kuz"
+            },
+            {
+              "value": "Barcha mavsum",
+              "label": "Barcha mavsum"
+            }
+          ]
+        },
+        {
+          "key": "colors",
+          "label": "Ranglar",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Qora, Oq, Bej"
+        },
+        {
+          "key": "returnDays",
+          "label": "Qaytarish muddati",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "14",
+          "suffix": "kun"
+        }
+      ]
+    },
+    {
+      "key": "BAGS",
+      "nameUz": "Sumka",
+      "sortOrder": 6,
+      "fields": [
+        {
+          "key": "bagType",
+          "label": "Turi",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Yelka",
+              "label": "Yelka"
+            },
+            {
+              "value": "Qo'l",
+              "label": "Qo'l"
+            },
+            {
+              "value": "Ryukzak",
+              "label": "Ryukzak"
+            },
+            {
+              "value": "Klatch",
+              "label": "Klatch"
+            }
+          ]
+        },
+        {
+          "key": "capacityL",
+          "label": "Hajmi",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "20",
+          "suffix": "litr"
+        },
+        {
+          "key": "brand",
+          "label": "Brand nomi",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Zara"
+        },
+        {
+          "key": "material",
+          "label": "Material",
+          "type": "TEXT",
+          "required": false,
+          "hint": "100% paxta"
+        },
+        {
+          "key": "season",
+          "label": "Mavsum",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Qish",
+              "label": "Qish"
+            },
+            {
+              "value": "Bahor",
+              "label": "Bahor"
+            },
+            {
+              "value": "Yoz",
+              "label": "Yoz"
+            },
+            {
+              "value": "Kuz",
+              "label": "Kuz"
+            },
+            {
+              "value": "Barcha mavsum",
+              "label": "Barcha mavsum"
+            }
+          ]
+        },
+        {
+          "key": "colors",
+          "label": "Ranglar",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Qora, Oq, Bej"
+        },
+        {
+          "key": "returnDays",
+          "label": "Qaytarish muddati",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "14",
+          "suffix": "kun"
+        }
+      ]
+    },
+    {
+      "key": "ACCESSORIES",
+      "nameUz": "Aksessuar",
+      "sortOrder": 7,
+      "fields": [
+        {
+          "key": "accessoryType",
+          "label": "Turi",
+          "type": "SELECT",
+          "required": true,
+          "options": [
+            {
+              "value": "Kamar",
+              "label": "Kamar"
+            },
+            {
+              "value": "Sharf",
+              "label": "Sharf"
+            },
+            {
+              "value": "Qo'lqop",
+              "label": "Qo'lqop"
+            },
+            {
+              "value": "Bosh kiyim",
+              "label": "Bosh kiyim"
+            },
+            {
+              "value": "Soat",
+              "label": "Soat"
+            },
+            {
+              "value": "Zargarlik",
+              "label": "Zargarlik"
+            }
+          ]
+        },
+        {
+          "key": "brand",
+          "label": "Brand nomi",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Zara"
+        },
+        {
+          "key": "material",
+          "label": "Material",
+          "type": "TEXT",
+          "required": false,
+          "hint": "100% paxta"
+        },
+        {
+          "key": "season",
+          "label": "Mavsum",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Qish",
+              "label": "Qish"
+            },
+            {
+              "value": "Bahor",
+              "label": "Bahor"
+            },
+            {
+              "value": "Yoz",
+              "label": "Yoz"
+            },
+            {
+              "value": "Kuz",
+              "label": "Kuz"
+            },
+            {
+              "value": "Barcha mavsum",
+              "label": "Barcha mavsum"
+            }
+          ]
+        },
+        {
+          "key": "colors",
+          "label": "Ranglar",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Qora, Oq, Bej"
+        },
+        {
+          "key": "returnDays",
+          "label": "Qaytarish muddati",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "14",
+          "suffix": "kun"
+        }
+      ]
+    },
+    {
+      "key": "OTHER",
+      "nameUz": "Boshqa",
+      "sortOrder": 8,
+      "fields": [
+        {
+          "key": "brand",
+          "label": "Brand nomi",
+          "type": "TEXT",
+          "required": false,
+          "hint": "Zara"
+        },
+        {
+          "key": "material",
+          "label": "Material",
+          "type": "TEXT",
+          "required": false,
+          "hint": "100% paxta"
+        },
+        {
+          "key": "season",
+          "label": "Mavsum",
+          "type": "SELECT",
+          "required": false,
+          "options": [
+            {
+              "value": "Qish",
+              "label": "Qish"
+            },
+            {
+              "value": "Bahor",
+              "label": "Bahor"
+            },
+            {
+              "value": "Yoz",
+              "label": "Yoz"
+            },
+            {
+              "value": "Kuz",
+              "label": "Kuz"
+            },
+            {
+              "value": "Barcha mavsum",
+              "label": "Barcha mavsum"
+            }
+          ]
+        },
+        {
+          "key": "colors",
+          "label": "Ranglar",
+          "type": "TAGS",
+          "required": false,
+          "hint": "Qora, Oq, Bej"
+        },
+        {
+          "key": "returnDays",
+          "label": "Qaytarish muddati",
+          "type": "NUMBER",
+          "required": false,
+          "hint": "14",
+          "suffix": "kun"
+        }
+      ],
+      "requiresCustomName": true
+    }
+  ],
+  "error": null
+}
