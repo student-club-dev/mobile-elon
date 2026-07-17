@@ -1,47 +1,74 @@
-# ---- IDE ----
-*.iml
-.idea/caches
-.idea/libraries
-.idea/modules.xml
-.idea/workspace.xml
-.idea/navEditor.xml
-.idea/assetWizardSettings.xml
-.idea/deploymentTargetDropDown.xml
-.idea/deploymentTargetSelector.xml
-
-# ---- OS ----
-.DS_Store
-
-# ---- Gradle / build ----
-.gradle
-.kotlin
+# Gradle / Kotlin
+.gradle/
 build/
-/captures
-.externalNativeBuild
-.cxx
+!gradle/wrapper/gradle-wrapper.jar
 local.properties
+.kotlin/
+kotlin-js-store/
 
-# ---- Android ----
+# Android
 *.apk
 *.aab
+*.ap_
+*.dex
+*.jks
 *.keystore
-!debug.keystore
+captures/
+.cxx/
+release/
 
-# ---- iOS / Xcode ----
+# IntelliJ / Android Studio
+# `.idea/` har qanday chuqurlikdagi papkani qamraydi (jumladan elonUzApp/.idea/).
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Xcode
 xcuserdata/
 *.xcuserstate
-iosApp/Pods/
-iosApp/*.xcworkspace
+*.xcscmblueprint
+*.xccheckout
 DerivedData/
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
 
-# Ichki modullardagi IDE papkalari — yuqoridagi qoidalar ildizga bog'langan,
-# shuning uchun `elonUzApp/.idea/` ni alohida chiqarib tashlaymiz.
-**/.idea/workspace.xml
-**/.idea/caches/
-elonUzApp/.idea/
+# Swift Package Manager
+.build/
+.swiftpm/
+Packages/
+Package.resolved
+
+# CocoaPods
+Pods/
+
+# Fastlane
+fastlane/report.xml
+fastlane/screenshots/**/*.png
+fastlane/test_output/
 
 # ---- Firebase / maxfiy kalitlar (haqiqiylarini commit QILMANG) ----
 # Repo'da faqat *.template versiyalari saqlanadi — nusxa olib nomini o'zgartiring.
 google-services.json
 GoogleService-Info.plist
 !*.template
+
+# Secrets / env
+.env
+.env.*
+!.env.example
+*.p8
+*.p12
+*.mobileprovision
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
