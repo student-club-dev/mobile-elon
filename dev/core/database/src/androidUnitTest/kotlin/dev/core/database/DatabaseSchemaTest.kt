@@ -76,9 +76,10 @@ class DatabaseSchemaTest {
     }
 
     @Test
-    fun schemaVersionIsNine() {
-        // 7.sqm — ListingEntity (chegirma e'lonlari), 8.sqm — ko'p filial (branchesJson).
-        assertEquals(9L, StudentClubsDatabase.Schema.version)
+    fun schemaVersionIsEleven() {
+        // 7.sqm — ListingEntity (chegirma e'lonlari), 8.sqm — ko'p filial (branchesJson),
+        // 9.sqm — biznes egasi profili (businessName/businessType), 10.sqm — profil emaili.
+        assertEquals(11L, StudentClubsDatabase.Schema.version)
     }
 
     @Test
@@ -116,12 +117,16 @@ class DatabaseSchemaTest {
             birthYear = 2004L,
             courseYear = "3",
             avatarUrl = "https://cdn.studentclubs.dev/avatars/uid-1.jpg",
+            businessName = null,
+            businessType = null,
+            email = "quvonchbek@example.com",
         )
         val profile = db.profileQueries.selectCurrent().executeAsOne()
         assertEquals("Quvonchbek", profile.firstName)
         assertEquals("tuit", profile.universityId)
         assertEquals(2004L, profile.birthYear)
         assertEquals("https://cdn.studentclubs.dev/avatars/uid-1.jpg", profile.avatarUrl)
+        assertEquals("quvonchbek@example.com", profile.email)
 
         db.profileQueries.clear()
         assertNull(db.profileQueries.selectCurrent().executeAsOneOrNull())
@@ -243,6 +248,27 @@ class DatabaseSchemaTest {
             0,
         )
 
+        // v8 dagi ProfileEntity — keyingi migratsiyalar (9.sqm, 10.sqm) shu jadvalga
+        // ustun qo'shadi, jadvalsiz migratsiya yiqiladi.
+        driver.execute(
+            null,
+            """
+            CREATE TABLE ProfileEntity (
+                uid TEXT NOT NULL PRIMARY KEY,
+                firstName TEXT,
+                lastName TEXT,
+                phoneNumber TEXT,
+                role TEXT,
+                universityId TEXT,
+                universityEmail TEXT,
+                birthYear INTEGER,
+                courseYear TEXT,
+                avatarUrl TEXT
+            )
+            """.trimIndent(),
+            0,
+        )
+
         // Koordinatasi bor e'lon — filialga aylanishi kerak.
         driver.execute(
             null,
@@ -271,7 +297,7 @@ class DatabaseSchemaTest {
                 priceUnit, originalPrice, discountType, discountValue, finalPrice,
                 redemptionMethod, address, validFrom, validTo, status, createdAt, updatedAt
             ) VALUES (
-                'l-2', 'u1', 'GROCERY', 'Korzinka', 'DAIRY', 'Sut',
+                'l-2', 'u1', 'CAFE_RESTAURANT', 'Korzinka', 'PIZZA', 'Pitsa',
                 'PER_ITEM', 12000, 'PERCENT', 10, 10800,
                 'STUDENT_ID', 'Qayerdadir', 0, 9999999999999, 'DRAFT', 0, 0
             )
