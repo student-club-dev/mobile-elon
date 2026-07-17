@@ -1,5 +1,5 @@
 // Data qatlami — umumiy infratuzilma `sc.module-data` dan. Bu yerda o'z domeni va
-// Firebase (backendsiz rejim: profil Firestore `users/{uid}` da).
+// Firebase Auth (kesh kaliti — sessiyadagi uid; profilning o'zi backenddan keladi).
 plugins {
     id("sc.module-data")
 }
@@ -9,9 +9,8 @@ kotlin {
         commonMain.dependencies {
             api(projects.dev.feature.profile.domain)
 
-            // Backendsiz rejim: profil Firestore hujjatida.
+            // Faqat uid kerak (ProfileRepositoryImpl) — Firestore ishlatilmaydi.
             implementation(libs.gitlive.firebase.auth)
-            implementation(libs.gitlive.firebase.firestore)
         }
 
         androidMain.dependencies {

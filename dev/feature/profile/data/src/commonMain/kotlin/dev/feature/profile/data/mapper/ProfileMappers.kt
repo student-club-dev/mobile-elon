@@ -5,7 +5,6 @@ import dev.core.network.generated.model.CourseYearDto
 import dev.core.network.generated.model.ProfileRoleDto
 import dev.core.network.generated.model.UpdateProfileRequestDto
 import dev.core.network.generated.model.UserProfileDto
-import dev.feature.profile.data.dto.ProfileFirestoreDto
 import dev.feature.profile.domain.model.UserProfile
 
 // ---------------------------------------------------------------------------
@@ -20,42 +19,6 @@ fun ProfileEntity.toDomain(): UserProfile = UserProfile(
     universityId = universityId,
     universityEmail = universityEmail,
     birthYear = birthYear?.toInt(),
-    courseYear = courseYear,
-    avatarUrl = avatarUrl,
-    businessName = businessName,
-    businessType = businessType,
-    email = email,
-)
-
-// ---------------------------------------------------------------------------
-// Firestore (backendsiz rejim)
-// ---------------------------------------------------------------------------
-
-fun ProfileFirestoreDto.toDomain(): UserProfile = UserProfile(
-    firstName = firstName,
-    lastName = lastName,
-    phoneNumber = phoneNumber,
-    gender = gender,
-    role = role,
-    universityId = universityId,
-    universityEmail = universityEmail,
-    birthYear = birthYear,
-    courseYear = courseYear,
-    avatarUrl = avatarUrl,
-    businessName = businessName,
-    businessType = businessType,
-    email = email,
-)
-
-fun UserProfile.toFirestoreDto(): ProfileFirestoreDto = ProfileFirestoreDto(
-    firstName = firstName,
-    lastName = lastName,
-    phoneNumber = phoneNumber,
-    gender = gender,
-    role = role,
-    universityId = universityId,
-    universityEmail = universityEmail,
-    birthYear = birthYear,
     courseYear = courseYear,
     avatarUrl = avatarUrl,
     businessName = businessName,
