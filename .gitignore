@@ -25,6 +25,9 @@ release/
 *.iws
 out/
 
+# AI vositalari sozlamalari — mahalliy, repoga kirmaydi.
+.claude/
+
 # Xcode
 xcuserdata/
 *.xcuserstate
