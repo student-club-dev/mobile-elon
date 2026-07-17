@@ -11,8 +11,12 @@ import dev.feature.discounts.domain.model.BusinessType
  * matnlarni oladi. Shunday qilib takrorlanish ham yo'q, yozuvlar ham har xil.
  */
 data class ListingFormCopy(
+    /** Chegirma e'loni sarlavhasi. */
     val screenTitle: String,
     val screenSubtitle: String,
+    /** Oddiy (chegirmasiz) e'lon sarlavhasi — `isDiscount = false` bo'lganда. */
+    val screenTitleRegular: String,
+    val screenSubtitleRegular: String,
 
     val businessSection: String,
     val businessHint: String,
@@ -46,6 +50,8 @@ data class ListingFormCopy(
             BusinessType.CAFE_RESTAURANT -> ListingFormCopy(
                 screenTitle = "Kafe chegirmasi",
                 screenSubtitle = "Taomga talaba chegirmasi",
+                screenTitleRegular = "Kafe e'loni",
+                screenSubtitleRegular = "Menyudagi taom e'loni",
                 businessSection = "Kafe va menyu bo'limi",
                 businessHint = "Kafe nomi: Chaykhana Navruz",
                 categoryHint = "Menyudagi bo'limni tanlang",
@@ -69,6 +75,8 @@ data class ListingFormCopy(
             BusinessType.GAME_CLUB -> ListingFormCopy(
                 screenTitle = "Game Club chegirmasi",
                 screenSubtitle = "O'yin sessiyasiga talaba chegirmasi",
+                screenTitleRegular = "Game Club e'loni",
+                screenSubtitleRegular = "O'yin sessiyasi e'loni",
                 businessSection = "Klub va qurilma",
                 businessHint = "Klub nomi: CyberZone",
                 categoryHint = "Qaysi qurilma yoki o'yin turi",
@@ -89,32 +97,12 @@ data class ListingFormCopy(
                 optionItemHint = "Variant: VIP zal",
             )
 
-            BusinessType.GROCERY -> ListingFormCopy(
-                screenTitle = "Oziq-ovqat chegirmasi",
-                screenSubtitle = "Mahsulotga talaba chegirmasi",
-                businessSection = "Do'kon va bo'lim",
-                businessHint = "Do'kon nomi: Korzinka",
-                categoryHint = "Mahsulot bo'limini tanlang",
-                imagesSection = "Mahsulot rasmlari",
-                imagesHint = "Qadoq va mahsulotning o'zi",
-                aboutSection = "Mahsulot haqida",
-                titleHint = "Mahsulot nomi: Sut 2.5%, 1 l",
-                descriptionHint = "Tarkibi, saqlash sharti...",
-                priceSection = "Do'kondagi narx",
-                priceHint = "12000",
-                conditionsHint = "Shart: talaba ID bilan, kuniga 2 tagacha",
-                detailsSection = "Mahsulot tafsilotlari",
-                detailsHint = "Og'irlik, muddat, brend",
-                hasOptions = false,
-                optionsSection = "",
-                optionsHint = "",
-                optionGroupHint = "",
-                optionItemHint = "",
-            )
 
             BusinessType.CLOTHING -> ListingFormCopy(
                 screenTitle = "Kiyim chegirmasi",
                 screenSubtitle = "Kiyimga talaba chegirmasi",
+                screenTitleRegular = "Kiyim e'loni",
+                screenSubtitleRegular = "Kiyim mahsuloti e'loni",
                 businessSection = "Do'kon va bo'lim",
                 businessHint = "Do'kon nomi: Zara",
                 categoryHint = "Kiyim bo'limini tanlang",
@@ -138,6 +126,8 @@ data class ListingFormCopy(
             BusinessType.EDUCATION_CENTER -> ListingFormCopy(
                 screenTitle = "Kurs chegirmasi",
                 screenSubtitle = "O'quv kursiga talaba chegirmasi",
+                screenTitleRegular = "Kurs e'loni",
+                screenSubtitleRegular = "O'quv kursi e'loni",
                 businessSection = "Markaz va yo'nalish",
                 businessHint = "Markaz nomi: PDP Academy",
                 categoryHint = "Kurs yo'nalishini tanlang",
@@ -161,6 +151,8 @@ data class ListingFormCopy(
             BusinessType.ENTERTAINMENT -> ListingFormCopy(
                 screenTitle = "Ko'ngilochar chegirma",
                 screenSubtitle = "Chiptaga talaba chegirmasi",
+                screenTitleRegular = "Ko'ngilochar e'lon",
+                screenSubtitleRegular = "Chipta va seans e'loni",
                 businessSection = "Muassasa va turi",
                 businessHint = "Nomi: Cinema Park",
                 categoryHint = "Tadbir turini tanlang",
@@ -181,32 +173,12 @@ data class ListingFormCopy(
                 optionItemHint = "",
             )
 
-            BusinessType.ELECTRONICS -> ListingFormCopy(
-                screenTitle = "Texnika chegirmasi",
-                screenSubtitle = "Qurilmaga talaba chegirmasi",
-                businessSection = "Do'kon va bo'lim",
-                businessHint = "Do'kon nomi: Texnomart",
-                categoryHint = "Qurilma bo'limini tanlang",
-                imagesSection = "Qurilma rasmlari",
-                imagesHint = "Qurilma va qutisi",
-                aboutSection = "Qurilma haqida",
-                titleHint = "Model: MacBook Air M3 13\"",
-                descriptionHint = "Xotira, protsessor, komplekt...",
-                priceSection = "Do'kondagi narx",
-                priceHint = "14500000",
-                conditionsHint = "Shart: talaba ID bilan, kafolat saqlanadi",
-                detailsSection = "Qurilma tafsilotlari",
-                detailsHint = "Brend, holati, kafolat",
-                hasOptions = true,
-                optionsSection = "Xotira va rang",
-                optionsHint = "Talaba tanlaydigan variantlar",
-                optionGroupHint = "Guruh nomi: Xotira hajmi",
-                optionItemHint = "Variant: 512 GB",
-            )
 
             BusinessType.BARBERSHOP -> ListingFormCopy(
                 screenTitle = "Sartaroshxona chegirmasi",
                 screenSubtitle = "Xizmatga talaba chegirmasi",
+                screenTitleRegular = "Sartaroshxona e'loni",
+                screenSubtitleRegular = "Xizmat e'loni",
                 businessSection = "Sartaroshxona va bo'lim",
                 businessHint = "Nomi: Barber House",
                 categoryHint = "Xizmat turini tanlang",
@@ -230,6 +202,8 @@ data class ListingFormCopy(
             BusinessType.BEAUTY_SALON -> ListingFormCopy(
                 screenTitle = "Go'zallik saloni chegirmasi",
                 screenSubtitle = "Xizmatga talaba chegirmasi",
+                screenTitleRegular = "Go'zallik saloni e'loni",
+                screenSubtitleRegular = "Xizmat e'loni",
                 businessSection = "Salon va bo'lim",
                 businessHint = "Nomi: Beauty Room",
                 categoryHint = "Xizmat turini tanlang",

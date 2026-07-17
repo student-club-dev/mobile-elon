@@ -6,6 +6,7 @@ import dev.core.common.Resource
 import dev.core.domain.repository.SettingsRepository
 import dev.core.domain.usecase.ObserveCurrentUserUseCase
 import dev.feature.discounts.domain.model.BusinessType
+import dev.feature.discounts.domain.model.CategoryInfo
 import dev.feature.discounts.domain.model.Gender
 import dev.feature.discounts.domain.model.DiscountType
 import dev.feature.discounts.domain.model.Listing
@@ -21,6 +22,7 @@ import dev.feature.discounts.domain.model.PriceUnit
 import dev.feature.discounts.domain.model.RedemptionMethod
 import dev.feature.discounts.domain.repository.PlaceSuggestion
 import dev.feature.discounts.domain.usecase.CreateBranchFromPointUseCase
+import dev.feature.discounts.domain.usecase.GetCategoriesUseCase
 import dev.feature.discounts.domain.usecase.GetListingUseCase
 import dev.feature.discounts.domain.usecase.PublishListingUseCase
 import dev.feature.discounts.domain.usecase.SaveDraftUseCase
@@ -54,12 +56,26 @@ data class PostListingUiState(
     val listingGender: Gender? = null,
 
     val businessName: String = "",
+    /**
+     * Backenddan kelgan kategoriyalar + har birining maydonlari (`fields` ичида `options`).
+     * Backend javob bermasa UseCase klient katalogini beradi — ro'yxat bo'sh qolmaydi.
+     */
+    val categoryList: List<CategoryInfo> = emptyList(),
+    /**
+     * Biznesni yuklab bo'lmadi (internet/xato/o'chirilgan) — tur meros olinmaydi. Shunда forma
+     * o'rniga xato + "Qayta urinish"/"Orqaga" ko'rsatiladi (cheksiz spinner tuzog'i bo'lmasin).
+     */
+    val loadError: String? = null,
     val categoryKey: String = "",
     val customCategoryName: String = "",
     /** Kategoriyaga xos maydonlar qiymatlari (ListingCatalog.categoryAttributes kalitlari). */
     val attributeValues: Map<String, String> = emptyMap(),
-    /** `true` — chegirma e'loni (chegirma maydonlari), `false` — oddiy e'lon (faqat narx). */
-    val isDiscount: Boolean = true,
+    /**
+     * `true` — chegirma e'loni (2 narx: oldingi + hozirgi), `false` — oddiy e'lon (1 narx).
+     * Odatiy holat — **oddiy e'lon**: ko'pchilik e'lon chegirmasiz joylanadi, chegirma esa
+     * ataylab tanlanadi.
+     */
+    val isDiscount: Boolean = false,
     /** Rejim tashqaridan (tab) belgilangan — E'lon turi tanlovi yashiriladi. */
     val modeLocked: Boolean = false,
 
@@ -120,6 +136,7 @@ class PostListingViewModel(
     private val searchPlaces: SearchPlacesUseCase,
     private val settings: SettingsRepository,
     private val getBusiness: dev.feature.discounts.domain.usecase.GetBusinessUseCase,
+    private val getCategories: GetCategoriesUseCase,
 ) : ViewModel() {
 
     /** E'lon tegishli biznes id'si (biznesdan meros olinganda yoki tahrirlashda). */
@@ -140,7 +157,24 @@ class PostListingViewModel(
                     else -> null
                 }
                 _state.update { it.copy(gender = g) }
+                loadCategories()
             }
+        }
+    }
+
+    /**
+     * Kategoriyalarni backenddan oladi (`GET /business/types/{type}/categories?gender=`).
+     * Javob ичида har kategoriyaning maydonlari ham keladi, shuning uchun kategoriya
+     * tanlanganда yangi so'rov ketmaydi. Backend ishlamasa — UseCase klient katalogini beradi.
+     */
+    private fun loadCategories() {
+        val s = _state.value
+        val type = s.businessType ?: return
+        // Kiyimда jins e'lonда tanlanadi, boshqa turlarда profildan keladi.
+        val g = if (type == BusinessType.CLOTHING) s.listingGender else s.gender
+        viewModelScope.launch {
+            val list = getCategories(type, g)
+            _state.update { it.copy(categoryList = list) }
         }
     }
     val state: StateFlow<PostListingUiState> = _state.asStateFlow()
@@ -155,7 +189,10 @@ class PostListingViewModel(
     // -----------------------------------------------------------------------
 
     /** Kiyim-kechak e'loni uchun jins (erkak/ayol kiyimi). Kategoriyalar shunga moslanadi. */
-    fun onListingGender(g: Gender) = _state.update { it.copy(listingGender = g, categoryKey = "") }
+    fun onListingGender(g: Gender) {
+        _state.update { it.copy(listingGender = g, categoryKey = "") }
+        loadCategories() // erkak/ayol kategoriyalari boshqacha
+    }
 
     /**
      * E'lon tanlangan biznesga tegishli — tur, nom va lokatsiya biznesdan **meros** olinadi.
@@ -163,10 +200,19 @@ class PostListingViewModel(
      */
     fun prefillFromBusiness(businessId: String) {
         viewModelScope.launch {
-            val biz = getBusiness(businessId) ?: return@launch
+            _state.update { it.copy(loadError = null) }
+            // Bo'sh id — navigatsiya argumenti yo'qolган; so'rov qilmasdan xato beramiz.
+            val biz = if (businessId.isBlank()) null else getBusiness(businessId)
+            if (biz == null) {
+                _state.update {
+                    it.copy(loadError = "Biznes ma'lumotini yuklab bo'lmadi. Internetni tekshirib, qayta urinib ko'ring.")
+                }
+                return@launch
+            }
             currentBusinessId = biz.id
             _state.update {
                 it.copy(
+                    loadError = null,
                     businessType = biz.businessType,
                     step = PostListingStep.FORM,
                     priceUnit = biz.businessType?.defaultPriceUnit ?: it.priceUnit,
@@ -175,6 +221,7 @@ class PostListingViewModel(
                     categoryKey = "",
                 )
             }
+            loadCategories()
         }
     }
 
@@ -473,12 +520,11 @@ class PostListingViewModel(
 private fun String.digits(): String = filter { it.isDigit() }
 
 /** Tanlangan biznes turining kategoriyalari (kiyimда per-e'lon jins, boshqasida profil jinsi). */
-fun PostListingUiState.categories() = businessType?.let { type ->
-    val g = if (type == BusinessType.CLOTHING) listingGender else gender
-    ListingCatalog.categoriesFor(type, g)
-}.orEmpty()
+/** Kategoriyalar — backenddan yuklangan ro'yxat (zaxira: klient katalogi, UseCase beradi). */
+fun PostListingUiState.categories(): List<CategoryInfo> = categoryList
 
 /** Tanlangan KATEGORIYAга xos maydonlar (masalan Game Club > PlayStation). */
+/** Tanlangan kategoriyaning maydonlari — o'sha javobning ичидан (yangi so'rov yo'q). */
 fun PostListingUiState.categoryAttributes() =
-    businessType?.let { ListingCatalog.categoryAttributes(it, categoryKey) }.orEmpty()
+    categoryList.firstOrNull { it.key == categoryKey }?.fields.orEmpty()
 

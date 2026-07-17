@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -79,17 +80,67 @@ fun PostListingScreen(
     LaunchedEffect(state.published) { if (state.published) onPublished() }
 
     val type = state.businessType
+    val loadError = state.loadError
 
     when {
         // Xarita hamma narsadan ustun — joy tanlanmaguncha forma ko'rinmaydi.
         state.pickingOnMap -> BranchMapScreen(state, palette, vm)
-        // Biznes turi hali yuklanmagan — qisqa spinner. "Chegirma e'loni" tur tanlash grid'i YO'Q:
+        // Biznes yuklanmadi — foydalanuvchi spinnerда qamalib qolmasin: xato + qayta urinish/orqaga.
+        type == null && loadError != null ->
+            LoadFailed(
+                message = loadError,
+                palette = palette,
+                onBack = onClose,
+                onRetry = businessId?.let { id -> { vm.prefillFromBusiness(id) } },
+            )
+        // Biznes turi hali yuklanmoqda — qisqa spinner. "Chegirma e'loni" tur tanlash grid'i YO'Q:
         // e'lon turi biznesdan meros olinadi.
         type == null ->
-            androidx.compose.foundation.layout.Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 androidx.compose.material3.CircularProgressIndicator(color = palette.primary, strokeWidth = 3.dp)
             }
         else -> TypeListingForm(type, state, palette, vm, onBack = onClose)
+    }
+}
+
+/**
+ * Biznes ma'lumoti kelmaganда ko'rsatiladi — cheksiz spinner o'rniga aniq xato va **ikkita
+ * chiqish yo'li**: qayta urinish yoki orqaga.
+ */
+@Composable
+private fun LoadFailed(
+    message: String,
+    palette: AppPalette,
+    onBack: () -> Unit,
+    onRetry: (() -> Unit)?,
+) {
+    Box(Modifier.fillMaxSize().padding(28.dp), contentAlignment = Alignment.Center) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(14.dp),
+        ) {
+            Text(
+                message,
+                style = TextStyle(
+                    fontFamily = AppFontFamily,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = palette.inkMuted,
+                ),
+                textAlign = TextAlign.Center,
+            )
+            if (onRetry != null) PrimaryButton("Qayta urinish", onRetry)
+            Text(
+                "Orqaga",
+                modifier = Modifier.clickable(onClick = onBack).padding(8.dp),
+                style = TextStyle(
+                    fontFamily = AppFontFamily,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = palette.primary,
+                ),
+            )
+        }
     }
 }
 

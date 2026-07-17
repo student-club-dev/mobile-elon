@@ -51,6 +51,7 @@ import dev.core.designsystem.theme.AppPalette
 import dev.core.designsystem.theme.appPalette
 import dev.feature.discounts.domain.model.Business
 import dev.feature.discounts.domain.model.BusinessType
+import dev.feature.discounts.domain.model.BusinessTypeInfo
 import dev.feature.discounts.presentation.components.IconSquareButton
 import dev.feature.discounts.presentation.map.MapCenterRequest
 import dev.feature.discounts.presentation.map.MapPicker
@@ -243,8 +244,8 @@ fun AddBusinessScreen(
         FieldLabelLocal("Biznes turi", palette)
         Spacer(Modifier.height(8.dp))
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(state.availableTypes) { type ->
-                TypeChip(type, state.businessType == type, { vm.onType(type) }, palette)
+            items(state.availableTypes) { info ->
+                TypeChip(info, state.businessType == info.type, { vm.onType(info.type) }, palette)
             }
         }
 
@@ -280,7 +281,7 @@ fun AddBusinessScreen(
 }
 
 @Composable
-private fun TypeChip(type: BusinessType, active: Boolean, onClick: () -> Unit, palette: AppPalette) {
+private fun TypeChip(type: BusinessTypeInfo, active: Boolean, onClick: () -> Unit, palette: AppPalette) {
     val shape = RoundedCornerShape(13.dp)
     Row(
         Modifier.clip(shape)
@@ -292,7 +293,7 @@ private fun TypeChip(type: BusinessType, active: Boolean, onClick: () -> Unit, p
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         Text(type.emoji, style = TextStyle(fontSize = 15.sp))
-        Text(type.label, style = TextStyle(fontFamily = AppFontFamily, fontSize = 12.5f.sp, fontWeight = FontWeight.Bold, color = if (active) Color.White else palette.inkMuted), maxLines = 1)
+        Text(type.nameUz, style = TextStyle(fontFamily = AppFontFamily, fontSize = 12.5f.sp, fontWeight = FontWeight.Bold, color = if (active) Color.White else palette.inkMuted), maxLines = 1)
     }
 }
 

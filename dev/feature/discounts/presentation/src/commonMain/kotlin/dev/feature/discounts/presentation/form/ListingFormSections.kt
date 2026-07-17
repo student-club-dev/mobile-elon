@@ -150,7 +150,7 @@ fun CategorySection(
         ) {
             items(state.categories()) { category ->
                 SelectChip(
-                    text = category.label,
+                    text = category.nameUz,
                     selected = state.categoryKey == category.key,
                     onClick = { vm.onCategory(category.key) },
                 )
@@ -192,7 +192,11 @@ fun AttributesSection(state: PostListingUiState, vm: PostListingViewModel) {
     if (specs.isEmpty()) return
     val palette = appPalette
 
-    FormSection(title = "Tafsilotlar", subtitle = "Tanlangan bo'limga mos ma'lumotlar") {
+    FormSection(
+        title = "Tafsilotlar",
+        subtitle = "Tanlangan bo'limga mos ma'lumotlar",
+        error = state.errorFor(ListingField.ATTRIBUTES),
+    ) {
         specs.forEach { spec ->
             val value = state.attributeValues[spec.key].orEmpty()
             Text(
@@ -220,6 +224,28 @@ fun AttributesSection(state: PostListingUiState, vm: PostListingViewModel) {
                             SelectChip(text = opt, selected = value == opt, onClick = { vm.onAttribute(spec.key, opt) })
                         }
                     }
+
+                // Bir nechta variant: mavjud razmerlar kabi. Vergul bilan saqlanadi ("S,M,L")
+                // va katalogdagi asl tartibda yoziladi.
+                AttributeKind.MULTI_SELECT -> {
+                    val selected = value.split(",").mapTo(mutableSetOf()) { it.trim() }
+                    Row(
+                        Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        spec.options.forEach { opt ->
+                            val on = opt in selected
+                            SelectChip(
+                                text = opt,
+                                selected = on,
+                                onClick = {
+                                    val next = if (on) selected - opt else selected + opt
+                                    vm.onAttribute(spec.key, spec.options.filter { it in next }.joinToString(","))
+                                },
+                            )
+                        }
+                    }
+                }
 
                 AttributeKind.BOOLEAN ->
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

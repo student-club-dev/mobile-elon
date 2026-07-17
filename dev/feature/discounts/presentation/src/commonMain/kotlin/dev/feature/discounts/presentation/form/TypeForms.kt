@@ -93,14 +93,20 @@ private fun ListingFormScaffold(
             ) {
                 IconSquareButton(onBack, AppIcons.ArrowLeft, palette)
                 Column {
+                    // Sarlavha rejimga ergashadi: chegirma e'lonida "Kafe chegirmasi",
+                    // oddiy e'londa "Kafe e'loni" — "chegirma" so'zi yolg'on turmasin.
                     Text(
-                        if (state.editing) "E'lonni tahrirlash" else copy.screenTitle,
+                        when {
+                            state.editing -> "E'lonni tahrirlash"
+                            state.isDiscount -> copy.screenTitle
+                            else -> copy.screenTitleRegular
+                        },
                         style = TextStyle(fontFamily = AppFontFamily, fontSize = 18.sp, fontWeight = FontWeight.Black, color = palette.ink),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
                     Text(
-                        copy.screenSubtitle,
+                        if (state.isDiscount) copy.screenSubtitle else copy.screenSubtitleRegular,
                         style = TextStyle(fontFamily = AppFontFamily, fontSize = 11.5f.sp, color = palette.inkFaint),
                     )
                 }
@@ -113,13 +119,18 @@ private fun ListingFormScaffold(
             if (!genderGate || state.listingGender != null) {
                 // SODDALASHTIRILGAN forma: turi + nomi + rasm + narx + tel + joylashuv.
                 // E'lon turi (Chegirma / Oddiy) — faqat tab belgilamagan bo'lsa (modeLocked=false).
-                if (!state.modeLocked) ListingModeSection(state, vm)
                 // Bo'lim (kategoriya) — horizontal scroll.
                 CategorySection(state, copy, vm)
+                // Kategoriyaga xos maydonlar — Futbolka → razmerlar, PlayStation → model (PS5/PS4).
+                // Kategoriya tanlanmaguncha bo'sh bo'ladi va ko'rinmaydi.
+                AttributesSection(state, vm)
                 // Nomi + qo'shimcha ma'lumot.
                 AboutSection(state, copy, vm)
                 // Rasm.
                 ImagesSection(state, copy, vm, onAdd = imagePicker::pick)
+                // E'lon turi (Chegirma / Oddiy) — bevosita narx tepasida, chunki u narx
+                // ko'rinishini belgilaydi: chegirmada 2 narx, oddiyda 1 narx.
+                if (!state.modeLocked) ListingModeSection(state, vm)
                 // Narx (chegirmada Oldingi + Hozirgi).
                 PriceAndDiscountSection(state, copy, vm)
                 // Telefon raqami.

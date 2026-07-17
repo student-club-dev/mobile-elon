@@ -101,8 +101,11 @@ fun BusinessShell(
                         palette = palette,
                     )
                     MyListingsScreen(
-                        onCreate = { nav.navigate("$POST_LISTING?businessId=$businessId") },
-                        onEdit = { listingId -> nav.navigate("$POST_LISTING?listingId=$listingId&businessId=$businessId") },
+                        // launchSingleTop — tez ikki marta bosishда ekran ikki nusxada ochilmasin.
+                        onCreate = { nav.navigate("$POST_LISTING?businessId=$businessId") { launchSingleTop = true } },
+                        onEdit = { listingId ->
+                            nav.navigate("$POST_LISTING?listingId=$listingId&businessId=$businessId") { launchSingleTop = true }
+                        },
                         showHeaderCreate = false,
                         showHeader = false,
                         // Chegirma + oddiy e'lonlar — hammasi bitta ro'yxatda.
@@ -150,7 +153,7 @@ fun BusinessShell(
             val businessId = backStack?.arguments?.getString("businessId").orEmpty()
             CreateFab(
                 palette = palette,
-                onClick = { nav.navigate("$POST_LISTING?businessId=$businessId") },
+                onClick = { nav.navigate("$POST_LISTING?businessId=$businessId") { launchSingleTop = true } },
                 modifier = Modifier.align(Alignment.BottomEnd).padding(end = 18.dp, bottom = 26.dp),
             )
         }

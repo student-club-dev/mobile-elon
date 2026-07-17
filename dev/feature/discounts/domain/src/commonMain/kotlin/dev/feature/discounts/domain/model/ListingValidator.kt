@@ -58,6 +58,12 @@ object ListingValidator {
             add(ListingError(ListingField.PRICE, "Narxni kiriting"))
         }
 
+        // Kategoriyaga xos MAJBURIY maydonlar — masalan Futbolkaда razmer, PlayStation'да model.
+        // Katalog `required = true` desa, to'ldirilmasdan e'lon joylanmaydi.
+        ListingCatalog.categoryAttributes(listing.businessType, listing.categoryKey)
+            .filter { it.required && listing.attributes[it.key].isNullOrBlank() }
+            .forEach { add(ListingError(ListingField.ATTRIBUTES, "${it.label} — tanlanmagan")) }
+
         // Oddiy e'londa chegirma yo'q — faqat chegirma e'lonida tekshiriladi.
         if (listing.attributes[ListingCatalog.REGULAR_KEY] != "1") {
             addAll(validateDiscount(listing))

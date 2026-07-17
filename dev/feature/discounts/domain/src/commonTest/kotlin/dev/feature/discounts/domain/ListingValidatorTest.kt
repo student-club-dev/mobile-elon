@@ -47,6 +47,8 @@ class ListingValidatorTest {
         discount = discount,
         redemption = ListingRedemption(RedemptionMethod.QR),
         branches = branches,
+        // PIZZA kategoriyasida `size` — katalogда majburiy maydon.
+        attributes = mapOf("size" to "30 sm"),
         validFrom = 1_000,
         validTo = 2_000,
         createdAt = 0,

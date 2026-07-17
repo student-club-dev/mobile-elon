@@ -5,12 +5,14 @@ import androidx.lifecycle.viewModelScope
 import dev.core.common.Resource
 import dev.core.domain.repository.SettingsRepository
 import dev.feature.discounts.domain.model.Business
+import dev.feature.discounts.domain.model.BusinessTypeInfo
 import dev.feature.discounts.domain.model.BusinessType
 import dev.feature.discounts.domain.model.Gender
 import dev.feature.discounts.domain.model.ListingBranch
 import dev.feature.discounts.domain.model.ListingCatalog
 import dev.feature.discounts.domain.repository.PlaceSuggestion
 import dev.feature.discounts.domain.usecase.CreateBranchFromPointUseCase
+import dev.feature.discounts.domain.usecase.GetBusinessTypesUseCase
 import dev.feature.discounts.domain.usecase.ObserveMyBusinessesUseCase
 import dev.feature.discounts.domain.usecase.SaveBusinessUseCase
 import dev.feature.discounts.domain.usecase.SearchPlacesUseCase
@@ -71,10 +73,14 @@ data class AddBusinessUiState(
     val saving: Boolean = false,
     val saved: Boolean = false,
     val error: String? = null,
+    /**
+     * Backenddan kelgan biznes turlari (`GET /business/types?gender=`). Backend javob
+     * bermasa UseCase klient katalogini beradi — ro'yxat hech qachon bo'sh qolmaydi.
+     */
+    val availableTypes: List<BusinessTypeInfo> = emptyList(),
 ) {
     val editing: Boolean get() = editId != null
     val phoneDigits: String get() = phone.filter { it.isDigit() }.take(9)
-    val availableTypes: List<BusinessType> get() = ListingCatalog.typesForGender(gender)
     val canSave: Boolean
         get() = name.isNotBlank() && phoneDigits.length == 9 && businessType != null && branch != null && !saving
 }
@@ -85,6 +91,7 @@ class AddBusinessViewModel(
     private val createBranch: CreateBranchFromPointUseCase,
     private val settings: SettingsRepository,
     private val getBusiness: dev.feature.discounts.domain.usecase.GetBusinessUseCase,
+    private val getBusinessTypes: GetBusinessTypesUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AddBusinessUiState())
@@ -119,7 +126,16 @@ class AddBusinessViewModel(
                     else -> null
                 }
                 _state.update { it.copy(gender = g) }
+                loadTypes(g)
             }
+        }
+    }
+
+    /** Turlarni backenddan oladi (xato bo'lsa UseCase fake beradi). */
+    private fun loadTypes(gender: Gender?) {
+        viewModelScope.launch {
+            val types = getBusinessTypes(gender)
+            _state.update { it.copy(availableTypes = types) }
         }
     }
 
