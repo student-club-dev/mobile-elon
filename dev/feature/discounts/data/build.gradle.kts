@@ -8,6 +8,9 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(projects.dev.feature.discounts.domain)
+
+            // SessionProvider (joriy uid) — local biznes egaligini belgilaydi.
+            implementation(projects.dev.core.domain)
         }
     }
 }

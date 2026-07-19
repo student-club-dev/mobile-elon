@@ -1,5 +1,6 @@
 package dev.feature.discounts.presentation.di
 
+import dev.core.domain.USE_LOCAL_DATA
 import dev.core.network.NetworkConfig
 import dev.core.network.createPublicHttpClient
 import dev.core.network.generated.api.BranchesApi
@@ -19,6 +20,9 @@ import dev.feature.discounts.data.repository.ApiBusinessRepository
 import dev.feature.discounts.data.repository.ApiCatalogRepository
 import dev.feature.discounts.data.repository.ApiDiscountFeedRepository
 import dev.feature.discounts.data.repository.ListingRepositoryImpl
+import dev.feature.discounts.data.repository.LocalBusinessRepository
+import dev.feature.discounts.data.repository.LocalCatalogRepository
+import dev.feature.discounts.data.repository.LocalDiscountFeedRepository
 import dev.feature.discounts.domain.repository.CatalogRepository
 import dev.feature.discounts.domain.repository.DiscountFeedRepository
 import dev.feature.discounts.domain.repository.GeoRepository
@@ -61,7 +65,9 @@ fun discountsModule() = module {
 
     // Katalog (biznes turlari + kategoriyalar) — backenddan. Backend javob bermasa
     // UseCase klientдаgi ListingCatalog'ga qaytadi, shuning uchun bayroq kerak emas.
-    single<CatalogRepository> { ApiCatalogRepository(get(), get()) }
+    single<CatalogRepository> {
+        if (USE_LOCAL_DATA) LocalCatalogRepository() else ApiCatalogRepository(get(), get())
+    }
     factory { GetBusinessTypesUseCase(get()) }
     factory { GetCategoriesUseCase(get()) }
 
@@ -80,13 +86,16 @@ fun discountsModule() = module {
     // Talaba qidiruvi — `GET /discounts`. Backend javob bermasa UseCase local faol
     // e'lonlarga qaytadi.
     single { DiscountsApi(baseUrl = get<NetworkConfig>().baseUrl, httpClient = get<HttpClient>()) }
-    single<DiscountFeedRepository> { ApiDiscountFeedRepository(get(), get()) }
+    single<DiscountFeedRepository> {
+        if (USE_LOCAL_DATA) LocalDiscountFeedRepository() else ApiDiscountFeedRepository(get(), get())
+    }
     factory { GetNearbyDiscountsUseCase(get(), get()) }
 
     // Biznes (nom, telefon, tur, filiallar) — backend `/business` + `/business/{id}/branches`.
     // Backend javob bermasa UseCase namuna ma'lumotga qaytadi, shuning uchun bayroq kerak emas.
     single<dev.feature.discounts.domain.repository.BusinessRepository> {
-        ApiBusinessRepository(get(), get(), get())
+        if (USE_LOCAL_DATA) LocalBusinessRepository(get())
+        else ApiBusinessRepository(get(), get(), get())
     }
     factory { dev.feature.discounts.domain.usecase.ObserveMyBusinessesUseCase(get()) }
     factory { dev.feature.discounts.domain.usecase.GetBusinessUseCase(get()) }

@@ -7,11 +7,10 @@ import dev.core.common.Resource
 import dev.core.database.sql.ElonUzDatabase
 import dev.feature.profile.data.mapper.toDomain
 import dev.feature.profile.data.remote.ProfileRemoteDataSource
+import dev.core.domain.repository.SessionProvider
 import dev.feature.profile.domain.model.UserProfile
 import dev.feature.profile.domain.repository.ProfileExistence
 import dev.feature.profile.domain.repository.ProfileRepository
-import dev.gitlive.firebase.Firebase
-import dev.gitlive.firebase.auth.auth
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -27,12 +26,13 @@ class ProfileRepositoryImpl(
     private val db: ElonUzDatabase,
     private val dispatchers: AppDispatchers,
     private val remote: ProfileRemoteDataSource,
+    private val session: SessionProvider,
 ) : ProfileRepository {
 
     private val q get() = db.profileQueries
 
-    /** Kesh kaliti — Firebase sessiyasidagi uid (REST rejimida ham auth Firebase orqali). */
-    private val currentUid: String? get() = Firebase.auth.currentUser?.uid
+    /** Kesh kaliti — joriy sessiya uid (prod: Firebase; local: dev-user). */
+    private val currentUid: String? get() = session.currentUid()
 
     override fun observeProfile(): Flow<UserProfile?> =
         q.selectCurrent()

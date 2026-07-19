@@ -34,7 +34,7 @@ fun profileModule() = module {
         FallbackProfileRemoteDataSource(ApiProfileRemoteDataSource(get()))
     }
 
-    single<ProfileRepository> { ProfileRepositoryImpl(get(), get(), get()) }
+    single<ProfileRepository> { ProfileRepositoryImpl(get(), get(), get(), get()) }
 
     factory { ObserveProfileUseCase(get()) }
     factory { SaveProfileUseCase(get()) }

@@ -53,6 +53,8 @@ fun BusinessWelcomeScreen(
     onGetCode: () -> Unit,
     onGoogle: () -> Unit,
     onEmail: () -> Unit,
+    // Faqat local test rejimida (USE_LOCAL_DATA) beriladi — Firebase'siz darrov kirish.
+    onDevLogin: (() -> Unit)? = null,
 ) {
     val palette = appPalette
 
@@ -125,6 +127,25 @@ fun BusinessWelcomeScreen(
 
         Spacer(Modifier.height(14.dp))
         HintText("Talaba sifatida kirmoqchimisiz? Orqaga qayting va \"Talaba\" ni tanlang.")
+
+        // Local test rejimi — Firebase/SMSsiz darrov kirish (backend tayyor bo'lganda yo'qoladi).
+        onDevLogin?.let { devLogin ->
+            Spacer(Modifier.height(20.dp))
+            Row(
+                Modifier.fillMaxWidth().height(48.dp)
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(palette.primary.copy(alpha = 0.12f))
+                    .border(1.dp, palette.primary.copy(alpha = 0.4f), RoundedCornerShape(14.dp))
+                    .clickable(enabled = !isLoading, onClick = devLogin),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Text(
+                    "🔧 Dev kirish (test)",
+                    style = TextStyle(fontFamily = AppFontFamily, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = palette.primary),
+                )
+            }
+        }
     }
 }
 

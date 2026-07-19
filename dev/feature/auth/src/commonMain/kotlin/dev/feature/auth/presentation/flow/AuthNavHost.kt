@@ -162,6 +162,7 @@ fun AuthNavHost(
                 onGetCode = { vm.sendOtp(socialAuth) },
                 onGoogle = { vm.signInWithGoogle(socialAuth) },
                 onEmail = { nav.navigate(Route.EMAIL) },
+                onDevLogin = if (dev.core.domain.USE_LOCAL_DATA) ({ vm.devLogin() }) else null,
             )
         }
         composable(Route.WELCOME) {

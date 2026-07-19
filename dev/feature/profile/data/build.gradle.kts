@@ -9,7 +9,11 @@ kotlin {
         commonMain.dependencies {
             api(projects.dev.feature.profile.domain)
 
-            // Faqat uid kerak (ProfileRepositoryImpl) — Firestore ishlatilmaydi.
+            // SessionProvider (joriy uid) — Firebase'ga bevosita bog'lanmaydi.
+            implementation(projects.dev.core.domain)
+
+            // Firebase Auth — endi bevosita ishlatilmaydi (SessionProvider orqali), lekin
+            // boshqa modullar uchun BOM'ni buzmaslik uchun qoldiriladi.
             implementation(libs.gitlive.firebase.auth)
         }
 

@@ -1,9 +1,14 @@
 package dev.feature.auth.di
 
 import dev.core.common.AuthTokenProvider
+import dev.core.domain.USE_LOCAL_DATA
 import dev.core.domain.repository.AuthRepository
 import dev.core.domain.repository.ChatRealtimeSource
+import dev.core.domain.repository.SessionProvider
+import dev.feature.auth.data.DevAuthRepository
+import dev.feature.auth.data.DevSessionProvider
 import dev.feature.auth.data.FirebaseAuthRepository
+import dev.feature.auth.data.FirebaseSessionProvider
 import dev.feature.auth.data.FirebaseTokenProvider
 import dev.feature.auth.data.FirestoreChatRealtimeSource
 import dev.feature.auth.presentation.flow.AuthFlowViewModel
@@ -36,9 +41,15 @@ private const val USE_EMAIL_CODE = false
 private const val CHAT_REALTIME_ENABLED = false
 
 val authFeatureModule = module {
-    // Backendsiz Firebase (GitLive) — email/parol, ro'yxat, reset, Firestore profil.
-    // ElonUzDatabase (SQLDelight) local sessiya keshi uchun uzatiladi.
-    single<AuthRepository> { FirebaseAuthRepository(get()) }
+    // Local test rejimida (USE_LOCAL_DATA) — Firebase'siz dev auth; aks holda Firebase.
+    single<AuthRepository> {
+        if (USE_LOCAL_DATA) DevAuthRepository(get()) else FirebaseAuthRepository(get())
+    }
+
+    // Joriy uid manbai — profil/biznes/e'lon egaligini beradi (Firebase'ga bevosita bog'lanmasin).
+    single<SessionProvider> {
+        if (USE_LOCAL_DATA) DevSessionProvider(get()) else FirebaseSessionProvider()
+    }
 
     // Ktor uchun Firebase ID token beruvchi (network qatlami shuni ishlatadi).
     single<AuthTokenProvider> { FirebaseTokenProvider() }

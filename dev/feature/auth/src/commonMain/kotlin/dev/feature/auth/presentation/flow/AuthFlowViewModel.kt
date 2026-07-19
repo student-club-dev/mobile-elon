@@ -136,6 +136,23 @@ class AuthFlowViewModel(
         }
     }
 
+    /**
+     * Dev-login (faqat local test rejimi, `USE_LOCAL_DATA`) — Firebase/SMS/backend'siz darrov
+     * kirish. [DevAuthRepository] har qanday kirishни muvaffaqiyatli qiladi, shu bois oddiy
+     * login use case dummy creds bilan chaqiriladi.
+     */
+    fun devLogin() {
+        if (_state.value.isLoading) return
+        _state.update { it.copy(isLoading = true, error = null) }
+        viewModelScope.launch {
+            when (val result = loginUseCase("dev@local.test", "devpass")) {
+                is Resource.Success -> finishAuthenticated(result.data)
+                is Resource.Error -> _state.update { it.copy(isLoading = false, error = result.message) }
+                Resource.Loading -> Unit
+            }
+        }
+    }
+
     // ------------------------------------------------------------------
     // Telefon (OTP)
     // ------------------------------------------------------------------
