@@ -2,6 +2,7 @@ package dev.feature.profile.domain.usecase
 
 import dev.core.common.Resource
 import dev.feature.profile.domain.model.UserProfile
+import dev.feature.profile.domain.repository.ProfileExistence
 import dev.feature.profile.domain.repository.ProfileRepository
 import kotlinx.coroutines.flow.Flow
 
@@ -16,9 +17,9 @@ class SaveProfileUseCase(private val repository: ProfileRepository) {
         repository.saveProfile(profile)
 }
 
-/** Joriy sessiyada profil bor-yo'qligini tekshiradi (login/register yo'nalishini ajratish). */
+/** Joriy sessiyada profil holatini tekshiradi (login/register/xato yo'nalishini ajratish). */
 class HasProfileUseCase(private val repository: ProfileRepository) {
-    suspend operator fun invoke(): Boolean = repository.hasProfile()
+    suspend operator fun invoke(): ProfileExistence = repository.profileExistence()
 }
 
 /** Profilni masofaviy manbadan qayta yuklaydi (ekran ochilganda fon rejimida). */

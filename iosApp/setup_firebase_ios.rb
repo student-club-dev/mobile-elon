@@ -5,9 +5,13 @@ require 'json'
 puts "🔧 iOS Firebase Setup Automating..."
 puts ""
 
-PROJECT_PATH = 'StudentClubs.xcodeproj'
-INFO_PLIST = 'StudentClubs/Info.plist'
-PLIST_FILE = 'StudentClubs/GoogleService-Info.plist'
+PROJECT_PATH = 'iosApp.xcodeproj'
+INFO_PLIST = 'iosApp/Info.plist'
+PLIST_FILE = 'iosApp/GoogleService-Info.plist'
+
+# TODO: Bu qiymatlar hali ESKI Firebase loyihasidan (studentclubs-d2905, sender 570659158152).
+# `uz.elonuz.ios` bundle'ini `elonuz-5dcca` loyihasiga qo'shgach, yangi GoogleService-Info.plist'dagi
+# GOOGLE_APP_ID va REVERSED_CLIENT_ID bilan almashtiring.
 APP_ID = '1:570659158152:ios:86c6d422fb25ed88ac873d'
 REVERSED_CLIENT_ID = 'com.googleusercontent.apps.570659158152-86c6d422fb25ed88ac873d'
 

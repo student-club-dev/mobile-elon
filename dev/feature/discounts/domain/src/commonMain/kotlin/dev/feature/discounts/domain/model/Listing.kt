@@ -10,7 +10,7 @@ import kotlin.math.sqrt
 /**
  * Chegirma e'loni — Chegirmalar bo'limining markaziy modeli.
  *
- * Spetsifikatsiya: `DISCOUNTS_BUSINESS_API.md` (§3.4) va `openapi/student-clubs.json`
+ * Spetsifikatsiya: `DISCOUNTS_BUSINESS_API.md` (§3.4) va `dev/api-client-generator/elon-uz.json`
  * (`ListingDto`). Bu yerdagi maydonlar API bilan bir xil nom bilan atalgan — backend
  * yoqilganda mapper'lar to'g'ridan-to'g'ri mos tushadi.
  *

@@ -4,10 +4,11 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import dev.core.common.AppDispatchers
 import dev.core.common.Resource
-import dev.core.database.sql.StudentClubsDatabase
+import dev.core.database.sql.ElonUzDatabase
 import dev.feature.profile.data.mapper.toDomain
 import dev.feature.profile.data.remote.ProfileRemoteDataSource
 import dev.feature.profile.domain.model.UserProfile
+import dev.feature.profile.domain.repository.ProfileExistence
 import dev.feature.profile.domain.repository.ProfileRepository
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.auth
@@ -23,7 +24,7 @@ import kotlinx.coroutines.withContext
  * Masofaviy manba REST'mi yoki Firestore'mi — bu klass bilmaydi ([ProfileRemoteDataSource]).
  */
 class ProfileRepositoryImpl(
-    private val db: StudentClubsDatabase,
+    private val db: ElonUzDatabase,
     private val dispatchers: AppDispatchers,
     private val remote: ProfileRemoteDataSource,
 ) : ProfileRepository {
@@ -86,10 +87,11 @@ class ProfileRepositoryImpl(
         }
     }
 
-    override suspend fun hasProfile(): Boolean {
-        // Offline-first: kesh bo'lsa tarmoqni kutmaymiz.
-        if (cachedProfile() != null) return true
-        return remote.exists()
+    override suspend fun profileExistence(): ProfileExistence {
+        // Offline-first: local kesh bo'lsa tarmoqni kutmaymiz — profil aniq bor.
+        if (cachedProfile() != null) return ProfileExistence.EXISTS
+        // Kesh yo'q — backend hal qiladi: MISSING (404) → SignUp, ERROR → OTP'da qayta urinish.
+        return remote.checkExistence()
     }
 
     private suspend fun cachedProfile(): UserProfile? = withContext(dispatchers.io) {

@@ -3,7 +3,7 @@ package dev.core.data.repository
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import dev.core.common.AppDispatchers
-import dev.core.database.sql.StudentClubsDatabase
+import dev.core.database.sql.ElonUzDatabase
 import dev.core.domain.model.ThemeMode
 import dev.core.domain.repository.SettingsRepository
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +14,7 @@ private const val KEY_THEME_MODE = "theme_mode"
 
 /** [SettingsRepository] — SQLDelight `AppSettingEntity` (kalit/qiymat) ustidagi implementatsiya. */
 class SettingsRepositoryImpl(
-    private val db: StudentClubsDatabase,
+    private val db: ElonUzDatabase,
     private val dispatchers: AppDispatchers,
 ) : SettingsRepository {
 

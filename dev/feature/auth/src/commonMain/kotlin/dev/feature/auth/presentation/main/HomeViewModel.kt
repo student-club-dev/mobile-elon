@@ -2,13 +2,11 @@ package dev.feature.auth.presentation.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.core.domain.model.Club
 import dev.core.domain.model.DiscountCategory
 import dev.core.domain.model.DiscountOffer
 import dev.core.domain.model.FriendStatus
 import dev.core.domain.model.Job
 import dev.core.domain.model.Student
-import dev.core.domain.repository.ClubRepository
 import dev.core.domain.repository.DiscountRepository
 import dev.core.domain.repository.JobRepository
 import dev.core.domain.repository.NotificationRepository
@@ -32,7 +30,6 @@ data class HomeUiState(
     val featured: DiscountOffer? = null,
     val jobs: List<Job> = emptyList(),
     val students: List<Student> = emptyList(),
-    val clubs: List<Club> = emptyList(),
     val hasUnreadNotifications: Boolean = false,
 )
 
@@ -44,7 +41,6 @@ class HomeViewModel(
     private val discountRepository: DiscountRepository,
     private val jobRepository: JobRepository,
     private val studentRepository: StudentRepository,
-    clubRepository: ClubRepository,
     notificationRepository: NotificationRepository,
 ) : ViewModel() {
 
@@ -77,9 +73,8 @@ class HomeViewModel(
         discountRepository.observeFeatured(),
         jobRepository.observeJobs(),
         studentRepository.observeStudents(),
-        clubRepository.observeClubs(),
-    ) { categories, featured, jobs, students, clubs ->
-        Content(categories, featured.firstOrNull(), jobs, students, clubs)
+    ) { categories, featured, jobs, students ->
+        Content(categories, featured.firstOrNull(), jobs, students)
     }
 
     val state: StateFlow<HomeUiState> = combine(
@@ -93,7 +88,6 @@ class HomeViewModel(
             featured = c.featured,
             jobs = c.jobs,
             students = c.students,
-            clubs = c.clubs,
             hasUnreadNotifications = unread > 0,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), HomeUiState())
@@ -115,7 +109,6 @@ class HomeViewModel(
         val featured: DiscountOffer?,
         val jobs: List<Job>,
         val students: List<Student>,
-        val clubs: List<Club>,
     )
 }
 

@@ -2,7 +2,7 @@
 -- Offline-first: UI **faqat** shu jadvalni kuzatadi; backend yoqilganda repository
 -- masofaviy manba bilan sinxronlab shu keshni yangilaydi.
 --
--- Spetsifikatsiya: DISCOUNTS_BUSINESS_API.md + openapi/student-clubs.json (ListingDto).
+-- Spetsifikatsiya: DISCOUNTS_BUSINESS_API.md + dev/api-client-generator/elon-uz.json (ListingDto).
 -- Ro'yxatli maydonlar (rasmlar, qo'shimchalar, turga xos atributlar) JSON matn sifatida
 -- saqlanadi — sxemani har yangi biznes turida o'zgartirmaslik uchun.
 CREATE TABLE ListingEntity (

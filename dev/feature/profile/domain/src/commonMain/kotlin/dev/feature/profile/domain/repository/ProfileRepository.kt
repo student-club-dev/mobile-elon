@@ -5,6 +5,15 @@ import dev.feature.profile.domain.model.UserProfile
 import kotlinx.coroutines.flow.Flow
 
 /**
+ * Profil mavjudligining uch holati — OTP dan keyingi yo'nalishni ajratadi:
+ * - [EXISTS]  — profil bor (local kesh yoki backend javobi) → HOME.
+ * - [MISSING] — backend aniq "yo'q" dedi (404) → SignUp (yangi foydalanuvchi).
+ * - [ERROR]   — tekshirib bo'lmadi (backend o'chiq / timeout / token) → OTP ekranida qolib
+ *   qayta urinish; foydalanuvchini noto'g'ri SignUp'ga tushirmaydi.
+ */
+enum class ProfileExistence { EXISTS, MISSING, ERROR }
+
+/**
  * Profil ma'lumotiga egalik qiluvchi repository (offline-first).
  *
  * UI **har doim** [observeProfile] (local DB) ni kuzatadi; [refresh] va [saveProfile]
@@ -32,8 +41,8 @@ interface ProfileRepository {
     suspend fun uploadAvatar(bytes: ByteArray, fileName: String): Resource<String>
 
     /**
-     * Joriy sessiyada saqlangan profil bormi. Telefon OTP oqimida login
-     * (profil bor → HOME) va register (profil yo'q → SignUp) yo'nalishlarini ajratadi.
+     * Joriy sessiyada profil holati. Telefon OTP oqimida login (EXISTS → HOME),
+     * register (MISSING → SignUp) va xato (ERROR → OTP'da qolib qayta urinish) ni ajratadi.
      */
-    suspend fun hasProfile(): Boolean
+    suspend fun profileExistence(): ProfileExistence
 }

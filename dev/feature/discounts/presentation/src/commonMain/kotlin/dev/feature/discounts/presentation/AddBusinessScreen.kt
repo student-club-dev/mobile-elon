@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
@@ -68,6 +69,7 @@ fun MyBusinessesScreen(
     onOpenBusiness: (Business) -> Unit,
     onEditBusiness: (Business) -> Unit,
     onAddBusiness: () -> Unit,
+    onProfile: () -> Unit = {},
     vm: MyBusinessesViewModel = koinViewModel(),
 ) {
     val palette = appPalette
@@ -76,9 +78,24 @@ fun MyBusinessesScreen(
 
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
-            Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 54.dp, bottom = 8.dp)) {
-                Text("BIZNES MARKAZI", style = TextStyle(fontFamily = AppFontFamily, fontSize = 11.sp, fontWeight = FontWeight.ExtraBold, color = palette.primary))
-                Text("Bizneslarim", style = TextStyle(fontFamily = AppFontFamily, fontSize = 26.sp, fontWeight = FontWeight.Black, color = palette.ink))
+            Row(
+                Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 54.dp, bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(Modifier.weight(1f)) {
+                    Text("BIZNES MARKAZI", style = TextStyle(fontFamily = AppFontFamily, fontSize = 11.sp, fontWeight = FontWeight.ExtraBold, color = palette.primary))
+                    Text("Bizneslarim", style = TextStyle(fontFamily = AppFontFamily, fontSize = 26.sp, fontWeight = FontWeight.Black, color = palette.ink))
+                }
+                // Gradient profil tugmasi — E'lonlarim ekranidagi bilan bir xil joylashuv.
+                Box(
+                    Modifier.size(46.dp)
+                        .shadow(10.dp, CircleShape, spotColor = palette.primary.copy(alpha = 0.5f))
+                        .clip(CircleShape).background(palette.primaryBrush)
+                        .clickable(onClick = onProfile),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(AppIcons.Store, "Profil", tint = Color.White, modifier = Modifier.size(21.dp))
+                }
             }
 
             when {

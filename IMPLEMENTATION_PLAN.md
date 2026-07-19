@@ -1,4 +1,4 @@
-# StudentClubs — To'liq Yakunlash Rejasi (Master Promt)
+# ElonUz — To'liq Yakunlash Rejasi (Master Promt)
 
 > Bu fayl — Claude uchun ishchi promt/checklist. Maqsad: **har bir button ishlaydigan** bo'lishi,
 > ilova **real API** bilan ishlashga tayyor bo'lishi, va **local DB** (Android + iOS) to'liq ishlashi.
@@ -80,8 +80,8 @@ Strategiya: **offline-first** — UI har doim SQLDelight'dan `Flow` o'qiydi; rep
 sync qilib DB'ni yangilaydi. Shunda API bo'lmasa ham ilova ishlaydi, API kelsa — yangilanadi.
 
 - [ ] **B1 — OpenAPI spekni aniqlashtirish.**
-  `dev/core/network/openapi/student-clubs.json` hozir namuna. Real API kelganda shu faylni
-  almashtirib `./gradlew :dev:core:network:openApiGenerate` ishga tushiriladi.
+  `dev/api-client-generator/elon-uz.json` hozir namuna. Real API kelganda shu faylni
+  almashtirib `./gradlew :dev:api-client-generator:generateAllApi` ishga tushiriladi.
   → Har bir domen uchun endpoint'lar ro'yxatini bu faylga kiritish
   (universities, discounts, jobs, students, ads, chat, clubs, notifications, profile).
 
@@ -129,7 +129,7 @@ sync qilib DB'ni yangilaydi. Shunda API bo'lmasa ham ilova ishlaydi, API kelsa �
     `ChatViewModel.send()` endi **haqiqiy epoch vaqt** (kotlinx-datetime) va `HH:mm` yorlig'i ishlatadi —
     qurilmalararo to'g'ri tartib va vaqt. `ChatViewModel` xabarlarni `flatMapLatest`+`observeMessages` bilan reaktiv oqadi.
 
-**B bosqich "bajarildi" mezoni:** `student-clubs.json`'ni real spek bilan almashtirsak va base URL'ni
+**B bosqich "bajarildi" mezoni:** `elon-uz.json`'ni real spek bilan almashtirsak va base URL'ni
 qo'ysak — ilova API'dan ma'lumot tortadi, token yuboradi, offline'da cache'dan ishlaydi.
 
 ---
@@ -271,7 +271,7 @@ uchun namuna.
   Host testlari: **5/5 o'tdi** — v1→v6 zanjiri, profil ko'chishi, bo'sh profilni o'tkazib yuborish.
 
 - [x] **H3 — B1 (qisman): OpenAPI v1 spec + profil endpointlari ulandi.** ✅
-  `openapi/student-clubs.json` — endi **API'ning yagona manbasi**: `servers: .../v1`,
+  `dev/api-client-generator/elon-uz.json` — endi **API'ning yagona manbasi**: `servers: .../v1`,
   `bearerAuth` (Firebase ID token), `GET/PUT /profile/me` + `UserProfileDto`/`UpdateProfileRequestDto`
   (+ `ProfileRoleDto`/`CourseYearDto` enum'lari).
   `openApiGenerate` → `dev.core.network.generated.api.ProfileApi` → `ApiProfileRemoteDataSource`.
@@ -298,7 +298,7 @@ uchun namuna.
     (generator shunday yozadi). Server fayl nomiga tayanmasin — turini kontent bo'yicha aniqlasin.
 
 > **Keyingi feature'ni ajratish retsepti:** H1 dagi 3 modul + `featureModule(...)` Koin
-> moduli + kerakli endpoint'larni `student-clubs.json` ga qo'shib `openApiGenerate`.
+> moduli + kerakli endpoint'larni `elon-uz.json` ga qo'shib `openApiGenerate`.
 > ⚠️ `MainShell` hamon `feature:auth` da va Profil ekranlarini chaqiradi — shuning uchun
 > `feature:auth` → `feature:profile:presentation` bog'liqligi bor. Keyinroq `MainShell`ni
 > alohida `feature:main` (yoki `dev:shared`) moduliga ko'chirsak, bu bog'liqlik yo'qoladi.

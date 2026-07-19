@@ -14,7 +14,7 @@ Hozir repo'da faqat *placeholder* konfiguratsiya fayllari bor.
 
 ## 2. Android
 
-1. Firebase'ga Android ilova qo'shing, package name: `com.studentclubs.android`.
+1. Firebase'ga Android ilova qo'shing, package name: `uz.elonuz.app`.
 2. Debug **SHA-1** ni qo'shing (Google Sign-In va Phone auth uchun majburiy):
    ```bash
    ./gradlew :androidApp:signingReport
@@ -30,7 +30,7 @@ Boshqa hech narsa shart emas — Android tomoni to'liq ishlaydi:
 
 ## 3. iOS
 
-1. Firebase'ga iOS ilova qo'shing, bundle ID: `com.studentclubs.ios`
+1. Firebase'ga iOS ilova qo'shing, bundle ID: `uz.elonuz.ios`
    (yoki o'zingiznikini — `GoogleService-Info.plist` va Info.plist'da moslang).
 2. Haqiqiy `GoogleService-Info.plist` ni yuklab, `iosApp/iosApp/GoogleService-Info.plist`
    (placeholder) o'rniga qo'ying va Xcode target'iga qo'shilганini tekshiring.

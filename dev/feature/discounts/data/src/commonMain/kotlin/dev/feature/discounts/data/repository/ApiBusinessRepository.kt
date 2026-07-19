@@ -10,7 +10,6 @@ import dev.core.network.generated.api.BusinessApi
 import dev.core.network.generated.model.BranchDto
 import dev.core.network.generated.model.BranchRequestDto
 import dev.core.network.generated.model.BusinessDto
-import dev.core.network.generated.model.BusinessTypeDto
 import dev.core.network.generated.model.CreateBusinessRequestDto
 import dev.core.network.generated.model.LocationDto
 import dev.core.network.generated.model.UpdateBusinessRequestDto
@@ -67,7 +66,7 @@ class ApiBusinessRepository(
             val saved: BusinessDto = if (business.id.isBlank()) {
                 businessApi.createBusiness(
                     CreateBusinessRequestDto(
-                        type = BusinessTypeDto.valueOf(type.name),
+                        type = type.name,
                         name = business.name,
                         phone = business.phone,
                     ),
@@ -135,7 +134,7 @@ private fun BusinessDto.toDomain(branches: List<BranchDto>) = Business(
     ownerId = ownerUserId.orEmpty(),
     name = name,
     phone = phone,
-    businessType = BusinessType.entries.firstOrNull { it.name == type.value },
+    businessType = BusinessType.entries.firstOrNull { it.name == type },
     branches = branches.map { it.toDomain() },
     createdAt = createdAt?.toEpochMilliseconds() ?: 0L,
     updatedAt = createdAt?.toEpochMilliseconds() ?: 0L,

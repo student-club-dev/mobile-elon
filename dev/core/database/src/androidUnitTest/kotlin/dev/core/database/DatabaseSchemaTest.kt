@@ -1,7 +1,7 @@
 package dev.core.database
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
-import dev.core.database.sql.StudentClubsDatabase
+import dev.core.database.sql.ElonUzDatabase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -18,7 +18,8 @@ class DatabaseSchemaTest {
 
     /**
      * v1 bazasini taqlid qiladi — migratsiya zanjiri tegadigan jadvallar:
-     * ClubEntity (3.sqm `joined` qo'shadi), ConversationEntity (4.sqm `archived` qo'shadi),
+     * ClubEntity (3.sqm `joined` qo'shadi, 11.sqm butunlay tashlaydi),
+     * ConversationEntity (4.sqm `archived` qo'shadi),
      * UserEntity (5.sqm profilni ajratib oladi — profil ustunlari hali ichida).
      */
     private fun createV1Tables(driver: JdbcSqliteDriver) {
@@ -79,14 +80,14 @@ class DatabaseSchemaTest {
     fun schemaVersionIsEleven() {
         // 7.sqm — ListingEntity (chegirma e'lonlari), 8.sqm — ko'p filial (branchesJson),
         // 9.sqm — biznes egasi profili (businessName/businessType), 10.sqm — profil emaili.
-        assertEquals(11L, StudentClubsDatabase.Schema.version)
+        assertEquals(12L, ElonUzDatabase.Schema.version)
     }
 
     @Test
     fun freshSchemaCreatesAllTablesAndCrudWorks() {
         val driver = freshDriver()
-        StudentClubsDatabase.Schema.create(driver)
-        val db = StudentClubsDatabase(driver)
+        ElonUzDatabase.Schema.create(driver)
+        val db = ElonUzDatabase(driver)
 
         // AppSetting (C5)
         db.appSettingQueries.upsert("theme_mode", "DARK")
@@ -99,12 +100,6 @@ class DatabaseSchemaTest {
         db.notificationQueries.markAllRead()
         assertEquals(0L, db.notificationQueries.countUnread().executeAsOne())
 
-        // Club (C4) — joined ustuni
-        db.clubQueries.upsert(1L, "IT Klub", "Tavsif", 10L, null)
-        db.clubQueries.setJoined(1L, 1L)
-        val club = db.clubQueries.selectAll().executeAsOne()
-        assertEquals(1L, club.joined)
-
         // Profile (feature:profile) — sessiyadan ajratilgan profil keshi
         db.profileQueries.upsert(
             uid = "uid-1",
@@ -116,7 +111,7 @@ class DatabaseSchemaTest {
             universityEmail = null,
             birthYear = 2004L,
             courseYear = "3",
-            avatarUrl = "https://cdn.studentclubs.dev/avatars/uid-1.jpg",
+            avatarUrl = "https://cdn.elon.uz/avatars/uid-1.jpg",
             businessName = null,
             businessType = null,
             email = "quvonchbek@example.com",
@@ -125,7 +120,7 @@ class DatabaseSchemaTest {
         assertEquals("Quvonchbek", profile.firstName)
         assertEquals("tuit", profile.universityId)
         assertEquals(2004L, profile.birthYear)
-        assertEquals("https://cdn.studentclubs.dev/avatars/uid-1.jpg", profile.avatarUrl)
+        assertEquals("https://cdn.elon.uz/avatars/uid-1.jpg", profile.avatarUrl)
         assertEquals("quvonchbek@example.com", profile.email)
 
         db.profileQueries.clear()
@@ -154,9 +149,10 @@ class DatabaseSchemaTest {
         )
 
         // 1.sqm (AppSetting), 2.sqm (Notification), 3.sqm (Club.joined),
-        // 4.sqm (Chat.archived), 5.sqm (ProfileEntity ajratish), 6.sqm (avatarUrl) — hammasi ishga tushadi.
-        StudentClubsDatabase.Schema.migrate(driver, 1L, StudentClubsDatabase.Schema.version)
-        val db = StudentClubsDatabase(driver)
+        // 4.sqm (Chat.archived), 5.sqm (ProfileEntity ajratish), 6.sqm (avatarUrl),
+        // 11.sqm (ClubEntity tashlanadi) — hammasi ishga tushadi.
+        ElonUzDatabase.Schema.migrate(driver, 1L, ElonUzDatabase.Schema.version)
+        val db = ElonUzDatabase(driver)
 
         // Migratsiyadan keyin yangi jadvallar mavjud bo'lishi kerak.
         db.appSettingQueries.upsert("k", "v")
@@ -165,10 +161,16 @@ class DatabaseSchemaTest {
         db.notificationQueries.insert("n1", "T", "B", "SYSTEM", "hozir", 1, 0)
         assertEquals(1L, db.notificationQueries.count().executeAsOne())
 
-        // Eski Club satri ham joined ustuniga ega bo'lishi (DEFAULT 0) va setJoined ishlashi kerak.
-        db.clubQueries.upsert(1L, "IT", "desc", 5L, null)
-        db.clubQueries.setJoined(1L, 1L)
-        assertEquals(1L, db.clubQueries.selectAll().executeAsOne().joined)
+        // v12: Klublar vertikali olib tashlangan — 11.sqm ClubEntity'ni tashlagan bo'lishi kerak.
+        assertEquals(
+            0L,
+            driver.executeQuery(
+                null,
+                "SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'ClubEntity'",
+                { cursor -> app.cash.sqldelight.db.QueryResult.Value(if (cursor.next().value) cursor.getLong(0) else 0L) },
+                0,
+            ).value,
+        )
 
         // v6: profil UserEntity'dan ProfileEntity'ga ko'chgan bo'lishi kerak...
         val profile = db.profileQueries.selectCurrent().executeAsOne()
@@ -305,8 +307,8 @@ class DatabaseSchemaTest {
             0,
         )
 
-        StudentClubsDatabase.Schema.migrate(driver, 8L, StudentClubsDatabase.Schema.version)
-        val db = StudentClubsDatabase(driver)
+        ElonUzDatabase.Schema.migrate(driver, 8L, ElonUzDatabase.Schema.version)
+        val db = ElonUzDatabase(driver)
 
         val withBranch = db.listingQueries.selectById("l-1").executeAsOne()
         assertTrue(withBranch.branchesJson.contains("41.2856"), "lat ko'chmadi: ${withBranch.branchesJson}")
@@ -324,8 +326,8 @@ class DatabaseSchemaTest {
     @Test
     fun listingCrudAndActiveFilterWork() {
         val driver = freshDriver()
-        StudentClubsDatabase.Schema.create(driver)
-        val db = StudentClubsDatabase(driver)
+        ElonUzDatabase.Schema.create(driver)
+        val db = ElonUzDatabase(driver)
         val q = db.listingQueries
 
         fun insert(id: String, status: String, validTo: Long) = q.upsert(
@@ -399,8 +401,8 @@ class DatabaseSchemaTest {
             0,
         )
 
-        StudentClubsDatabase.Schema.migrate(driver, 1L, StudentClubsDatabase.Schema.version)
-        val db = StudentClubsDatabase(driver)
+        ElonUzDatabase.Schema.migrate(driver, 1L, ElonUzDatabase.Schema.version)
+        val db = ElonUzDatabase(driver)
 
         assertNull(db.profileQueries.selectCurrent().executeAsOneOrNull())
         assertEquals("Profilsiz", db.userQueries.selectCurrent().executeAsOne().fullName)
@@ -411,14 +413,14 @@ class DatabaseSchemaTest {
     @Test
     fun seedInsertIsIdempotentByPrimaryKey() {
         val driver = freshDriver()
-        StudentClubsDatabase.Schema.create(driver)
-        val db = StudentClubsDatabase(driver)
+        ElonUzDatabase.Schema.create(driver)
+        val db = ElonUzDatabase(driver)
 
         // Bir xil id bilan ikki marta — INSERT OR REPLACE dublikat yaratmasligi kerak.
-        db.clubQueries.upsert(1L, "IT", "desc", 5L, null)
-        db.clubQueries.upsert(1L, "IT yangilangan", "desc2", 6L, null)
-        assertEquals(1, db.clubQueries.selectAll().executeAsList().size)
-        assertTrue(db.clubQueries.selectAll().executeAsOne().name == "IT yangilangan")
+        db.universityQueries.upsert("tuit", "TATU", "Toshkent", "TU", null, 1L)
+        db.universityQueries.upsert("tuit", "TATU yangilangan", "Toshkent", "TU", null, 2L)
+        assertEquals(1, db.universityQueries.selectAll().executeAsList().size)
+        assertTrue(db.universityQueries.selectAll().executeAsOne().name == "TATU yangilangan")
 
         driver.close()
     }

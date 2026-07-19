@@ -1,4 +1,4 @@
-# Student Clubs — KMP Arxitektura
+# Elon Uz — KMP Arxitektura
 
 Kotlin Multiplatform (Android + iOS), Compose Multiplatform UI, modulli "feature + core" arxitektura.
 Modullar `dev/` papkasi ostida joylashgan.
@@ -6,7 +6,7 @@ Modullar `dev/` papkasi ostida joylashgan.
 ## Modullar daraxti
 
 ```
-StudentClubs/
+ElonUz/
 ├── androidApp/                 # Android entry point (MainActivity, Application)
 ├── iosApp/                     # iOS entry point (SwiftUI + Shared.framework)
 └── dev/
@@ -39,12 +39,12 @@ DI: barcha bog'lanishlar **Koin** orqali (`dev/core/di` + har feature'ning `di` 
 
 ## JSON (OpenAPI) → API generatsiyasi
 
-- Spetsifikatsiya: `dev/core/network/openapi/student-clubs.json`
+- Spetsifikatsiya: `dev/api-client-generator/elon-uz.json`
 - Plagin: `org.openapi.generator` (`library = multiplatform`, Ktor + kotlinx.serialization)
 - Generatsiya qilingan kod: `dev/core/network/build/generated/openapi/.../generated/{api,model,infrastructure}`
 - Har kompilyatsiyadan oldin avtomatik ishga tushadi (`openApiGenerate` task).
 
-**Haqiqiy API kelganda:** `student-clubs.json` faylini almashtiring va `./gradlew :dev:core:network:openApiGenerate` ni ishga tushiring.
+**Haqiqiy API kelganda:** `elon-uz.json` faylini almashtiring va `./gradlew :dev:api-client-generator:generateAllApi` ni ishga tushiring.
 
 ## Texnologiyalar
 

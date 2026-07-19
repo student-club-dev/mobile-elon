@@ -13,6 +13,7 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import dev.core.network.response.EnvelopeUnwrapPlugin
 import kotlinx.serialization.json.Json
 
 data class NetworkConfig(
@@ -33,6 +34,10 @@ fun createHttpClient(
     tokenProvider: suspend () -> String? = { null },
 ): HttpClient = platformHttpClient {
     expectSuccess = true
+
+    // BaseResponse konvertini shaffof ochadi — ContentNegotiation'DAN OLDIN o'rnatiladi,
+    // shunda raw JSON'ni birinchi bo'lib shu ushlaydi (aks holda konvert bo'sh DTO'ga aylanadi).
+    install(EnvelopeUnwrapPlugin)
 
     install(ContentNegotiation) { json(appJson) }
 

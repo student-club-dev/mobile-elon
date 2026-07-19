@@ -20,7 +20,7 @@ import kotlinx.datetime.Instant
 import kotlinx.io.Buffer
 
 /**
- * Real backend — spetsifikatsiya: `dev/core/network/openapi/student-clubs.json`
+ * Real backend — spetsifikatsiya: `dev/api-client-generator/elon-uz.json`
  * (`Listings`, `Media` tag'lari), hujjat: `DISCOUNTS_BUSINESS_API.md`.
  *
  * Ikki qadam: `POST /business/{id}/listings` (DRAFT yaratadi) → `POST /listings/{id}/submit`

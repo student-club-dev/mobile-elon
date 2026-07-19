@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 /**
  * Chegirmalar API javob DTO'lari (B4 offline-first shabloni).
  *
- * Real API spek (`student-clubs.json`) kelганда: maydon nomlarini serverникiga moslang
+ * Real API spek (`elon-uz.json`) kelganda: maydon nomlarini serverinikiga moslang
  * (kerak bo'lsa `@SerialName("...")`), qolgan oqim (RemoteDataSource → refresh → DB) o'zgarmaydi.
  */
 @Serializable

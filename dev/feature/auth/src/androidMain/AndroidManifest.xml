@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application>
-        <!-- Telegram login web oqimidan qaytishni ushlaydi: studentclubs://telegram?token=... -->
+        <!-- Telegram login web oqimidan qaytishni ushlaydi: elonuz://telegram?token=... -->
         <activity
             android:name=".social.TelegramAuthActivity"
             android:exported="true"
@@ -12,7 +12,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="studentclubs" android:host="telegram" />
+                <data android:scheme="elonuz" android:host="telegram" />
             </intent-filter>
         </activity>
     </application>

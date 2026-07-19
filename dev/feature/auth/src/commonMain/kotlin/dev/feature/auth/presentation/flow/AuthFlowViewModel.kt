@@ -7,6 +7,7 @@ import dev.core.domain.model.ExternalAuthUser
 import dev.core.domain.model.User
 import dev.core.domain.repository.SettingsRepository
 import dev.feature.profile.domain.model.UserProfile
+import dev.feature.profile.domain.repository.ProfileExistence
 import dev.core.domain.usecase.ConfirmEmailSignupUseCase
 import dev.feature.profile.domain.usecase.HasProfileUseCase
 import dev.core.domain.usecase.LoginUseCase
@@ -146,6 +147,9 @@ class AuthFlowViewModel(
             return
         }
         val e164 = "+998${s.phoneDigits}"
+        // Yangi OTP so'rovi — eski tasdiqlangan sessiya belgisini tozalaymiz, aks holda
+        // confirmOtp OTP ni butunlay o'tkazib yuborishi mumkin (eski verifiedExternal qolib).
+        verifiedExternal = null
         _state.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
             when (val result = controller.sendOtp(e164)) {
@@ -163,6 +167,14 @@ class AuthFlowViewModel(
     fun confirmOtp(controller: SocialAuthController) {
         val s = _state.value
         if (s.isLoading) return
+        // Sessiya allaqachon tasdiqlangan (oldingi urinishda profil tekshiruvi ERROR bergan) —
+        // OTP kodi iste'mol qilingan, uni qayta tasdiqlamaymiz; faqat profil tekshiruvini
+        // qayta yuritamiz.
+        verifiedExternal?.let { external ->
+            _state.update { it.copy(isLoading = true, error = null) }
+            viewModelScope.launch { onPhoneVerified(external) }
+            return
+        }
         if (!s.otpValid) {
             _state.update { it.copy(error = "6 xonali kodni kiriting.") }
             return
@@ -436,11 +448,19 @@ class AuthFlowViewModel(
      */
     private suspend fun onPhoneVerified(external: ExternalAuthUser) {
         verifiedExternal = external
-        if (hasProfileUseCase()) {
-            syncAndFinish(external) // mavjud foydalanuvchi → HOME
-        } else {
-            _state.update { it.copy(isLoading = false) }
-            _events.send(AuthEvent.OtpVerified) // yangi foydalanuvchi → SignUp
+        when (hasProfileUseCase()) {
+            // Profil bor → mavjud foydalanuvchi → HOME.
+            ProfileExistence.EXISTS -> syncAndFinish(external)
+            // Backend aniq "yo'q" dedi (404) → yangi foydalanuvchi → SignUp.
+            ProfileExistence.MISSING -> {
+                _state.update { it.copy(isLoading = false) }
+                _events.send(AuthEvent.OtpVerified)
+            }
+            // Tekshirib bo'lmadi (backend o'chiq/timeout) → OTP'da qolib qayta urinsin.
+            // Mavjud profilli foydalanuvchini noto'g'ri SignUp'ga tushirmaymiz.
+            ProfileExistence.ERROR -> _state.update {
+                it.copy(isLoading = false, error = "Profilni tekshirib bo'lmadi. Internetni tekshirib, qayta urinib ko'ring.")
+            }
         }
     }
 

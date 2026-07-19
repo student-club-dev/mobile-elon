@@ -24,7 +24,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -203,28 +202,9 @@ fun SignUpScreen(
         }
 
         Spacer(Modifier.height(16.dp))
-        FieldLabel("Kim sifatida?")
-        Spacer(Modifier.height(8.dp))
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(7.dp)) {
-            RoleChip("Talaba", AppIcons.GraduationCap, state.role == Role.STUDENT, { vm.onRoleChange(Role.STUDENT) }, Modifier.weight(1f), palette)
-            RoleChip("Biznes", AppIcons.Store, state.role == Role.BUSINESS, { vm.onRoleChange(Role.BUSINESS) }, Modifier.weight(1f), palette)
-            RoleChip("Ish beruvchi", AppIcons.Briefcase, state.role == Role.EMPLOYER, { vm.onRoleChange(Role.EMPLOYER) }, Modifier.weight(1f), palette)
-            RoleChip("Univer", AppIcons.Building, state.role == Role.UNIVERSITY, { vm.onRoleChange(Role.UNIVERSITY) }, Modifier.weight(1f), palette)
-        }
-
-        Spacer(Modifier.height(14.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(9.dp)) {
             GlassTextField(state.firstName, vm::onFirstNameChange, "Ism", Modifier.weight(1f), height = 46)
             GlassTextField(state.lastName, vm::onLastNameChange, "Familya", Modifier.weight(1f), height = 46)
-        }
-
-        // Jins — biznes turlari va kategoriyalar shunga qarab moslanadi.
-        Spacer(Modifier.height(12.dp))
-        FieldLabel("Jinsingiz")
-        Spacer(Modifier.height(8.dp))
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(7.dp)) {
-            GenderChip("👨", "Erkak", state.gender == "MALE", { vm.onGenderChange("MALE") }, Modifier.weight(1f), palette)
-            GenderChip("👩", "Ayol", state.gender == "FEMALE", { vm.onGenderChange("FEMALE") }, Modifier.weight(1f), palette)
         }
 
         Spacer(Modifier.height(9.dp))
@@ -309,45 +289,6 @@ fun SignUpScreen(
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(16.dp))
         PrimaryButton("Hisob yaratish", onCreate, enabled = state.termsAccepted && !state.isLoading)
-    }
-}
-
-@Composable
-private fun GenderChip(emoji: String, label: String, active: Boolean, onClick: () -> Unit, modifier: Modifier, palette: AppPalette) {
-    val shape = RoundedCornerShape(13.dp)
-    Row(
-        modifier
-            .clip(shape)
-            .background(if (active) palette.primary else palette.glass)
-            .then(if (active) Modifier else Modifier.border(1.dp, palette.border, shape))
-            .clickableNoRipple(onClick)
-            .padding(vertical = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(7.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(emoji, style = TextStyle(fontSize = 16.sp))
-        Text(
-            label,
-            style = TextStyle(fontFamily = AppFontFamily, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = if (active) Color.White else palette.inkMuted),
-        )
-    }
-}
-
-@Composable
-private fun RoleChip(label: String, icon: ImageVector, active: Boolean, onClick: () -> Unit, modifier: Modifier, palette: AppPalette) {
-    val shape = RoundedCornerShape(13.dp)
-    Column(
-        modifier
-            .clip(shape)
-            .background(if (active) palette.primary else palette.glass)
-            .then(if (active) Modifier else Modifier.border(1.dp, palette.border, shape))
-            .clickableNoRipple(onClick)
-            .padding(vertical = 9.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(5.dp),
-    ) {
-        Icon(icon, null, tint = if (active) Color.White else palette.inkFaint, modifier = Modifier.size(18.dp))
-        Text(label, style = TextStyle(fontFamily = AppFontFamily, fontSize = 10.5f.sp, fontWeight = if (active) FontWeight.ExtraBold else FontWeight.Bold, color = if (active) Color.White else palette.inkMuted), maxLines = 1)
     }
 }
 

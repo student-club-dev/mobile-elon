@@ -10,7 +10,7 @@ import kotlinx.coroutines.CompletableDeferred
 
 /**
  * Telegram web-login oqimini boshqaradi: Custom Tab ochadi va
- * `studentclubs://telegram?token=...` deep-link'i orqali qaytgan custom token'ni kutadi.
+ * `elonuz://telegram?token=...` deep-link'i orqali qaytgan custom token'ni kutadi.
  */
 internal object TelegramAuthLauncher {
 
@@ -38,7 +38,7 @@ internal object TelegramAuthLauncher {
 }
 
 /**
- * `studentclubs://telegram` deep-link'ini ushlaydi. Custom Tab custom token bilan
+ * `elonuz://telegram` deep-link'ini ushlaydi. Custom Tab custom token bilan
  * shu manzilga qaytadi; Activity token'ni [TelegramAuthLauncher] ga uzatib yopiladi.
  */
 class TelegramAuthActivity : Activity() {

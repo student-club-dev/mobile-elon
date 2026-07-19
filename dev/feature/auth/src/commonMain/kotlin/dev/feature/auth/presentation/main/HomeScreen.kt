@@ -33,7 +33,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.core.domain.model.Club
 import dev.core.domain.model.DiscountCategory
 import dev.core.domain.model.DiscountOffer
 import dev.core.domain.model.DiscountTag
@@ -51,7 +50,6 @@ fun HomeScreen(
     onOpenProfile: () -> Unit = {},
     onOpenChat: () -> Unit = {},
     onOpenNotifications: () -> Unit = {},
-    onOpenClubs: () -> Unit = {},
     onOpenDiscounts: () -> Unit = {},
     onOpenJobs: () -> Unit = {},
     onOpenStudents: () -> Unit = {},
@@ -64,8 +62,6 @@ fun HomeScreen(
         HomeHeader(state, palette, onOpenProfile, onOpenChat, onOpenNotifications)
         Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 18.dp)) {
             DiscountsSection(state.categories, state.featured, palette, onOpenDiscounts)
-            Spacer(Modifier.height(24.dp))
-            ClubsSection(state.clubs, palette, onOpenClubs)
             Spacer(Modifier.height(24.dp))
             JobsSection(state.jobs, palette, onOpenJobs) { vm.toggleBookmark(it) }
             Spacer(Modifier.height(24.dp))
@@ -152,45 +148,6 @@ private fun SectionHeader(title: String, action: String? = null, subtitle: Strin
             ) {
                 Text(action, style = TextStyle(fontFamily = AppFontFamily, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = palette.primary))
                 Icon(AppIcons.ChevronRight, null, tint = palette.primary, modifier = Modifier.size(15.dp))
-            }
-        }
-    }
-}
-
-// ---------------------------------------------------------------------------
-// Klublar
-// ---------------------------------------------------------------------------
-private val homeClubAccents = listOf(
-    Color(0xFF6C47FF), Color(0xFF2563EB), Color(0xFF059669),
-    Color(0xFFD97706), Color(0xFFBE185D), Color(0xFF0EA5E9),
-)
-private val homeClubEmojis = listOf("💻", "🗣️", "⚽", "🤝", "🎨", "🌍", "🎬", "📚")
-
-@Composable
-private fun ClubsSection(clubs: List<Club>, palette: AppPalette, onOpenClubs: () -> Unit) {
-    if (clubs.isEmpty()) return
-    Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).clickable(onClick = onOpenClubs), verticalAlignment = Alignment.CenterVertically) {
-        Text("Klublar", style = TextStyle(fontFamily = AppFontFamily, fontSize = 17.sp, fontWeight = FontWeight.Black, color = palette.ink), modifier = Modifier.weight(1f))
-        Text("Barchasi", style = TextStyle(fontFamily = AppFontFamily, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = palette.primary))
-        Icon(AppIcons.ChevronRight, null, tint = palette.primary, modifier = Modifier.size(15.dp))
-    }
-    Spacer(Modifier.height(12.dp))
-    Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        clubs.take(6).forEach { club ->
-            val idx = ((club.id - 1).toInt()).mod(homeClubAccents.size)
-            val accent = homeClubAccents[idx]
-            val emoji = homeClubEmojis[((club.id - 1).toInt()).mod(homeClubEmojis.size)]
-            Column(
-                Modifier.width(120.dp).clip(RoundedCornerShape(16.dp)).background(palette.glass).border(1.dp, palette.border, RoundedCornerShape(16.dp)).clickable(onClick = onOpenClubs).padding(12.dp),
-                horizontalAlignment = Alignment.Start,
-            ) {
-                Box(Modifier.size(40.dp).clip(RoundedCornerShape(12.dp)).background(accent.copy(alpha = 0.14f)), contentAlignment = Alignment.Center) {
-                    Text(emoji, style = TextStyle(fontSize = 19.sp))
-                }
-                Spacer(Modifier.height(9.dp))
-                Text(club.name, style = TextStyle(fontFamily = AppFontFamily, fontSize = 12.5f.sp, fontWeight = FontWeight.Black, color = palette.ink), maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Spacer(Modifier.height(3.dp))
-                Text("${club.membersCount} a'zo", style = TextStyle(fontFamily = AppFontFamily, fontSize = 10.5f.sp, fontWeight = FontWeight.Bold, color = if (club.joined) accent else palette.inkFaint))
             }
         }
     }

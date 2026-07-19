@@ -2,8 +2,8 @@
 
 > Bu fayl **AI'ga (yoki dasturchiga) beriladigan topshiriq**. Pastdagi "PROMPT BOSHLANISHI"
 > dan oxirigacha bo'lgan matnni to'liq nusxalab bering. Ikkita fayl ilova qilinadi:
-> - `dev/api-client-generator/student-clubs.json` — OpenAPI 3.0.3 shartnoma (30 endpoint, 58 schema)
-> - `docs/backend/catalog-seed.json` — katalog seed (9 tur, 95 kategoriya, atributlar)
+> - `dev/api-client-generator/elon-uz.json` — OpenAPI 3.0.3 shartnoma (29 endpoint, 60 schema)
+> - `docs/backend/catalog-seed.json` — katalog seed (7 tur, 74 kategoriya, atributlar)
 
 ---
 
@@ -14,14 +14,15 @@ REST backend yoz. ElonUz — O'zbekistondagi talabalar uchun chegirmalar ilovasi
 Multiplatform: Android + iOS). Biznes egalari o'z bizneslarini va e'lonlarini (chegirmali yoki
 oddiy) joylaydi, talabalar ularni yaqinlik bo'yicha topadi va QR/promokod orqali ishlatadi.
 
-Hozir ilova ma'lumotni **Firebase Firestore**'dan oladi va biznes turlari/kategoriyalari
-klientда **qattiq kodlangan**. Vazifang — bularning **barchasini backendga ko'chirish**:
-har bir ekrandagi har bir ma'lumot (turlar, kategoriyalar, atributlar, e'lonlar, bizneslar,
-profil) shu backenddan kelsin.
+Ilovada biznes turlari/kategoriyalari hozircha qisman klientда **qattiq kodlangan**, profil va
+biznes ma'lumoti esa to'liq backend talab qiladi (eski Firestore qatlami olib tashlangan —
+autentifikatsiya Firebase Auth'да qoladi, lekin **ma'lumot bu REST backenddan keladi**).
+Vazifang — har bir ekrandagi har bir ma'lumot (turlar, kategoriyalar, atributlar, e'lonlar,
+bizneslar, profil) shu backenddan kelsin.
 
 ### Kiritma fayllar (majburiy o'qi)
 
-1. **`student-clubs.json`** — OpenAPI 3.0.3 shartnomasi. Bu **haqiqat manbai**. Barcha yo'llar,
+1. **`elon-uz.json`** — OpenAPI 3.0.3 shartnomasi. Bu **haqiqat manbai**. Barcha yo'llar,
    schema'lar, maydon nomlari, majburiylik va enum'lar aynan shu spec'ga mos bo'lishi shart.
    Klient (Ktor) allaqachon shu spec'dan generatsiya qilingan — **shartnomani buzma**.
 2. **`catalog-seed.json`** — biznes turlari, kategoriyalar va atributlar katalogi. Migratsiya/seed
@@ -90,6 +91,37 @@ mumkin emas. Validatsiya xatosi (422) `error.fields` ni to'ldirsin:
 
 ### 3. Autentifikatsiya
 
+**Firebase Admin sozlash (avval shuni qil).** `verifyIdToken` ishlashi uchun backend Firebase
+Admin SDK'ni **mobil ilova bilan AYNAN BIR XIL Firebase loyihasi** credential'i bilan ishga
+tushirishi shart — aks holda tokenlar tasdiqlanmaydi (`project_id` mos kelmaydi).
+
+- Firebase Console → Project Settings → **Service accounts** → **Generate new private key** →
+  JSON kalit olinadi. Uni repoга **qo'shma** — env orqali ber.
+- `config/env.ts` (Zod bilan) quyidagilarni talab qilsin, `.env.example` da ham ko'rsat:
+  ```
+  FIREBASE_PROJECT_ID=elonuz-xxxxx
+  FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@elonuz-xxxxx.iam.gserviceaccount.com
+  FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+  # yoki muqobil: butun JSON fayl yo'li
+  GOOGLE_APPLICATION_CREDENTIALS=./secrets/firebase-admin.json
+  ```
+- Init (bir marta, ilova start'ida):
+  ```ts
+  import { initializeApp, cert } from "firebase-admin/app";
+  import { getAuth } from "firebase-admin/auth";
+  initializeApp({
+    credential: cert({
+      projectId: env.FIREBASE_PROJECT_ID,
+      clientEmail: env.FIREBASE_CLIENT_EMAIL,
+      privateKey: env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"), // env'да \n literal bo'ladi
+    }),
+  });
+  // auth plugin ичида: const decoded = await getAuth().verifyIdToken(token);
+  ```
+- ⚠️ `FIREBASE_PRIVATE_KEY` env'да `\n` **literal** sifatida keladi — yuqoridagidek haqiqiy
+  qatorga o'gir, aks holda "Invalid PEM" xatosi chiqadi.
+- `.env` va service-account JSON **`.gitignore`** da bo'lsin (hech qachon commit qilinmaydi).
+
 - Har bir so'rov: `Authorization: Bearer <firebase_id_token>` (istisno: `/auth/login`).
 - `firebase-admin.auth().verifyIdToken(token)` bilan tekshir → `req.user = { uid, phone, email }`.
 - Token muddati tugagan → **401** va `code: "TOKEN_EXPIRED"` (klient avtomatik yangilab, so'rovni
@@ -111,8 +143,9 @@ Spec'даgi schema'lardan kelib chiqib yoz. Asosiy jadvallar:
   `gender?` (MALE|FEMALE), `role?` (STUDENT|BUSINESS|EMPLOYER|UNIVERSITY), `universityId?`,
   `universityEmail?`, `birthYear?`, `courseYear?` (1|2|3|4|MASTER), `avatarUrl?`, `email?`,
   `createdAt`, `updatedAt`
-- **Business**: `id` (cuid), `ownerUserId` → User, `type` (BusinessType, **yaratilgach
-  o'zgarmaydi**), `name`, `phone` (E.164), `status` (BusinessStatus), `legalName?`, `inn?` (9 raqam),
+- **Business**: `id` (cuid), `ownerUserId` → User, `type` (**string** — `business_types.type` ga
+  FK, enum EMAS; **yaratilgach o'zgarmaydi**), `name`, `phone` (E.164), `status` (BusinessStatus),
+  `legalName?`, `inn?` (9 raqam),
   `description?`, `logoUrl?`, `coverUrl?`, `contacts?` (jsonb: telegram/instagram/website),
   `isOnlineOnly` (default false), `rejectionReason?`, `rating?`, `reviewsCount`, `listingsCount`,
   `createdAt`, `updatedAt`
@@ -138,16 +171,21 @@ Spec'даgi schema'lardan kelib chiqib yoz. Asosiy jadvallar:
 kasr yo'q). JSON'ga `number` sifatida ber (JS `BigInt` ni serializer'да `Number`ga o'gir).
 
 **Sanalar:** REST API'да **ISO-8601** (`"2026-07-16T10:30:00Z"`) — generatsiya qilingan klient
-`kotlinx.datetime.Instant` kutadi. (Eslatma: Firestore DTO'ларида epoch-ms ishlatilgan, lekin
-REST uchun ISO-8601 — shartnoma shunday.)
+`kotlinx.datetime.Instant` kutadi. Epoch-ms EMAS.
 
 ---
 
 ### 5. Enum'lar (spec'даgi bilan bir xil, aynan shu qiymatlar)
 
+> ⚠️ **`BusinessType` — enum EMAS, string kalit.** Uni Postgres enum qilma — **`business_types`
+> jadvalида** (seed'dan) `type` = **string PK** sifatida sakla. Shunda yangi tur qo'shish =
+> jadvalga bitta qator (migratsiyasiz, релизsiz). `GET /business/types` shu jadvaldan qaytaradi;
+> `business.type` / `listing`' dagi `categoryKey` shu jadvalga (matnли) bog'lanadi. Quyidagi ro'yxat
+> — faqat **seed uchun boshlang'ich kalitlar**, cheklov emas.
+
 ```
-BusinessType: GAME_CLUB, CLOTHING, CAFE_RESTAURANT, EDUCATION_CENTER,
-              ENTERTAINMENT, BARBERSHOP, BEAUTY_SALON                  ← 7 ta
+BusinessType (string kalit, jadvaldan): GAME_CLUB, CLOTHING, CAFE_RESTAURANT, EDUCATION_CENTER,
+              ENTERTAINMENT, BARBERSHOP, BEAUTY_SALON            ← 7 ta seed, kengaytiriladi
 Gender: MALE, FEMALE
 BusinessStatus: DRAFT, PENDING_REVIEW, APPROVED, REJECTED, BLOCKED
 ListingStatus: DRAFT, PENDING_REVIEW, REJECTED, SCHEDULED, ACTIVE, PAUSED, EXPIRED, SOLD_OUT, ARCHIVED
@@ -165,12 +203,12 @@ AttributeKind: TEXT, NUMBER, BOOLEAN, SELECT, TAGS
 
 ---
 
-### 6. Endpoint'lar (30 ta — spec'даgi barchasi)
+### 6. Endpoint'lar (29 ta — spec'даgi barchasi)
 
 **Katalog (shaxsiylashtirilgan — jins bo'yicha):**
 | Method | Path | Izoh |
 |---|---|---|
-| GET | `/business/types?gender=` | 9 tur. `gender=MALE` → BEAUTY_SALON chiqmaydi; `gender=FEMALE` → BARBERSHOP chiqmaydi; berilmasa — 9 ta |
+| GET | `/business/types?gender=` | 7 tur. `gender=MALE` → BEAUTY_SALON chiqmaydi (6 ta); `gender=FEMALE` → BARBERSHOP chiqmaydi (6 ta); berilmasa — 7 ta |
 | GET | `/business/types/{type}/categories?gender=` | Kategoriyalar. CLOTHING + `gender` → jinsga xos ro'yxat (`categoriesByGender`) |
 | GET | `/business/types/{type}/attributes-schema` | Turга xos atributlar (dinamik forma uchun) |
 
@@ -185,8 +223,7 @@ AttributeKind: TEXT, NUMBER, BOOLEAN, SELECT, TAGS
 **Profil:** `GET|PUT /profile/me` · `POST /profile/me/avatar`
 **Geo:** `GET /geo/regions` · `GET /geo/regions/{regionId}/districts` · `POST /geo/geocode` · `POST /geo/reverse-geocode`
 **Media:** `POST /media/upload` (multipart: `file` + `purpose=LOGO|COVER|LISTING`)
-**Auth:** `POST /auth/login`
-**Klublar:** `GET /clubs`
+**Auth:** `POST /auth/login` (spec'да bor, lekin ilova Firebase bilan kiradi — ixtiyoriy)
 
 ---
 
@@ -291,7 +328,7 @@ docker-compose.yml  Dockerfile  .env.example  README.md
 2. `catalog-seed.json` seed orqali yuklanadi — katalog **kodда qattiq yozilmaydi**.
 3. Har endpoint uchun Zod schema + integratsiya testi.
 4. `README.md` — ishga tushirish, env, seed, `/discounts` misollari.
-5. `student-clubs.json` bilan **shartnoma testi** — javob shakli spec'ga mos ekanini tekshirsin.
+5. `elon-uz.json` bilan **shartnoma testi** — javob shakli spec'ga mos ekanini tekshirsin.
 
 ### 10. Qabul mezonlari (acceptance)
 

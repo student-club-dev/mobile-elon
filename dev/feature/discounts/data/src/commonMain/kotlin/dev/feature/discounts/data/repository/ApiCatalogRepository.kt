@@ -7,7 +7,6 @@ import dev.core.common.network.NetworkConnectivity
 import dev.core.network.generated.api.BusinessApi
 import dev.core.network.generated.model.AttributeFieldDto
 import dev.core.network.generated.model.AttributeFieldTypeDto
-import dev.core.network.generated.model.BusinessTypeDto
 import dev.core.network.generated.model.BusinessTypeInfoDto
 import dev.core.network.generated.model.CategoryDto
 import dev.core.network.generated.model.GenderDto
@@ -67,11 +66,12 @@ private fun Gender.toDto(): GenderDto = when (this) {
     Gender.FEMALE -> GenderDto.FEMALE
 }
 
-private fun BusinessType.toDto(): BusinessTypeDto = BusinessTypeDto.valueOf(name)
+// Tur endi ochiq string (spec'да enum emas) — domen enum nomi to'g'ridan-to'g'ri kalit.
+private fun BusinessType.toDto(): String = name
 
-/** Backend bizga noma'lum tur yuborsa — o'tkazib yuboriladi (enum'да yo'q). */
+/** Backend bizga noma'lum tur yuborsa — o'tkazib yuboriladi (klient enum'ида yo'q). */
 private fun BusinessTypeInfoDto.toDomain(): BusinessTypeInfo? {
-    val domainType = BusinessType.entries.firstOrNull { it.name == type.value } ?: return null
+    val domainType = BusinessType.entries.firstOrNull { it.name == type } ?: return null
     return BusinessTypeInfo(
         type = domainType,
         nameUz = nameUz,

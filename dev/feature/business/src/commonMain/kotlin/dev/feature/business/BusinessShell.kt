@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -76,6 +77,7 @@ fun BusinessShell(
                     onOpenBusiness = { biz -> nav.navigate("$LISTINGS/${biz.id}") },
                     onEditBusiness = { biz -> nav.navigate("$ADD_BUSINESS?businessId=${biz.id}") },
                     onAddBusiness = { nav.navigate(ADD_BUSINESS) },
+                    onProfile = { nav.navigate(PROFILE) },
                 )
             }
             // 2. Biznes qo'shish / tahrirlash (nom, telefon, tur, lokatsiya).
@@ -97,6 +99,7 @@ fun BusinessShell(
                 val businessId = entry.arguments?.getString("businessId").orEmpty()
                 Column(Modifier.fillMaxSize()) {
                     BusinessTopBar(
+                        onBack = { nav.popBackStack() },
                         onProfile = { nav.navigate(PROFILE) },
                         palette = palette,
                     )
@@ -160,9 +163,10 @@ fun BusinessShell(
     }
 }
 
-/** Yuqori panel: "E'lonlarim" sarlavhasi + gradient profil tugmasi. */
+/** Yuqori panel: back tugmasi + "E'lonlarim" sarlavhasi + gradient profil tugmasi. */
 @Composable
 private fun BusinessTopBar(
+    onBack: () -> Unit,
     onProfile: () -> Unit,
     palette: AppPalette,
 ) {
@@ -171,6 +175,17 @@ private fun BusinessTopBar(
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
+            // Orqaga qaytish — "Bizneslarim" ro'yxatiga.
+            Box(
+                Modifier.size(42.dp)
+                    .clip(CircleShape).background(palette.glass)
+                    .border(1.dp, palette.border, CircleShape)
+                    .clickable(onClick = onBack),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(AppIcons.ArrowLeft, "Orqaga", tint = palette.ink, modifier = Modifier.size(19.dp))
+            }
+            Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Text(
                     "BIZNES MARKAZI",

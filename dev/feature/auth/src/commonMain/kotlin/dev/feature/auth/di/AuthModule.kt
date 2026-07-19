@@ -8,7 +8,6 @@ import dev.feature.auth.data.FirebaseTokenProvider
 import dev.feature.auth.data.FirestoreChatRealtimeSource
 import dev.feature.auth.presentation.flow.AuthFlowViewModel
 import dev.feature.auth.presentation.main.ChatViewModel
-import dev.feature.auth.presentation.main.ClubsViewModel
 import dev.feature.auth.presentation.main.DiscountsViewModel
 import dev.feature.auth.presentation.main.HomeViewModel
 import dev.feature.auth.presentation.main.JobsViewModel
@@ -38,7 +37,7 @@ private const val CHAT_REALTIME_ENABLED = false
 
 val authFeatureModule = module {
     // Backendsiz Firebase (GitLive) — email/parol, ro'yxat, reset, Firestore profil.
-    // StudentClubsDatabase (SQLDelight) local sessiya keshi uchun uzatiladi.
+    // ElonUzDatabase (SQLDelight) local sessiya keshi uchun uzatiladi.
     single<AuthRepository> { FirebaseAuthRepository(get()) }
 
     // Ktor uchun Firebase ID token beruvchi (network qatlami shuni ishlatadi).
@@ -72,5 +71,4 @@ val authFeatureModule = module {
     viewModelOf(::ChatViewModel)
     viewModelOf(::SettingsViewModel)
     viewModelOf(::NotificationsViewModel)
-    viewModelOf(::ClubsViewModel)
 }

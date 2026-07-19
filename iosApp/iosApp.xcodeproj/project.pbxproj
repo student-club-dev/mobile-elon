@@ -244,7 +244,7 @@
 					"$(inherited)",
 					"-lsqlite3",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.studentclubs.ios;
+				PRODUCT_BUNDLE_IDENTIFIER = uz.elonuz.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -276,7 +276,7 @@
 					"$(inherited)",
 					"-lsqlite3",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.studentclubs.ios;
+				PRODUCT_BUNDLE_IDENTIFIER = uz.elonuz.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;

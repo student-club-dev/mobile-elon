@@ -54,7 +54,8 @@ data class AuthFlowState(
     val lastName: String = "",
     /** Jins — "MALE" | "FEMALE" | null (tanlanmagan). Biznes turlarini moslaydi. */
     val gender: String? = null,
-    val role: Role = Role.STUDENT,
+    // ElonUz — faqat biznes ilovasi: rol har doim BUSINESS (tanlash ekrani yo'q).
+    val role: Role = Role.BUSINESS,
     val universityEmail: String = "",
     val termsAccepted: Boolean = false,
     // Profil (talaba)

@@ -62,7 +62,7 @@ include(":dev:feature:profile:data")
 include(":dev:feature:profile:presentation")
 
 // Chegirmalar feature'i — biznes egasi e'lon qo'yadi, talaba ko'radi.
-// Spetsifikatsiya: DISCOUNTS_BUSINESS_API.md + openapi/student-clubs.json.
+// Spetsifikatsiya: DISCOUNTS_BUSINESS_API.md + dev/api-client-generator/elon-uz.json.
 include(":dev:feature:discounts:domain")
 include(":dev:feature:discounts:data")
 include(":dev:feature:discounts:presentation")

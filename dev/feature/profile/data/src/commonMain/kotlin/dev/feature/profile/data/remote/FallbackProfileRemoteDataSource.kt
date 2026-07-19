@@ -2,6 +2,7 @@ package dev.feature.profile.data.remote
 
 import dev.core.common.Resource
 import dev.feature.profile.domain.model.UserProfile
+import dev.feature.profile.domain.repository.ProfileExistence
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
@@ -29,8 +30,13 @@ class FallbackProfileRemoteDataSource(
         runCatching { api.save(profile) }.getOrNull() as? Resource.Success
             ?: Resource.Success(profile)
 
-    /** Tarmoq xatosida `false` — repository avval keshni tekshiradi. */
-    override suspend fun exists(): Boolean = runCatching { api.exists() }.getOrDefault(false)
+    /**
+     * Bu yerда xatoni yutmaymiz: EXISTS/MISSING/ERROR shundaygina uzatiladi. Login yo'nalishida
+     * ERROR ni MISSING'dan ajratish shart — aks holda mavjud foydalanuvchi SignUp'ga tushadi.
+     * Kutilmagan istisno bo'lsa ham ERROR (MISSING emas).
+     */
+    override suspend fun checkExistence(): ProfileExistence =
+        runCatching { api.checkExistence() }.getOrDefault(ProfileExistence.ERROR)
 
     /** Backendsiz rasm hech qayerga yuklanmaydi — u `data:` URI sifatida profil bilan saqlanadi. */
     @OptIn(ExperimentalEncodingApi::class)

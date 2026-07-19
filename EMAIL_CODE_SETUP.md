@@ -18,7 +18,7 @@ Register(email+parol) → requestEmailSignup(email)  [akkaunt HALI yo'q]
 ## 1. Gmail App Password olish
 Kod yuboradigan Gmail hisobi uchun:
 1. Google Account → **Security** → **2-Step Verification** yoqilган bo'lsin.
-2. **App passwords** → yangi parol yarating (masalan "StudentClubs") → 16 belgilik parolni saqlang.
+2. **App passwords** → yangi parol yarating (masalan "ElonUz") → 16 belgilik parolni saqlang.
 
 > Oddiy Gmail parol emas — aynan **App Password** kerak.
 

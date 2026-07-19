@@ -14,7 +14,7 @@ object TelegramConfig {
     const val LOGIN_URL = "https://elonuz-5dcca.web.app/telegram-login.html"
 
     /** Deep-link sxemasi — Android manifest va iOS ASWebAuthenticationSession bilan mos bo'lsin. */
-    const val REDIRECT_SCHEME = "studentclubs"
+    const val REDIRECT_SCHEME = "elonuz"
     const val REDIRECT_HOST = "telegram"
 
     /** To'liq qaytish manzili — LOGIN_URL sahifasiga `redirect_uri` sifatida uzatiladi. */

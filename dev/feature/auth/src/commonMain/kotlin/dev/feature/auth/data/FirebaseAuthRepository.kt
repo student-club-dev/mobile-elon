@@ -3,7 +3,7 @@ package dev.feature.auth.data
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import dev.core.common.Resource
-import dev.core.database.sql.StudentClubsDatabase
+import dev.core.database.sql.ElonUzDatabase
 import dev.core.database.sql.UserEntity
 import dev.core.domain.model.ExternalAuthUser
 import dev.core.domain.model.User
@@ -37,7 +37,7 @@ import dev.gitlive.firebase.functions.functions
  */
 class FirebaseAuthRepository(
     /** Local sessiya keshi (SQLDelight) — offline ishlash va avtomatik kirish uchun. */
-    private val database: StudentClubsDatabase,
+    private val database: ElonUzDatabase,
 ) : AuthRepository {
 
     private val auth get() = Firebase.auth

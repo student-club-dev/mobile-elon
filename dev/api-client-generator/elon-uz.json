@@ -1,13 +1,13 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "Student Clubs API",
+    "title": "Elon Uz API",
     "version": "2.0.0",
-    "description": "Student Clubs super-app'ining v1 API spetsifikatsiyasi.\n\nBu fayl — API'ning YAGONA MANBASI. Har yangi feature moduli o'ziga kerak bo'lgan\nendpoint'larni shu yerga qo'shadi, so'ng `./gradlew :dev:core:network:openApiGenerate`\nishga tushiriladi va Kotlin klienti (`dev.core.network.generated.api.*`) avtomatik yaratiladi.\n\nBaza manzili `/v1` bilan tugaydi (`CoreModules.DEV_BASE_URL`), shuning uchun bu yerdagi\nyo'llar versiyasiz yoziladi: `/profile/me` -> `https://api.studentclubs.dev/v1/profile/me`.\n\nAvtorizatsiya: har so'rovga Firebase ID token `Authorization: Bearer <token>` sifatida\nqo'shiladi (Ktor `Auth` plagini, `FirebaseTokenProvider`)."
+    "description": "v1 API specification for the Elon Uz super-app.\n\nThis file is the SINGLE SOURCE OF TRUTH for the API. Every new feature module adds the\nendpoints it needs here, then `./gradlew :dev:api-client-generator:generateAllApi` is run\nand the Kotlin client (`dev.core.network.generated.api.*`) is generated automatically.\n\nThe base URL already ends with `/v1` (`CoreModules.DEV_BASE_URL`), so paths here are written\nwithout a version prefix: `/profile/me` -> `https://api.elon.uz/v1/profile/me`.\n\nAuthorization: every request carries a Firebase ID token as `Authorization: Bearer <token>`\n(Ktor `Auth` plugin, `FirebaseTokenProvider`).\n\nRESPONSE ENVELOPE: every response (success and error) is wrapped in the BaseResponse envelope\n`{success,status,code,message,result,error}`. The response schemas below describe the `result`\npayload only. See `docs/backend/BACKEND_PROMPT.md` section 2 for the full contract."
   },
   "servers": [
     {
-      "url": "https://api.studentclubs.dev/v1",
+      "url": "https://api.elon.uz/v1",
       "description": "Dev"
     }
   ],
@@ -19,43 +19,39 @@
   "tags": [
     {
       "name": "Profile",
-      "description": "Joriy foydalanuvchi profili (feature:profile)"
-    },
-    {
-      "name": "Clubs",
-      "description": "Klublar"
+      "description": "Current user profile (feature:profile)"
     },
     {
       "name": "Auth",
-      "description": "Autentifikatsiya"
+      "description": "Authentication"
     },
     {
       "name": "Business",
-      "description": "Biznes profili va ma'lumotnomalar (feature:discounts, BUSINESS roli)"
+      "description": "Business profile and reference data (feature:discounts, BUSINESS role)"
     },
     {
       "name": "Branches",
-      "description": "Biznes filiallari va lokatsiya"
+      "description": "Business branches and location"
     },
     {
       "name": "Listings",
-      "description": "Chegirma e'lonlari — yaratish, moderatsiya, statistika"
+      "description": "Discount listings — creation, moderation, statistics"
     },
     {
       "name": "Redemptions",
-      "description": "Chegirmani ishlatish (QR / promokod) — kassir tomoni"
+      "description": "Redeeming a discount (QR / promo code) — cashier side"
     },
     {
       "name": "Discounts",
-      "description": "Talaba tomoni — chegirmalarni ko'rish va geo-qidiruv"
+      "description": "Student side — browsing discounts and geo search"
     },
     {
       "name": "Geo",
-      "description": "Viloyat/tuman ma'lumotnomasi va geokodlash"
+      "description": "Region/district reference data and geocoding"
     },
     {
       "name": "Media",
-      "description": "Rasm yuklash"
+      "description": "Image upload"
     }
   ],
   "paths": {
@@ -65,11 +61,11 @@
         "tags": [
           "Profile"
         ],
-        "summary": "Joriy foydalanuvchi profilini olish",
-        "description": "Foydalanuvchi Bearer token'dan aniqlanadi. Profil hali yaratilmagan bo'lsa 404 qaytaradi.",
+        "summary": "Get the current user's profile",
+        "description": "The user is resolved from the Bearer token. Returns 404 if the profile has not been created yet.",
         "responses": {
           "200": {
-            "description": "Profil topildi",
+            "description": "Profile found",
             "content": {
               "application/json": {
                 "schema": {
@@ -79,10 +75,10 @@
             }
           },
           "404": {
-            "description": "Profil hali yaratilmagan"
+            "description": "Profile has not been created yet"
           },
           "401": {
-            "description": "Token yaroqsiz yoki muddati o'tgan"
+            "description": "Token is invalid or expired"
           }
         }
       },
@@ -91,8 +87,8 @@
         "tags": [
           "Profile"
         ],
-        "summary": "Joriy foydalanuvchi profilini saqlash",
-        "description": "Profil mavjud bo'lmasa yaratiladi, mavjud bo'lsa yangilanadi (upsert).",
+        "summary": "Save the current user's profile",
+        "description": "Creates the profile if it does not exist, updates it otherwise (upsert).",
         "requestBody": {
           "required": true,
           "content": {
@@ -105,7 +101,7 @@
         },
         "responses": {
           "200": {
-            "description": "Saqlandi — yangilangan profil",
+            "description": "Saved — the updated profile",
             "content": {
               "application/json": {
                 "schema": {
@@ -115,10 +111,10 @@
             }
           },
           "400": {
-            "description": "Ma'lumot noto'g'ri"
+            "description": "Invalid payload"
           },
           "401": {
-            "description": "Token yaroqsiz yoki muddati o'tgan"
+            "description": "Token is invalid or expired"
           }
         }
       }
@@ -129,8 +125,8 @@
         "tags": [
           "Profile"
         ],
-        "summary": "Profil rasmini (avatar) yuklash",
-        "description": "Rasm fayli multipart sifatida yuboriladi. Server rasmni saqlab, uning ochiq URL manzilini qaytaradi; shu URL keyin profilning `avatarUrl` maydoniga yoziladi.",
+        "summary": "Upload a profile picture (avatar)",
+        "description": "The image is sent as multipart. The server stores it and returns its public URL; that URL is then written to the profile's `avatarUrl` field.",
         "requestBody": {
           "required": true,
           "content": {
@@ -144,7 +140,7 @@
                   "file": {
                     "type": "string",
                     "format": "binary",
-                    "description": "Rasm fayli (JPEG yoki PNG, maks. 5 MB)"
+                    "description": "Image file (JPEG or PNG, max 5 MB)"
                   }
                 }
               }
@@ -153,7 +149,7 @@
         },
         "responses": {
           "200": {
-            "description": "Yuklandi — rasmning URL manzili",
+            "description": "Uploaded — the image URL",
             "content": {
               "application/json": {
                 "schema": {
@@ -163,37 +159,13 @@
             }
           },
           "400": {
-            "description": "Fayl formati yoki hajmi noto'g'ri"
+            "description": "Invalid file format or size"
           },
           "401": {
-            "description": "Token yaroqsiz yoki muddati o'tgan"
+            "description": "Token is invalid or expired"
           },
           "413": {
-            "description": "Fayl juda katta"
-          }
-        }
-      }
-    },
-    "/clubs": {
-      "get": {
-        "operationId": "getClubs",
-        "tags": [
-          "Clubs"
-        ],
-        "summary": "Barcha klublar ro'yxati",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ClubDto"
-                  }
-                }
-              }
-            }
+            "description": "File is too large"
           }
         }
       }
@@ -204,7 +176,7 @@
         "tags": [
           "Auth"
         ],
-        "summary": "Tizimga kirish",
+        "summary": "Sign in",
         "security": [],
         "requestBody": {
           "required": true,
@@ -236,8 +208,8 @@
         "tags": [
           "Business"
         ],
-        "summary": "Biznes turlari ro'yxati",
-        "description": "7 ta faol tur va ularning odatiy narx birligi. `gender` berilsa shaxsiylashtiriladi: MALE → BEAUTY_SALON chiqmaydi, FEMALE → BARBERSHOP chiqmaydi.",
+        "summary": "List business types",
+        "description": "The 7 active types and their default price unit. Personalised when `gender` is supplied: MALE excludes BEAUTY_SALON, FEMALE excludes BARBERSHOP.",
         "responses": {
           "200": {
             "description": "OK",
@@ -258,7 +230,7 @@
             "name": "gender",
             "in": "query",
             "required": false,
-            "description": "Foydalanuvchi jinsi — turlar ro'yxatini filtrlaydi. Berilmasa hammasi qaytadi.",
+            "description": "User gender — filters the list of types. All types are returned when omitted.",
             "schema": {
               "$ref": "#/components/schemas/GenderDto"
             }
@@ -272,8 +244,8 @@
         "tags": [
           "Business"
         ],
-        "summary": "Biznes turi bo'yicha kategoriyalar",
-        "description": "Masalan CAFE_RESTAURANT uchun: NATIONAL, PIZZA, BURGER, ... Har turda ALL va OTHER ham bor. CLOTHING uchun `gender` majburiy emas, lekin berilsa jinsga xos kategoriyalar qaytadi (MALE → SHIRTS/PANTS/SUITS..., FEMALE → DRESSES/SKIRTS/BLOUSES...).",
+        "summary": "List categories for a business type",
+        "description": "For example, for CAFE_RESTAURANT: NATIONAL, PIZZA, BURGER, ... Every type also has ALL and OTHER. For CLOTHING `gender` is optional, but when supplied gender-specific categories are returned (MALE → SHIRTS/PANTS/SUITS..., FEMALE → DRESSES/SKIRTS/BLOUSES...).",
         "parameters": [
           {
             "name": "type",
@@ -287,7 +259,7 @@
             "name": "gender",
             "in": "query",
             "required": false,
-            "description": "CLOTHING uchun jinsga xos kategoriyalar. Boshqa turlarда e'tiborga olinmaydi.",
+            "description": "Gender-specific categories for CLOTHING. Ignored for other types.",
             "schema": {
               "$ref": "#/components/schemas/GenderDto"
             }
@@ -316,8 +288,8 @@
         "tags": [
           "Business"
         ],
-        "summary": "E'lon `attributes` maydoni uchun JSON Schema",
-        "description": "Klient e'lon yuklash formasini shu sxemadan DINAMIK quradi — turga xos maydonlar ilovada hardcode qilinmaydi. Backendga yangi maydon qo'shilsa, ilovani qayta chiqarmasdan ishlaydi.",
+        "summary": "JSON Schema for a listing's `attributes` field",
+        "description": "The client builds the listing form DYNAMICALLY from this schema — type-specific fields are never hardcoded in the app. Adding a new field on the backend works without shipping a new app release.",
         "parameters": [
           {
             "name": "type",
@@ -349,7 +321,7 @@
         "tags": [
           "Geo"
         ],
-        "summary": "Viloyatlar ro'yxati (14 ta)",
+        "summary": "List regions (14 total)",
         "responses": {
           "200": {
             "description": "OK",
@@ -373,7 +345,7 @@
         "tags": [
           "Geo"
         ],
-        "summary": "Viloyat bo'yicha tumanlar",
+        "summary": "List districts for a region",
         "parameters": [
           {
             "name": "regionId",
@@ -399,7 +371,7 @@
             }
           },
           "404": {
-            "description": "Viloyat topilmadi"
+            "description": "Region not found"
           }
         }
       }
@@ -410,8 +382,8 @@
         "tags": [
           "Geo"
         ],
-        "summary": "Manzil matnidan koordinata",
-        "description": "Yandex Geocoder backend orqali proksilanadi (API kalit klientga chiqmaydi). Natija taxminiy — ilova uni xaritada tasdiqlatadi.",
+        "summary": "Geocode an address string to coordinates",
+        "description": "Proxied through the backend to Yandex Geocoder (the API key never reaches the client). Results are approximate — the app asks the user to confirm them on the map.",
         "requestBody": {
           "required": true,
           "content": {
@@ -424,7 +396,7 @@
         },
         "responses": {
           "200": {
-            "description": "Topilgan variantlar (confidence bo'yicha tartiblangan)",
+            "description": "Matches found (ordered by confidence)",
             "content": {
               "application/json": {
                 "schema": {
@@ -445,8 +417,8 @@
         "tags": [
           "Geo"
         ],
-        "summary": "Koordinatadan manzil",
-        "description": "Xaritada nuqta tanlanganda filial formasini avtomatik to'ldirish uchun.",
+        "summary": "Reverse geocode coordinates to an address",
+        "description": "Used to auto-fill the branch form when a point is picked on the map.",
         "requestBody": {
           "required": true,
           "content": {
@@ -469,7 +441,7 @@
             }
           },
           "422": {
-            "description": "LOCATION_OUT_OF_BOUNDS — koordinata O'zbekiston chegarasidan tashqarida"
+            "description": "LOCATION_OUT_OF_BOUNDS — the coordinates fall outside Uzbekistan"
           }
         }
       }
@@ -480,8 +452,8 @@
         "tags": [
           "Business"
         ],
-        "summary": "Biznes yaratish",
-        "description": "status = DRAFT bilan yaratiladi. `type` keyin o'zgarmaydi. Bir foydalanuvchida maks. 5 ta biznes.",
+        "summary": "Create a business",
+        "description": "Created with status = DRAFT. `type` cannot be changed afterwards. A user may own at most 5 businesses.",
         "requestBody": {
           "required": true,
           "content": {
@@ -494,7 +466,7 @@
         },
         "responses": {
           "201": {
-            "description": "Yaratildi",
+            "description": "Created",
             "content": {
               "application/json": {
                 "schema": {
@@ -507,10 +479,10 @@
             "description": "VALIDATION_ERROR"
           },
           "403": {
-            "description": "FORBIDDEN_ROLE — foydalanuvchi roli BUSINESS emas"
+            "description": "FORBIDDEN_ROLE — the user's role is not BUSINESS"
           },
           "429": {
-            "description": "RATE_LIMIT_EXCEEDED — 5 ta biznes limiti"
+            "description": "RATE_LIMIT_EXCEEDED — the 5-business limit"
           }
         }
       }
@@ -521,7 +493,7 @@
         "tags": [
           "Business"
         ],
-        "summary": "Egasining bizneslari",
+        "summary": "List the owner's businesses",
         "responses": {
           "200": {
             "description": "OK",
@@ -555,7 +527,7 @@
         "tags": [
           "Business"
         ],
-        "summary": "Bitta biznes",
+        "summary": "Get a single business",
         "responses": {
           "200": {
             "description": "OK",
@@ -577,8 +549,8 @@
         "tags": [
           "Business"
         ],
-        "summary": "Biznesni tahrirlash",
-        "description": "APPROVED biznes tahrirlansa qayta moderatsiyaga tushadi (PENDING_REVIEW).",
+        "summary": "Update a business",
+        "description": "Editing an APPROVED business sends it back to moderation (PENDING_REVIEW).",
         "requestBody": {
           "required": true,
           "content": {
@@ -610,11 +582,11 @@
         "tags": [
           "Business"
         ],
-        "summary": "Biznesni arxivlash",
-        "description": "Biznesning barcha e'lonlari ARCHIVED bo'ladi.",
+        "summary": "Archive a business",
+        "description": "All of the business's listings become ARCHIVED.",
         "responses": {
           "204": {
-            "description": "Arxivlandi"
+            "description": "Archived"
           },
           "403": {
             "description": "NOT_BUSINESS_OWNER"
@@ -628,8 +600,8 @@
         "tags": [
           "Business"
         ],
-        "summary": "Biznesni moderatsiyaga yuborish",
-        "description": "DRAFT | REJECTED -> PENDING_REVIEW. SLA: 24 soat.",
+        "summary": "Submit a business for review",
+        "description": "DRAFT | REJECTED -> PENDING_REVIEW. SLA: 24 hours.",
         "parameters": [
           {
             "name": "businessId",
@@ -673,7 +645,7 @@
         "tags": [
           "Branches"
         ],
-        "summary": "Filiallar ro'yxati",
+        "summary": "List branches",
         "responses": {
           "200": {
             "description": "OK",
@@ -695,8 +667,8 @@
         "tags": [
           "Branches"
         ],
-        "summary": "Filial qo'shish",
-        "description": "Bir biznesda maks. 50 filial. 100 m radiusda dublikat filial bo'lmaydi.",
+        "summary": "Create a branch",
+        "description": "At most 50 branches per business. No duplicate branch within a 100 m radius.",
         "requestBody": {
           "required": true,
           "content": {
@@ -709,7 +681,7 @@
         },
         "responses": {
           "201": {
-            "description": "Yaratildi",
+            "description": "Created",
             "content": {
               "application/json": {
                 "schema": {
@@ -751,7 +723,7 @@
         "tags": [
           "Branches"
         ],
-        "summary": "Filialni tahrirlash",
+        "summary": "Update a branch",
         "requestBody": {
           "required": true,
           "content": {
@@ -774,7 +746,7 @@
             }
           },
           "422": {
-            "description": "Lokatsiya validatsiyasi buzildi"
+            "description": "Location validation failed"
           }
         }
       },
@@ -783,14 +755,14 @@
         "tags": [
           "Branches"
         ],
-        "summary": "Filialni o'chirish",
-        "description": "Oxirgi faol filialni o'chirib bo'lmaydi (faol e'lonlar bo'lsa).",
+        "summary": "Delete a branch",
+        "description": "The last active branch cannot be deleted while active listings exist.",
         "responses": {
           "204": {
-            "description": "O'chirildi"
+            "description": "Deleted"
           },
           "409": {
-            "description": "NO_ACTIVE_BRANCH — oxirgi faol filial"
+            "description": "NO_ACTIVE_BRANCH — this is the last active branch"
           }
         }
       }
@@ -811,7 +783,7 @@
         "tags": [
           "Listings"
         ],
-        "summary": "Biznesning e'lonlari",
+        "summary": "List a business's listings",
         "parameters": [
           {
             "name": "status",
@@ -868,8 +840,8 @@
         "tags": [
           "Listings"
         ],
-        "summary": "E'lon yaratish",
-        "description": "status = DRAFT bilan yaratiladi. `finalPrice` ni SERVER hisoblaydi — klientdan qabul qilinmaydi. Publish qilish uchun /listings/{id}/submit chaqiriladi.",
+        "summary": "Create a listing",
+        "description": "Created with status = DRAFT. `finalPrice` is computed by the SERVER — it is never accepted from the client. Call /listings/{id}/submit to publish.",
         "requestBody": {
           "required": true,
           "content": {
@@ -882,7 +854,7 @@
         },
         "responses": {
           "201": {
-            "description": "Yaratildi",
+            "description": "Created",
             "content": {
               "application/json": {
                 "schema": {
@@ -916,7 +888,7 @@
         "tags": [
           "Listings"
         ],
-        "summary": "Bitta e'lon",
+        "summary": "Get a single listing",
         "responses": {
           "200": {
             "description": "OK",
@@ -938,8 +910,8 @@
         "tags": [
           "Listings"
         ],
-        "summary": "E'lonni tahrirlash",
-        "description": "ACTIVE e'londa title/description/images/discount/originalPrice/categoryKey o'zgarsa — qayta moderatsiya (PENDING_REVIEW). branchIds, validTo, totalLimit, stockCount, seatsLeft, option.isAvailable o'zgarsa — darhol saqlanadi.",
+        "summary": "Update a listing",
+        "description": "On an ACTIVE listing, changing title/description/images/discount/originalPrice/categoryKey sends it back to moderation (PENDING_REVIEW). Changes to branchIds, validTo, totalLimit, stockCount, seatsLeft or option.isAvailable are saved immediately.",
         "requestBody": {
           "required": true,
           "content": {
@@ -962,7 +934,7 @@
             }
           },
           "409": {
-            "description": "INVALID_STATUS_TRANSITION — PENDING_REVIEW da tahrirlab bo'lmaydi, avval withdraw"
+            "description": "INVALID_STATUS_TRANSITION — a listing in PENDING_REVIEW cannot be edited; withdraw it first"
           }
         }
       },
@@ -971,7 +943,7 @@
         "tags": [
           "Listings"
         ],
-        "summary": "E'lonni arxivlash",
+        "summary": "Archive a listing",
         "responses": {
           "204": {
             "description": "ARCHIVED"
@@ -985,8 +957,8 @@
         "tags": [
           "Listings"
         ],
-        "summary": "E'lonni moderatsiyaga yuborish",
-        "description": "DRAFT | REJECTED -> PENDING_REVIEW. Tekshiriladi: biznes APPROVED, faol filial va to'liq lokatsiya bor, kamida 1 rasm, finalPrice < originalPrice, validTo kelajakda, kategoriya turga mos, attributes sxemaga mos, faol e'lonlar 100 tadan oshmagan.",
+        "summary": "Submit a listing for review",
+        "description": "DRAFT | REJECTED -> PENDING_REVIEW. Checks: the business is APPROVED, it has an active branch with a complete location, at least 1 image, finalPrice < originalPrice, validTo is in the future, the category matches the business type, attributes match the schema, and active listings do not exceed 100.",
         "parameters": [
           {
             "name": "listingId",
@@ -1009,7 +981,7 @@
             }
           },
           "422": {
-            "description": "Publish shartlari buzildi"
+            "description": "Publishing preconditions were not met"
           }
         }
       }
@@ -1020,7 +992,7 @@
         "tags": [
           "Listings"
         ],
-        "summary": "Moderatsiyadan qaytarib olish",
+        "summary": "Withdraw a listing from review",
         "description": "PENDING_REVIEW -> DRAFT.",
         "parameters": [
           {
@@ -1055,7 +1027,7 @@
         "tags": [
           "Listings"
         ],
-        "summary": "E'lonni to'xtatib turish (ACTIVE -> PAUSED)",
+        "summary": "Pause a listing (ACTIVE -> PAUSED)",
         "parameters": [
           {
             "name": "listingId",
@@ -1089,7 +1061,7 @@
         "tags": [
           "Listings"
         ],
-        "summary": "E'lonni qayta yoqish (PAUSED -> ACTIVE)",
+        "summary": "Resume a listing (PAUSED -> ACTIVE)",
         "parameters": [
           {
             "name": "listingId",
@@ -1123,8 +1095,8 @@
         "tags": [
           "Listings"
         ],
-        "summary": "E'londan nusxa olish",
-        "description": "EXPIRED/SOLD_OUT e'lonni qayta chiqarish uchun. Nusxa DRAFT bo'ladi, usedCount = 0.",
+        "summary": "Duplicate a listing",
+        "description": "Used to re-publish an EXPIRED/SOLD_OUT listing. The copy is a DRAFT with usedCount = 0.",
         "parameters": [
           {
             "name": "listingId",
@@ -1137,7 +1109,7 @@
         ],
         "responses": {
           "201": {
-            "description": "Nusxa yaratildi",
+            "description": "Copy created",
             "content": {
               "application/json": {
                 "schema": {
@@ -1155,7 +1127,7 @@
         "tags": [
           "Listings"
         ],
-        "summary": "E'lon statistikasi",
+        "summary": "Get listing statistics",
         "parameters": [
           {
             "name": "listingId",
@@ -1186,7 +1158,7 @@
         "tags": [
           "Redemptions"
         ],
-        "summary": "Chegirmani kim, qachon ishlatgani",
+        "summary": "Who redeemed the discount and when",
         "parameters": [
           {
             "name": "listingId",
@@ -1237,8 +1209,8 @@
         "tags": [
           "Redemptions"
         ],
-        "summary": "QR/promokodni tekshirish (kassir)",
-        "description": "Kodning haqiqiyligini va limitlarni tekshiradi. Hisoblagichni O'ZGARTIRMAYDI.",
+        "summary": "Verify a QR/promo code (cashier)",
+        "description": "Checks that the code is valid and within its limits. Does NOT change the counter.",
         "parameters": [
           {
             "name": "listingId",
@@ -1261,7 +1233,7 @@
         },
         "responses": {
           "200": {
-            "description": "Tekshirildi",
+            "description": "Verified",
             "content": {
               "application/json": {
                 "schema": {
@@ -1282,8 +1254,8 @@
         "tags": [
           "Redemptions"
         ],
-        "summary": "Chegirmani ishlatilgan deb belgilash (kassir)",
-        "description": "usedCount++ va talaba tarixiga yoziladi. Bir kod ikki marta ishlatilmaydi.",
+        "summary": "Mark a discount as redeemed (cashier)",
+        "description": "Increments usedCount and records the redemption in the student's history. A code cannot be redeemed twice.",
         "parameters": [
           {
             "name": "listingId",
@@ -1306,7 +1278,7 @@
         },
         "responses": {
           "200": {
-            "description": "Tasdiqlandi",
+            "description": "Confirmed",
             "content": {
               "application/json": {
                 "schema": {
@@ -1327,8 +1299,8 @@
         "tags": [
           "Media"
         ],
-        "summary": "Rasm yuklash (logo, muqova, e'lon rasmi)",
-        "description": "JPEG/PNG/WebP, maks. 5 MB, min. 600x600. Server WebP ga o'giradi va 3 o'lchamda saqlaydi.",
+        "summary": "Upload an image (logo, cover, listing photo)",
+        "description": "JPEG/PNG/WebP, max 5 MB, min 600x600. The server converts to WebP and stores 3 sizes.",
         "requestBody": {
           "required": true,
           "content": {
@@ -1343,11 +1315,11 @@
                   "file": {
                     "type": "string",
                     "format": "binary",
-                    "description": "Rasm fayli (JPEG/PNG/WebP, maks. 5 MB)"
+                    "description": "Image file (JPEG/PNG/WebP, max 5 MB)"
                   },
                   "purpose": {
                     "type": "string",
-                    "description": "Rasm maqsadi: LOGO | COVER | LISTING. Multipart'da enum ishlatilmaydi — codegen Ktor'ning internal API'siga tayanib qoladi.",
+                    "description": "Image purpose: LOGO | COVER | LISTING. Declared as a plain string rather than an enum, because an enum here makes the generated multipart code depend on Ktor's internal API.",
                     "example": "LISTING"
                   }
                 }
@@ -1357,7 +1329,7 @@
         },
         "responses": {
           "200": {
-            "description": "Yuklandi",
+            "description": "Uploaded",
             "content": {
               "application/json": {
                 "schema": {
@@ -1370,7 +1342,7 @@
             "description": "FILE_TOO_LARGE"
           },
           "429": {
-            "description": "RATE_LIMIT_EXCEEDED — soatiga 100 ta"
+            "description": "RATE_LIMIT_EXCEEDED — 100 per hour"
           }
         }
       }
@@ -1381,8 +1353,8 @@
         "tags": [
           "Discounts"
         ],
-        "summary": "Talaba uchun chegirmalar ro'yxati (geo-qidiruv)",
-        "description": "Faqat ACTIVE e'lonlar. `lat`/`lng` berilsa — har bir e'lon eng yaqin filiali va masofasi bilan qaytadi. Talabaning koordinatasi SAQLANMAYDI, faqat so'rov paytida masofa hisoblashga ishlatiladi.",
+        "summary": "List discounts for a student (geo search)",
+        "description": "ACTIVE listings only. When `lat`/`lng` are supplied, each listing is returned with its nearest branch and the distance to it. The student's coordinates are NOT STORED — they are used only to compute distance for the duration of the request.",
         "parameters": [
           {
             "name": "lat",
@@ -1467,7 +1439,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Matn bo'yicha qidiruv"
+            "description": "Full-text search"
           },
           {
             "name": "sort",
@@ -1525,7 +1497,7 @@
     "schemas": {
       "UserProfileDto": {
         "type": "object",
-        "description": "Foydalanuvchi profili. Domen modeli: dev.feature.profile.domain.model.UserProfile",
+        "description": "User profile. Domain model: dev.feature.profile.domain.model.UserProfile",
         "properties": {
           "firstName": {
             "type": "string",
@@ -1540,7 +1512,7 @@
           "phoneNumber": {
             "type": "string",
             "nullable": true,
-            "description": "E.164 formatда",
+            "description": "In E.164 format",
             "example": "+998901234567"
           },
           "gender": {
@@ -1569,8 +1541,8 @@
           "avatarUrl": {
             "type": "string",
             "nullable": true,
-            "description": "Profil rasmining ochiq URL manzili (POST /profile/me/avatar qaytaradi)",
-            "example": "https://cdn.studentclubs.dev/avatars/abc123.jpg"
+            "description": "Public URL of the profile picture (returned by POST /profile/me/avatar)",
+            "example": "https://cdn.elon.uz/avatars/abc123.jpg"
           }
         }
       },
@@ -1582,13 +1554,13 @@
         "properties": {
           "avatarUrl": {
             "type": "string",
-            "description": "Yuklangan rasmning ochiq URL manzili"
+            "description": "Public URL of the uploaded image"
           }
         }
       },
       "UpdateProfileRequestDto": {
         "type": "object",
-        "description": "Profilni saqlash so'rovi. Berilmagan (null) maydonlar o'zgarmaydi.",
+        "description": "Request to save a profile. Fields left unset (null) are not modified.",
         "properties": {
           "firstName": {
             "type": "string",
@@ -1643,7 +1615,7 @@
       "CourseYearDto": {
         "type": "string",
         "nullable": true,
-        "description": "Kurs: 1-4 yoki magistratura",
+        "description": "Year of study: 1-4, or master's",
         "enum": [
           "1",
           "2",
@@ -1652,44 +1624,9 @@
           "MASTER"
         ]
       },
-      "ClubDto": {
-        "type": "object",
-        "required": [
-          "id",
-          "name"
-        ],
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "membersCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "imageUrl": {
-            "type": "string"
-          }
-        }
-      },
       "BusinessTypeDto": {
         "type": "string",
-        "description": "Biznes turi. Biznes yaratilganda tanlanadi va KEYIN O'ZGARMAYDI — chunki kategoriyalar va `attributes` shunga bog'liq. BARBERSHOP/BEAUTY_SALON foydalanuvchi jinsiga qarab filtrlanadi (`GET /business/types?gender=`).",
-        "enum": [
-          "GAME_CLUB",
-          "CLOTHING",
-          "CAFE_RESTAURANT",
-          "EDUCATION_CENTER",
-          "ENTERTAINMENT",
-          "BARBERSHOP",
-          "BEAUTY_SALON"
-        ]
+        "description": "Business type key (e.g. GAME_CLUB). Chosen when the business is created and IMMUTABLE afterwards, because categories and `attributes` depend on it. NOT an enum — the value set is data-driven: `GET /business/types` returns the available types from the backend, so new types are added as data (a table row) without changing this spec or releasing the app. Known seed keys: GAME_CLUB, CLOTHING, CAFE_RESTAURANT, EDUCATION_CENTER, ENTERTAINMENT, BARBERSHOP, BEAUTY_SALON. BARBERSHOP/BEAUTY_SALON are filtered by the user's gender (`GET /business/types?gender=`)."
       },
       "BusinessTypeInfoDto": {
         "type": "object",
@@ -1724,12 +1661,12 @@
           "accentColor": {
             "type": "string",
             "nullable": true,
-            "description": "HEX rang",
+            "description": "HEX colour",
             "example": "#7C5CFF"
           },
           "priceUnits": {
             "type": "array",
-            "description": "Turga mos narx birliklari (birinchisi — odatiy)",
+            "description": "Price units valid for this type (the first one is the default)",
             "items": {
               "$ref": "#/components/schemas/PriceUnitDto"
             }
@@ -1738,7 +1675,7 @@
       },
       "BusinessStatusDto": {
         "type": "string",
-        "description": "DRAFT -> PENDING_REVIEW -> APPROVED | REJECTED -> (BLOCKED). APPROVED bo'lmaguncha e'lon publish qilinmaydi.",
+        "description": "DRAFT -> PENDING_REVIEW -> APPROVED | REJECTED -> (BLOCKED). No listing can be published until the business is APPROVED.",
         "enum": [
           "DRAFT",
           "PENDING_REVIEW",
@@ -1749,7 +1686,7 @@
       },
       "PriceUnitDto": {
         "type": "string",
-        "description": "Narx birligi: dona, soat, kg, oy, kurs, dars, chipta, kishi, sessiya",
+        "description": "Price unit: item, hour, kg, month, course, lesson, ticket, person, session",
         "enum": [
           "PER_ITEM",
           "PER_HOUR",
@@ -1797,7 +1734,7 @@
           },
           "ownerUserId": {
             "type": "string",
-            "description": "Bearer token'dan aniqlanadi"
+            "description": "Resolved from the Bearer token"
           },
           "type": {
             "$ref": "#/components/schemas/BusinessTypeDto"
@@ -1814,7 +1751,7 @@
           "inn": {
             "type": "string",
             "nullable": true,
-            "description": "9 raqam",
+            "description": "9 digits",
             "example": "301234567"
           },
           "description": {
@@ -1841,7 +1778,7 @@
           "isOnlineOnly": {
             "type": "boolean",
             "default": false,
-            "description": "true bo'lsa filial va lokatsiya talab qilinmaydi (masalan onlayn kurs)"
+            "description": "When true, no branch or location is required (e.g. an online course)"
           },
           "status": {
             "$ref": "#/components/schemas/BusinessStatusDto"
@@ -1920,7 +1857,7 @@
       },
       "UpdateBusinessRequestDto": {
         "type": "object",
-        "description": "`type` bu yerda YO'Q — biznes turi o'zgarmaydi.",
+        "description": "`type` is absent here — the business type is immutable.",
         "properties": {
           "name": {
             "type": "string",
@@ -2024,7 +1961,7 @@
       },
       "LocationDto": {
         "type": "object",
-        "description": "Filial lokatsiyasi. Koordinata O'zbekiston chegarasida bo'lishi shart va tanlangan tumandan 10 km dan uzoq bo'lmasligi kerak.",
+        "description": "Branch location. The coordinates must fall within Uzbekistan and no more than 10 km from the selected district.",
         "required": [
           "regionId",
           "districtId",
@@ -2051,7 +1988,7 @@
             "type": "string",
             "nullable": true,
             "maxLength": 200,
-            "description": "Mo'ljal — talabalar uchun eng foydali maydon",
+            "description": "Landmark — the most useful field for students",
             "example": "Chilonzor metrosi yonida, Korzinka ro'parasida"
           },
           "entranceNote": {
@@ -2077,7 +2014,7 @@
           "geohash": {
             "type": "string",
             "nullable": true,
-            "description": "Server hisoblaydi (7 belgi ~150 m). Klientdan qabul qilinmaydi."
+            "description": "Computed by the server (7 characters ~150 m). Not accepted from the client."
           },
           "mapUrl": {
             "type": "string",
@@ -2086,7 +2023,7 @@
           "metroStation": {
             "type": "string",
             "nullable": true,
-            "description": "Faqat Toshkent shahri uchun"
+            "description": "Tashkent city only"
           }
         }
       },
@@ -2104,7 +2041,7 @@
       },
       "WorkingHoursDto": {
         "type": "object",
-        "description": "7 kunning hammasi yuborilishi shart. `close` < `open` bo'lsa tungacha ishlaydi (20:00-04:00).",
+        "description": "All 7 days must be supplied. When `close` < `open` the venue stays open overnight (20:00-04:00).",
         "required": [
           "day",
           "isClosed"
@@ -2130,7 +2067,7 @@
       },
       "DeliveryZoneDto": {
         "type": "object",
-        "description": "Yetkazib berish zonasi — asosan GROCERY va CAFE_RESTAURANT uchun. `enabled` bo'lsa `radiusMeters` majburiy.",
+        "description": "Delivery zone — mainly for GROCERY and CAFE_RESTAURANT. `radiusMeters` is required when `enabled` is true.",
         "required": [
           "enabled"
         ],
@@ -2251,7 +2188,7 @@
           "regionId": {
             "type": "string",
             "nullable": true,
-            "description": "Qidiruvni viloyat bilan cheklash"
+            "description": "Restrict the search to a region"
           }
         }
       },
@@ -2360,7 +2297,7 @@
           },
           "fields": {
             "type": "array",
-            "description": "Shu kategoriya tanlanganда formaда chiqadigan maydonlar (tartib muhim).",
+            "description": "The fields shown in the form when this category is selected (order matters).",
             "items": {
               "$ref": "#/components/schemas/AttributeFieldDto"
             }
@@ -2368,14 +2305,14 @@
           "requiresCustomName": {
             "type": "boolean",
             "nullable": true,
-            "description": "OTHER uchun true — `customCategoryName` majburiy bo'ladi"
+            "description": "True for OTHER — `customCategoryName` then becomes required"
           }
         },
-        "description": "Kategoriya va uning maydonlari. `fields[]` ичида `options[]` bo'ladi — ya'ni PlayStation → Model → PS5/PS4/PS3 bitta so'rovда keladi."
+        "description": "A category and its fields. `fields[]` contains `options[]`, so PlayStation → Model → PS5/PS4/PS3 all arrive in a single request."
       },
       "DiscountTypeDto": {
         "type": "string",
-        "description": "PERCENT: value = 1..90 foiz. FIXED_AMOUNT: value = so'mda chegirma. SPECIAL_PRICE: value = yangi narx. FREE_ITEM: 1+1, shartlar `conditions` da.",
+        "description": "PERCENT: value = 1..90 percent. FIXED_AMOUNT: value = discount in soums. SPECIAL_PRICE: value = the new price. FREE_ITEM: 1+1, with the terms in `conditions`.",
         "enum": [
           "PERCENT",
           "FIXED_AMOUNT",
@@ -2402,7 +2339,7 @@
           "finalPrice": {
             "type": "integer",
             "format": "int64",
-            "description": "SERVER hisoblaydi. finalPrice < originalPrice (FREE_ITEM dan tashqari).",
+            "description": "Computed by the SERVER. finalPrice < originalPrice (except for FREE_ITEM).",
             "example": 44000
           },
           "conditions": {
@@ -2413,13 +2350,13 @@
           "appliesToOptions": {
             "type": "boolean",
             "default": false,
-            "description": "false — chegirma faqat asosiy narxga, qo'shimchalar (priceDelta) narxiga tarqalmaydi."
+            "description": "False — the discount applies only to the base price, not to add-ons (priceDelta)."
           }
         }
       },
       "DiscountRequestDto": {
         "type": "object",
-        "description": "`finalPrice` bu yerda YO'Q — server hisoblaydi.",
+        "description": "`finalPrice` is absent here — the server computes it.",
         "required": [
           "type",
           "value"
@@ -2444,7 +2381,7 @@
       },
       "RedemptionMethodDto": {
         "type": "string",
-        "description": "QR: ilovada QR chiqadi. PROMO_CODE: kod aytiladi. STUDENT_ID: talaba profilini ko'rsatadi. ONLINE_LINK: tashqi havola.",
+        "description": "QR: the app shows a QR code. PROMO_CODE: the student reads out a code. STUDENT_ID: the student shows their profile. ONLINE_LINK: an external link.",
         "enum": [
           "QR",
           "PROMO_CODE",
@@ -2477,7 +2414,7 @@
           "url": {
             "type": "string",
             "nullable": true,
-            "description": "ONLINE_LINK uchun"
+            "description": "For ONLINE_LINK"
           },
           "perUserLimit": {
             "type": "integer",
@@ -2492,12 +2429,12 @@
             "type": "integer",
             "format": "int32",
             "nullable": true,
-            "description": "null = cheksiz. usedCount >= totalLimit bo'lsa e'lon SOLD_OUT ga o'tadi."
+            "description": "null = unlimited. The listing moves to SOLD_OUT once usedCount >= totalLimit."
           },
           "usedCount": {
             "type": "integer",
             "format": "int32",
-            "description": "Server hisoblaydi"
+            "description": "Computed by the server"
           }
         }
       },
@@ -2526,7 +2463,7 @@
           "priceDelta": {
             "type": "integer",
             "format": "int64",
-            "description": "Asosiy narxga qo'shiladigan summa (manfiy ham bo'lishi mumkin)",
+            "description": "Amount added to the base price (may be negative)",
             "example": 12000
           },
           "isAvailable": {
@@ -2542,7 +2479,7 @@
       },
       "OptionGroupDto": {
         "type": "object",
-        "description": "Qo'shimcha tanlovlar. Kafeda 'Hajm', Game Club'da 'Zal turi', Kiyimda 'O'lcham', Texnikada 'Xotira hajmi'. Maks. 10 guruh, har birida 30 variant.",
+        "description": "Add-on choices. 'Size' in a cafe, 'Hall type' in a game club, 'Size' in clothing, 'Storage' in electronics. Max 10 groups, 30 options each.",
         "required": [
           "name",
           "selectionType",
@@ -2593,7 +2530,7 @@
         "additionalProperties": {
           "type": "string"
         },
-        "description": "Biznes turiga xos maydonlar — erkin kalit-qiymat to'plami (qiymatlar matn ko'rinishida, forma qanday yuborsa shunday).\n\nBackend TUR BO'YICHA JSON Schema bilan validatsiya qiladi (GET /business/types/{type}/attributes-schema), klient esa formani o'sha sxemadan dinamik quradi. Shuning uchun bu yerda qat'iy tuzilma YO'Q: yangi maydon qo'shilganda spec ham, ilova ham o'zgarmaydi.\n\nTurlar bo'yicha kalitlar (to'liq tavsif — DISCOUNTS_BUSINESS_API.md §4):\n- `hallType` [GAME_CLUB] — STANDARD | VIP | PRIVATE_ROOM\n- `seatsCount` [GAME_CLUB] — o'rin/joystik soni\n- `deviceModel` [GAME_CLUB] — masalan PlayStation 5 Slim\n- `sessionMinutes` [GAME_CLUB] — bitta sessiya davomiyligi\n- `gamesList` [GAME_CLUB]\n- `hasNightPackage` [GAME_CLUB] — tungi paket\n- `nightPackagePrice` [GAME_CLUB]\n- `minPlayers` [GAME_CLUB]\n- `maxPlayers` [GAME_CLUB]\n- `brand` [GROCERY, CLOTHING, ELECTRONICS]\n- `weightGrams` [GROCERY]\n- `volumeMl` [GROCERY]\n- `packageType` [GROCERY] — BOX | BOTTLE | PACK | WEIGHT\n- `expiryDate` [GROCERY]\n- `storageCondition` [GROCERY]\n- `composition` [GROCERY] — tarkibi\n- `stockCount` [GROCERY, CLOTHING, ELECTRONICS] — qoldiq. null = cheksiz. Moderatsiyasiz o'zgaradi.\n- `gender` [CLOTHING] — MALE | FEMALE | UNISEX | KIDS\n- `sizes` [CLOTHING] — S, M, L yoki 39, 40, 41\n- `sizeSystem` [CLOTHING] — INTERNATIONAL | EU | US | NUMERIC\n- `colors` [CLOTHING]\n- `material` [CLOTHING]\n- `season` [CLOTHING] — WINTER | SPRING | SUMMER | AUTUMN | ALL_SEASON\n- `hasFittingRoom` [CLOTHING]\n- `returnDays` [CLOTHING] — qaytarish muddati\n- `portionGrams` [CAFE_RESTAURANT]\n- `calories` [CAFE_RESTAURANT]\n- `ingredients` [CAFE_RESTAURANT]\n- `allergens` [CAFE_RESTAURANT] — GLUTEN | MILK | EGG | NUTS | SEAFOOD | SOY\n- `spicyLevel` [CAFE_RESTAURANT] — NONE | MILD | MEDIUM | HOT\n- `isVegetarian` [CAFE_RESTAURANT]\n- `isHalal` [CAFE_RESTAURANT, GROCERY]\n- `cookingMinutes` [CAFE_RESTAURANT]\n- `servingType` [CAFE_RESTAURANT] — DINE_IN | TAKEAWAY | DELIVERY\n- `hasDelivery` [CAFE_RESTAURANT, GROCERY]\n- `deliveryMinutes` [CAFE_RESTAURANT]\n- `minOrderAmount` [CAFE_RESTAURANT, GROCERY]\n- `availableHours` [CAFE_RESTAURANT, ENTERTAINMENT] — chegirma amal qiladigan oraliq, masalan 12:00-17:00\n- `subject` [EDUCATION_CENTER]\n- `level` [EDUCATION_CENTER] — BEGINNER | ELEMENTARY | INTERMEDIATE | ADVANCED\n- `format` [EDUCATION_CENTER] — OFFLINE | ONLINE | HYBRID. [ENTERTAINMENT] 2D | 3D | IMAX | IMAX_3D | 4DX | VR\n- `groupType` [EDUCATION_CENTER] — GROUP | INDIVIDUAL | MINI_GROUP\n- `groupSize` [EDUCATION_CENTER]\n- `durationMonths` [EDUCATION_CENTER]\n- `lessonsPerWeek` [EDUCATION_CENTER]\n- `lessonMinutes` [EDUCATION_CENTER]\n- `teacherName` [EDUCATION_CENTER]\n- `teacherBio` [EDUCATION_CENTER]\n- `startDate` [EDUCATION_CENTER]\n- `schedule` [EDUCATION_CENTER] — masalan: Du, Chor, Ju - 18:00\n- `hasFreeTrialLesson` [EDUCATION_CENTER]\n- `hasCertificate` [EDUCATION_CENTER]\n- `seatsLeft` [EDUCATION_CENTER, ENTERTAINMENT] — Moderatsiyasiz o'zgaradi.\n- `eventTitle` [ENTERTAINMENT]\n- `language` [ENTERTAINMENT] — UZ | RU | EN | ORIGINAL_SUB\n- `durationMinutes` [ENTERTAINMENT]\n- `ageLimit` [ENTERTAINMENT] — 0 | 6 | 12 | 16 | 18\n- `sessionTimes` [ENTERTAINMENT] — seans vaqtlari\n- `eventDate` [ENTERTAINMENT] — bir martalik tadbir\n- `hallName` [ENTERTAINMENT]\n- `seatsTotal` [ENTERTAINMENT]\n- `minPersons` [ENTERTAINMENT] — kvest uchun\n- `maxPersons` [ENTERTAINMENT]\n- `includesEquipment` [ENTERTAINMENT] — inventar narxga kiradimi\n- `ticketType` [ENTERTAINMENT] — STANDARD | VIP | FAMILY | GROUP\n- `model` [ELECTRONICS]\n- `condition` [ELECTRONICS] — NEW | REFURBISHED | USED\n- `warrantyMonths` [ELECTRONICS]\n- `color` [ELECTRONICS]\n- `specs` [ELECTRONICS] — erkin key-value, maks. 20 ta\n- `hasInstallment` [ELECTRONICS, EDUCATION_CENTER] — muddatli to'lov\n- `installmentMonths` [ELECTRONICS]\n- `installmentMonthlyPrice` [ELECTRONICS]\n- `isOfficialSeller` [ELECTRONICS]",
+        "description": "Business-type-specific fields — a free-form key/value map (values are strings, exactly as the\nform submits them).\n\nThe backend validates them PER TYPE with a JSON Schema (GET /business/types/{type}/attributes-schema),\nand the client builds the form dynamically from that same schema. That is why there is no rigid\nstructure here: adding a new field changes neither this spec nor the app.\n\nKeys by business type (full description — DISCOUNTS_BUSINESS_API.md §4):\n- `hallType` [GAME_CLUB] — STANDARD | VIP | PRIVATE_ROOM\n- `seatsCount` [GAME_CLUB] — number of seats/gamepads\n- `deviceModel` [GAME_CLUB] — e.g. PlayStation 5 Slim\n- `sessionMinutes` [GAME_CLUB] — length of a single session\n- `gamesList` [GAME_CLUB]\n- `hasNightPackage` [GAME_CLUB] — night package\n- `nightPackagePrice` [GAME_CLUB]\n- `minPlayers` [GAME_CLUB]\n- `maxPlayers` [GAME_CLUB]\n- `brand` [GROCERY, CLOTHING, ELECTRONICS]\n- `weightGrams` [GROCERY]\n- `volumeMl` [GROCERY]\n- `packageType` [GROCERY] — BOX | BOTTLE | PACK | WEIGHT\n- `expiryDate` [GROCERY]\n- `storageCondition` [GROCERY]\n- `composition` [GROCERY] — ingredients\n- `stockCount` [GROCERY, CLOTHING, ELECTRONICS] — remaining stock. null = unlimited. Changes without moderation.\n- `gender` [CLOTHING] — MALE | FEMALE | UNISEX | KIDS\n- `sizes` [CLOTHING] — S, M, L or 39, 40, 41\n- `sizeSystem` [CLOTHING] — INTERNATIONAL | EU | US | NUMERIC\n- `colors` [CLOTHING]\n- `material` [CLOTHING]\n- `season` [CLOTHING] — WINTER | SPRING | SUMMER | AUTUMN | ALL_SEASON\n- `hasFittingRoom` [CLOTHING]\n- `returnDays` [CLOTHING] — return window\n- `portionGrams` [CAFE_RESTAURANT]\n- `calories` [CAFE_RESTAURANT]\n- `ingredients` [CAFE_RESTAURANT]\n- `allergens` [CAFE_RESTAURANT] — GLUTEN | MILK | EGG | NUTS | SEAFOOD | SOY\n- `spicyLevel` [CAFE_RESTAURANT] — NONE | MILD | MEDIUM | HOT\n- `isVegetarian` [CAFE_RESTAURANT]\n- `isHalal` [CAFE_RESTAURANT, GROCERY]\n- `cookingMinutes` [CAFE_RESTAURANT]\n- `servingType` [CAFE_RESTAURANT] — DINE_IN | TAKEAWAY | DELIVERY\n- `hasDelivery` [CAFE_RESTAURANT, GROCERY]\n- `deliveryMinutes` [CAFE_RESTAURANT]\n- `minOrderAmount` [CAFE_RESTAURANT, GROCERY]\n- `availableHours` [CAFE_RESTAURANT, ENTERTAINMENT] — window in which the discount applies, e.g. 12:00-17:00\n- `subject` [EDUCATION_CENTER]\n- `level` [EDUCATION_CENTER] — BEGINNER | ELEMENTARY | INTERMEDIATE | ADVANCED\n- `format` [EDUCATION_CENTER] — OFFLINE | ONLINE | HYBRID. [ENTERTAINMENT] 2D | 3D | IMAX | IMAX_3D | 4DX | VR\n- `groupType` [EDUCATION_CENTER] — GROUP | INDIVIDUAL | MINI_GROUP\n- `groupSize` [EDUCATION_CENTER]\n- `durationMonths` [EDUCATION_CENTER]\n- `lessonsPerWeek` [EDUCATION_CENTER]\n- `lessonMinutes` [EDUCATION_CENTER]\n- `teacherName` [EDUCATION_CENTER]\n- `teacherBio` [EDUCATION_CENTER]\n- `startDate` [EDUCATION_CENTER]\n- `schedule` [EDUCATION_CENTER] — e.g. Mon, Wed, Fri - 18:00\n- `hasFreeTrialLesson` [EDUCATION_CENTER]\n- `hasCertificate` [EDUCATION_CENTER]\n- `seatsLeft` [EDUCATION_CENTER, ENTERTAINMENT] — Changes without moderation.\n- `eventTitle` [ENTERTAINMENT]\n- `language` [ENTERTAINMENT] — UZ | RU | EN | ORIGINAL_SUB\n- `durationMinutes` [ENTERTAINMENT]\n- `ageLimit` [ENTERTAINMENT] — 0 | 6 | 12 | 16 | 18\n- `sessionTimes` [ENTERTAINMENT] — showtimes\n- `eventDate` [ENTERTAINMENT] — one-off event\n- `hallName` [ENTERTAINMENT]\n- `seatsTotal` [ENTERTAINMENT]\n- `minPersons` [ENTERTAINMENT] — for quests\n- `maxPersons` [ENTERTAINMENT]\n- `includesEquipment` [ENTERTAINMENT] — whether equipment is included in the price\n- `ticketType` [ENTERTAINMENT] — STANDARD | VIP | FAMILY | GROUP\n- `model` [ELECTRONICS]\n- `condition` [ELECTRONICS] — NEW | REFURBISHED | USED\n- `warrantyMonths` [ELECTRONICS]\n- `color` [ELECTRONICS]\n- `specs` [ELECTRONICS] — free-form key/value, max 20 entries\n- `hasInstallment` [ELECTRONICS, EDUCATION_CENTER] — installment plan\n- `installmentMonths` [ELECTRONICS]\n- `installmentMonthlyPrice` [ELECTRONICS]\n- `isOfficialSeller` [ELECTRONICS]",
         "example": {
           "portionGrams": "550",
           "isHalal": "true",
@@ -2603,7 +2540,7 @@
       },
       "ListingStatusDto": {
         "type": "string",
-        "description": "DRAFT -> PENDING_REVIEW -> ACTIVE <-> PAUSED. Avtomatik: EXPIRED (validTo o'tdi), SOLD_OUT (limit tugadi), SCHEDULED (validFrom hali kelmadi).",
+        "description": "DRAFT -> PENDING_REVIEW -> ACTIVE <-> PAUSED. Automatic: EXPIRED (validTo has passed), SOLD_OUT (the limit is used up), SCHEDULED (validFrom has not arrived yet).",
         "enum": [
           "DRAFT",
           "PENDING_REVIEW",
@@ -2644,7 +2581,7 @@
             "items": {
               "type": "string"
             },
-            "description": "Bo'sh bo'lsa — biznesning barcha faol filiallari"
+            "description": "When empty — all active branches of the business"
           },
           "categoryKey": {
             "type": "string",
@@ -2653,7 +2590,7 @@
           "customCategoryName": {
             "type": "string",
             "nullable": true,
-            "description": "categoryKey = OTHER bo'lganda majburiy"
+            "description": "Required when categoryKey = OTHER"
           },
           "title": {
             "type": "string",
@@ -2672,7 +2609,7 @@
             },
             "minItems": 1,
             "maxItems": 10,
-            "description": "Birinchisi — muqova"
+            "description": "The first one is the cover"
           },
           "priceUnit": {
             "$ref": "#/components/schemas/PriceUnitDto"
@@ -2680,7 +2617,7 @@
           "originalPrice": {
             "type": "integer",
             "format": "int64",
-            "description": "Butun so'm (tiyinsiz)",
+            "description": "Whole soums (no tiyin)",
             "example": 55000
           },
           "currency": {
@@ -2700,7 +2637,7 @@
           "validTo": {
             "type": "string",
             "format": "date-time",
-            "description": "validTo > validFrom, maks. +1 yil"
+            "description": "validTo > validFrom, at most +1 year"
           },
           "attributes": {
             "$ref": "#/components/schemas/ListingAttributesDto"
@@ -2718,7 +2655,7 @@
           "rejectionReason": {
             "type": "string",
             "nullable": true,
-            "description": "FAKE_DISCOUNT | POOR_IMAGE | PROHIBITED_CONTENT | WRONG_CATEGORY | INCOMPLETE_INFO | OTHER + izoh"
+            "description": "FAKE_DISCOUNT | POOR_IMAGE | PROHIBITED_CONTENT | WRONG_CATEGORY | INCOMPLETE_INFO | OTHER + a comment"
           },
           "viewsCount": {
             "type": "integer",
@@ -2814,7 +2751,7 @@
       },
       "UpdateListingRequestDto": {
         "type": "object",
-        "description": "Berilmagan (null) maydonlar o'zgarmaydi.",
+        "description": "Fields left unset (null) are not modified.",
         "properties": {
           "branchIds": {
             "type": "array",
@@ -2940,7 +2877,7 @@
           "totalRevenue": {
             "type": "integer",
             "format": "int64",
-            "description": "Tasdiqlangan redemption'lar summasi"
+            "description": "Total value of confirmed redemptions"
           }
         }
       },
@@ -2952,7 +2889,7 @@
         "properties": {
           "code": {
             "type": "string",
-            "description": "QR'dan o'qilgan yoki talaba aytgan promokod"
+            "description": "The promo code scanned from the QR or read out by the student"
           }
         }
       },
@@ -3006,13 +2943,13 @@
           "branchId": {
             "type": "string",
             "nullable": true,
-            "description": "Qaysi filialda ishlatildi"
+            "description": "The branch where it was redeemed"
           },
           "amount": {
             "type": "integer",
             "format": "int64",
             "nullable": true,
-            "description": "Chegirmadan keyingi yakuniy summa"
+            "description": "Final amount after the discount"
           }
         }
       },
@@ -3088,7 +3025,7 @@
         "properties": {
           "url": {
             "type": "string",
-            "description": "To'liq o'lcham"
+            "description": "Full size"
           },
           "thumbUrl": {
             "type": "string",
@@ -3113,7 +3050,7 @@
       },
       "NearestBranchDto": {
         "type": "object",
-        "description": "Talabaga eng yaqin filial. `distanceMeters` faqat so'rovda lat/lng berilganda to'ladi.",
+        "description": "The branch nearest to the student. `distanceMeters` is populated only when lat/lng are supplied in the request.",
         "properties": {
           "id": {
             "type": "string"
@@ -3148,7 +3085,7 @@
       },
       "DiscountCardDto": {
         "type": "object",
-        "description": "Talaba ro'yxatida ko'radigan qisqartirilgan e'lon.",
+        "description": "The condensed listing a student sees in the results list.",
         "required": [
           "id",
           "title",
@@ -3182,7 +3119,7 @@
           "imageUrl": {
             "type": "string",
             "nullable": true,
-            "description": "Muqova rasmi"
+            "description": "Cover image"
           },
           "priceUnit": {
             "$ref": "#/components/schemas/PriceUnitDto"
@@ -3247,7 +3184,7 @@
       },
       "ErrorDto": {
         "type": "object",
-        "description": "Barcha xatoliklar shu formatda qaytadi.",
+        "description": "Every error is returned in this format.",
         "required": [
           "code",
           "message"
@@ -3307,7 +3244,7 @@
       },
       "GenderDto": {
         "type": "string",
-        "description": "Foydalanuvchi jinsi — ro'yxatdan o'tishда tanlanadi. Biznes turlari va kiyim kategoriyalarini shaxsiylashtiradi.",
+        "description": "User gender — chosen during sign-up. Personalises business types and clothing categories.",
         "enum": [
           "MALE",
           "FEMALE"
@@ -3315,7 +3252,7 @@
       },
       "AttributeFieldTypeDto": {
         "type": "string",
-        "description": "Maydon UI turi. SELECT — bittasi, MULTI_SELECT — bir nechtasi tanlanadi.",
+        "description": "The field's UI type. SELECT — one choice, MULTI_SELECT — several choices.",
         "enum": [
           "TEXT",
           "NUMBER",
@@ -3331,16 +3268,16 @@
           "value",
           "label"
         ],
-        "description": "SELECT/MULTI_SELECT varianti — masalan PS5.",
+        "description": "A SELECT/MULTI_SELECT option — e.g. PS5.",
         "properties": {
           "value": {
             "type": "string",
-            "description": "`attributes` да saqlanadigan qiymat",
+            "description": "The value stored in `attributes`",
             "example": "PS5"
           },
           "label": {
             "type": "string",
-            "description": "Ekranда ko'rinadigan matn",
+            "description": "The label shown on screen",
             "example": "PS5"
           }
         }
@@ -3353,11 +3290,11 @@
           "type",
           "required"
         ],
-        "description": "E'lon formasining bitta maydoni. Klient `type` ga qarab UI'ni o'zi chizadi — yangi maydon qo'shish uchun ilova yangilanmaydi.",
+        "description": "A single field of the listing form. The client renders the UI from `type` alone — adding a new field needs no app update.",
         "properties": {
           "key": {
             "type": "string",
-            "description": "`Listing.attributes` кalitи",
+            "description": "The `Listing.attributes` key",
             "example": "model"
           },
           "label": {
@@ -3369,30 +3306,30 @@
           },
           "required": {
             "type": "boolean",
-            "description": "To'ldirilmasa e'lon joylanmaydi",
+            "description": "The listing cannot be published unless this is filled in",
             "example": true
           },
           "hint": {
             "type": "string",
             "nullable": true,
-            "description": "TEXT/NUMBER uchun namuna",
+            "description": "Placeholder for TEXT/NUMBER",
             "example": "60"
           },
           "suffix": {
             "type": "string",
             "nullable": true,
-            "description": "NUMBER o'lchovi",
+            "description": "Unit for NUMBER",
             "example": "daqiqa"
           },
           "multiple": {
             "type": "boolean",
             "nullable": true,
-            "description": "MULTI_SELECT uchun true. Qiymat vergul bilan saqlanadi: \"S,M,L\""
+            "description": "True for MULTI_SELECT. The value is stored comma-separated: \"S,M,L\""
           },
           "options": {
             "type": "array",
             "nullable": true,
-            "description": "Faqat SELECT/MULTI_SELECT uchun",
+            "description": "For SELECT/MULTI_SELECT only",
             "items": {
               "$ref": "#/components/schemas/AttributeOptionDto"
             }

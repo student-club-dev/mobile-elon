@@ -1,0 +1,4 @@
+-- Migratsiya v11 -> v12
+-- Klublar vertikali olib tashlandi (ElonUz rebrand) — ClubEntity endi ishlatilmaydi.
+-- Eski o'rnatmalarda jadval qolib ketmasligi uchun tashlab yuboriladi.
+DROP TABLE IF EXISTS ClubEntity;

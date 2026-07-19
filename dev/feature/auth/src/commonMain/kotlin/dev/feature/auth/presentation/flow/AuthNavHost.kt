@@ -43,17 +43,13 @@ import dev.feature.auth.presentation.screens.OnboardingScreen
 import dev.feature.auth.presentation.screens.OtpScreen
 import dev.feature.auth.presentation.screens.PhoneScreen
 import dev.feature.auth.presentation.screens.EmailVerifyScreen
-import dev.feature.auth.presentation.screens.ProfileScreen
 import dev.feature.auth.presentation.screens.RegisterChoiceScreen
 import dev.feature.auth.presentation.screens.RegisterScreen
 import dev.feature.auth.presentation.screens.RoleChoiceScreen
 import dev.feature.business.BusinessWelcomeScreen
-import dev.feature.business.BusinessProfileScreen
 import dev.feature.business.BusinessShell
 import dev.feature.auth.presentation.main.SettingsScreen
 import dev.feature.auth.presentation.screens.SignUpScreen
-import dev.feature.auth.presentation.screens.SuccessScreen
-import dev.feature.auth.presentation.screens.UniversityPickerScreen
 import dev.feature.auth.presentation.screens.WelcomeScreen
 import dev.core.designsystem.theme.appPalette
 import dev.feature.auth.social.rememberSocialAuthController
@@ -65,7 +61,6 @@ private object Route {
     const val WELCOME = "welcome"
     // Biznesmen uchun alohida oqim
     const val BUSINESS_WELCOME = "business_welcome"
-    const val BUSINESS_PROFILE = "business_profile"
     const val PHONE = "phone"
     const val EMAIL = "email"
     const val OTP = "otp"
@@ -74,9 +69,6 @@ private object Route {
     const val REGISTER = "register"
     const val VERIFY_EMAIL = "verify_email"
     const val FORGOT = "forgot"
-    const val SUCCESS = "success"
-    const val PROFILE = "profile"
-    const val UNIVERSITY = "university"
     const val HOME = "home"
 }
 
@@ -121,24 +113,17 @@ fun AuthNavHost(
                     popUpTo(Route.OTP) { inclusive = true }
                 }
                 AuthEvent.EmailVerificationSent -> nav.navigate(Route.VERIFY_EMAIL)
-                // Hisob yaratildi — biznesmen alohida biznes profilга, talaba esa Success/Profile'ga.
-                AuthEvent.Registered ->
-                    if (vm.state.value.role == Role.BUSINESS) {
-                        nav.navigate(Route.BUSINESS_PROFILE) { popUpTo(Route.BUSINESS_WELCOME) }
-                    } else {
-                        nav.navigate(Route.SUCCESS) { popUpTo(Route.WELCOME) }
-                    }
-                // Google/ijtimoiy kirish biznes profil rolini saqlamaydi — biznesmen bo'lsa avval
-                // biznes profilini to'ldiradi (rol=BUSINESS + biznes nomi saqlanadi), keyin HOME.
-                is AuthEvent.Authenticated ->
-                    if (vm.state.value.role == Role.BUSINESS && vm.state.value.businessName.isBlank()) {
-                        nav.navigate(Route.BUSINESS_PROFILE)
-                    } else {
-                        nav.navigate(Route.HOME) {
-                            popUpTo(Route.ONBOARDING) { inclusive = true }
-                            launchSingleTop = true
-                        }
-                    }
+                // Hisob yaratildi — biznes profili to'ldirish qadami olib tashlandi;
+                // to'g'ridan-to'g'ri asosiy ekranga (biznes ma'lumoti keyin "Biznes qo'shish" orqali).
+                AuthEvent.Registered -> nav.navigate(Route.HOME) {
+                    popUpTo(Route.ONBOARDING) { inclusive = true }
+                    launchSingleTop = true
+                }
+                // Google/ijtimoiy kirish ham to'g'ridan-to'g'ri asosiy ekranga o'tadi.
+                is AuthEvent.Authenticated -> nav.navigate(Route.HOME) {
+                    popUpTo(Route.ONBOARDING) { inclusive = true }
+                    launchSingleTop = true
+                }
                 AuthEvent.ProfileSaved -> nav.navigate(Route.HOME) {
                     popUpTo(Route.ONBOARDING) { inclusive = true }
                     launchSingleTop = true
@@ -177,18 +162,6 @@ fun AuthNavHost(
                 onGetCode = { vm.sendOtp(socialAuth) },
                 onGoogle = { vm.signInWithGoogle(socialAuth) },
                 onEmail = { nav.navigate(Route.EMAIL) },
-            )
-        }
-        composable(Route.BUSINESS_PROFILE) {
-            BusinessProfileScreen(
-                businessName = state.businessName,
-                businessType = state.businessType,
-                error = state.error,
-                isLoading = state.isLoading,
-                onNameChange = vm::onBusinessNameChange,
-                onTypeChange = vm::onBusinessTypeChange,
-                onBack = { nav.popBackStack() },
-                onStart = { vm.completeProfile() },
             )
         }
         composable(Route.WELCOME) {
@@ -288,27 +261,6 @@ fun AuthNavHost(
                 onBack = { nav.popBackStack() },
                 onSend = { vm.requestPasswordReset() },
                 onBackToLogin = { nav.popBackStack() },
-            )
-        }
-        composable(Route.SUCCESS) {
-            SuccessScreen(
-                state = state, vm = vm,
-                onContinue = { nav.navigate(Route.PROFILE) },
-            )
-        }
-        composable(Route.PROFILE) {
-            ProfileScreen(
-                state = state, vm = vm,
-                onBack = { nav.popBackStack() },
-                onPickUniversity = { nav.navigate(Route.UNIVERSITY) },
-                onStart = { vm.completeProfile() },
-            )
-        }
-        composable(Route.UNIVERSITY) {
-            UniversityPickerScreen(
-                state = state, vm = vm,
-                onClose = { nav.popBackStack() },
-                onSelectDone = { nav.popBackStack() },
             )
         }
         composable(Route.HOME) {

@@ -1,9 +1,10 @@
 // Generatsiya qilingan API klienti moduli — `iym-native-business` loyihasidagi `:dev:api-client`
 // joylashuvining moslashtirilgan varianti.
 //
-// Bu modulda QO'LDA kod yozilmaydi: uning `src/` papkasini `:dev:api-client-generator` moduli
-// `openApiGenerate` taski to'ldiradi (paket `dev.core.network.generated`). Generatsiya qilingan
-// kod git'da saqlanmaydi (.gitignore), build vaqtida qayta yaratiladi.
+// Bu modulda QO'LDA kod yozilmaydi: generatsiya qilingan Kotlin klientini `:dev:api-client-generator`
+// moduli `openApiGenerate` taski o'zining `build/generated-client/` papkasiga chiqaradi, bu modul esa
+// o'sha kodni `commonMain` srcDir sifatida ulaydi (paket `dev.core.network.generated`). Generatsiya
+// qilingan kod git'da saqlanmaydi, build vaqtida qayta yaratiladi.
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -15,6 +16,13 @@ plugins {
 evaluationDependsOn(":dev:api-client-generator")
 val generateApi = project(":dev:api-client-generator").tasks.named("openApiGenerate")
 
+// Generator chiqishi — SHU srcDir'ni `builtBy(generateApi)` bilan ulash Gradle'ga aniq task
+// bog'liqligini beradi: commonMain manbalarini o'qiydigan HAR bir task (kompilyatsiya, metadata
+// transform, lint...) avtomatik ravishda generatsiyadan keyin ishlaydi. Shu bois pastda nom bo'yicha
+// moslashtiradigan mo'rt `configureEach` blok endi kerak emas.
+val generatedClientSrc = project(":dev:api-client-generator")
+    .layout.buildDirectory.dir("generated-client/src/commonMain/kotlin")
+
 kotlin {
     androidTarget {
         compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) }
@@ -24,6 +32,9 @@ kotlin {
     }
 
     sourceSets {
+        commonMain.configure {
+            kotlin.srcDir(files(generatedClientSrc).builtBy(generateApi))
+        }
         commonMain.dependencies {
             // Generatsiya qilingan klient faqat shu kutubxonalarga tayanadi (HTTP dvigatel'i
             // — okhttp/darwin — `:dev:core:network` da beriladi).
@@ -44,22 +55,5 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-}
-
-// Generatsiya chiqishini o'qiydigan HAR bir task undan oldin ishlashi kerak — nafaqat Kotlin
-// kompilyatsiyasi, balki Android resurs/AarMetadata/prebuild tasklari ham (iym'dagi
-// `tasks.configureEach { ... dependsOn(genV2) }` uslubi).
-tasks.configureEach {
-    if (name.contains("compile", ignoreCase = true) ||
-        name.contains("ProcessResources", ignoreCase = true) ||
-        name.contains("generateResources", ignoreCase = true) ||
-        name.contains("Resources", ignoreCase = true) ||
-        name.contains("AarMetadata", ignoreCase = true) ||
-        name.contains("Sources", ignoreCase = true) ||
-        name.contains("prebuild", ignoreCase = true) ||
-        name.contains("lint", ignoreCase = true)
-    ) {
-        dependsOn(generateApi)
     }
 }

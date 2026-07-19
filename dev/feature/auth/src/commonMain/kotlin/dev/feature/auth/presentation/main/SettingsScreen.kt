@@ -98,7 +98,7 @@ fun SettingsScreen(
             SettingRow(AppIcons.ShieldCheck, "Ilova haqida", if (aboutExpanded) "Versiya 1.0.0" else null, palette) { aboutExpanded = !aboutExpanded }
             if (aboutExpanded) {
                 Text(
-                    "StudentClubs — talabalar uchun super-app: chegirmalar, ishlar, e'lonlar va xabarlar.\nVersiya 1.0.0",
+                    "ElonUz — talabalar uchun super-app: chegirmalar, ishlar, e'lonlar va xabarlar.\nVersiya 1.0.0",
                     style = TextStyle(fontFamily = AppFontFamily, fontSize = 12.sp, color = palette.inkMuted),
                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                 )

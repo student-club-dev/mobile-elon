@@ -1,13 +1,13 @@
 # Chegirmalar — Biznes egalari uchun e'lon yuklash (Backend spetsifikatsiyasi)
 
-Bu hujjat Student Clubs super-app'ining **Chegirmalar** bo'limida biznes egalari
+Bu hujjat Elon Uz super-app'ining **Chegirmalar** bo'limida biznes egalari
 (`BUSINESS` roli) e'lon (offer) yuklashi uchun kerak bo'lgan backend modellari,
 oqimlari va endpoint'larini tavsiflaydi.
 
 Talaba tomoni (ko'rish, qidirish, chegirmani ishlatish) alohida hujjatda —
 bu yerda faqat **biznes egasi nima yuklaydi va u qanday saqlanadi** yoritiladi.
 
-Yakuniy API kontrakti `dev/core/network/openapi/student-clubs.json` (OpenAPI v1) ga
+Yakuniy API kontrakti `dev/api-client-generator/elon-uz.json` (OpenAPI v1) ga
 qo'shiladi — u yagona manba, Kotlin klienti o'sha yerdan generatsiya qilinadi.
 
 ---
@@ -836,7 +836,7 @@ Joylashuvga ruxsat berilmasa masofa ko'rsatilmaydi, lekin ro'yxat baribir ishlay
   "categoryKey": "PIZZA",
   "title": "Pepperoni pitsa",
   "description": "Mozzarella, pepperoni kolbasa, firma sousi. O'tin pechida pishiriladi.",
-  "images": ["https://cdn.studentclubs.dev/l/abc1.webp"],
+  "images": ["https://cdn.elon.uz/l/abc1.webp"],
   "priceUnit": "PER_ITEM",
   "originalPrice": 55000,
   "currency": "UZS",
@@ -983,13 +983,13 @@ ORDER BY distance_meters;
 
 ## 10. OpenAPI spec va Kotlin klienti
 
-Bu hujjatdagi hamma narsa **`dev/core/network/openapi/student-clubs.json`** ga qo'shildi —
+Bu hujjatdagi hamma narsa **`dev/api-client-generator/elon-uz.json`** ga qo'shildi —
 tag'lar: `Business`, `Branches`, `Listings`, `Redemptions`, `Discounts`, `Geo`, `Media`.
 
 Kotlin klientini yangilash:
 
 ```bash
-./gradlew :dev:core:network:openApiGenerate
+./gradlew :dev:api-client-generator:generateAllApi
 ```
 
 Natijada `dev.core.network.generated.api.*` da paydo bo'ladi:

@@ -1,7 +1,7 @@
 // API-generatsiya moduli — `iym-native-business` loyihasidagi `:dev:api-client-generator`
 // joylashuvining moslashtirilgan (bitta spec'li) varianti.
 //
-// Bu modul kod chiqarmaydi: u faqat spec'ni (`student-clubs.json`) ushlaydi va generatsiya
+// Bu modul kod chiqarmaydi: u faqat spec'ni (`elon-uz.json`) ushlaydi va generatsiya
 // tasklarini beradi. Generatsiya qilingan Kotlin klienti qo'shni `:dev:api-client` moduliga
 // yoziladi. Spec — API'ning yagona manbasi.
 //
@@ -15,27 +15,32 @@ plugins {
 }
 
 // Kirish spec'i shu modulda yashaydi.
-val specFile = layout.projectDirectory.file("student-clubs.json")
+val specFile = layout.projectDirectory.file("elon-uz.json")
 
 // Tayyorlangan spec build papkasiga tushadi (iym'dagi `v2-processed.json` ekvivalenti).
-val processedSpec = layout.buildDirectory.file("student-clubs-processed.json")
+val processedSpec = layout.buildDirectory.file("elon-uz-processed.json")
 
-// Generatsiya qilingan kod qo'shni `:dev:api-client` moduliga chiqadi.
-val clientDir = layout.projectDirectory.dir("../api-client")
+// Generatsiya qilingan kod SHU modulning `build/` papkasiga chiqadi, `:dev:api-client` esa uni
+// srcDir sifatida ulaydi (`builtBy` orqali).
+//
+// Nega `../api-client` EMAS: outputDir butun modul papkasini qamrasa, Gradle uchun `api-client/build/`
+// ham shu taskning chiqishi bo'lib qoladi — natijada o'sha papkaga yozadigan har bir task
+// "uses this output without declaring dependency" validatsiya xatosini beradi.
+val clientDir = layout.buildDirectory.dir("generated-client")
 
 // iym'dagi `cleanSwaggerV2` bosqichining moslashtirilgan varianti — hozircha spec'ni
 // build papkasiga ko'chiradi. Keyinchalik spec tozalash/normalizatsiya shu yerga qo'shiladi.
 val cleanSwagger = tasks.register<Copy>("cleanSwagger") {
     from(specFile)
     into(processedSpec.get().asFile.parentFile)
-    rename { "student-clubs-processed.json" }
+    rename { "elon-uz-processed.json" }
 }
 
 openApiGenerate {
     generatorName.set("kotlin")
     library.set("multiplatform")
     inputSpec.set(processedSpec.map { it.asFile.path })
-    outputDir.set(clientDir.asFile.path)
+    outputDir.set(clientDir.map { it.asFile.path })
     packageName.set("dev.core.network.generated")
     apiPackage.set("dev.core.network.generated.api")
     modelPackage.set("dev.core.network.generated.model")
@@ -60,6 +65,6 @@ tasks.named("openApiGenerate") {
 // iym'dagi `generateAllApi` taskining ekvivalenti — bitta joydan hamma API'ni generatsiya qiladi.
 tasks.register("generateAllApi") {
     group = "openapi"
-    description = "Barcha OpenAPI klientlarini generatsiya qiladi (student-clubs.json)"
+    description = "Barcha OpenAPI klientlarini generatsiya qiladi (elon-uz.json)"
     dependsOn("openApiGenerate")
 }

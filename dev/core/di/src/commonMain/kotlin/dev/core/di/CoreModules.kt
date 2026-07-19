@@ -5,7 +5,6 @@ import dev.core.common.AuthTokenProvider
 import dev.core.common.DefaultAppDispatchers
 import dev.core.data.repository.AdRepositoryImpl
 import dev.core.data.repository.ChatRepositoryImpl
-import dev.core.data.repository.ClubRepositoryImpl
 import dev.core.data.repository.DiscountRepositoryImpl
 import dev.core.data.remote.AdRemoteDataSource
 import dev.core.data.remote.ChatRemoteDataSource
@@ -27,10 +26,9 @@ import dev.core.data.repository.UniversityRepositoryImpl
 import dev.core.data.seed.LocalDataSeeder
 import dev.core.database.DatabaseFactory
 import dev.core.database.DriverFactory
-import dev.core.database.sql.StudentClubsDatabase
+import dev.core.database.sql.ElonUzDatabase
 import dev.core.domain.repository.AdRepository
 import dev.core.domain.repository.ChatRepository
-import dev.core.domain.repository.ClubRepository
 import dev.core.domain.repository.DiscountRepository
 import dev.core.domain.repository.JobRepository
 import dev.core.domain.repository.NotificationRepository
@@ -58,10 +56,10 @@ import org.koin.dsl.module
  * ⚠️ Oxiridagi `/v1/` (slash bilan) MUHIM:
  * - Ktor `defaultRequest` nisbiy yo'llarni shunga nisbatan hal qiladi (`get("jobs")` → `/v1/jobs`),
  * - OpenAPI'dan generatsiya qilingan klient ham shu bazaga yo'lni qo'shadi (`/profile/me` → `/v1/profile/me`).
- * API versiyasi `openapi/student-clubs.json` dagi `servers` bilan mos bo'lishi kerak.
+ * API versiyasi `dev/api-client-generator/elon-uz.json` dagi `servers` bilan mos bo'lishi kerak.
  */
-const val DEV_BASE_URL = "https://api.studentclubs.dev/v1/"
-const val PROD_BASE_URL = "https://api.studentclubs.dev/v1/"
+const val DEV_BASE_URL = "https://api.elon.uz/v1/"
+const val PROD_BASE_URL = "https://api.elon.uz/v1/"
 private const val USE_PROD_API = false
 
 /** Joriy bazaviy URL (bitta manba). */
@@ -83,7 +81,7 @@ val networkModule = module {
 }
 
 val databaseModule = module {
-    single<StudentClubsDatabase> { DatabaseFactory.create(get<DriverFactory>()) }
+    single<ElonUzDatabase> { DatabaseFactory.create(get<DriverFactory>()) }
 }
 
 val dispatchersModule = module {
@@ -92,7 +90,6 @@ val dispatchersModule = module {
 
 val repositoryModule = module {
     // AuthRepository (Firebase) auth feature modulida bog'lanadi (authFeatureModule).
-    single<ClubRepository> { ClubRepositoryImpl(get(), get(), get()) }
 
     // Barcha domenlar — local DB (SQLDelight) ustidagi repository'lar.
     // --- B4 offline-first: masofaviy manbalar (Ktor) ---

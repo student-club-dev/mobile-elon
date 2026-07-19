@@ -53,7 +53,6 @@ private const val CHAT = "chat"
 private const val NOTIFICATIONS = "notifications"
 private const val EDIT_PROFILE = "edit_profile"
 private const val SETTINGS = "settings"
-private const val CLUBS = "clubs"
 
 private val tabRoutes = StudentTab.entries.map { it.route }.toSet()
 
@@ -84,7 +83,6 @@ fun StudentShell(onLoggedOut: () -> Unit) {
                     onOpenProfile = { nav.navigate(PROFILE) },
                     onOpenChat = { nav.navigate(CHAT) },
                     onOpenNotifications = { nav.navigate(NOTIFICATIONS) },
-                    onOpenClubs = { nav.navigate(CLUBS) },
                     onOpenDiscounts = { selectTab(StudentTab.DISCOUNTS.route) },
                     onOpenJobs = { selectTab(StudentTab.JOBS.route) },
                     onOpenStudents = { selectTab(StudentTab.STUDENTS.route) },
@@ -115,7 +113,6 @@ fun StudentShell(onLoggedOut: () -> Unit) {
             }
             composable(CHAT) { ChatScreen(onBack = { nav.popBackStack() }) }
             composable(NOTIFICATIONS) { NotificationsScreen(onBack = { nav.popBackStack() }) }
-            composable(CLUBS) { ClubsScreen(onBack = { nav.popBackStack() }) }
             composable(EDIT_PROFILE) { EditProfileScreen(onBack = { nav.popBackStack() }) }
             composable(SETTINGS) {
                 SettingsScreen(

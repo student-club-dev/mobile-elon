@@ -14,7 +14,7 @@ import dev.core.data.mapper.joinDb
 import dev.core.data.mapper.toBool
 import dev.core.data.mapper.toDb
 import dev.core.data.mapper.toDomain
-import dev.core.database.sql.StudentClubsDatabase
+import dev.core.database.sql.ElonUzDatabase
 import dev.core.domain.model.Ad
 import dev.core.domain.model.Conversation
 import dev.core.domain.model.DiscountCategory
@@ -40,7 +40,7 @@ import kotlinx.coroutines.withContext
 // Universitetlar
 // ===========================================================================
 class UniversityRepositoryImpl(
-    private val db: StudentClubsDatabase,
+    private val db: ElonUzDatabase,
     private val dispatchers: AppDispatchers,
     private val remote: UniversityRemoteDataSource,
     private val syncEnabled: Boolean,
@@ -73,7 +73,7 @@ class UniversityRepositoryImpl(
 // Chegirmalar
 // ===========================================================================
 class DiscountRepositoryImpl(
-    private val db: StudentClubsDatabase,
+    private val db: ElonUzDatabase,
     private val dispatchers: AppDispatchers,
     // --- B4 offline-first shabloni: tarmoq manbasi + sinxronlash bayrog'i ---
     private val remote: DiscountRemoteDataSource,
@@ -135,7 +135,7 @@ class DiscountRepositoryImpl(
 // Ishlar
 // ===========================================================================
 class JobRepositoryImpl(
-    private val db: StudentClubsDatabase,
+    private val db: ElonUzDatabase,
     private val dispatchers: AppDispatchers,
     private val remote: JobRemoteDataSource,
     private val syncEnabled: Boolean,
@@ -194,7 +194,7 @@ class JobRepositoryImpl(
 // Studentlar
 // ===========================================================================
 class StudentRepositoryImpl(
-    private val db: StudentClubsDatabase,
+    private val db: ElonUzDatabase,
     private val dispatchers: AppDispatchers,
     private val remote: StudentRemoteDataSource,
     private val syncEnabled: Boolean,
@@ -239,7 +239,7 @@ class StudentRepositoryImpl(
 // E'lonlar
 // ===========================================================================
 class AdRepositoryImpl(
-    private val db: StudentClubsDatabase,
+    private val db: ElonUzDatabase,
     private val dispatchers: AppDispatchers,
     private val remote: AdRemoteDataSource,
     private val syncEnabled: Boolean,
@@ -297,7 +297,7 @@ class AdRepositoryImpl(
 // Chat
 // ===========================================================================
 class ChatRepositoryImpl(
-    private val db: StudentClubsDatabase,
+    private val db: ElonUzDatabase,
     private val dispatchers: AppDispatchers,
     private val remote: ChatRemoteDataSource,
     private val syncEnabled: Boolean,

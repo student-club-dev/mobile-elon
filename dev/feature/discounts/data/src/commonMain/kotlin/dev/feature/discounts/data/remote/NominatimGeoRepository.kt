@@ -22,7 +22,7 @@ import kotlinx.serialization.Serializable
  * bizda so'rov faqat foydalanuvchi xaritada nuqta tanlaganda ketadi, shuning uchun yetarli.
  *
  * MUHIM: bu klient ilovaning umumiy Ktor klienti EMAS — u har so'rovga Firebase Bearer
- * tokenini qo'shadi va bazaviy manzili `api.studentclubs.dev`. Nominatim'ga o'z klienti kerak.
+ * tokenini qo'shadi va bazaviy manzili `api.elon.uz`. Nominatim'ga o'z klienti kerak.
  */
 class NominatimGeoRepository(
     private val httpClient: HttpClient,
@@ -63,7 +63,7 @@ class NominatimGeoRepository(
 
     private companion object {
         const val BASE_URL = "https://nominatim.openstreetmap.org"
-        const val USER_AGENT = "StudentClubs/1.0 (https://studentclubs.dev)"
+        const val USER_AGENT = "ElonUz/1.0 (https://elon.uz)"
     }
 }
 

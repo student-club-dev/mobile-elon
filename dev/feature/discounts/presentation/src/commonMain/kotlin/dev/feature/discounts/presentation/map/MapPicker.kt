@@ -41,7 +41,7 @@ expect fun MapPicker(
 )
 
 /** Xarita bosilganda JS shu ko'prik orqali koordinatani Kotlin'ga uzatadi. */
-internal const val MAP_BRIDGE = "StudentClubsMap"
+internal const val MAP_BRIDGE = "ElonUzMap"
 
 /**
  * Plitka serveri — **CARTO Voyager** (OpenStreetMap ma'lumoti ustiga toza dizayn).

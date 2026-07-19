@@ -5,7 +5,7 @@ Telegram Firebase'ning tayyor provideri emas, shuning uchun oqim quyidagicha:
 ```
 Ilova → Telegram Login sahifasi (Firebase Hosting) → foydalanuvchi Telegram'da tasdiqlaydi
       → Cloud Function imzoni bot token bilan tekshiradi → Firebase custom token
-      → sahifa `studentclubs://telegram?token=...` deep-link'iga qaytadi
+      → sahifa `elonuz://telegram?token=...` deep-link'iga qaytadi
       → ilova custom token bilan Firebase'ga kiradi
 ```
 
@@ -36,10 +36,10 @@ firebase deploy --only functions,hosting
 ```
 
 ## 4. Deep-link (allaqachon kodda)
-- **Android**: `TelegramAuthActivity` + `studentclubs://telegram` intent-filter
+- **Android**: `TelegramAuthActivity` + `elonuz://telegram` intent-filter
   (`dev/feature/auth/src/androidMain/AndroidManifest.xml`) — tayyor.
-- **iOS**: `ASWebAuthenticationSession` callback scheme `studentclubs` — `SocialAuthBridge.swift`da tayyor.
-  Ixtiyoriy: `Info.plist`ga `studentclubs` URL scheme qo'shsangiz, universal ishlaydi.
+- **iOS**: `ASWebAuthenticationSession` callback scheme `elonuz` — `SocialAuthBridge.swift`da tayyor.
+  Ixtiyoriy: `Info.plist`ga `elonuz` URL scheme qo'shsangiz, universal ishlaydi.
 
 ## 5. Tekshirish
 Ilovada **Welcome / Telefon** ekranidagi Telegram tugmasini bosing → Telegram tasdiq →

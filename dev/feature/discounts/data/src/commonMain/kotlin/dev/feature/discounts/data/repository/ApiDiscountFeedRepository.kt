@@ -6,7 +6,6 @@ import dev.core.common.error.AppException
 import dev.core.common.error.toAppException
 import dev.core.common.network.NetworkConnectivity
 import dev.core.network.generated.api.DiscountsApi
-import dev.core.network.generated.model.BusinessTypeDto
 import dev.core.network.generated.model.DiscountCardDto
 import dev.core.network.generated.model.DiscountPageDto
 import dev.core.network.generated.model.DiscountSortDto
@@ -44,7 +43,7 @@ class ApiDiscountFeedRepository(
                 lat = query.lat,
                 lng = query.lng,
                 radiusMeters = query.radiusMeters,
-                type = query.businessType?.let { BusinessTypeDto.valueOf(it.name) },
+                type = query.businessType?.name,
                 categoryKey = query.categoryKey,
                 query = query.query?.takeIf { it.isNotBlank() },
                 sort = query.sort.toDto(),
@@ -72,7 +71,7 @@ private fun DiscountSort.toDto(): DiscountSortDto = when (this) {
 
 /** Backend bizga noma'lum tur yuborsa yoki nom bermasa — karta o'tkazib yuboriladi. */
 private fun DiscountCardDto.toDomain(): DiscountCard? {
-    val type = businessType?.let { dto -> BusinessType.entries.firstOrNull { it.name == dto.value } }
+    val type = businessType?.let { key -> BusinessType.entries.firstOrNull { it.name == key } }
         ?: return null
     val discountType = DiscountType.entries.firstOrNull { it.name == discount.type.value }
         ?: return null
