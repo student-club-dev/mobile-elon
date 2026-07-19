@@ -44,5 +44,7 @@
 	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Yaqin-atrofdagi chegirmalar va biznes filialini xaritada ko'rsatish uchun joylashuvingizdan foydalaniladi.</string>
 </dict>
 </plist>
