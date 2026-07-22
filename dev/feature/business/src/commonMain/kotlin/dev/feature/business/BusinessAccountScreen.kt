@@ -24,30 +24,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.core.uikit.component.AppIcons
-import dev.core.uikit.component.GlassCard
 import dev.core.uikit.component.GlassRow
 import dev.core.uikit.component.GradientHeader
 import dev.core.uikit.component.HeaderIconButton
 import dev.core.uikit.component.IconTile
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.business_account_title
-import dev.core.uikit.resources.business_field_phone
-import dev.core.uikit.resources.business_info_email
-import dev.core.uikit.resources.business_info_hours
-import dev.core.uikit.resources.business_info_hours_unset
-import dev.core.uikit.resources.business_info_type
 import dev.core.uikit.resources.business_menu_listings
 import dev.core.uikit.resources.business_menu_settings
-import dev.core.uikit.resources.business_rating_new
 import dev.core.uikit.resources.business_stat_active
 import dev.core.uikit.resources.business_stat_redemptions
 import dev.core.uikit.resources.business_stat_views
-import dev.core.uikit.resources.business_type_default
 import dev.core.uikit.resources.business_verified
 import dev.core.uikit.resources.common_back
 import dev.core.uikit.resources.common_edit
@@ -58,13 +49,16 @@ import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
 import dev.feature.business.components.AccountRow
-import dev.feature.business.components.InfoRow
 import dev.feature.business.components.RowPaddingHorizontal
 import dev.feature.business.components.RowPaddingVertical
 import dev.feature.business.components.StatCard
 import dev.feature.profile.presentation.ProfileViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import androidx.compose.ui.unit.sp
+import dev.feature.profile.presentation.components.ProfileAvatar
+import dev.core.uikit.resources.business_profile_title
+import dev.core.uikit.resources.business_profile_no_contact
 
 /** Handoff: gradient header ostki burchagi 36dp. */
 private val HeaderCorner = 36.dp
@@ -93,11 +87,7 @@ fun BusinessAccountScreen(
     val palette = appPalette
     val state by vm.state.collectAsStateWithLifecycle()
 
-    val businessName = state.profile?.businessName?.takeIf { it.isNotBlank() } ?: state.name
     // Saqlangan tur — barqaror id. Ekranda tarjimasi ko'rsatiladi, ikonka esa id bo'yicha tanlanadi.
-    val businessTypeId = state.profile?.businessType?.takeIf { it.isNotBlank() }
-    val businessTypeText = businessTypeId?.let { businessTypeLabel(it) }
-        ?: stringResource(Res.string.business_type_default)
     val phone = state.profile?.phoneNumber?.takeIf { it.isNotBlank() } ?: state.contact.takeIf { it.isNotBlank() }
     val email = state.profile?.email?.takeIf { it.isNotBlank() }
 
@@ -130,7 +120,7 @@ fun BusinessAccountScreen(
                     contentDescription = stringResource(Res.string.common_back),
                 )
                 Text(
-                    stringResource(Res.string.business_account_title),
+                    stringResource(Res.string.business_profile_title),
                     modifier = Modifier.weight(1f),
                     // Gradient ustidagi matn — palitra emas, doim oq.
                     style = AppType.sheetTitle.copy(color = Color.White),
@@ -159,20 +149,21 @@ fun BusinessAccountScreen(
                 horizontalArrangement = Arrangement.spacedBy(14.dp),
                 palette = palette,
             ) {
-                IconTile(
-                    typeIcon(businessTypeId.orEmpty()),
-                    tint = palette.primary,
-                    background = palette.accentBg,
+                // Bu SHAXSIY profil — biznesniki emas: avatar va ism foydalanuvchiniki.
+                // Biznes o'z kartochkasida (Bizneslarim) va tahrirlash ekranida ko'rsatiladi.
+                ProfileAvatar(
+                    name = state.name,
                     size = 58.dp,
-                    iconSize = AppSize.iconFab,
-                    shape = AppRadius.row,
+                    fontSize = 22.sp,
+                    palette = palette,
+                    avatarUrl = state.profile?.avatarUrl,
                 )
                 Column(Modifier.weight(1f)) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp),
                     ) {
-                        Text(businessName, style = AppType.cardTitle.copy(color = palette.ink))
+                        Text(state.name, style = AppType.cardTitle.copy(color = palette.ink))
                         Icon(
                             AppIcons.ShieldCheck,
                             stringResource(Res.string.business_verified),
@@ -181,17 +172,13 @@ fun BusinessAccountScreen(
                         )
                     }
                     Spacer(Modifier.height(2.dp))
-                    Text(businessTypeText, style = AppType.secondary.copy(color = palette.inkMuted))
-                    Spacer(Modifier.height(AppSpacing.xs))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(AppSpacing.xs),
-                    ) {
-                        Icon(AppIcons.Star, null, tint = palette.warning, modifier = Modifier.size(13.dp))
-                        Text(
-                            stringResource(Res.string.business_rating_new),
-                            style = AppType.groupLabel.copy(color = palette.warning),
-                        )
+                    Text(
+                        phone ?: email ?: stringResource(Res.string.business_profile_no_contact),
+                        style = AppType.secondary.copy(color = palette.inkMuted),
+                    )
+                    if (email != null) {
+                        Spacer(Modifier.height(2.dp))
+                        Text(email, style = AppType.caption.copy(color = palette.inkFaint))
                     }
                 }
             }
@@ -201,45 +188,6 @@ fun BusinessAccountScreen(
                 StatCard(stringResource(Res.string.business_stat_active), "0", AppIcons.Tag, palette, Modifier.weight(1f))
                 StatCard(stringResource(Res.string.business_stat_redemptions), "0", AppIcons.ScanFace, palette, Modifier.weight(1f))
                 StatCard(stringResource(Res.string.business_stat_views), "0", AppIcons.Users, palette, Modifier.weight(1f))
-            }
-
-            // Biznes ma'lumotlari — qatorlar orasida nozik ajratgich, oxirgisida yo'q.
-            GlassCard(
-                shape = AppRadius.card,
-                contentPadding = PaddingValues(horizontal = RowPaddingHorizontal, vertical = 6.dp),
-                palette = palette,
-            ) {
-                InfoRow(
-                    AppIcons.Home,
-                    stringResource(Res.string.business_info_type),
-                    businessTypeText,
-                    palette,
-                    showDivider = true,
-                )
-                if (phone != null) {
-                    InfoRow(
-                        AppIcons.Phone,
-                        stringResource(Res.string.business_field_phone),
-                        phone,
-                        palette,
-                        showDivider = true,
-                    )
-                }
-                if (email != null) {
-                    InfoRow(
-                        AppIcons.Mail,
-                        stringResource(Res.string.business_info_email),
-                        email,
-                        palette,
-                        showDivider = true,
-                    )
-                }
-                InfoRow(
-                    AppIcons.Clock,
-                    stringResource(Res.string.business_info_hours),
-                    stringResource(Res.string.business_info_hours_unset),
-                    palette,
-                )
             }
 
             // Menyu
@@ -267,10 +215,3 @@ fun BusinessAccountScreen(
     }
 }
 
-/** Biznes turiga mos ikonka (mavjud ikonkalar ichidan). Tur id'i bo'yicha — tarjimaga bog'liq emas. */
-private fun typeIcon(type: String): ImageVector = when {
-    type.contains("O'quv", ignoreCase = true) -> AppIcons.GraduationCap
-    type.contains("Kino", ignoreCase = true) -> AppIcons.Star
-    type.contains("Texnika", ignoreCase = true) -> AppIcons.Building
-    else -> AppIcons.Store
-}

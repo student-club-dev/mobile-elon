@@ -63,4 +63,6 @@
     <string name="business_type_flowers">Flower shop</string>
     <string name="business_type_other">Other</string>
 
+    <string name="business_profile_title">Profile</string>
+    <string name="business_profile_no_contact">No contact details yet</string>
 </resources>

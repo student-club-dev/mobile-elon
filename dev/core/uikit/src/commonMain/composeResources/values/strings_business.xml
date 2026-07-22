@@ -70,4 +70,6 @@
     <string name="business_type_flowers">Gul do'koni</string>
     <string name="business_type_other">Boshqa</string>
 
+    <string name="business_profile_title">Profil</string>
+    <string name="business_profile_no_contact">Aloqa ma'lumoti kiritilmagan</string>
 </resources>

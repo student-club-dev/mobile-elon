@@ -63,4 +63,6 @@
     <string name="business_type_flowers">Цветочный магазин</string>
     <string name="business_type_other">Другое</string>
 
+    <string name="business_profile_title">Профиль</string>
+    <string name="business_profile_no_contact">Контактные данные не указаны</string>
 </resources>
