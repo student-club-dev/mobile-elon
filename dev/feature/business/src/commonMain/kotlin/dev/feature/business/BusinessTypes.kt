@@ -79,8 +79,8 @@ internal fun TypeChip(type: BusinessType, active: Boolean, onClick: () -> Unit, 
         Modifier
             .height(44.dp)
             .clip(shape)
-            .background(if (active) palette.primary.copy(alpha = 0.14f) else palette.fieldBg)
-            .border(if (active) 1.5.dp else 1.dp, if (active) palette.primary else palette.border, shape)
+            .background(if (active) palette.accentBg else palette.card)
+            .then(if (active) Modifier.border(1.5.dp, palette.primary, shape) else Modifier)
             .clickable(onClick = onClick)
             .padding(horizontal = AppSpacing.lg),
         verticalAlignment = Alignment.CenterVertically,

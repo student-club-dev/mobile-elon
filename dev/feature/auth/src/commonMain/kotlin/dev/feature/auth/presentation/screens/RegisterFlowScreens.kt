@@ -66,7 +66,7 @@ fun RegisterChoiceScreen(
         BackButton(onBack, contentDescription = stringResource(Res.string.common_back))
         Spacer(Modifier.height(AppSpacing.xl))
         LogoTile(size = 56.dp, radius = 17.dp, iconSize = 30.dp)
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(AppSpacing.xl))
         ScreenTitle(stringResource(Res.string.auth_register_choice_title))
         Spacer(Modifier.height(6.dp))
         ScreenSubtitle(stringResource(Res.string.auth_register_choice_subtitle))
@@ -124,7 +124,7 @@ fun EmailVerifyScreen(
             style = AppType.subtitle,
         )
 
-        Spacer(Modifier.height(22.dp))
+        Spacer(Modifier.height(AppSpacing.section))
         CodeInput(state.emailCode, vm::onEmailCodeChange, palette)
 
         Spacer(Modifier.height(20.dp))
@@ -136,7 +136,7 @@ fun EmailVerifyScreen(
             palette = palette,
         )
 
-        Spacer(Modifier.height(22.dp))
+        Spacer(Modifier.height(AppSpacing.section))
         PrimaryButton(
             stringResource(Res.string.auth_verify),
             onVerify,
@@ -146,7 +146,7 @@ fun EmailVerifyScreen(
 
         state.info?.let {
             Spacer(Modifier.height(AppSpacing.md))
-            Text(it, style = AppType.error.copy(fontWeight = AppType.bodyStrong.fontWeight, color = palette.successDeep))
+            Text(it, style = AppType.error.copy(fontWeight = AppType.bodyStrong.fontWeight, color = palette.success))
         }
         ErrorText(state.error)
 

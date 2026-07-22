@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -124,7 +123,7 @@ private fun ChatThread(
     // header tepada qotib qoladi, xabarlar bo'limi qisqaradi (surilmaydi).
     Column(Modifier.fillMaxSize().imePadding()) {
         // Header — tepada QOTIB turadi (scroll bo'lmaydi)
-        Column(Modifier.fillMaxWidth().background(palette.glass)) {
+        Column(Modifier.fillMaxWidth().background(palette.card)) {
             Row(
                 Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg).padding(top = 54.dp, bottom = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -134,7 +133,7 @@ private fun ChatThread(
                 Box(contentAlignment = Alignment.Center) {
                     MonogramTile(conversation.peerInitial, size = 42.dp, fontSize = 16.sp)
                     if (conversation.online) {
-                        OnlineDot(palette, ringColor = palette.glass, modifier = Modifier.align(Alignment.BottomEnd))
+                        OnlineDot(palette, ringColor = palette.card, modifier = Modifier.align(Alignment.BottomEnd))
                     }
                 }
                 Column(Modifier.weight(1f)) {
@@ -151,7 +150,7 @@ private fun ChatThread(
                             stringResource(Res.string.auth_chat_offline)
                         },
                         style = AppType.hint.copy(
-                            color = if (conversation.online) palette.successDeep else palette.inkFaint,
+                            color = if (conversation.online) palette.success else palette.inkFaint,
                         ),
                     )
                 }
@@ -163,12 +162,12 @@ private fun ChatThread(
                         background = palette.dangerBg,
                         size = 38.dp,
                         iconSize = 16.dp,
-                        shape = RoundedCornerShape(11.dp),
+                        shape = AppRadius.sm,
                         onClick = { showClearConfirm = true },
                     )
                 }
             }
-            Box(Modifier.fillMaxWidth().height(1.dp).background(palette.border))
+            Box(Modifier.fillMaxWidth().height(1.dp).background(palette.divider))
         }
 
         // Xabarlar — FAQAT shu qism scroll bo'ladi
@@ -184,8 +183,8 @@ private fun ChatThread(
         }
 
         // Kiritish paneli — klaviatura tepasida qoladi (imePadding)
-        Column(Modifier.fillMaxWidth().background(palette.glass)) {
-            Box(Modifier.fillMaxWidth().height(1.dp).background(palette.border))
+        Column(Modifier.fillMaxWidth().background(palette.card)) {
+            Box(Modifier.fillMaxWidth().height(1.dp).background(palette.divider))
             Row(
                 Modifier.fillMaxWidth().padding(horizontal = AppSpacing.md, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,

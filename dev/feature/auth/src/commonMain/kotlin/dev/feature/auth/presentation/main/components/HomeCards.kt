@@ -1,7 +1,6 @@
 package dev.feature.auth.presentation.main.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,6 +32,7 @@ import dev.core.domain.model.FriendStatus
 import dev.core.domain.model.Job
 import dev.core.domain.model.Student
 import dev.core.uikit.component.AppIcons
+import dev.core.uikit.component.GlassRow
 import dev.core.uikit.component.MonogramTile
 import dev.core.uikit.component.SoftPill
 import dev.core.uikit.resources.Res
@@ -57,6 +56,7 @@ import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
+import dev.core.uikit.theme.rowShadow
 import org.jetbrains.compose.resources.stringResource
 
 // ---------------------------------------------------------------------------
@@ -74,7 +74,7 @@ internal fun SectionHeader(
 ) {
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
-            Text(title, style = AppType.screenTitle.copy(fontSize = 17.sp, letterSpacing = 0.sp, color = palette.ink))
+            Text(title, style = AppType.cardTitle.copy(color = palette.ink))
             if (subtitle != null) {
                 Text(subtitle, style = AppType.hint.copy(color = palette.inkFaint))
             }
@@ -83,7 +83,7 @@ internal fun SectionHeader(
             Row(
                 Modifier.then(
                     if (onAction != null) {
-                        Modifier.clip(RoundedCornerShape(8.dp)).clickable(onClick = onAction)
+                        Modifier.clip(AppRadius.sm).clickable(onClick = onAction)
                             .padding(horizontal = AppSpacing.xs, vertical = 2.dp)
                     } else {
                         Modifier
@@ -141,7 +141,8 @@ internal fun DiscountsSection(
 private fun CategoryChip(category: DiscountCategory, palette: AppPalette, onClick: () -> Unit) {
     val shape = AppRadius.pill
     Row(
-        Modifier.clip(shape).background(palette.glass).border(1.dp, palette.border, shape)
+        // Chegara emas, yengil soya — yangi dizaynda chip ham "suzuvchi" oq yuza.
+        Modifier.rowShadow(shape).clip(shape).background(palette.card)
             .clickable(onClick = onClick).padding(horizontal = AppSpacing.md, vertical = AppSpacing.sm),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -160,12 +161,12 @@ private fun CategoryChip(category: DiscountCategory, palette: AppPalette, onClic
 private fun FeaturedOfferCard(offer: DiscountOffer, palette: AppPalette, onClick: () -> Unit) {
     // Aksent domendan keladi (har bir taklifning o'z banneri) — palitra tokeni emas.
     val accent = Color(offer.bannerAccent)
-    val shape = AppRadius.card
-    Row(
-        Modifier.fillMaxWidth().clip(shape).background(palette.glassStrong)
-            .border(1.dp, palette.border, shape).clickable(onClick = onClick).padding(AppSpacing.md),
-        verticalAlignment = Alignment.CenterVertically,
+    GlassRow(
+        shape = AppRadius.card,
+        contentPadding = PaddingValues(AppSpacing.md),
         horizontalArrangement = Arrangement.spacedBy(AppSpacing.md),
+        onClick = onClick,
+        palette = palette,
     ) {
         Box(
             Modifier.size(52.dp).clip(AppRadius.lg).background(accent.copy(alpha = 0.15f)),
@@ -174,7 +175,7 @@ private fun FeaturedOfferCard(offer: DiscountOffer, palette: AppPalette, onClick
         Column(Modifier.weight(1f)) {
             Text(
                 stringResource(Res.string.auth_home_offer_title, offer.merchant, "${offer.discountPercent}%"),
-                style = AppType.label.copy(fontSize = 13.5f.sp, fontWeight = AppType.button.fontWeight, color = palette.ink),
+                style = AppType.subtitle.copy(fontWeight = AppType.button.fontWeight, color = palette.ink),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -192,7 +193,7 @@ private fun FeaturedOfferCard(offer: DiscountOffer, palette: AppPalette, onClick
             contentAlignment = Alignment.Center,
         ) {
             // To'ldirilgan aksent USTIDAGI matn — palitradan emas, doim oq.
-            Text("−${offer.discountPercent}%", style = AppType.screenTitle.copy(fontSize = 13.sp, letterSpacing = 0.sp, color = palette.onPrimary))
+            Text("−${offer.discountPercent}%", style = AppType.secondary.copy(fontWeight = AppType.button.fontWeight, color = palette.onPrimary))
         }
     }
 }
@@ -218,18 +219,17 @@ internal fun JobsSection(jobs: List<Job>, palette: AppPalette, onSeeAll: () -> U
 
 @Composable
 private fun JobRow(job: Job, palette: AppPalette, onBookmark: (Job) -> Unit) {
-    val shape = RoundedCornerShape(16.dp)
-    Row(
-        Modifier.fillMaxWidth().clip(shape).background(palette.glass)
-            .border(1.dp, palette.border, shape).padding(AppSpacing.md),
-        verticalAlignment = Alignment.CenterVertically,
+    GlassRow(
+        shape = AppRadius.md,
+        contentPadding = PaddingValues(AppSpacing.md),
         horizontalArrangement = Arrangement.spacedBy(11.dp),
+        palette = palette,
     ) {
         MonogramTile(job.companyMonogram, size = 42.dp, shape = AppRadius.md, fontSize = 16.sp, backgroundAlpha = 0.12f)
         Column(Modifier.weight(1f)) {
             Text(
                 job.title,
-                style = AppType.label.copy(fontSize = 13.5f.sp, fontWeight = AppType.button.fontWeight, color = palette.ink),
+                style = AppType.subtitle.copy(fontWeight = AppType.button.fontWeight, color = palette.ink),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -241,7 +241,7 @@ private fun JobRow(job: Job, palette: AppPalette, onBookmark: (Job) -> Unit) {
                 overflow = TextOverflow.Ellipsis,
             )
             Spacer(Modifier.height(AppSpacing.xs))
-            Text(job.salary, style = AppType.link.copy(fontWeight = AppType.label.fontWeight, color = palette.successDeep))
+            Text(job.salary, style = AppType.link.copy(fontWeight = AppType.label.fontWeight, color = palette.success))
         }
         Icon(
             AppIcons.Bookmark,
@@ -281,10 +281,11 @@ internal fun StudentsSection(
 
 @Composable
 private fun StudentConnectCard(student: Student, palette: AppPalette, onFriend: (Student) -> Unit) {
-    val shape = RoundedCornerShape(16.dp)
+    val shape = AppRadius.md
     Column(
-        Modifier.width(128.dp).clip(shape).background(palette.glass)
-            .border(1.dp, palette.border, shape).padding(AppSpacing.md),
+        // Oq karta + yumshoq soya (chegara yo'q).
+        Modifier.width(128.dp).rowShadow(shape).clip(shape).background(palette.card)
+            .padding(AppSpacing.md),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(7.dp),
     ) {
@@ -295,7 +296,7 @@ private fun StudentConnectCard(student: Student, palette: AppPalette, onFriend: 
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        Text(student.universityMonogram, style = AppType.caption.copy(fontSize = 10.5f.sp, color = palette.inkFaint))
+        Text(student.universityMonogram, style = AppType.caption.copy(color = palette.inkFaint))
         FriendButton(student, palette, onFriend)
     }
 }

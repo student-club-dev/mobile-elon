@@ -1,7 +1,6 @@
 package dev.feature.auth.presentation.main
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -35,7 +33,6 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.core.domain.model.DiscountCategory
 import dev.core.domain.model.DiscountOffer
@@ -61,6 +58,8 @@ import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
+import dev.core.uikit.theme.cardShadow
+import dev.core.uikit.theme.rowShadow
 import dev.feature.discounts.presentation.NearbyDiscountsSection
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
@@ -104,7 +103,7 @@ private fun DiscountsGrid(
         Column(Modifier.fillMaxWidth()) {
             Text(
                 stringResource(Res.string.auth_discounts_title),
-                style = AppType.screenTitle.copy(letterSpacing = 0.sp, color = palette.ink),
+                style = AppType.screenTitle.copy(color = palette.ink),
             )
             Spacer(Modifier.height(AppSpacing.xs))
             Text(
@@ -112,12 +111,12 @@ private fun DiscountsGrid(
                 style = AppType.link.copy(color = palette.inkMuted),
             )
         }
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(AppSpacing.xl))
 
         // Biznes egalari yuklagan haqiqiy e'lonlar — eng yaqin filiali va masofasi bilan
         // (feature:discounts). E'lon bo'lmasa bo'lim ko'rinmaydi.
         NearbyDiscountsSection()
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(AppSpacing.xl))
 
         Column(verticalArrangement = Arrangement.spacedBy(11.dp)) {
             categories.chunked(2).forEach { rowItems ->
@@ -140,19 +139,20 @@ private fun CategoryCard(
 ) {
     // Aksent domendan keladi (har bir kategoriyaning o'z rangi) — palitra tokeni emas.
     val accent = Color(category.accent)
-    val shape = RoundedCornerShape(16.dp)
+    val shape = AppRadius.md
     Column(
-        modifier.clip(shape).background(palette.glass).border(1.dp, palette.border, shape)
-            .clickable { onOpen(category) }.padding(14.dp),
+        // Oq karta — chegara emas, soya bilan ajratiladi.
+        modifier.rowShadow(shape).clip(shape).background(palette.card)
+            .clickable { onOpen(category) }.padding(AppSpacing.lg),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Box(
-            Modifier.size(46.dp).clip(RoundedCornerShape(13.dp)).background(accent.copy(alpha = 0.14f)),
+            Modifier.size(46.dp).clip(AppRadius.sm).background(accent.copy(alpha = 0.14f)),
             contentAlignment = Alignment.Center,
         ) { Icon(AppIcons.forCatalog(category.id), null, tint = accent, modifier = Modifier.size(23.dp)) }
         Text(
             category.name,
-            style = AppType.label.copy(fontSize = 13.5f.sp, fontWeight = AppType.button.fontWeight, color = palette.ink),
+            style = AppType.subtitle.copy(fontWeight = AppType.button.fontWeight, color = palette.ink),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
@@ -190,7 +190,7 @@ private fun CategoryOffers(
                 )
                 Text(
                     stringResource(Res.string.auth_discounts_category_title, category.name),
-                    style = AppType.screenTitle.copy(fontSize = 17.sp, letterSpacing = 0.sp, color = palette.ink),
+                    style = AppType.cardTitle.copy(color = palette.ink),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -232,12 +232,12 @@ private fun OfferCard(
     LaunchedEffect(copied) { if (copied) { delay(1500); copied = false } }
     val shape = AppRadius.card
     Column(
-        Modifier.fillMaxWidth().clip(shape).background(palette.glass).border(1.dp, palette.border, shape),
+        Modifier.fillMaxWidth().cardShadow(shape).clip(shape).background(palette.card),
     ) {
         // Rangli banner
         Box(
             Modifier.fillMaxWidth().height(64.dp).background(accent.copy(alpha = 0.16f))
-                .padding(horizontal = 14.dp),
+                .padding(horizontal = AppSpacing.lg),
             contentAlignment = Alignment.CenterStart,
         ) {
             Icon(AppIcons.forCatalog(offer.categoryId), null, tint = accent, modifier = Modifier.size(30.dp))
@@ -249,11 +249,11 @@ private fun OfferCard(
                 // To'ldirilgan aksent USTIDAGI matn — doim oq.
                 Text(
                     "−${offer.discountPercent}%",
-                    style = AppType.screenTitle.copy(fontSize = 15.sp, letterSpacing = 0.sp, color = palette.onPrimary),
+                    style = AppType.button.copy(color = palette.onPrimary),
                 )
             }
         }
-        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
+        Column(Modifier.padding(AppSpacing.lg), verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
             Text(
                 "${offer.merchant} — ${offer.title}",
                 style = AppType.body.copy(fontWeight = AppType.button.fontWeight, color = palette.ink),
@@ -271,8 +271,8 @@ private fun OfferCard(
                 if (promo != null) {
                     Spacer(Modifier.size(6.dp))
                     Row(
-                        Modifier.clip(RoundedCornerShape(8.dp))
-                            .background(palette.primary.copy(alpha = 0.08f))
+                        Modifier.clip(AppRadius.sm)
+                            .background(palette.accentBg)
                             .clickable { clipboard.setText(AnnotatedString(promo)); copied = true }
                             .padding(horizontal = AppSpacing.sm, vertical = AppSpacing.xs),
                         verticalAlignment = Alignment.CenterVertically,
@@ -281,7 +281,6 @@ private fun OfferCard(
                         Text(
                             if (copied) stringResource(Res.string.auth_copied) else promo,
                             style = AppType.caption.copy(
-                                fontSize = 10.5f.sp,
                                 fontWeight = AppType.button.fontWeight,
                                 color = palette.primary,
                             ),
@@ -307,7 +306,7 @@ private fun OfferCard(
             // Manzil oldidagi belgi emoji emas — `ic_pin` ikonkasi (iOS'da emoji chizilmaydi).
             val meta = listOfNotNull(offer.location, offer.expiry).joinToString(" · ")
             if (meta.isNotBlank()) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(AppSpacing.xs)) {
                     if (offer.location != null) {
                         Icon(AppIcons.Pin, null, tint = palette.inkFaint, modifier = Modifier.size(12.dp))
                     }

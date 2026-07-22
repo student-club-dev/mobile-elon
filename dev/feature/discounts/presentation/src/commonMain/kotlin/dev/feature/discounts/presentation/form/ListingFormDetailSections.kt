@@ -41,6 +41,7 @@ import dev.core.uikit.resources.discounts_validity_section
 import dev.core.uikit.resources.discounts_validity_subtitle
 import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
+import dev.core.uikit.theme.AppSize
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
@@ -110,7 +111,7 @@ fun AboutSection(
         subtitle = stringResource(Res.string.discounts_about_subtitle),
         error = state.errorFor(ListingField.TITLE),
     ) {
-        GlassTextField(state.title, vm::onTitle, stringResource(copy.titleHint), height = 48.dp, type = AppFieldType.LatinText)
+        GlassTextField(state.title, vm::onTitle, stringResource(copy.titleHint), height = AppSize.fieldHeight, type = AppFieldType.LatinText)
         GlassTextField(state.description, vm::onDescription, stringResource(copy.descriptionHint), height = 110.dp, type = AppFieldType.LatinText)
     }
 }
@@ -141,7 +142,7 @@ fun PriceAndDiscountSection(
         )
         GlassTextField(
             state.originalPrice, vm::onPrice, stringResource(Res.string.discounts_price_old_hint),
-            height = 48.dp,
+            height = AppSize.fieldHeight,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             trailing = { Suffix(stringResource(Res.string.discounts_sum_suffix), palette) },
             palette = palette,
@@ -151,7 +152,7 @@ fun PriceAndDiscountSection(
             MiniLabel(stringResource(Res.string.discounts_price_new_label), palette)
             GlassTextField(
                 state.discountValue, vm::onDiscountValue, stringResource(Res.string.discounts_price_new_hint),
-                height = 48.dp,
+                height = AppSize.fieldHeight,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 trailing = { Suffix(stringResource(Res.string.discounts_sum_suffix), palette) },
                 palette = palette,
@@ -171,7 +172,7 @@ fun PriceAndDiscountSection(
                         stringResource(Res.string.discounts_student_pays, new.formatSum()),
                         style = AppType.label.copy(
                             fontWeight = AppType.screenTitle.fontWeight,
-                            color = palette.successDeep,
+                            color = palette.success,
                         ),
                     )
                     Spacer(Modifier.weight(1f))
@@ -179,7 +180,7 @@ fun PriceAndDiscountSection(
                         stringResource(Res.string.discounts_percent_off, "$percent"),
                         style = AppType.fieldLabel.copy(
                             fontWeight = AppType.buttonSecondary.fontWeight,
-                            color = palette.successDeep,
+                            color = palette.success,
                         ),
                     )
                 }
@@ -197,7 +198,7 @@ fun ContactSection(state: PostListingUiState, vm: PostListingViewModel) {
     ) {
         GlassTextField(
             state.contactPhone, vm::onContactPhone, stringResource(Res.string.discounts_contact_hint),
-            height = 48.dp,
+            height = AppSize.fieldHeight,
             leadingContent = { Text(UZ_DIALING_CODE, style = AppType.bodyStrong.copy(color = appPalette.ink)) },
             type = AppFieldType.UzPhone,
         )
@@ -207,7 +208,7 @@ fun ContactSection(state: PostListingUiState, vm: PostListingViewModel) {
 /** Maydon ustidagi kichik yorliq. */
 @Composable
 private fun MiniLabel(text: String, palette: AppPalette) {
-    Text(text, style = AppType.fieldLabel.copy(color = palette.label))
+    Text(text, style = AppType.fieldLabel.copy(color = palette.inkMuted))
 }
 
 /** 5. Qanday ishlatiladi — uchta variant, limitlar yo'q (odatiy: kuniga 1 marta). */
@@ -228,7 +229,7 @@ fun RedemptionSection(state: PostListingUiState, vm: PostListingViewModel) {
                 state.promoCode,
                 vm::onPromoCode,
                 stringResource(Res.string.discounts_promo_hint),
-                height = 46.dp,
+                height = AppSize.fieldHeight,
             )
         }
     }

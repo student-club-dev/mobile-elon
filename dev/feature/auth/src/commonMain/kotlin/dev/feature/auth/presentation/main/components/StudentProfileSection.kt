@@ -1,7 +1,6 @@
 package dev.feature.auth.presentation.main.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -26,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import dev.core.domain.model.FriendStatus
 import dev.core.domain.model.Student
 import dev.core.uikit.component.AppIcons
@@ -43,6 +40,7 @@ import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
+import dev.core.uikit.theme.rowShadow
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -63,7 +61,14 @@ internal fun StudentProfile(
 ) {
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         GradientHeader(palette = palette) {
-            Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 54.dp, bottom = 26.dp)) {
+            Column(
+                Modifier.padding(
+                    start = AppSpacing.screenHorizontal,
+                    end = AppSpacing.screenHorizontal,
+                    top = 54.dp,
+                    bottom = AppSpacing.screenBottom,
+                ),
+            ) {
                 Box(
                     Modifier.size(40.dp).clip(AppRadius.md)
                         .background(Color.White.copy(alpha = 0.18f))
@@ -80,11 +85,11 @@ internal fun StudentProfile(
                 Spacer(Modifier.height(14.dp))
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                     Box(
-                        Modifier.size(72.dp).clip(RoundedCornerShape(24.dp))
+                        Modifier.size(72.dp).clip(AppRadius.card)
                             .background(Color.White.copy(alpha = 0.20f)),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Text(student.initial, style = AppType.screenTitle.copy(fontSize = 30.sp, color = Color.White))
+                        Text(student.initial, style = AppType.screenTitle.copy(color = Color.White))
                     }
                     Column {
                         Row(
@@ -93,7 +98,7 @@ internal fun StudentProfile(
                         ) {
                             Text(
                                 student.fullName,
-                                style = AppType.screenTitle.copy(fontSize = 19.sp, letterSpacing = 0.sp, color = Color.White),
+                                style = AppType.sectionTitle.copy(color = Color.White),
                             )
                             Icon(AppIcons.ShieldCheck, null, tint = Color.White, modifier = Modifier.size(16.dp))
                         }
@@ -112,10 +117,11 @@ internal fun StudentProfile(
 
         Column(Modifier.fillMaxWidth().padding(AppSpacing.lg)) {
             // Statistika
-            val shape = RoundedCornerShape(16.dp)
+            // Statistika kartasi — chegara emas, soya (yangi dizayn tili).
+            val shape = AppRadius.md
             Row(
-                Modifier.fillMaxWidth().clip(shape).background(palette.glass)
-                    .border(1.dp, palette.border, shape).padding(vertical = 14.dp),
+                Modifier.fillMaxWidth().rowShadow(shape).clip(shape).background(palette.card)
+                    .padding(vertical = AppSpacing.lg),
             ) {
                 StatCell("${student.friendsCount}", stringResource(Res.string.auth_students_stat_friends), palette, Modifier.weight(1f))
                 StatCell("${student.adsCount}", stringResource(Res.string.auth_students_stat_ads), palette, Modifier.weight(1f))
@@ -142,7 +148,7 @@ internal fun StudentProfile(
                         )
                     }
                 }
-                Spacer(Modifier.height(18.dp))
+                Spacer(Modifier.height(AppSpacing.xl))
             }
 
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -156,15 +162,14 @@ internal fun StudentProfile(
                     Text(
                         friendLabel,
                         style = AppType.label.copy(
-                            fontSize = 13.5f.sp,
                             fontWeight = AppType.button.fontWeight,
                             color = if (filled) palette.onPrimary else palette.primary,
                         ),
                     )
                 }
                 Box(
-                    Modifier.size(50.dp).clip(AppRadius.lg).background(palette.glass)
-                        .border(1.dp, palette.border, AppRadius.lg),
+                    Modifier.size(50.dp).rowShadow(AppRadius.lg).clip(AppRadius.lg)
+                        .background(palette.card),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
@@ -182,8 +187,8 @@ internal fun StudentProfile(
 @Composable
 private fun StatCell(value: String, label: String, palette: AppPalette, modifier: Modifier) {
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(value, style = AppType.screenTitle.copy(fontSize = 17.sp, letterSpacing = 0.sp, color = palette.ink))
-        Text(label, style = AppType.caption.copy(fontSize = 10.5f.sp, color = palette.inkFaint))
+        Text(value, style = AppType.cardTitle.copy(color = palette.ink))
+        Text(label, style = AppType.caption.copy(color = palette.inkFaint))
     }
 }
 

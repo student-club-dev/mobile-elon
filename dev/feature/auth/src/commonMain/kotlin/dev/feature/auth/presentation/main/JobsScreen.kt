@@ -1,7 +1,6 @@
 package dev.feature.auth.presentation.main
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -39,6 +37,7 @@ import dev.core.domain.model.JobFilter
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.BackButton
 import dev.core.uikit.component.FilterPill
+import dev.core.uikit.component.GlassCard
 import dev.core.uikit.component.MonogramTile
 import dev.core.uikit.component.PrimaryButton
 import dev.core.uikit.component.SoftPill
@@ -58,9 +57,11 @@ import dev.core.uikit.resources.auth_jobs_title
 import dev.core.uikit.resources.common_back
 import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
+import dev.core.uikit.theme.AppSize
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
+import dev.core.uikit.theme.rowShadow
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -96,19 +97,19 @@ fun JobsScreen(vm: JobsViewModel = koinViewModel()) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     stringResource(Res.string.auth_jobs_title),
-                    style = AppType.screenTitle.copy(letterSpacing = 0.sp, color = palette.ink),
+                    style = AppType.screenTitle.copy(color = palette.ink),
                     modifier = Modifier.weight(1f),
                 )
                 Box(
-                    Modifier.size(40.dp).clip(AppRadius.md).background(palette.glass)
-                        .border(1.dp, palette.border, AppRadius.md),
+                    Modifier.size(AppSize.iconButton).rowShadow(AppRadius.md)
+                        .clip(AppRadius.md).background(palette.card),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         AppIcons.Filter,
                         stringResource(Res.string.auth_filter),
                         tint = palette.ink,
-                        modifier = Modifier.size(18.dp),
+                        modifier = Modifier.size(AppSize.iconMd),
                     )
                 }
             }
@@ -144,24 +145,25 @@ fun JobsScreen(vm: JobsViewModel = koinViewModel()) {
 
 @Composable
 private fun JobCard(job: Job, palette: AppPalette, onOpen: () -> Unit, onBookmark: () -> Unit) {
-    val shape = AppRadius.card
-    Column(
-        Modifier.fillMaxWidth().clip(shape).background(palette.glass).border(1.dp, palette.border, shape)
-            .clickable(onClick = onOpen).padding(14.dp),
+    GlassCard(
+        shape = AppRadius.card,
+        contentPadding = PaddingValues(AppSpacing.lg),
         verticalArrangement = Arrangement.spacedBy(10.dp),
+        onClick = onOpen,
+        palette = palette,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(11.dp)) {
             MonogramTile(
                 job.companyMonogram,
                 size = 46.dp,
-                shape = RoundedCornerShape(13.dp),
+                shape = AppRadius.sm,
                 fontSize = 17.sp,
                 backgroundAlpha = 0.12f,
             )
             Column(Modifier.weight(1f)) {
                 Text(
                     job.title,
-                    style = AppType.body.copy(fontSize = 14.5f.sp, fontWeight = AppType.button.fontWeight, color = palette.ink),
+                    style = AppType.body.copy(fontWeight = AppType.button.fontWeight, color = palette.ink),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -193,7 +195,7 @@ private fun JobCard(job: Job, palette: AppPalette, onOpen: () -> Unit, onBookmar
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text(
                 job.salary,
-                style = AppType.subtitle.copy(fontWeight = AppType.button.fontWeight, color = palette.successDeep),
+                style = AppType.subtitle.copy(fontWeight = AppType.button.fontWeight, color = palette.success),
                 modifier = Modifier.weight(1f),
             )
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(AppSpacing.xs)) {
@@ -230,14 +232,14 @@ private fun JobDetail(job: Job, palette: AppPalette, onBack: () -> Unit, onApply
                 MonogramTile(
                     job.companyMonogram,
                     size = 58.dp,
-                    shape = RoundedCornerShape(16.dp),
+                    shape = AppRadius.md,
                     fontSize = 22.sp,
                     backgroundAlpha = 0.12f,
                 )
                 Column(Modifier.weight(1f)) {
                     Text(
                         job.title,
-                        style = AppType.screenTitle.copy(fontSize = 18.sp, letterSpacing = 0.sp, color = palette.ink),
+                        style = AppType.sheetTitle.copy(color = palette.ink),
                     )
                     Text(
                         stringResource(Res.string.auth_jobs_meta, job.company, job.location),
@@ -253,12 +255,12 @@ private fun JobDetail(job: Job, palette: AppPalette, onBack: () -> Unit, onApply
                 job.tags.forEach { SoftPill(it) }
             }
             Spacer(Modifier.height(AppSpacing.lg))
-            Box(Modifier.fillMaxWidth().clip(AppRadius.lg).background(palette.successBg).padding(14.dp)) {
+            Box(Modifier.fillMaxWidth().clip(AppRadius.lg).background(palette.successBg).padding(AppSpacing.lg)) {
                 Column {
                     Text(stringResource(Res.string.auth_jobs_salary), style = AppType.caption.copy(color = palette.inkFaint))
                     Text(
                         job.salary,
-                        style = AppType.screenTitle.copy(fontSize = 18.sp, letterSpacing = 0.sp, color = palette.successDeep),
+                        style = AppType.sheetTitle.copy(color = palette.success),
                     )
                 }
             }

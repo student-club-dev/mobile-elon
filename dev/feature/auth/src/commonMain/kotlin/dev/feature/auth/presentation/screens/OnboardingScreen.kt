@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,6 +33,7 @@ import dev.core.uikit.resources.auth_onboarding_subtitle
 import dev.core.uikit.resources.auth_onboarding_title
 import dev.core.uikit.resources.common_next
 import dev.core.uikit.theme.AppPalette
+import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
@@ -56,7 +56,7 @@ fun OnboardingScreen(
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             Text(
                 stringResource(Res.string.auth_onboarding_skip),
-                modifier = Modifier.clip(RoundedCornerShape(8.dp)).clickableNoRipple(onSkip).padding(AppSpacing.xs),
+                modifier = Modifier.clip(AppRadius.sm).clickableNoRipple(onSkip).padding(AppSpacing.xs),
                 style = AppType.link.copy(fontWeight = AppType.label.fontWeight, color = palette.inkFaint),
             )
         }
@@ -66,12 +66,12 @@ fun OnboardingScreen(
             Box(
                 Modifier.align(Alignment.Center).size(180.dp).background(
                     Brush.radialGradient(listOf(palette.primary.copy(alpha = 0.20f), Color.Transparent)),
-                    RoundedCornerShape(999.dp),
+                    AppRadius.pill,
                 ),
             )
             Box(
                 Modifier.align(Alignment.Center).size(104.dp)
-                    .background(palette.primaryBrush, RoundedCornerShape(32.dp)),
+                    .background(palette.primaryBrush, AppRadius.card),
                 contentAlignment = Alignment.Center,
             ) {
                 // Gradient USTIDAGI ikonka — palitraga bog'liq emas, har ikkala rejimda oq.

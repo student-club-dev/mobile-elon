@@ -51,6 +51,7 @@ import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
 import org.jetbrains.compose.resources.stringResource
 import dev.core.uikit.component.AppFieldType
+import dev.core.uikit.theme.rowShadow
 
 /**
  * Biznesmen uchun ALOHIDA kirish ekrani. Sof UI — holat/callbacklarni parametr sifatida oladi
@@ -112,9 +113,9 @@ fun BusinessWelcomeScreen(
         Spacer(Modifier.height(AppSpacing.md))
         Row(
             Modifier.fillMaxWidth().height(AppSize.buttonSecondaryHeight)
+                .rowShadow(AppRadius.lg)
                 .clip(AppRadius.lg)
-                .background(palette.glass)
-                .border(1.dp, palette.border, AppRadius.lg)
+                .background(palette.card)
                 .clickable(enabled = !isLoading, onClick = onGoogle),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
@@ -167,6 +168,6 @@ private fun PhonePrefix(palette: AppPalette) {
             style = AppType.bodyStrong.copy(fontWeight = AppType.fieldLabel.fontWeight, color = palette.ink),
         )
         Spacer(Modifier.width(9.dp))
-        Box(Modifier.width(1.dp).height(22.dp).background(palette.border))
+        Box(Modifier.width(1.dp).height(22.dp).background(palette.divider))
     }
 }

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -63,6 +62,7 @@ import dev.core.uikit.resources.auth_welcome_phone_hint
 import dev.core.uikit.resources.auth_welcome_subtitle
 import dev.core.uikit.resources.auth_welcome_title
 import dev.core.uikit.theme.AppPalette
+import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSize
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
@@ -94,11 +94,11 @@ fun WelcomeScreen(
 ) {
     AppScreenScaffold(scroll = true, topPadding = 60.dp) {
         LogoTile()
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(AppSpacing.xl))
         ScreenTitle(stringResource(Res.string.auth_welcome_title), fontSize = 25.sp)
         Spacer(Modifier.height(6.dp))
         ScreenSubtitle(stringResource(Res.string.auth_welcome_subtitle))
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(AppSpacing.xl))
 
         SegmentedTabs(tab, onTab)
         Spacer(Modifier.height(14.dp))
@@ -133,12 +133,9 @@ fun WelcomeScreen(
         Spacer(Modifier.height(AppSpacing.lg))
         PrimaryButton(stringResource(Res.string.auth_continue), onContinue, trailingIcon = AppIcons.ArrowRight)
 
-        state.error?.let {
-            Spacer(Modifier.height(10.dp))
-            Text(it, style = AppType.error.copy(fontSize = 12.sp, color = palette.danger))
-        }
+        ErrorText(state.error)
 
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(AppSpacing.xl))
         OrDivider()
         Spacer(Modifier.height(14.dp))
         SocialRow(onGoogle, onApple, onTelegram)
@@ -175,7 +172,7 @@ fun PhoneScreen(
         ScreenTitle(stringResource(Res.string.auth_phone_title))
         Spacer(Modifier.height(6.dp))
         ScreenSubtitle(stringResource(Res.string.auth_phone_subtitle))
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(AppSpacing.xl))
 
         SegmentedTabs(AuthTab.PHONE, { if (it == AuthTab.EMAIL) onSwitchEmail() })
         Spacer(Modifier.height(AppSpacing.lg))
@@ -193,7 +190,7 @@ fun PhoneScreen(
         Spacer(Modifier.height(9.dp))
         HintText(stringResource(Res.string.auth_phone_only_uz_hint))
 
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(AppSpacing.xl))
         PrimaryButton(
             stringResource(Res.string.auth_get_code),
             onGetCode,
@@ -203,7 +200,7 @@ fun PhoneScreen(
 
         ErrorText(state.error)
 
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(AppSpacing.xl))
         OrDivider()
         Spacer(Modifier.height(14.dp))
         SocialRow(onGoogle, onApple, onTelegram)
@@ -236,7 +233,7 @@ fun EmailLoginScreen(
 ) {
     AppScreenScaffold(scroll = false) {
         BackButton(onBack, contentDescription = stringResource(Res.string.common_back))
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(AppSpacing.xl))
         ScreenTitle(stringResource(Res.string.auth_login_title))
         Spacer(Modifier.height(6.dp))
         ScreenSubtitle(stringResource(Res.string.auth_login_subtitle))
@@ -267,7 +264,7 @@ fun EmailLoginScreen(
                     if (state.passwordVisible) AppIcons.EyeOff else AppIcons.Eye,
                     null,
                     tint = palette.inkFaint,
-                    modifier = Modifier.size(AppSize.iconMd).clip(RoundedCornerShape(6.dp))
+                    modifier = Modifier.size(AppSize.iconMd).clip(AppRadius.sm)
                         .clickableNoRipple { vm.togglePasswordVisible() },
                 )
             },
@@ -289,7 +286,7 @@ fun EmailLoginScreen(
                 CheckBoxSmall(state.rememberMe, palette)
                 Text(
                     stringResource(Res.string.auth_remember_me),
-                    style = AppType.link.copy(fontWeight = AppType.bodyStrong.fontWeight, color = palette.label),
+                    style = AppType.link.copy(fontWeight = AppType.bodyStrong.fontWeight, color = palette.inkMuted),
                 )
             }
             Text(
@@ -299,7 +296,7 @@ fun EmailLoginScreen(
             )
         }
 
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(AppSpacing.xl))
         PrimaryButton(stringResource(Res.string.auth_sign_in), onLogin, enabled = !state.isLoading)
         Spacer(Modifier.height(11.dp))
         OutlineButton(

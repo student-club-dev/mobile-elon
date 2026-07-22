@@ -86,7 +86,7 @@ private fun ListingFormScaffold(
             Modifier.weight(1f).verticalScroll(rememberScrollState())
                 .padding(top = 54.dp),
             // Flat dizayn — bo'limlar orasi kengroq; yon padding har bo'lim ichida.
-            verticalArrangement = Arrangement.spacedBy(18.dp),
+            verticalArrangement = Arrangement.spacedBy(AppSpacing.xl),
         ) {
             // Sarlavha rejimga ergashadi: chegirma e'lonida "Kafe chegirmasi",
             // oddiy e'londa "Kafe e'loni" — "chegirma" so'zi yolg'on turmasin.

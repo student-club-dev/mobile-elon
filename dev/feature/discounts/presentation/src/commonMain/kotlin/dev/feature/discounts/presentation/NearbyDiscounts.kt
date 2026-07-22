@@ -1,7 +1,6 @@
 package dev.feature.discounts.presentation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,7 +21,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,6 +33,7 @@ import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
+import dev.core.uikit.theme.rowShadow
 import dev.feature.discounts.domain.model.DiscountCard
 import dev.feature.discounts.domain.model.DiscountQuery
 import dev.feature.discounts.domain.model.formatSum
@@ -105,7 +103,7 @@ fun NearbyDiscountsSection(
             if (userLocation == null) {
                 Text(
                     stringResource(Res.string.discounts_location_off),
-                    style = AppType.caption.copy(fontSize = 10.5f.sp, color = palette.inkFaint),
+                    style = AppType.caption.copy(color = palette.inkFaint),
                 )
             }
         }
@@ -125,12 +123,13 @@ private fun NearbyDiscountCard(
 ) {
     // Aksent biznes TURIDAN keladi — ma'lumot, palitra tokeni emas.
     val accent = Color(card.businessType.accent)
-    val cardShape = RoundedCornerShape(16.dp)
-    val coverShape = RoundedCornerShape(13.dp)
+    val cardShape = AppRadius.md
+    val coverShape = AppRadius.sm
 
+    // Chegara yo'q — oq kartani yumshoq soya ajratadi.
     Row(
-        Modifier.fillMaxWidth().clip(cardShape).background(palette.glass)
-            .border(1.dp, palette.border, cardShape).padding(11.dp),
+        Modifier.fillMaxWidth().rowShadow(cardShape).clip(cardShape).background(palette.card)
+            .padding(11.dp),
         horizontalArrangement = Arrangement.spacedBy(11.dp),
     ) {
         Box(
@@ -158,13 +157,12 @@ private fun NearbyDiscountCard(
                     stringResource(Res.string.discounts_price_sum, card.finalPrice.formatSum()),
                     style = AppType.link.copy(
                         fontWeight = AppType.screenTitle.fontWeight,
-                        color = palette.successDeep,
+                        color = palette.success,
                     ),
                 )
                 Text(
                     card.originalPrice.formatSum(),
                     style = AppType.caption.copy(
-                        fontSize = 11.sp,
                         color = palette.inkFaint,
                         textDecoration = TextDecoration.LineThrough,
                     ),
@@ -179,7 +177,7 @@ private fun NearbyDiscountCard(
             if (meta.isNotBlank()) {
                 Text(
                     meta,
-                    style = AppType.caption.copy(fontSize = 10.5f.sp, color = palette.inkFaint),
+                    style = AppType.caption.copy(color = palette.inkFaint),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )

@@ -101,6 +101,8 @@
     <string name="discounts_business_hub">БИЗНЕС-ЦЕНТР</string>
     <string name="discounts_my_businesses">Мои бизнесы</string>
     <string name="discounts_profile">Профиль</string>
+    <string name="discounts_business_messages">Сообщения</string>
+    <string name="discounts_business_support">Поддержка</string>
     <string name="discounts_business">Бизнес</string>
     <string name="discounts_business_delete_title">Удалить бизнес</string>
     <string name="discounts_business_delete_confirm">Удалить \"%1$s\"? Это действие нельзя отменить.</string>
@@ -109,6 +111,7 @@
     <string name="discounts_business_add">Добавить бизнес</string>
     <string name="discounts_business_edit">Редактировать бизнес</string>
     <string name="discounts_business_type_label">Тип бизнеса</string>
+    <string name="discounts_business_type_select">Выберите тип бизнеса</string>
     <string name="discounts_business_name_label">Название бизнеса</string>
     <string name="discounts_business_name_hint">Например: Кафе Aurora</string>
     <string name="discounts_phone_label">Номер телефона</string>

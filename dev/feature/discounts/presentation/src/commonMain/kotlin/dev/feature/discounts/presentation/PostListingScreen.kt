@@ -21,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.GlassTextField
@@ -36,6 +35,7 @@ import dev.core.uikit.resources.discounts_map_hint
 import dev.core.uikit.resources.discounts_map_search_hint
 import dev.core.uikit.resources.discounts_resolving_address
 import dev.core.uikit.theme.AppPalette
+import dev.core.uikit.theme.AppSize
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
@@ -180,7 +180,7 @@ private fun BranchMapScreen(state: PostListingUiState, palette: AppPalette, vm: 
                 { query -> vm.onSearchQuery(query, pickedPoint?.lat, pickedPoint?.lng) },
                 stringResource(Res.string.discounts_map_search_hint),
                 leading = AppIcons.Search,
-                height = 46.dp,
+                height = AppSize.fieldHeight,
                 palette = palette,
             )
         }

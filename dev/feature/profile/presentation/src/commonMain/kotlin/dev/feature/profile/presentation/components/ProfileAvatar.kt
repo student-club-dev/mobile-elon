@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,6 +17,7 @@ import coil3.compose.AsyncImage
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.profile_avatar_content_description
 import dev.core.uikit.theme.AppPalette
+import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppType
 import org.jetbrains.compose.resources.stringResource
 
@@ -40,7 +40,7 @@ fun ProfileAvatar(
     Box(
         modifier
             .size(size)
-            .clip(CircleShape)
+            .clip(AppRadius.pill)
             .background(palette.primary.copy(alpha = 0.14f)),
         contentAlignment = Alignment.Center,
     ) {

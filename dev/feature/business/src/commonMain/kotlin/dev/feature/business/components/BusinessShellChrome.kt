@@ -35,6 +35,8 @@ import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import org.jetbrains.compose.resources.stringResource
+import dev.core.uikit.theme.rowShadow
+import dev.core.uikit.theme.AppRadius
 
 /**
  * `BusinessShell` ning "bezagi" — yuqori panel va suzuvchi tugma. Navigatsiya grafi
@@ -56,8 +58,8 @@ internal fun BusinessTopBar(
             // Orqaga qaytish — "Bizneslarim" ro'yxatiga.
             Box(
                 Modifier.size(42.dp)
-                    .clip(CircleShape).background(palette.glass)
-                    .border(1.dp, palette.border, CircleShape)
+                    .rowShadow(AppRadius.pill)
+                    .clip(CircleShape).background(palette.card)
                     .clickable(onClick = onBack),
                 contentAlignment = Alignment.Center,
             ) {

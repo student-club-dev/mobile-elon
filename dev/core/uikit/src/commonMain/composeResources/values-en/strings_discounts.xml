@@ -101,6 +101,8 @@
     <string name="discounts_business_hub">BUSINESS HUB</string>
     <string name="discounts_my_businesses">My businesses</string>
     <string name="discounts_profile">Profile</string>
+    <string name="discounts_business_messages">Messages</string>
+    <string name="discounts_business_support">Support</string>
     <string name="discounts_business">Business</string>
     <string name="discounts_business_delete_title">Delete business</string>
     <string name="discounts_business_delete_confirm">Delete \"%1$s\"? This cannot be undone.</string>
@@ -109,6 +111,7 @@
     <string name="discounts_business_add">Add business</string>
     <string name="discounts_business_edit">Edit business</string>
     <string name="discounts_business_type_label">Business type</string>
+    <string name="discounts_business_type_select">Select a business type</string>
     <string name="discounts_business_name_label">Business name</string>
     <string name="discounts_business_name_hint">For example: Cafe Aurora</string>
     <string name="discounts_phone_label">Phone number</string>

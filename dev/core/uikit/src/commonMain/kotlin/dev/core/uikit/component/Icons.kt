@@ -193,6 +193,33 @@ object AppIcons {
         "M 13.1 12 a 1.1 1.1 0 1 1 -2.2 0 a 1.1 1.1 0 0 1 2.2 0",
     )
 
+    /**
+     * Qo'llab-quvvatlash — garnitura (naushnik + mikrofon) va ichida suhbat pufagi.
+     *
+     * Bizneslarim ekranidagi "Qo'llab-quvvatlash" tugmasi uchun. Ilgari u telefon go'shagi
+     * bilan chizilardi va oddiy qo'ng'iroqdan farq qilmasdi.
+     *
+     * Uch nuqta `h 0.01` bo'lagi bilan chizilgan: [strokeIcon] faqat chiziq qo'yadi, dumaloq
+     * uchli (`StrokeCap.Round`) juda qisqa chiziq esa aynan nuqta bo'lib ko'rinadi.
+     */
+    val Support = strokeIcon(
+        "Support",
+        // Bosh kamar
+        "M 4 14 v -2.5 a 8 8 0 0 1 16 0 V 14",
+        // Chap va o'ng quloqchin
+        "M 4 11.5 a 2 2 0 0 1 2 2 v 2.5 a 2 2 0 0 1 -4 0 v -2.5 a 2 2 0 0 1 2 -2 z",
+        "M 20 11.5 a 2 2 0 0 1 2 2 v 2.5 a 2 2 0 0 1 -4 0 v -2.5 a 2 2 0 0 1 2 -2 z",
+        // Mikrofon shtangasi va og'izcha
+        "M 21 18 v 1 a 2.5 2.5 0 0 1 -2.5 2.5 H 16",
+        "M 12.5 20 h 3 a 1.5 1.5 0 0 1 0 3 h -3 a 1.5 1.5 0 0 1 0 -3 z",
+        // Suhbat pufagi (pastki chap tomonida dumchasi bilan)
+        "M 9 6.5 h 6 a 2 2 0 0 1 2 2 v 3.5 a 2 2 0 0 1 -2 2 h -4 l -2.5 2.5 V 14 a 2 2 0 0 1 -1.5 -2 V 8.5 a 2 2 0 0 1 2 -2 z",
+        // Uch nuqta
+        "M 10 10.5 h 0.01",
+        "M 12 10.5 h 0.01",
+        "M 14 10.5 h 0.01",
+    )
+
     /** `ic_send_enter` — xabar yuborish tugmasi (matn yozilganda). */
     val Send = strokeIcon(
         "Send",

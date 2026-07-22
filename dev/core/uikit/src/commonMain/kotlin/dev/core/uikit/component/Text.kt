@@ -34,7 +34,7 @@ fun ScreenSubtitle(text: String, modifier: Modifier = Modifier, palette: AppPale
 
 @Composable
 fun FieldLabel(text: String, modifier: Modifier = Modifier, palette: AppPalette = appPalette) {
-    Text(text, modifier, style = AppType.fieldLabel.copy(color = palette.label))
+    Text(text, modifier, style = AppType.fieldLabel.copy(color = palette.ink))
 }
 
 @Composable

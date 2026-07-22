@@ -1,7 +1,6 @@
 package dev.feature.profile.presentation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -65,6 +63,8 @@ import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
+import dev.core.uikit.theme.cardShadow
+import dev.core.uikit.theme.rowShadow
 import dev.feature.profile.domain.model.UserProfile
 import dev.feature.profile.presentation.components.ProfileAvatar
 import org.jetbrains.compose.resources.StringResource
@@ -139,10 +139,10 @@ fun EditProfileScreen(onBack: () -> Unit, vm: ProfileViewModel = koinViewModel()
             )
             Text(
                 stringResource(Res.string.profile_edit_action),
-                style = AppType.screenTitle.copy(fontSize = 20.sp, color = palette.ink),
+                style = AppType.topBarTitle.copy(color = palette.ink),
             )
         }
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(AppSpacing.xl))
 
         // Avatar — bosilganda galereya ochiladi
         val changePhotoLabel = stringResource(Res.string.profile_avatar_change)
@@ -163,7 +163,7 @@ fun EditProfileScreen(onBack: () -> Unit, vm: ProfileViewModel = koinViewModel()
                 )
                 // Kamera nishoni — brend rangli doira ustida, shuning uchun ikonka doim oq.
                 Box(
-                    Modifier.size(30.dp).clip(CircleShape).background(palette.primary)
+                    Modifier.size(30.dp).clip(AppRadius.pill).background(palette.primary)
                         .clickable(enabled = !avatarUploading) { imagePicker.pick() },
                     contentAlignment = Alignment.Center,
                 ) {
@@ -211,8 +211,9 @@ fun EditProfileScreen(onBack: () -> Unit, vm: ProfileViewModel = koinViewModel()
             FieldLabel(stringResource(Res.string.profile_field_university), palette = palette)
             val selectedUni = state.universities.firstOrNull { it.id == universityId }
             Row(
-                Modifier.fillMaxWidth().clip(AppRadius.lg).background(palette.fieldBg)
-                    .border(1.dp, palette.border, AppRadius.lg)
+                // Maydon — oq yuza + yumshoq soya, chegara yo'q.
+                Modifier.fillMaxWidth().rowShadow(AppRadius.lg).clip(AppRadius.lg)
+                    .background(palette.fieldBg)
                     .clickable { uniExpanded = !uniExpanded }
                     .padding(horizontal = AppSpacing.md, vertical = 15.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -230,8 +231,8 @@ fun EditProfileScreen(onBack: () -> Unit, vm: ProfileViewModel = koinViewModel()
             }
             if (uniExpanded) {
                 Column(
-                    Modifier.fillMaxWidth().clip(AppRadius.lg).background(palette.glass)
-                        .border(1.dp, palette.border, AppRadius.lg),
+                    Modifier.fillMaxWidth().cardShadow(AppRadius.lg).clip(AppRadius.lg)
+                        .background(palette.card),
                 ) {
                     state.universities.forEach { uni ->
                         UniversityRow(uni, selected = uni.id == universityId, palette = palette) {
@@ -248,9 +249,9 @@ fun EditProfileScreen(onBack: () -> Unit, vm: ProfileViewModel = koinViewModel()
                 courseOptions.forEach { opt ->
                     val active = opt.value == courseYear
                     Box(
-                        Modifier.weight(1f).height(42.dp).clip(AppRadius.md)
-                            .background(if (active) palette.primary.copy(alpha = 0.14f) else palette.glass)
-                            .border(1.dp, if (active) palette.primary else palette.border, AppRadius.md)
+                        // Tanlangani ochiq ko'k aksent fonda; chegara o'rniga soya.
+                        Modifier.weight(1f).height(42.dp).rowShadow(AppRadius.md).clip(AppRadius.md)
+                            .background(if (active) palette.accentBg else palette.card)
                             .clickable { courseYear = opt.value },
                         contentAlignment = Alignment.Center,
                     ) {

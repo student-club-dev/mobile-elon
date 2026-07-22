@@ -74,7 +74,10 @@ data class AddBusinessUiState(
      * viloyat bo'yicha filtrga tushmay qolardi.
      */
     val regionId: String? = null,
+    /** Viloyat tanlash sheet'i ochiqmi (`AppBottomSheet`). */
     val regionPickerOpen: Boolean = false,
+    /** Biznes turi tanlash sheet'i ochiqmi (`AppBottomSheet`). */
+    val typePickerOpen: Boolean = false,
     val pickingOnMap: Boolean = false,
     val resolvingAddress: Boolean = false,
     val searchQuery: String = "",
@@ -181,7 +184,14 @@ class AddBusinessViewModel(
         it.copy(name = TextScript.stripCyrillic(v), error = null)
     }
     fun onPhone(v: String) = _state.update { it.copy(phone = v.filter { c -> c.isDigit() }.take(9), error = null) }
-    fun onType(t: BusinessType) = _state.update { it.copy(businessType = t, error = null) }
+    // Tur tanlanishi bilan sheet yopiladi — tasdiqlash tugmasi yo'q, tanlovning o'zi javob.
+    fun onType(t: BusinessType) = _state.update {
+        it.copy(businessType = t, typePickerOpen = false, error = null)
+    }
+
+    fun openTypePicker() = _state.update { it.copy(typePickerOpen = true) }
+
+    fun closeTypePicker() = _state.update { it.copy(typePickerOpen = false) }
 
     fun openMap() = _state.update { it.copy(pickingOnMap = true) }
     fun closeMap() = _state.update {

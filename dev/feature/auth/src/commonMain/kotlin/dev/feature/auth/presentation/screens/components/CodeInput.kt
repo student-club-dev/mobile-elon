@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
@@ -24,10 +23,11 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.theme.AppPalette
+import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSize
+import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 
 /**
@@ -52,7 +52,7 @@ fun CodeInput(
         cursorBrush = SolidColor(Color.Transparent),
         modifier = modifier.fillMaxWidth(),
         decorationBox = {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
                 repeat(length) { i ->
                     CodeCell(value.getOrNull(i), i == value.length, palette, Modifier.weight(1f))
                 }
@@ -64,24 +64,24 @@ fun CodeInput(
 /** Bitta katak — bo'sh, fokusda yoki to'ldirilgan holatlar uchun alohida fon/chegara. */
 @Composable
 private fun CodeCell(ch: Char?, focused: Boolean, palette: AppPalette, modifier: Modifier) {
-    val shape = RoundedCornerShape(13.dp)
-    // Bo'sh katak foni — palitradagi chip yo'lakchasi (yorug'da och binafsha, qorong'ida shaffof oq).
-    val background = if (ch != null || focused) palette.fieldBg else palette.chipTrack
+    val shape = AppRadius.sm
+    // Bo'sh katak foni — palitradagi ochiq ko'k aksent yuzasi.
+    val background = if (ch != null || focused) palette.fieldBg else palette.accentBg
     val border = when {
         focused -> palette.primary
         ch != null -> palette.primary.copy(alpha = 0.20f)
-        else -> palette.border
+        else -> palette.divider
     }
     Box(
         modifier
-            .height(52.dp)
+            .height(AppSize.fieldHeight)
             .clip(shape)
             .background(background)
             .border(if (focused || ch != null) 1.5.dp else 1.dp, border, shape),
         contentAlignment = Alignment.Center,
     ) {
         when {
-            ch != null -> Text(ch.toString(), style = AppType.screenTitle.copy(fontSize = 22.sp, color = palette.ink))
+            ch != null -> Text(ch.toString(), style = AppType.topBarTitle.copy(color = palette.ink))
             focused -> Box(Modifier.width(2.dp).height(24.dp).background(palette.primary))
         }
     }

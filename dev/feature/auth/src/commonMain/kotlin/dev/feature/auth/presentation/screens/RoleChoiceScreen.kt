@@ -1,7 +1,6 @@
 package dev.feature.auth.presentation.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,9 +33,12 @@ import dev.core.uikit.resources.auth_role_subtitle
 import dev.core.uikit.resources.auth_role_title
 import dev.core.uikit.resources.common_back
 import dev.core.uikit.theme.AppPalette
+import dev.core.uikit.theme.AppRadius
+import dev.core.uikit.theme.AppSize
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
+import dev.core.uikit.theme.rowShadow
 import dev.feature.auth.presentation.flow.Role
 import org.jetbrains.compose.resources.stringResource
 
@@ -55,23 +56,25 @@ fun RoleChoiceScreen(
 
     AppScreenScaffold {
         Column(
-            Modifier.fillMaxSize().padding(horizontal = 20.dp).padding(top = 48.dp, bottom = AppSpacing.xl),
+            Modifier.fillMaxSize()
+                .padding(horizontal = AppSpacing.screenHorizontal)
+                .padding(top = 48.dp, bottom = AppSpacing.xl),
         ) {
             IconTile(
                 AppIcons.ArrowLeft,
                 contentDescription = stringResource(Res.string.common_back),
                 tint = palette.primary,
-                background = palette.primary.copy(alpha = 0.10f),
-                size = 40.dp,
-                iconSize = 19.dp,
-                shape = RoundedCornerShape(13.dp),
+                background = palette.accentBg,
+                size = AppSize.iconButton,
+                iconSize = AppSize.iconMd,
+                shape = AppRadius.sm,
                 onClick = onBack,
             )
 
             Spacer(Modifier.height(28.dp))
             Text(
                 stringResource(Res.string.auth_role_title),
-                style = AppType.screenTitle.copy(fontSize = 26.sp, letterSpacing = 0.sp, color = palette.ink),
+                style = AppType.screenTitle.copy(fontSize = 26.sp, color = palette.ink),
             )
             Spacer(Modifier.height(AppSpacing.sm))
             Text(
@@ -93,7 +96,7 @@ fun RoleChoiceScreen(
                 title = stringResource(Res.string.auth_role_business),
                 desc = stringResource(Res.string.auth_role_business_desc),
                 icon = AppIcons.Store,
-                accent = palette.moduleFood,
+                accent = palette.accentFood,
                 onClick = { onPick(Role.BUSINESS) },
                 palette = palette,
             )
@@ -110,14 +113,15 @@ private fun RoleCard(
     onClick: () -> Unit,
     palette: AppPalette,
 ) {
-    val shape = RoundedCornerShape(20.dp)
+    // Rol kartasi — oq yuza va soya; rangni faqat nishon va chevron olib yuradi.
+    val shape = AppRadius.row
     Row(
         Modifier.fillMaxWidth()
+            .rowShadow(shape)
             .clip(shape)
-            .background(accent.copy(alpha = 0.08f))
-            .border(1.5.dp, accent.copy(alpha = 0.28f), shape)
+            .background(palette.card)
             .clickable(onClick = onClick)
-            .padding(18.dp),
+            .padding(AppSpacing.lg),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(14.dp),
     ) {
@@ -127,13 +131,13 @@ private fun RoleCard(
             tint = accent,
             background = accent.copy(alpha = 0.16f),
             size = 52.dp,
-            iconSize = 26.dp,
-            shape = RoundedCornerShape(16.dp),
+            iconSize = AppSize.iconFab,
+            shape = AppRadius.md,
         )
         Column(Modifier.weight(1f)) {
             Text(title, style = AppType.sectionTitle.copy(fontWeight = AppType.screenTitle.fontWeight, color = palette.ink))
             Spacer(Modifier.height(3.dp))
-            Text(desc, style = AppType.hint.copy(fontSize = 12.sp, color = palette.inkFaint))
+            Text(desc, style = AppType.hint.copy(color = palette.inkFaint))
         }
         Icon(AppIcons.ChevronRight, null, tint = accent, modifier = Modifier.size(20.dp))
     }

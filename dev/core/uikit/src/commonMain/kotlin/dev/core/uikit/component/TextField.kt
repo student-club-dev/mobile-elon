@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.VisualTransformation
@@ -30,11 +29,12 @@ import dev.core.uikit.theme.AppSize
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
+import dev.core.uikit.theme.rowShadow
 
 /**
- * Shisha uslubidagi matn maydoni.
+ * Matn maydoni — oq karta yuzasi, yumshoq soya bilan (`design_handoff_studentclub_elonuz`).
  *
- * [focused] `true` bo'lganda chegara qalinlashadi va brend rangiga o'tadi — fokus holati
+ * [focused] `true` bo'lganda brend rangli nozik halqa qo'shiladi. Fokus holati
  * `BasicTextField` ichida emas, tashqaridan boshqariladi (ekran o'z fokus holatini biladi).
  */
 @Composable
@@ -59,18 +59,19 @@ fun GlassTextField(
     palette: AppPalette = appPalette,
 ) {
     val shape = AppRadius.lg
-    val borderColor = if (focused) palette.borderStrong else palette.border
-    val borderWidth = if (focused) 1.5.dp else 1.dp
-    var box = modifier
+    // Yangi dizaynda maydonni chegara emas, SOYA ajratadi — u oq karta bilan bir xil yuzada.
+    // Fokusda esa brend rangli nozik halqa qo'shiladi, shunda faol maydon aniq ko'rinadi.
+    val box = modifier
         .fillMaxWidth()
         .height(height)
-    if (focused) box = box.shadow(0.dp, shape, spotColor = palette.fieldFocusGlow)
+        .rowShadow(shape)
+        .clip(shape)
+        .background(palette.card)
+        .then(
+            if (focused) Modifier.border(1.5.dp, palette.primary, shape) else Modifier,
+        )
     Row(
-        box
-            .clip(shape)
-            .background(palette.fieldBg)
-            .border(borderWidth, borderColor, shape)
-            .padding(horizontal = AppSpacing.md),
+        box.padding(horizontal = AppSpacing.lg),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(9.dp),
     ) {

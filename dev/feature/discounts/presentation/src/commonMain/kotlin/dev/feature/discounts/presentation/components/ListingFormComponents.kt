@@ -1,7 +1,6 @@
 package dev.feature.discounts.presentation.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,8 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -32,15 +29,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.rememberKeyboardDismiss
 import dev.core.uikit.component.SoftPill
 import dev.core.uikit.resources.Res
 import dev.core.uikit.theme.AppPalette
+import dev.core.uikit.theme.AppRadius
+import dev.core.uikit.theme.AppSize
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
+import dev.core.uikit.theme.rowShadow
 import org.jetbrains.compose.resources.stringResource
 
 /** Bo'lim yon (horizontal) padding'i — flat dizaynда sarlavha/maydonlar shu qadar ichkariда. */
@@ -100,13 +99,13 @@ fun SelectChip(
 ) {
     // Chip bosilganda klaviatura yopiladi — u ochiq bo'lsa variantlar ostida qolib ketadi.
     val dismissKeyboard = rememberKeyboardDismiss()
-    val shape = RoundedCornerShape(14.dp)
+    val shape = AppRadius.sm
+    // Tanlanmagan chip — ochiq ko'k aksent yuzasi (chegara emas).
     Row(
         Modifier
             .height(36.dp)
             .clip(shape)
-            .background(if (selected) palette.primary else palette.fieldBg)
-            .then(if (selected) Modifier else Modifier.border(1.dp, palette.border, shape))
+            .background(if (selected) palette.primary else palette.accentBg)
             .clickable { dismissKeyboard(); onClick() }
             .padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -149,17 +148,18 @@ fun FormDropdown(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val label = options.firstOrNull { it.first == value }?.second
-    val shape = RoundedCornerShape(14.dp)
+    val shape = AppRadius.lg
 
     Box(modifier.fillMaxWidth()) {
         Row(
+            // Maydon — oq yuza va yumshoq soya; chegara yangi dizaynda yo'q.
             Modifier.fillMaxWidth()
-                .height(48.dp)
+                .height(AppSize.fieldHeight)
+                .rowShadow(shape)
                 .clip(shape)
                 .background(palette.fieldBg)
-                .border(1.dp, palette.border, shape)
                 .clickable(enabled = enabled) { expanded = true }
-                .padding(horizontal = 14.dp),
+                .padding(horizontal = AppSpacing.lg),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
@@ -176,7 +176,7 @@ fun FormDropdown(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
             )
-            Icon(AppIcons.ChevronDown, null, tint = palette.chevron, modifier = Modifier.size(18.dp))
+            Icon(AppIcons.ChevronDown, null, tint = palette.inkMuted, modifier = Modifier.size(AppSize.iconSm))
         }
 
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
@@ -219,13 +219,13 @@ fun FormSwitch(
             modifier = Modifier.weight(1f),
         )
         Box(
-            Modifier.size(width = 44.dp, height = 26.dp)
-                .clip(CircleShape)
-                .background(if (checked) palette.primary else palette.tabTrack),
+            Modifier.size(width = AppSize.toggleWidth, height = AppSize.toggleHeight)
+                .clip(AppRadius.pill)
+                .background(if (checked) palette.primary else palette.accentBg),
             contentAlignment = if (checked) Alignment.CenterEnd else Alignment.CenterStart,
         ) {
             // Rangli yo'lak USTIDAGI tugmacha — kontent rangi (`onPrimary`) ishlatiladi.
-            Box(Modifier.padding(horizontal = 3.dp).size(20.dp).clip(CircleShape).background(palette.onPrimary))
+            Box(Modifier.padding(horizontal = 3.dp).size(20.dp).clip(AppRadius.pill).background(palette.onPrimary))
         }
     }
 }
@@ -237,9 +237,8 @@ fun StatusPill(text: String, color: Color) {
         text,
         accent = color,
         backgroundAlpha = 0.14f,
-        shape = RoundedCornerShape(8.dp),
+        shape = AppRadius.sm,
         textStyle = AppType.caption.copy(
-            fontSize = 10.5f.sp,
             fontWeight = AppType.buttonSecondary.fontWeight,
         ),
         contentPadding = PaddingValues(horizontal = 9.dp, vertical = AppSpacing.xs),

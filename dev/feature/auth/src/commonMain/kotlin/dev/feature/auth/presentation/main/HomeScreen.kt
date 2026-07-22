@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -36,6 +35,7 @@ import dev.core.uikit.resources.auth_home_greeting
 import dev.core.uikit.resources.auth_notifications_title
 import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
+import dev.core.uikit.theme.AppSize
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
@@ -85,7 +85,12 @@ private fun HomeHeader(
 ) {
     GradientHeader(palette = palette) {
         Row(
-            Modifier.padding(start = 20.dp, end = 20.dp, top = 54.dp, bottom = AppSpacing.xl),
+            Modifier.padding(
+                start = AppSpacing.screenHorizontal,
+                end = AppSpacing.screenHorizontal,
+                top = 54.dp,
+                bottom = AppSpacing.xl,
+            ),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
@@ -108,7 +113,7 @@ private fun HomeHeader(
                 Spacer(Modifier.height(2.dp))
                 Text(
                     state.userName,
-                    style = AppType.screenTitle.copy(fontSize = 18.sp, letterSpacing = 0.sp, color = Color.White),
+                    style = AppType.sheetTitle.copy(color = Color.White),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -125,7 +130,6 @@ private fun HomeHeader(
                         Text(
                             badge,
                             style = AppType.caption.copy(
-                                fontSize = 10.5f.sp,
                                 fontWeight = AppType.label.fontWeight,
                                 color = Color.White,
                             ),
@@ -140,7 +144,7 @@ private fun HomeHeader(
                     if (state.hasUnreadNotifications) {
                         Box(
                             Modifier.align(Alignment.TopEnd).padding(10.dp).size(7.dp)
-                                .clip(AppRadius.pill).background(palette.badge),
+                                .clip(AppRadius.pill).background(palette.danger),
                         )
                     }
                 }
@@ -157,11 +161,11 @@ private fun HeaderAction(
     onClick: () -> Unit,
 ) {
     Box(
-        Modifier.size(40.dp).clip(RoundedCornerShape(13.dp))
+        Modifier.size(AppSize.iconButton).clip(AppRadius.sm)
             .background(Color.White.copy(alpha = 0.18f))
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(icon, contentDescription, tint = Color.White, modifier = Modifier.size(18.dp))
+        Icon(icon, contentDescription, tint = Color.White, modifier = Modifier.size(AppSize.iconMd))
     }
 }

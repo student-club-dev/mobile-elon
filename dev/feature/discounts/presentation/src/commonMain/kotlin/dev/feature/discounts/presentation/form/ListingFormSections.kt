@@ -1,7 +1,6 @@
 package dev.feature.discounts.presentation.form
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.GlassTextField
 import dev.core.uikit.resources.Res
@@ -38,9 +35,12 @@ import dev.core.uikit.resources.discounts_mode_regular
 import dev.core.uikit.resources.discounts_mode_section
 import dev.core.uikit.resources.discounts_mode_subtitle
 import dev.core.uikit.theme.AppPalette
+import dev.core.uikit.theme.AppRadius
+import dev.core.uikit.theme.AppSize
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
+import dev.core.uikit.theme.rowShadow
 import dev.feature.discounts.domain.model.Gender
 import dev.feature.discounts.domain.model.ListingCatalog
 import dev.feature.discounts.domain.model.ListingField
@@ -148,12 +148,14 @@ private fun GenderCard(
     modifier: Modifier,
     palette: AppPalette,
 ) {
-    val shape = RoundedCornerShape(16.dp)
+    val shape = AppRadius.md
+    // Tanlanmagan karta — oq yuza + soya; tanlangani brend rangida.
+    val surface = if (active) Modifier else Modifier.rowShadow(shape)
     Column(
         modifier
+            .then(surface)
             .clip(shape)
-            .background(if (active) palette.primary else palette.glass)
-            .then(if (active) Modifier else Modifier.border(1.dp, palette.border, shape))
+            .background(if (active) palette.primary else palette.card)
             .clickable(onClick = onClick)
             .padding(vertical = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -217,7 +219,7 @@ fun CategorySection(
                     state.customCategoryName,
                     vm::onCustomCategory,
                     stringResource(Res.string.discounts_category_custom_hint),
-                    height = 46.dp,
+                    height = AppSize.fieldHeight,
                     type = AppFieldType.LatinText,
                     palette = palette,
                 )
@@ -242,7 +244,7 @@ fun BusinessAndScopeSection(
             state.businessName,
             vm::onBusinessName,
             stringResource(copy.businessHint),
-            height = 48.dp,
+            height = AppSize.fieldHeight,
             type = AppFieldType.LatinText,
         )
     }

@@ -1,7 +1,6 @@
 package dev.feature.auth.presentation.main
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,13 +29,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.core.domain.model.FriendStatus
 import dev.core.domain.model.Student
 import dev.core.domain.model.StudentSort
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.FilterPill
+import dev.core.uikit.component.GlassRow
 import dev.core.uikit.component.MonogramTile
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.auth_filter
@@ -54,6 +52,7 @@ import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
+import dev.core.uikit.theme.rowShadow
 import dev.feature.auth.presentation.main.components.StudentProfile
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -81,7 +80,7 @@ fun StudentsScreen(vm: StudentsViewModel = koinViewModel()) {
         Column(Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg).padding(top = 54.dp)) {
             Text(
                 stringResource(Res.string.auth_students_title),
-                style = AppType.screenTitle.copy(letterSpacing = 0.sp, color = palette.ink),
+                style = AppType.screenTitle.copy(color = palette.ink),
             )
             Spacer(Modifier.height(14.dp))
             Row(
@@ -128,7 +127,7 @@ fun StudentsScreen(vm: StudentsViewModel = koinViewModel()) {
 private fun FilterChipButton(palette: AppPalette) {
     val shape = AppRadius.pill
     Row(
-        Modifier.clip(shape).background(palette.glass).border(1.dp, palette.border, shape)
+        Modifier.rowShadow(shape).clip(shape).background(palette.card)
             .padding(horizontal = 13.dp, vertical = AppSpacing.sm),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -136,25 +135,25 @@ private fun FilterChipButton(palette: AppPalette) {
         Icon(AppIcons.Filter, null, tint = palette.inkMuted, modifier = Modifier.size(14.dp))
         Text(
             stringResource(Res.string.auth_filter),
-            style = AppType.label.copy(fontSize = 12.5f.sp, color = palette.inkMuted),
+            style = AppType.groupLabel.copy(color = palette.inkMuted),
         )
     }
 }
 
 @Composable
 private fun StudentRow(student: Student, palette: AppPalette, onOpen: () -> Unit, onFriend: () -> Unit) {
-    val shape = RoundedCornerShape(16.dp)
-    Row(
-        Modifier.fillMaxWidth().clip(shape).background(palette.glass).border(1.dp, palette.border, shape)
-            .clickable(onClick = onOpen).padding(AppSpacing.md),
-        verticalAlignment = Alignment.CenterVertically,
+    GlassRow(
+        shape = AppRadius.md,
+        contentPadding = PaddingValues(AppSpacing.md),
         horizontalArrangement = Arrangement.spacedBy(11.dp),
+        onClick = onOpen,
+        palette = palette,
     ) {
         MonogramTile(student.initial, size = 46.dp)
         Column(Modifier.weight(1f)) {
             Text(
                 student.fullName,
-                style = AppType.label.copy(fontSize = 13.5f.sp, fontWeight = AppType.button.fontWeight, color = palette.ink),
+                style = AppType.subtitle.copy(fontWeight = AppType.button.fontWeight, color = palette.ink),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

@@ -10,7 +10,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import dev.core.uikit.component.GlassTextField
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.discounts_attribute_label
@@ -19,6 +18,7 @@ import dev.core.uikit.resources.discounts_attributes_subtitle
 import dev.core.uikit.resources.discounts_no
 import dev.core.uikit.resources.discounts_number_hint
 import dev.core.uikit.resources.discounts_yes
+import dev.core.uikit.theme.AppSize
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
@@ -57,7 +57,7 @@ fun AttributesSection(state: PostListingUiState, vm: PostListingViewModel) {
                 } else {
                     spec.label
                 },
-                style = AppType.fieldLabel.copy(color = palette.label),
+                style = AppType.fieldLabel.copy(color = palette.inkMuted),
             )
             when (spec.kind) {
                 AttributeKind.TEXT, AttributeKind.TAGS ->
@@ -65,7 +65,7 @@ fun AttributesSection(state: PostListingUiState, vm: PostListingViewModel) {
                         value,
                         { vm.onAttribute(spec.key, it) },
                         spec.hint.ifBlank { spec.label },
-                        height = 46.dp,
+                        height = AppSize.fieldHeight,
                         palette = palette,
                     )
 
@@ -73,7 +73,7 @@ fun AttributesSection(state: PostListingUiState, vm: PostListingViewModel) {
                     GlassTextField(
                         value, { vm.onAttribute(spec.key, it.filter { c -> c.isDigit() }) },
                         spec.hint.ifBlank { stringResource(Res.string.discounts_number_hint) },
-                        height = 46.dp,
+                        height = AppSize.fieldHeight,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         palette = palette,
                     )

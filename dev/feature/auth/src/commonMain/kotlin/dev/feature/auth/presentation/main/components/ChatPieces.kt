@@ -2,7 +2,6 @@ package dev.feature.auth.presentation.main.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +34,7 @@ import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
+import dev.core.uikit.theme.rowShadow
 
 /**
  * Suhbat qatori — avatar, oxirgi xabar va o'qilmaganlar hisoblagichi.
@@ -48,10 +48,10 @@ internal fun ConversationRow(
     onClick: () -> Unit,
     onLongPress: () -> Unit,
 ) {
-    val shape = RoundedCornerShape(16.dp)
+    val shape = AppRadius.md
     Row(
-        Modifier.fillMaxWidth().clip(shape).background(palette.glass)
-            .border(1.dp, palette.border, shape)
+        // Chegara emas — oq karta va yumshoq soya (yangi dizayn tili).
+        Modifier.fillMaxWidth().rowShadow(shape).clip(shape).background(palette.card)
             .combinedClickable(onClick = onClick, onLongClick = onLongPress)
             .padding(AppSpacing.md),
         verticalAlignment = Alignment.CenterVertically,
@@ -60,12 +60,12 @@ internal fun ConversationRow(
         Box {
             MonogramTile(c.peerInitial, size = 46.dp)
             // Onlayn nuqtasi atrofidagi halqa — ekran yuzasi rangida (qorong'ida quyuq).
-            if (c.online) OnlineDot(palette, ringColor = palette.barSurface, modifier = Modifier.align(Alignment.BottomEnd))
+            if (c.online) OnlineDot(palette, ringColor = palette.card, modifier = Modifier.align(Alignment.BottomEnd))
         }
         Column(Modifier.weight(1f)) {
             Text(
                 c.peerName,
-                style = AppType.label.copy(fontSize = 13.5f.sp, fontWeight = AppType.button.fontWeight, color = palette.ink),
+                style = AppType.subtitle.copy(fontWeight = AppType.button.fontWeight, color = palette.ink),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -78,7 +78,7 @@ internal fun ConversationRow(
             )
         }
         Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(AppSpacing.xs)) {
-            Text(c.lastTime, style = AppType.caption.copy(fontSize = 10.5f.sp, color = palette.inkFaint))
+            Text(c.lastTime, style = AppType.caption.copy(color = palette.inkFaint))
             if (c.unreadCount > 0) {
                 Box(
                     Modifier.size(18.dp).clip(AppRadius.pill).background(palette.primary),
@@ -102,7 +102,7 @@ internal fun ConversationRow(
 @Composable
 internal fun OnlineDot(palette: AppPalette, ringColor: Color, modifier: Modifier = Modifier) {
     Box(modifier.size(12.dp).clip(AppRadius.pill).background(ringColor).padding(2.dp)) {
-        Box(Modifier.fillMaxSize().clip(AppRadius.pill).background(palette.successDeep))
+        Box(Modifier.fillMaxSize().clip(AppRadius.pill).background(palette.success))
     }
 }
 
@@ -112,15 +112,17 @@ internal fun OnlineDot(palette: AppPalette, ringColor: Color, modifier: Modifier
 internal fun MessageBubble(message: Message, palette: AppPalette, onLongPress: () -> Unit) {
     val align = if (message.outgoing) Alignment.CenterEnd else Alignment.CenterStart
     Box(Modifier.fillMaxWidth(), contentAlignment = align) {
+        val corner = 16.dp
         val shape = if (message.outgoing) {
-            RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = AppSpacing.xs)
+            RoundedCornerShape(corner, corner, AppSpacing.xs, corner)
         } else {
-            RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = AppSpacing.xs, bottomEnd = 16.dp)
+            RoundedCornerShape(corner, corner, corner, AppSpacing.xs)
         }
+        // Kiruvchi pufak oq karta — uni chegara emas, soya ajratadi.
+        val surface = if (message.outgoing) Modifier else Modifier.rowShadow(shape)
         Column(
-            Modifier.widthIn(max = 280.dp).clip(shape)
-                .background(if (message.outgoing) palette.primary else palette.glassStrong)
-                .then(if (message.outgoing) Modifier else Modifier.border(1.dp, palette.border, shape))
+            Modifier.widthIn(max = 280.dp).then(surface).clip(shape)
+                .background(if (message.outgoing) palette.primary else palette.card)
                 .combinedClickable(onClick = {}, onLongClick = onLongPress)
                 .padding(horizontal = 13.dp, vertical = 9.dp),
         ) {

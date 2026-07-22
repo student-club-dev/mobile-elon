@@ -1,7 +1,6 @@
 package dev.feature.auth.presentation.main
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,7 +25,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.core.domain.model.AppNotification
 import dev.core.domain.model.NotificationType
@@ -42,9 +39,11 @@ import dev.core.uikit.resources.auth_notifications_title
 import dev.core.uikit.resources.common_back
 import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
+import dev.core.uikit.theme.AppSize
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
+import dev.core.uikit.theme.rowShadow
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -67,14 +66,14 @@ fun NotificationsScreen(onBack: () -> Unit, vm: NotificationsViewModel = koinVie
             BackButton(onBack, contentDescription = stringResource(Res.string.common_back), iconSize = 18.dp)
             Text(
                 stringResource(Res.string.auth_notifications_title),
-                style = AppType.screenTitle.copy(fontSize = 20.sp, letterSpacing = 0.sp, color = palette.ink),
+                style = AppType.topBarTitle.copy(color = palette.ink),
                 modifier = Modifier.weight(1f),
             )
             if (state.unreadCount > 0) {
                 Text(
                     stringResource(Res.string.auth_notifications_mark_all_read),
                     style = AppType.fieldLabel.copy(color = palette.primary),
-                    modifier = Modifier.clip(RoundedCornerShape(8.dp)).clickable { vm.markAllRead() }
+                    modifier = Modifier.clip(AppRadius.sm).clickable { vm.markAllRead() }
                         .padding(horizontal = 6.dp, vertical = AppSpacing.xs),
                 )
             }
@@ -100,12 +99,12 @@ fun NotificationsScreen(onBack: () -> Unit, vm: NotificationsViewModel = koinVie
 @Composable
 private fun NotificationRow(n: AppNotification, palette: AppPalette, onClick: () -> Unit) {
     val (icon, accent) = n.type.iconAndAccent(palette)
-    val shape = AppRadius.lg
+    val shape = AppRadius.row
     Row(
-        Modifier.fillMaxWidth().clip(shape)
-            .background(if (n.read) palette.glass else palette.primary.copy(alpha = 0.06f))
-            .border(1.dp, if (n.read) palette.border else palette.primary.copy(alpha = 0.30f), shape)
-            .clickable(onClick = onClick).padding(14.dp),
+        // Chegara yo'q: qatorni soya ajratadi, o'qilmagani esa ochiq ko'k fon bilan belgilanadi.
+        Modifier.fillMaxWidth().rowShadow(shape).clip(shape)
+            .background(if (n.read) palette.card else palette.accentBg)
+            .clickable(onClick = onClick).padding(AppSpacing.lg),
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.spacedBy(11.dp),
     ) {
@@ -114,14 +113,14 @@ private fun NotificationRow(n: AppNotification, palette: AppPalette, onClick: ()
             tint = accent,
             background = accent.copy(alpha = 0.14f),
             size = 38.dp,
-            iconSize = 18.dp,
-            shape = RoundedCornerShape(11.dp),
+            iconSize = AppSize.iconSm,
+            shape = AppRadius.sm,
         )
         Column(Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     n.title,
-                    style = AppType.label.copy(fontSize = 13.5f.sp, fontWeight = AppType.button.fontWeight, color = palette.ink),
+                    style = AppType.subtitle.copy(fontWeight = AppType.button.fontWeight, color = palette.ink),
                     modifier = Modifier.weight(1f),
                 )
                 if (!n.read) {
@@ -136,7 +135,7 @@ private fun NotificationRow(n: AppNotification, palette: AppPalette, onClick: ()
             Spacer(Modifier.height(AppSpacing.xs))
             Text(
                 n.timeLabel,
-                style = AppType.caption.copy(fontSize = 10.5f.sp, fontWeight = AppType.label.fontWeight, color = palette.inkFaint),
+                style = AppType.caption.copy(fontWeight = AppType.label.fontWeight, color = palette.inkFaint),
             )
         }
     }
@@ -155,11 +154,11 @@ private fun EmptyNotifications(palette: AppPalette) {
                 background = palette.primary.copy(alpha = 0.12f),
                 size = 72.dp,
                 iconSize = 34.dp,
-                shape = RoundedCornerShape(22.dp),
+                shape = AppRadius.card,
             )
             Text(
                 stringResource(Res.string.auth_notifications_empty_title),
-                style = AppType.screenTitle.copy(fontSize = 17.sp, letterSpacing = 0.sp, color = palette.ink),
+                style = AppType.cardTitle.copy(color = palette.ink),
             )
             Text(
                 stringResource(Res.string.auth_notifications_empty_body),
@@ -172,9 +171,9 @@ private fun EmptyNotifications(palette: AppPalette) {
 
 /** Bildirishnoma turiga mos ikonka va modul aksenti. */
 private fun NotificationType.iconAndAccent(palette: AppPalette): Pair<ImageVector, Color> = when (this) {
-    NotificationType.JOB -> AppIcons.Briefcase to palette.moduleStudy
-    NotificationType.DISCOUNT -> AppIcons.Tag to palette.moduleFood
-    NotificationType.AD -> AppIcons.FileText to palette.moduleHousing
+    NotificationType.JOB -> AppIcons.Briefcase to palette.accentStudy
+    NotificationType.DISCOUNT -> AppIcons.Tag to palette.accentFood
+    NotificationType.AD -> AppIcons.FileText to palette.success
     NotificationType.CHAT -> AppIcons.MessageSquare to palette.primary
-    NotificationType.SYSTEM -> AppIcons.Bell to palette.moduleMedical
+    NotificationType.SYSTEM -> AppIcons.Bell to palette.accentBeauty
 }

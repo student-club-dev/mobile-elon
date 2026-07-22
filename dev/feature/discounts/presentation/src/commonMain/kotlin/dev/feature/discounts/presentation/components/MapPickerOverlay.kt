@@ -1,7 +1,6 @@
 package dev.feature.discounts.presentation.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -30,6 +28,8 @@ import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
+import dev.core.uikit.theme.cardShadow
+import dev.core.uikit.theme.rowShadow
 import dev.feature.discounts.domain.repository.PlaceSuggestion
 import org.jetbrains.compose.resources.stringResource
 
@@ -59,10 +59,10 @@ fun BoxScope.MapSearchResults(
         Modifier.align(Alignment.TopCenter)
             .padding(horizontal = AppSpacing.md, vertical = AppSpacing.sm)
             .fillMaxWidth()
+            // Xarita ustidagi panel — oq karta, uni chegara emas soya ajratadi.
+            .cardShadow(AppRadius.lg)
             .clip(AppRadius.lg)
-            // Xarita ustidagi panel — palitradagi ko'tarilgan yuza rangi.
-            .background(palette.barSurface)
-            .border(1.dp, palette.border, AppRadius.lg),
+            .background(palette.card),
     ) {
         when {
             searching -> Text(
@@ -128,9 +128,9 @@ fun BoxScope.MyLocationButton(
         modifier
             .align(Alignment.BottomStart)
             .padding(start = AppSpacing.md, bottom = bottomPadding)
-            .shadow(6.dp, AppRadius.md)
+            .rowShadow(AppRadius.md)
             .clip(AppRadius.md)
-            .background(palette.barSurface)
+            .background(palette.card)
             .clickable(onClick = onClick)
             .padding(horizontal = AppSpacing.md, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,

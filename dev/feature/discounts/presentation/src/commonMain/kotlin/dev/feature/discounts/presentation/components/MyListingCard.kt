@@ -1,7 +1,6 @@
 package dev.feature.discounts.presentation.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,14 +11,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
@@ -41,6 +38,7 @@ import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
+import dev.core.uikit.theme.cardShadow
 import dev.feature.discounts.domain.model.Listing
 import dev.feature.discounts.domain.model.ListingStatus
 import dev.feature.discounts.domain.model.formatSum
@@ -64,15 +62,16 @@ fun MyListingCard(
 ) {
     val accent = Color(listing.businessType.accent)
     val isDiscount = listing.isDiscount
-    val cardShape = RoundedCornerShape(22.dp)
+    val cardShape = AppRadius.card
 
+    // Karta chegarasiz — uni yumshoq soya ajratadi (yangi dizayn tili).
     Column(
-        Modifier.fillMaxWidth()
-            .shadow(10.dp, cardShape, spotColor = accent.copy(alpha = 0.25f))
-            .clip(cardShape).background(palette.glass)
-            .border(1.dp, palette.border, cardShape),
+        Modifier.fillMaxWidth().cardShadow(cardShape).clip(cardShape).background(palette.card),
     ) {
-        Row(Modifier.fillMaxWidth().padding(13.dp), horizontalArrangement = Arrangement.spacedBy(AppSpacing.md)) {
+        Row(
+            Modifier.fillMaxWidth().padding(AppSpacing.lg),
+            horizontalArrangement = Arrangement.spacedBy(AppSpacing.md),
+        ) {
             ListingCover(listing, accent, isDiscount, palette)
 
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(5.dp)) {
@@ -86,8 +85,8 @@ fun MyListingCard(
                     listing.categoryLabel,
                     accent = accent,
                     backgroundAlpha = 0.12f,
-                    shape = RoundedCornerShape(7.dp),
-                    textStyle = AppType.caption.copy(fontSize = 10.5f.sp, fontWeight = AppType.label.fontWeight),
+                    shape = AppRadius.sm,
+                    textStyle = AppType.caption.copy(fontWeight = AppType.label.fontWeight),
                     contentPadding = PaddingValues(horizontal = AppSpacing.sm, vertical = 3.dp),
                 )
                 Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(7.dp)) {
@@ -125,7 +124,7 @@ fun MyListingCard(
                     if (extra > 0) stringResource(Res.string.discounts_branch_extra, "$extra") else ""
                 Text(
                     stringResource(Res.string.discounts_branch_location, first.display()) + extraLabel,
-                    style = AppType.caption.copy(fontSize = 10.5f.sp, color = palette.inkFaint),
+                    style = AppType.caption.copy(color = palette.inkFaint),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
@@ -159,7 +158,7 @@ private fun ListingCover(
     isDiscount: Boolean,
     palette: AppPalette,
 ) {
-    val shape = RoundedCornerShape(16.dp)
+    val shape = AppRadius.md
     Box(Modifier.size(72.dp)) {
         Box(
             Modifier.fillMaxSize().clip(shape)
@@ -178,7 +177,7 @@ private fun ListingCover(
         if (isDiscount) {
             Box(
                 Modifier.align(Alignment.TopStart).padding(5.dp)
-                    .clip(RoundedCornerShape(8.dp)).background(accent)
+                    .clip(AppRadius.sm).background(accent)
                     .padding(horizontal = 6.dp, vertical = 2.dp),
             ) {
                 // Aksent fon USTIDA — kontent rangi palitradan emas, `onPrimary` dan olinadi.
@@ -217,7 +216,7 @@ private fun CardAction(
 
 /** Status rangi — palitradan, shuning uchun qorong'i rejimda ham o'qiladi. */
 private fun ListingStatus.color(palette: AppPalette): Color = when (this) {
-    ListingStatus.ACTIVE -> palette.successDeep
+    ListingStatus.ACTIVE -> palette.success
     ListingStatus.DRAFT -> palette.inkFaint
     ListingStatus.PENDING_REVIEW, ListingStatus.SCHEDULED -> palette.primary
     ListingStatus.REJECTED, ListingStatus.EXPIRED, ListingStatus.SOLD_OUT -> palette.danger

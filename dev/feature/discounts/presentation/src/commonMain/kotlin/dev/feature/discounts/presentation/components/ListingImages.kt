@@ -2,7 +2,6 @@ package dev.feature.discounts.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,8 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +28,7 @@ import dev.core.uikit.resources.common_delete
 import dev.core.uikit.resources.discounts_image
 import dev.core.uikit.resources.discounts_image_uploading
 import dev.core.uikit.theme.AppPalette
+import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
@@ -69,12 +67,12 @@ private fun String.decodeDataUri(): ByteArray? {
 /** Rasm qo'shish katakchasi (bo'sh joy) — bosilganda galereya ochiladi. */
 @Composable
 fun AddImageTile(onClick: () -> Unit, loading: Boolean, palette: AppPalette = appPalette) {
-    val shape = RoundedCornerShape(14.dp)
+    val shape = AppRadius.sm
+    // Bo'sh katak — ochiq ko'k aksent yuzasi, chegara yo'q.
     Box(
         Modifier.size(84.dp)
             .clip(shape)
-            .background(palette.primary.copy(alpha = 0.06f))
-            .border(1.dp, palette.border, shape)
+            .background(palette.accentBg)
             .clickable(enabled = !loading, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
@@ -101,14 +99,14 @@ fun AddImageTile(onClick: () -> Unit, loading: Boolean, palette: AppPalette = ap
 /** Qo'shilgan rasm — burchagida o'chirish tugmasi. */
 @Composable
 fun ImageThumb(source: String, onRemove: () -> Unit, palette: AppPalette = appPalette) {
-    val shape = RoundedCornerShape(14.dp)
+    val shape = AppRadius.sm
     Box(Modifier.size(84.dp)) {
-        ListingImage(source, Modifier.fillMaxSize().clip(shape).border(1.dp, palette.border, shape))
+        ListingImage(source, Modifier.fillMaxSize().clip(shape))
         Box(
             Modifier.align(Alignment.TopEnd)
                 .padding(AppSpacing.xs)
                 .size(20.dp)
-                .clip(CircleShape)
+                .clip(AppRadius.pill)
                 // Rasm ustidagi quyuq qoplama — palitradagi `scrim` tokeni.
                 .background(palette.scrim)
                 .clickable(onClick = onRemove),

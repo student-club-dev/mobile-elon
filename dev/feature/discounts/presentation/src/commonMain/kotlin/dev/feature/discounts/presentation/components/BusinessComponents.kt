@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,12 +16,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.core.uikit.component.AppIcons
+import dev.core.uikit.component.GradientTile
 import dev.core.uikit.component.rememberKeyboardDismiss
 import dev.core.uikit.component.IconTile
 import dev.core.uikit.resources.Res
@@ -35,14 +34,38 @@ import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
+import dev.core.uikit.theme.cardShadow
 import dev.feature.discounts.domain.model.Business
+import dev.feature.discounts.domain.model.BusinessType
 import dev.feature.discounts.domain.model.BusinessTypeInfo
 import dev.feature.discounts.presentation.icon
 import dev.feature.discounts.presentation.localizedLabel
 import org.jetbrains.compose.resources.stringResource
+import dev.core.uikit.theme.rowShadow
 
 /** Biznes turi noma'lum bo'lganda ko'rsatiladigan zaxira ikonka. */
 private val BusinessFallbackIcon = AppIcons.Building
+
+/** Handoff: kartadagi tahrirlash/o'chirish tugmalari 40dp, ikonkasi 18dp. */
+private val CardActionSize = 40.dp
+private val CardActionIconSize = 18.dp
+
+/**
+ * Kategoriya aksenti — palitradagi kategoriya tokenlaridan.
+ *
+ * `BusinessType.accent` (domain) eski binafsha-pushti to'plamdan qolgan `Long` qiymat va
+ * u yangi dizayn tiliga to'g'ri kelmaydi. Ekranlarda faqat palitra ishlatiladi, shuning
+ * uchun tur → token moslamasi shu yerda turadi.
+ */
+private fun BusinessType.accentColor(palette: AppPalette): Color = when (this) {
+    BusinessType.GAME_CLUB -> palette.accentGame
+    BusinessType.CLOTHING -> palette.accentClothing
+    BusinessType.CAFE_RESTAURANT -> palette.accentFood
+    BusinessType.EDUCATION_CENTER -> palette.accentStudy
+    BusinessType.ENTERTAINMENT -> palette.accentCinema
+    BusinessType.BARBERSHOP -> palette.accentBarber
+    BusinessType.BEAUTY_SALON -> palette.accentBeauty
+}
 
 /** "Bizneslarim" ro'yxatidagi karta — nom, tur, manzil va ikkita harakat tugmasi. */
 @Composable
@@ -53,70 +76,64 @@ fun BusinessCard(
     onEdit: () -> Unit,
     onDelete: () -> Unit,
 ) {
-    // Aksent biznes TURIDAN keladi — bu ma'lumot, palitra tokeni emas.
-    val accent = biz.businessType?.let { Color(it.accent) } ?: palette.primary
-    val shape = RoundedCornerShape(20.dp)
+    val accent = biz.businessType?.accentColor(palette) ?: palette.primary
     Row(
         Modifier.fillMaxWidth()
-            .shadow(10.dp, shape, spotColor = accent.copy(alpha = 0.22f))
-            .clip(shape).background(palette.glass)
-            .border(1.dp, palette.border, shape)
+            .cardShadow()
+            .clip(AppRadius.card).background(palette.card)
             .clickable(onClick = onClick)
-            .padding(14.dp),
+            .padding(AppSpacing.lg),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(AppSpacing.md),
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        Box(
-            Modifier.size(52.dp).clip(RoundedCornerShape(15.dp)).background(accent.copy(alpha = 0.14f)),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                biz.businessType?.icon ?: BusinessFallbackIcon,
-                null,
-                tint = accent,
-                modifier = Modifier.size(26.dp),
-            )
-        }
+        // Handoff'da nishon kategoriya rangining ochiq gradienti — ikonka esa to'liq aksentda.
+        GradientTile(
+            biz.businessType?.icon ?: BusinessFallbackIcon,
+            gradient = listOf(accent.copy(alpha = 0.18f), accent.copy(alpha = 0.38f)),
+            tint = accent,
+        )
         Column(Modifier.weight(1f)) {
             Text(
                 biz.name,
-                style = AppType.cardTitle.copy(fontWeight = AppType.screenTitle.fontWeight, color = palette.ink),
+                style = AppType.cardTitle.copy(color = palette.ink),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
                 biz.businessType?.localizedLabel() ?: stringResource(Res.string.discounts_business),
-                style = AppType.hint.copy(fontWeight = AppType.label.fontWeight, color = accent),
+                style = AppType.secondary.copy(fontWeight = AppType.label.fontWeight, color = accent),
             )
             biz.primaryBranch?.address?.takeIf { it.isNotBlank() }?.let {
                 Text(
                     stringResource(Res.string.discounts_branch_location, it),
-                    style = AppType.caption.copy(fontSize = 11.sp, color = palette.inkFaint),
+                    style = AppType.caption.copy(color = palette.inkFaint),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
             }
         }
-        IconTile(
-            AppIcons.Pencil,
-            contentDescription = stringResource(Res.string.common_edit),
-            tint = palette.primary,
-            background = palette.primary.copy(alpha = 0.12f),
-            size = 34.dp,
-            iconSize = 16.dp,
-            shape = AppRadius.sm,
-            onClick = onEdit,
-        )
-        IconTile(
-            AppIcons.Close,
-            contentDescription = stringResource(Res.string.common_delete),
-            tint = palette.danger,
-            background = palette.dangerBg,
-            size = 34.dp,
-            iconSize = 16.dp,
-            shape = AppRadius.sm,
-            onClick = onDelete,
-        )
+        Row(horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
+            IconTile(
+                AppIcons.Pencil,
+                contentDescription = stringResource(Res.string.common_edit),
+                tint = palette.primary,
+                background = palette.accentBg,
+                size = CardActionSize,
+                iconSize = CardActionIconSize,
+                shape = AppRadius.sm,
+                onClick = onEdit,
+            )
+            IconTile(
+                AppIcons.Close,
+                contentDescription = stringResource(Res.string.common_delete),
+                tint = palette.danger,
+                background = palette.dangerBg,
+                size = CardActionSize,
+                iconSize = CardActionIconSize,
+                shape = AppRadius.sm,
+                onClick = onDelete,
+            )
+        }
     }
 }
 
@@ -133,8 +150,7 @@ fun BusinessTypeChip(
     val shape = RoundedCornerShape(13.dp)
     Row(
         Modifier.clip(shape)
-            .background(if (active) palette.primary else palette.glass)
-            .then(if (active) Modifier else Modifier.border(1.dp, palette.border, shape))
+            .background(if (active) palette.primary else palette.card)
             .clickable { dismissKeyboard(); onClick() }
             .padding(horizontal = 13.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -164,8 +180,7 @@ fun BusinessTypeChip(
 @Composable
 fun LocationCard(address: String?, palette: AppPalette, onPick: () -> Unit) {
     Row(
-        Modifier.fillMaxWidth().clip(AppRadius.lg).background(palette.glass)
-            .border(1.dp, palette.border, AppRadius.lg)
+        Modifier.fillMaxWidth().rowShadow(AppRadius.lg).clip(AppRadius.lg).background(palette.card)
             .clickable(onClick = onPick).padding(horizontal = 14.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),

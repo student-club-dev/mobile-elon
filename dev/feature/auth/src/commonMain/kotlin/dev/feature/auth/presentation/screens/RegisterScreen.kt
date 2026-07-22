@@ -3,7 +3,6 @@ package dev.feature.auth.presentation.screens
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -39,6 +38,7 @@ import dev.core.uikit.resources.auth_sign_in
 import dev.core.uikit.resources.auth_signup_title
 import dev.core.uikit.resources.common_back
 import dev.core.uikit.theme.AppPalette
+import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSize
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.appPalette
@@ -63,13 +63,13 @@ fun RegisterScreen(
     val pwVisual = if (state.passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
     AppScreenScaffold(scroll = true) {
         BackButton(onBack, contentDescription = stringResource(Res.string.common_back))
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(AppSpacing.xl))
         LogoTile(size = 48.dp, radius = 15.dp, iconSize = 26.dp)
         Spacer(Modifier.height(AppSpacing.lg))
         ScreenTitle(stringResource(Res.string.auth_signup_title))
         Spacer(Modifier.height(6.dp))
         ScreenSubtitle(stringResource(Res.string.auth_register_subtitle))
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(AppSpacing.xl))
 
         FieldLabel(stringResource(Res.string.auth_field_email_label))
         Spacer(Modifier.height(7.dp))
@@ -94,7 +94,7 @@ fun RegisterScreen(
                     if (state.passwordVisible) AppIcons.EyeOff else AppIcons.Eye,
                     null,
                     tint = palette.inkFaint,
-                    modifier = Modifier.size(AppSize.iconMd).clip(RoundedCornerShape(6.dp))
+                    modifier = Modifier.size(AppSize.iconMd).clip(AppRadius.sm)
                         .clickableNoRipple { vm.togglePasswordVisible() },
                 )
             },
@@ -116,7 +116,7 @@ fun RegisterScreen(
         Spacer(Modifier.height(AppSpacing.sm))
         HintText(stringResource(Res.string.auth_register_hint))
 
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(AppSpacing.xl))
         PrimaryButton(
             stringResource(Res.string.auth_signup_title),
             onCreate,

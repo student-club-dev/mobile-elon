@@ -22,10 +22,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.theme.AppPalette
+import dev.core.uikit.theme.AppRadius
+import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
+import dev.core.uikit.theme.rowShadow
 import dev.core.uikit.util.UZ_DIALING_CODE
 
 /** Telefon maydonining "🇺🇿 +998 |" prefiksi. */
@@ -35,7 +37,7 @@ fun PhonePrefix(palette: AppPalette) {
         // Bayroq emojisi olib tashlandi: Compose iOS uni chiza olmaydi va ikkita "?" bo'lib chiqadi.
         Text(UZ_DIALING_CODE, style = AppType.bodyStrong.copy(fontWeight = AppType.label.fontWeight, color = palette.ink))
         Spacer(Modifier.width(9.dp))
-        Box(Modifier.width(1.dp).height(22.dp).background(palette.border))
+        Box(Modifier.width(1.dp).height(22.dp).background(palette.divider))
     }
 }
 
@@ -51,7 +53,7 @@ fun CheckBoxSmall(checked: Boolean, palette: AppPalette, size: Dp = 20.dp) {
     Box(
         Modifier.size(size).clip(shape)
             .background(if (checked) palette.primary else Color.Transparent)
-            .border(if (checked) 0.dp else 1.5.dp, palette.border, shape),
+            .border(if (checked) 0.dp else 1.5.dp, palette.divider, shape),
         contentAlignment = Alignment.Center,
     ) {
         if (checked) {
@@ -80,11 +82,12 @@ fun AccentIconTile(
     icon: ImageVector,
     palette: AppPalette,
     size: Dp = 60.dp,
-    radius: Dp = 18.dp,
+    shape: RoundedCornerShape = AppRadius.lg,
     iconSize: Dp = 30.dp,
 ) {
     Box(
-        Modifier.size(size).background(palette.primary.copy(alpha = 0.14f), RoundedCornerShape(radius)),
+        // Yangi dizaynda nishon foni — ochiq ko'k `accentBg`, shaffof qatlam emas.
+        Modifier.size(size).background(palette.accentBg, shape),
         contentAlignment = Alignment.Center,
     ) {
         Icon(icon, null, tint = palette.primary, modifier = Modifier.size(iconSize))
@@ -97,7 +100,7 @@ internal fun Dot(active: Boolean, palette: AppPalette) {
     Box(
         Modifier.height(7.dp).width(if (active) 22.dp else 7.dp).background(
             if (active) palette.primary else palette.primary.copy(alpha = 0.25f),
-            RoundedCornerShape(999.dp),
+            AppRadius.pill,
         ),
     )
 }
@@ -105,14 +108,15 @@ internal fun Dot(active: Boolean, palette: AppPalette) {
 /** Onboarding illyustratsiyasi ustida suzuvchi ikonka chipi (ilgari emoji edi). */
 @Composable
 internal fun FloatingChip(icon: ImageVector, label: String?, modifier: Modifier, palette: AppPalette) {
-    val shape = RoundedCornerShape(15.dp)
+    val shape = AppRadius.sm
     Row(
-        modifier.clip(shape)
-            .background(palette.glassStrong)
-            .border(1.dp, palette.border, shape)
+        // Chegara o'rniga soya — chip fon ustida "suzib" turadi.
+        modifier.rowShadow(shape)
+            .clip(shape)
+            .background(palette.card)
             .padding(horizontal = 11.dp, vertical = 9.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
     ) {
         Icon(icon, null, tint = palette.primary, modifier = Modifier.size(16.dp))
         if (label != null) {

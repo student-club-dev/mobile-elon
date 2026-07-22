@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -44,6 +43,8 @@ import dev.core.uikit.theme.AppSize
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
+import dev.core.uikit.theme.cardShadow
+import dev.core.uikit.theme.ctaShadow
 import dev.feature.profile.presentation.EditProfileScreen
 import dev.feature.profile.presentation.ProfileScreen
 import org.jetbrains.compose.resources.StringResource
@@ -153,11 +154,15 @@ private fun BottomBar(
     palette: AppPalette,
     modifier: Modifier = Modifier,
 ) {
+    // Panel yuqori burchaklari yumaloq, uni kontentdan soya ajratadi (chegara emas).
+    val barShape = RoundedCornerShape(topStart = AppSpacing.section, topEnd = AppSpacing.section)
     Box(modifier.fillMaxWidth().height(88.dp)) {
         Row(
             Modifier.align(Alignment.BottomCenter).fillMaxWidth()
                 .height(66.dp)
-                .background(palette.barSurface, RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp))
+                .cardShadow(barShape)
+                .clip(barShape)
+                .background(palette.card)
                 .padding(horizontal = AppSpacing.sm),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -174,7 +179,9 @@ private fun BottomBar(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Box(
-                Modifier.size(54.dp).clip(RoundedCornerShape(18.dp))
+                Modifier.size(AppSize.iconButtonLarge)
+                    .ctaShadow(AppRadius.lg)
+                    .clip(AppRadius.lg)
                     .background(palette.primaryBrush)
                     .clickable(onClick = onFab),
                 contentAlignment = Alignment.Center,
@@ -184,13 +191,13 @@ private fun BottomBar(
                     AppIcons.Plus,
                     stringResource(Res.string.auth_post_ad),
                     tint = palette.onPrimary,
-                    modifier = Modifier.size(26.dp),
+                    modifier = Modifier.size(AppSize.iconFab),
                 )
             }
             Spacer(Modifier.height(3.dp))
             Text(
                 stringResource(Res.string.auth_post_ad_short),
-                style = AppType.navLabel.copy(fontSize = 9.sp, color = palette.primary),
+                style = AppType.navLabel.copy(color = palette.primary),
             )
         }
     }
@@ -216,7 +223,6 @@ private fun NavBarItem(
         Text(
             label,
             style = AppType.navLabel.copy(
-                fontSize = 9.sp,
                 fontWeight = if (active) AppType.button.fontWeight else AppType.label.fontWeight,
                 color = tint,
             ),

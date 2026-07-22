@@ -1,7 +1,6 @@
 package dev.feature.auth.presentation.main
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -25,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.core.domain.model.AdType
 import dev.core.uikit.component.AppIcons
@@ -60,6 +57,8 @@ import dev.core.uikit.resources.auth_post_ad_question
 import dev.core.uikit.resources.common_back
 import dev.core.uikit.resources.common_close
 import dev.core.uikit.theme.AppPalette
+import dev.core.uikit.theme.AppRadius
+import dev.core.uikit.theme.AppSize
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
@@ -112,7 +111,7 @@ private fun AdTypePicker(palette: AppPalette, onClose: () -> Unit, onPick: (AdTy
             )
             Text(
                 stringResource(Res.string.auth_post_ad),
-                style = AppType.screenTitle.copy(fontSize = 20.sp, letterSpacing = 0.sp, color = palette.ink),
+                style = AppType.topBarTitle.copy(color = palette.ink),
             )
         }
         Spacer(Modifier.height(6.dp))
@@ -124,17 +123,17 @@ private fun AdTypePicker(palette: AppPalette, onClose: () -> Unit, onPick: (AdTy
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             adTypes.forEach { info ->
                 GlassRow(
-                    shape = RoundedCornerShape(16.dp),
+                    shape = AppRadius.md,
                     onClick = { onPick(info.type) },
                     palette = palette,
                 ) {
                     IconTile(
                         info.icon,
                         tint = palette.primary,
-                        background = palette.primary.copy(alpha = 0.12f),
-                        size = 42.dp,
-                        iconSize = 20.dp,
-                        shape = RoundedCornerShape(12.dp),
+                        background = palette.accentBg,
+                        size = AppSize.iconTile,
+                        iconSize = AppSize.iconLg,
+                        shape = AppRadius.sm,
                     )
                     Column(Modifier.weight(1f)) {
                         Text(
@@ -166,17 +165,16 @@ private fun AdForm(state: PostAdUiState, palette: AppPalette, onBack: () -> Unit
                 BackButton(onBack, contentDescription = stringResource(Res.string.common_back), iconSize = 18.dp)
                 Text(
                     stringResource(info.title),
-                    style = AppType.screenTitle.copy(fontSize = 19.sp, letterSpacing = 0.sp, color = palette.ink),
+                    style = AppType.sectionTitle.copy(color = palette.ink),
                 )
             }
             Spacer(Modifier.height(AppSpacing.lg))
 
             // Rasm qo'shish (placeholder)
-            val photoShape = RoundedCornerShape(16.dp)
+            // Rasm maydoni — chegara emas, ochiq ko'k aksent yuzasi (yangi dizayn tili).
             Box(
-                Modifier.fillMaxWidth().height(120.dp).clip(photoShape)
-                    .background(palette.primary.copy(alpha = 0.05f))
-                    .border(1.dp, palette.border, photoShape),
+                Modifier.fillMaxWidth().height(120.dp).clip(AppRadius.md)
+                    .background(palette.accentBg),
                 contentAlignment = Alignment.Center,
             ) {
                 Column(
@@ -193,7 +191,7 @@ private fun AdForm(state: PostAdUiState, palette: AppPalette, onBack: () -> Unit
             Spacer(Modifier.height(14.dp))
 
             FieldTitle(stringResource(Res.string.auth_ad_title_label), palette)
-            GlassTextField(state.title, vm::onTitle, stringResource(Res.string.auth_ad_title_placeholder), height = 48.dp)
+            GlassTextField(state.title, vm::onTitle, stringResource(Res.string.auth_ad_title_placeholder), height = AppSize.fieldHeight)
             Spacer(Modifier.height(AppSpacing.md))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Column(Modifier.weight(1f)) {
@@ -202,7 +200,7 @@ private fun AdForm(state: PostAdUiState, palette: AppPalette, onBack: () -> Unit
                         state.category,
                         vm::onCategory,
                         stringResource(Res.string.auth_ad_category_placeholder),
-                        height = 48.dp,
+                        height = AppSize.fieldHeight,
                     )
                 }
                 Column(Modifier.weight(1f)) {
@@ -211,7 +209,7 @@ private fun AdForm(state: PostAdUiState, palette: AppPalette, onBack: () -> Unit
                         state.price,
                         vm::onPrice,
                         stringResource(Res.string.auth_ad_price_placeholder),
-                        height = 48.dp,
+                        height = AppSize.fieldHeight,
                     )
                 }
             }
@@ -234,6 +232,6 @@ private fun AdForm(state: PostAdUiState, palette: AppPalette, onBack: () -> Unit
 
 @Composable
 private fun FieldTitle(text: String, palette: AppPalette) {
-    Text(text, style = AppType.fieldLabel.copy(color = palette.label))
+    Text(text, style = AppType.fieldLabel.copy(color = palette.inkMuted))
     Spacer(Modifier.height(7.dp))
 }

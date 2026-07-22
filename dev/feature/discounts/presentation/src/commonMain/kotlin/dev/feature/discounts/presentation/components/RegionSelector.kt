@@ -1,38 +1,90 @@
 package dev.feature.discounts.presentation.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import dev.core.uikit.component.AppBottomSheet
 import dev.core.uikit.component.AppIcons
+import dev.core.uikit.component.BottomSheetOption
 import dev.core.uikit.component.rememberKeyboardDismiss
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.discounts_region_select
 import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
+import dev.core.uikit.theme.AppSize
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
+import dev.core.uikit.theme.rowShadow
 import dev.feature.discounts.domain.model.GeoCatalog
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * Viloyat tanlash — bosilganda ro'yxat ochiladi.
+ * Tanlov maydoni va viloyat sheet'i (`design_handoff_studentclub_elonuz`, "Biznes qo'shish").
+ *
+ * Ilgari viloyat ochilib-yopiladigan inline ro'yxat edi: u ochilganda formaning qolgani pastga
+ * suriladi va 14 ta viloyat ekranga sig'may qolardi. Handoff naqshi — bosiladigan oq qator,
+ * ro'yxat esa modal Bottom Sheet'da.
+ */
+
+/**
+ * Bosiladigan tanlov qatori — chapda ikonka, o'rtada qiymat, o'ngda strelka.
+ *
+ * Handoff: oq karta, radius 18, ichki padding 15/16, yumshoq soya. Qiymat tanlanmaganda
+ * matn ochroq va yengilroq bo'ladi (placeholder holati).
+ */
+@Composable
+fun SelectorField(
+    icon: ImageVector,
+    value: String?,
+    placeholder: String,
+    onClick: () -> Unit,
+    palette: AppPalette,
+    modifier: Modifier = Modifier,
+    trailingIcon: ImageVector = AppIcons.ChevronRight,
+) {
+    // Sheet ochilganda klaviatura yopiladi — aks holda u variantlarni to'sib qoladi.
+    val dismissKeyboard = rememberKeyboardDismiss()
+    Row(
+        modifier.fillMaxWidth()
+            .rowShadow(AppRadius.lg)
+            .clip(AppRadius.lg)
+            .background(palette.card)
+            .clickable { dismissKeyboard(); onClick() }
+            .padding(horizontal = AppSpacing.lg, vertical = 15.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(AppSpacing.md),
+    ) {
+        Icon(icon, null, tint = palette.primary, modifier = Modifier.size(AppSize.iconMd))
+        Text(
+            value ?: placeholder,
+            style = if (value != null) {
+                AppType.bodyStrong.copy(color = palette.ink)
+            } else {
+                AppType.body.copy(color = palette.inkFaint)
+            },
+            modifier = Modifier.weight(1f),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
+        Icon(trailingIcon, null, tint = palette.chevron, modifier = Modifier.size(16.dp))
+    }
+}
+
+/**
+ * Viloyat tanlash sheet'i.
  *
  * Viloyat xaritadan joy tanlanganda teskari geokodlashdan avtomatik to'ladi, lekin bu har
  * doim ham ishlamaydi: Nominatim viloyat nomini [GeoCatalog] id'siga bog'lay olmasa `null`
@@ -40,80 +92,26 @@ import org.jetbrains.compose.resources.stringResource
  * ko'rinadigan va tuzatsa bo'ladigan qilindi.
  */
 @Composable
-fun RegionSelector(
-    regionName: String?,
-    expanded: Boolean,
-    onToggle: () -> Unit,
+fun RegionSheet(
+    visible: Boolean,
+    regionId: String?,
     onSelect: (String) -> Unit,
+    onDismiss: () -> Unit,
     palette: AppPalette,
-    modifier: Modifier = Modifier,
 ) {
-    // Ro'yxat ochilganda klaviatura yopiladi — aks holda u variantlarni to'sib qoladi.
-    val dismissKeyboard = rememberKeyboardDismiss()
-    Column(modifier.fillMaxWidth()) {
-        Row(
-            Modifier.fillMaxWidth()
-                .clip(AppRadius.lg)
-                .background(palette.fieldBg)
-                .border(1.dp, palette.border, AppRadius.lg)
-                .clickable { dismissKeyboard(); onToggle() }
-                .padding(horizontal = AppSpacing.md, vertical = 15.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(AppIcons.Building, null, tint = palette.inkFaint, modifier = Modifier.size(17.dp))
-            Spacer(Modifier.width(9.dp))
-            Text(
-                regionName ?: stringResource(Res.string.discounts_region_select),
-                style = AppType.bodyStrong.copy(
-                    color = if (regionName != null) palette.ink else palette.inkFaint,
-                ),
-                modifier = Modifier.weight(1f),
+    AppBottomSheet(
+        visible = visible,
+        onDismiss = onDismiss,
+        title = stringResource(Res.string.discounts_region_select),
+        palette = palette,
+    ) {
+        GeoCatalog.regions().forEach { region ->
+            BottomSheetOption(
+                label = region.name,
+                selected = region.id == regionId,
+                onClick = { onSelect(region.id) },
+                palette = palette,
             )
-            Icon(
-                if (expanded) AppIcons.ChevronDown else AppIcons.ChevronRight,
-                null,
-                tint = palette.inkFaint,
-                modifier = Modifier.size(18.dp),
-            )
-        }
-
-        if (expanded) {
-            Spacer(Modifier.padding(top = AppSpacing.xs))
-            Column(
-                Modifier.fillMaxWidth()
-                    .clip(AppRadius.lg)
-                    .background(palette.glass)
-                    .border(1.dp, palette.border, AppRadius.lg)
-                    // Viloyatlar 14 ta — ro'yxat ekranni to'liq egallamasin.
-                    .heightIn(max = 260.dp)
-                    .verticalScroll(rememberScrollState()),
-            ) {
-                GeoCatalog.regions().forEach { region ->
-                    val selected = region.name == regionName
-                    Row(
-                        Modifier.fillMaxWidth()
-                            .clickable { onSelect(region.id) }
-                            .padding(horizontal = 14.dp, vertical = 13.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            region.name,
-                            style = AppType.label.copy(
-                                color = if (selected) palette.primary else palette.ink,
-                            ),
-                            modifier = Modifier.weight(1f),
-                        )
-                        if (selected) {
-                            Icon(
-                                AppIcons.Check,
-                                null,
-                                tint = palette.primary,
-                                modifier = Modifier.size(17.dp),
-                            )
-                        }
-                    }
-                }
-            }
         }
     }
 }

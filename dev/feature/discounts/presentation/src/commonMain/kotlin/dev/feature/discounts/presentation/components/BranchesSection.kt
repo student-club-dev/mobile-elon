@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,8 +53,8 @@ fun BranchesSection(state: PostListingUiState, palette: AppPalette, vm: PostList
     ) {
         state.branches.forEachIndexed { index, branch ->
             Column(
-                Modifier.fillMaxWidth().clip(RoundedCornerShape(13.dp))
-                    .background(palette.fieldBg).padding(11.dp),
+                Modifier.fillMaxWidth().clip(AppRadius.sm)
+                    .background(palette.accentBg).padding(11.dp),
                 verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
             ) {
                 Row(
@@ -63,8 +62,8 @@ fun BranchesSection(state: PostListingUiState, palette: AppPalette, vm: PostList
                     horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
                 ) {
                     Box(
-                        Modifier.size(28.dp).clip(RoundedCornerShape(9.dp))
-                            .background(palette.primary.copy(alpha = 0.14f)),
+                        Modifier.size(28.dp).clip(AppRadius.sm)
+                            .background(palette.card),
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
@@ -94,7 +93,7 @@ fun BranchesSection(state: PostListingUiState, palette: AppPalette, vm: PostList
                     branch.name.orEmpty(),
                     { vm.onBranchName(index, it) },
                     stringResource(Res.string.discounts_branch_name_hint),
-                    height = 44.dp,
+                    height = AppSize.fieldHeight,
                     palette = palette,
                 )
             }
@@ -108,8 +107,8 @@ fun BranchesSection(state: PostListingUiState, palette: AppPalette, vm: PostList
         }
 
         Row(
-            Modifier.fillMaxWidth().clip(RoundedCornerShape(13.dp))
-                .background(palette.primary.copy(alpha = 0.08f))
+            Modifier.fillMaxWidth().clip(AppRadius.sm)
+                .background(palette.accentBg)
                 .clickable(onClick = vm::openMap)
                 .padding(vertical = 13.dp),
             verticalAlignment = Alignment.CenterVertically,

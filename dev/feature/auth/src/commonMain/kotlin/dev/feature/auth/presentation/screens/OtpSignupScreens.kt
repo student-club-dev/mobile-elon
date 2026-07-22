@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
@@ -62,6 +61,7 @@ import dev.core.uikit.resources.auth_verified_badge
 import dev.core.uikit.resources.auth_verify
 import dev.core.uikit.resources.common_back
 import dev.core.uikit.theme.AppPalette
+import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
@@ -114,11 +114,11 @@ fun OtpScreen(
             },
             style = AppType.subtitle,
         )
-        Spacer(Modifier.height(22.dp))
+        Spacer(Modifier.height(AppSpacing.section))
 
         CodeInput(state.otp, vm::onOtpChange, palette)
 
-        Spacer(Modifier.height(22.dp))
+        Spacer(Modifier.height(AppSpacing.section))
         ResendRow(
             seconds = state.resendSeconds,
             timerPrefix = stringResource(Res.string.auth_resend_code_timer_prefix),
@@ -127,7 +127,7 @@ fun OtpScreen(
             palette = palette,
         )
 
-        Spacer(Modifier.height(22.dp))
+        Spacer(Modifier.height(AppSpacing.section))
         PrimaryButton(
             stringResource(Res.string.auth_verify),
             onVerify,
@@ -164,7 +164,7 @@ fun SignUpScreen(
     onCreate: () -> Unit,
     palette: AppPalette = appPalette,
 ) {
-    AppScreenScaffold(scroll = false, horizontalPadding = 20.dp, topPadding = 54.dp) {
+    AppScreenScaffold(scroll = false, topPadding = 54.dp) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(11.dp)) {
             BackButton(onBack, contentDescription = stringResource(Res.string.common_back))
             ScreenTitle(stringResource(Res.string.auth_signup_title), fontSize = 21.sp)
@@ -242,17 +242,17 @@ fun SignUpScreen(
 /** Universitet emaili maydoni — to'g'ri formatda "TASDIQLANGAN" nishoni chiqadi. */
 @Composable
 private fun UniversityEmailField(value: String, onValueChange: (String) -> Unit, palette: AppPalette) {
-    val shape = RoundedCornerShape(13.dp)
+    val shape = AppRadius.sm
     val verified = value.endsWith(".uz") && value.contains("@")
     Row(
         Modifier.fillMaxWidth().height(46.dp).clip(shape)
             .background(palette.successBg)
-            .border(1.dp, palette.successDeep.copy(alpha = 0.28f), shape)
+            .border(1.dp, palette.success.copy(alpha = 0.28f), shape)
             .padding(horizontal = AppSpacing.md),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(9.dp),
     ) {
-        Icon(AppIcons.ShieldCheck, null, tint = palette.successDeep, modifier = Modifier.size(16.dp))
+        Icon(AppIcons.ShieldCheck, null, tint = palette.success, modifier = Modifier.size(16.dp))
         Box(Modifier.weight(1f)) {
             if (value.isEmpty()) {
                 Text(
@@ -273,9 +273,9 @@ private fun UniversityEmailField(value: String, onValueChange: (String) -> Unit,
         if (verified) {
             SoftPill(
                 text = stringResource(Res.string.auth_verified_badge),
-                accent = palette.successDeep,
+                accent = palette.success,
                 backgroundAlpha = 0.14f,
-                shape = RoundedCornerShape(6.dp),
+                shape = AppRadius.sm,
                 textStyle = AppType.caption.copy(fontSize = 10.sp, fontWeight = AppType.button.fontWeight),
                 contentPadding = PaddingValues(horizontal = 7.dp, vertical = 3.dp),
             )
@@ -291,7 +291,7 @@ private fun TermsRow(accepted: Boolean, palette: AppPalette, onToggle: () -> Uni
     val and = stringResource(Res.string.auth_terms_and)
     val privacy = stringResource(Res.string.auth_terms_privacy)
     val suffix = stringResource(Res.string.auth_terms_agree_suffix)
-    val plain = SpanStyle(color = palette.label)
+    val plain = SpanStyle(color = palette.inkMuted)
     val accent = SpanStyle(color = palette.primary, fontWeight = AppType.label.fontWeight)
     Row(
         verticalAlignment = Alignment.Top,

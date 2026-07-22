@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -38,6 +37,7 @@ import dev.core.uikit.resources.auth_forgot_subtitle
 import dev.core.uikit.resources.auth_forgot_title
 import dev.core.uikit.resources.common_back
 import dev.core.uikit.theme.AppPalette
+import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
@@ -63,19 +63,18 @@ fun ForgotPasswordScreen(
         Spacer(Modifier.height(40.dp))
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             Box(
-                Modifier.size(96.dp)
-                    .background(palette.primary.copy(alpha = 0.14f), RoundedCornerShape(30.dp)),
+                Modifier.size(96.dp).background(palette.accentBg, AppRadius.card),
                 contentAlignment = Alignment.Center,
             ) {
                 Box(
-                    Modifier.size(64.dp).background(palette.primaryBrush, RoundedCornerShape(20.dp)),
+                    Modifier.size(64.dp).background(palette.primaryBrush, AppRadius.row),
                     contentAlignment = Alignment.Center,
                 ) {
                     // Gradient USTIDAGI ikonka — har ikkala rejimda oq bo'lib qoladi.
                     Icon(AppIcons.Lock, null, tint = palette.onPrimary, modifier = Modifier.size(32.dp))
                 }
             }
-            Spacer(Modifier.height(22.dp))
+            Spacer(Modifier.height(AppSpacing.section))
             ScreenTitle(stringResource(Res.string.auth_forgot_title), fontSize = 23.sp)
             Spacer(Modifier.height(AppSpacing.sm))
             Text(
@@ -96,12 +95,12 @@ fun ForgotPasswordScreen(
             focused = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
         )
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(AppSpacing.xl))
         PrimaryButton(stringResource(Res.string.auth_forgot_send), onSend, enabled = !state.isLoading)
 
         state.info?.let {
             Spacer(Modifier.height(AppSpacing.md))
-            Text(it, style = AppType.error.copy(fontWeight = AppType.bodyStrong.fontWeight, color = palette.successDeep))
+            Text(it, style = AppType.error.copy(fontWeight = AppType.bodyStrong.fontWeight, color = palette.success))
         }
         state.error?.let {
             Spacer(Modifier.height(AppSpacing.md))

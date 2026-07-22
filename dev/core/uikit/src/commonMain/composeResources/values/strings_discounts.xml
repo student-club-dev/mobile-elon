@@ -107,6 +107,9 @@
     <string name="discounts_business_hub">BIZNES MARKAZI</string>
     <string name="discounts_my_businesses">Bizneslarim</string>
     <string name="discounts_profile">Profil</string>
+    <!-- Sarlavha yonidagi tugmalar — ekran o'quvchisi uchun tavsif. -->
+    <string name="discounts_business_messages">Xabarlar</string>
+    <string name="discounts_business_support">Qo'llab-quvvatlash</string>
     <string name="discounts_business">Biznes</string>
     <string name="discounts_business_delete_title">Biznesni o'chirish</string>
     <string name="discounts_business_delete_confirm">\"%1$s\" o'chirilsinmi? Bu amalni qaytarib bo'lmaydi.</string>
@@ -115,6 +118,7 @@
     <string name="discounts_business_add">Biznes qo'shish</string>
     <string name="discounts_business_edit">Biznesni tahrirlash</string>
     <string name="discounts_business_type_label">Biznes turi</string>
+    <string name="discounts_business_type_select">Biznes turini tanlang</string>
     <string name="discounts_business_name_label">Biznes nomi</string>
     <string name="discounts_business_name_hint">Masalan: Kafe Aurora</string>
     <string name="discounts_phone_label">Telefon raqami</string>

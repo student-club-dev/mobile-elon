@@ -1,7 +1,6 @@
 package dev.feature.auth.presentation.main.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import dev.core.domain.model.Conversation
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.BackButton
@@ -50,6 +48,7 @@ import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
+import dev.core.uikit.theme.rowShadow
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -89,7 +88,7 @@ internal fun ConversationList(
                 } else {
                     stringResource(Res.string.auth_chat_title)
                 },
-                style = AppType.screenTitle.copy(fontSize = 22.sp, letterSpacing = 0.sp, color = palette.ink),
+                style = AppType.topBarTitle.copy(color = palette.ink),
                 modifier = Modifier.weight(1f),
             )
             if (!showArchived && archivedConversations.isNotEmpty()) {
@@ -174,7 +173,7 @@ internal fun ConversationList(
 private fun ArchiveButton(count: Int, palette: AppPalette, onClick: () -> Unit) {
     val shape = AppRadius.sm
     Row(
-        Modifier.clip(shape).background(palette.glass).border(1.dp, palette.border, shape)
+        Modifier.rowShadow(shape).clip(shape).background(palette.card)
             .clickable(onClick = onClick).padding(horizontal = 10.dp, vertical = 7.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(5.dp),

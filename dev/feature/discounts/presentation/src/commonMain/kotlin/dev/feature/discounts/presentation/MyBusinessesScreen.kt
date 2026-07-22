@@ -1,7 +1,5 @@
 package dev.feature.discounts.presentation
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,14 +8,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -27,13 +21,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.core.uikit.component.AppIcons
+import dev.core.uikit.component.CompactPrimaryButton
 import dev.core.uikit.component.EmptyState
+import dev.core.uikit.component.GradientIconButton
+import dev.core.uikit.component.IconActionButton
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.common_cancel
 import dev.core.uikit.resources.common_delete
@@ -44,8 +38,11 @@ import dev.core.uikit.resources.discounts_business_delete_title
 import dev.core.uikit.resources.discounts_business_empty_message
 import dev.core.uikit.resources.discounts_business_empty_title
 import dev.core.uikit.resources.discounts_business_hub
+import dev.core.uikit.resources.discounts_business_messages
+import dev.core.uikit.resources.discounts_business_support
 import dev.core.uikit.resources.discounts_my_businesses
 import dev.core.uikit.resources.discounts_profile
+import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
@@ -54,9 +51,17 @@ import dev.feature.discounts.presentation.components.BusinessCard
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+/** Handoff: yuqoridagi oq harakat tugmalari 44dp, ichidagi ikonka 20dp. */
+private val TopActionSize = 44.dp
+private val TopActionIconSize = 20.dp
+
 /**
  * "Bizneslarim" — biznes egasining barcha bizneslari. Har biriga alohida chegirma va
  * e'lonlar joylanadi, shuning uchun bu ekran butun biznes oqimining kirish nuqtasi.
+ *
+ * Tuzilishi handoff'dagi "SCREEN 1: Bizneslarim" bilan bir xil: mikro-yorliq + katta
+ * sarlavha, o'ngda uchta tugma (xabarlar, qo'llab-quvvatlash, profil), ro'yxat va pastda
+ * o'ngda suzuvchi "+ Biznes" CTA.
  */
 @Composable
 fun MyBusinessesScreen(
@@ -64,6 +69,10 @@ fun MyBusinessesScreen(
     onEditBusiness: (Business) -> Unit,
     onAddBusiness: () -> Unit,
     onProfile: () -> Unit = {},
+    // Xabarlar va qo'llab-quvvatlash chatlari alohida oqim — karkas (`BusinessShell`)
+    // ularni ulaguncha tugmalar ko'rinadi, lekin harakat bermaydi.
+    onMessages: () -> Unit = {},
+    onSupport: () -> Unit = {},
     vm: MyBusinessesViewModel = koinViewModel(),
 ) {
     val palette = appPalette
@@ -73,37 +82,50 @@ fun MyBusinessesScreen(
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
             Row(
-                Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg)
+                Modifier.fillMaxWidth()
+                    .padding(horizontal = AppSpacing.screenHorizontal)
                     .padding(top = 54.dp, bottom = AppSpacing.sm),
-                verticalAlignment = Alignment.CenterVertically,
+                // Sarlavha ikki qatorli — tugmalar uning YUQORISIGA tekislanadi.
+                verticalAlignment = Alignment.Top,
             ) {
                 Column(Modifier.weight(1f)) {
                     Text(
                         stringResource(Res.string.discounts_business_hub),
-                        style = AppType.caption.copy(
-                            fontWeight = AppType.buttonSecondary.fontWeight,
-                            color = palette.primary,
-                        ),
+                        style = AppType.microLabel.copy(color = palette.primary),
                     )
                     Text(
                         stringResource(Res.string.discounts_my_businesses),
-                        style = AppType.screenTitle.copy(fontSize = 26.sp, color = palette.ink),
+                        style = AppType.screenTitle.copy(color = palette.ink),
                     )
                 }
-                // Gradient profil tugmasi — E'lonlarim ekranidagi bilan bir xil joylashuv.
-                Box(
-                    Modifier.size(46.dp)
-                        .shadow(10.dp, CircleShape, spotColor = palette.primary.copy(alpha = 0.5f))
-                        .clip(CircleShape).background(palette.primaryBrush)
-                        .clickable(onClick = onProfile),
-                    contentAlignment = Alignment.Center,
+                Row(
+                    Modifier.padding(top = AppSpacing.xs),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(9.dp),
                 ) {
-                    // Gradient FONI USTIDA — kontent rangi `onPrimary`.
-                    Icon(
-                        AppIcons.Store,
-                        stringResource(Res.string.discounts_profile),
-                        tint = palette.onPrimary,
-                        modifier = Modifier.size(21.dp),
+                    IconActionButton(
+                        AppIcons.MessageSquare,
+                        onClick = onMessages,
+                        contentDescription = stringResource(Res.string.discounts_business_messages),
+                        size = TopActionSize,
+                        iconSize = TopActionIconSize,
+                        palette = palette,
+                    )
+                    IconActionButton(
+                        AppIcons.Support,
+                        onClick = onSupport,
+                        contentDescription = stringResource(Res.string.discounts_business_support),
+                        size = TopActionSize,
+                        iconSize = TopActionIconSize,
+                        palette = palette,
+                    )
+                    // Uchinchisi urg'uli — kattaroq va ko'k gradient (handoff: 54dp, radius 20).
+                    GradientIconButton(
+                        AppIcons.Users,
+                        onClick = onProfile,
+                        contentDescription = stringResource(Res.string.discounts_profile),
+                        shape = AppRadius.row,
+                        palette = palette,
                     )
                 }
             }
@@ -125,12 +147,12 @@ fun MyBusinessesScreen(
                 else -> LazyColumn(
                     Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(
-                        start = AppSpacing.lg,
-                        end = AppSpacing.lg,
-                        top = AppSpacing.sm,
+                        start = AppSpacing.screenHorizontal,
+                        end = AppSpacing.screenHorizontal,
+                        top = 14.dp,
                         bottom = 110.dp,
                     ),
-                    verticalArrangement = Arrangement.spacedBy(11.dp),
+                    verticalArrangement = Arrangement.spacedBy(AppSpacing.md),
                 ) {
                     items(state.businesses, key = { it.id }) { biz ->
                         BusinessCard(
@@ -144,22 +166,14 @@ fun MyBusinessesScreen(
             }
         }
 
-        // Pastdagi "+" tugma — yangi biznes qo'shish.
-        Row(
-            Modifier.align(Alignment.BottomEnd).padding(20.dp)
-                .shadow(12.dp, RoundedCornerShape(18.dp), spotColor = palette.primary.copy(alpha = 0.5f))
-                .clip(RoundedCornerShape(18.dp)).background(palette.primaryBrush)
-                .clickable(onClick = onAddBusiness)
-                .padding(horizontal = 20.dp, vertical = 15.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
-        ) {
-            Icon(AppIcons.Plus, null, tint = palette.onPrimary, modifier = Modifier.size(20.dp))
-            Text(
-                stringResource(Res.string.discounts_business),
-                style = AppType.button.copy(fontWeight = AppType.screenTitle.fontWeight, color = palette.onPrimary),
-            )
-        }
+        // Pastdagi "+ Biznes" CTA — yangi biznes qo'shish.
+        CompactPrimaryButton(
+            text = stringResource(Res.string.discounts_business),
+            onClick = onAddBusiness,
+            modifier = Modifier.align(Alignment.BottomEnd)
+                .padding(end = AppSpacing.screenHorizontal, bottom = AppSpacing.screenBottom),
+            palette = palette,
+        )
 
         // O'chirishни tasdiqlash dialogи.
         toDelete?.let { biz ->
@@ -168,16 +182,13 @@ fun MyBusinessesScreen(
                 title = {
                     Text(
                         stringResource(Res.string.discounts_business_delete_title),
-                        style = AppType.sectionTitle.copy(
-                            fontWeight = AppType.screenTitle.fontWeight,
-                            color = palette.ink,
-                        ),
+                        style = AppType.sectionTitle.copy(color = palette.ink),
                     )
                 },
                 text = {
                     Text(
                         stringResource(Res.string.discounts_business_delete_confirm, biz.name),
-                        style = AppType.body.copy(fontWeight = AppType.subtitle.fontWeight, color = palette.inkMuted),
+                        style = AppType.body.copy(color = palette.inkMuted),
                     )
                 },
                 confirmButton = {
@@ -192,7 +203,7 @@ fun MyBusinessesScreen(
                     TextButton(onClick = { toDelete = null }) {
                         Text(
                             stringResource(Res.string.common_cancel),
-                            style = AppType.body.copy(fontWeight = AppType.subtitle.fontWeight, color = palette.inkMuted),
+                            style = AppType.body.copy(color = palette.inkMuted),
                         )
                     }
                 },
