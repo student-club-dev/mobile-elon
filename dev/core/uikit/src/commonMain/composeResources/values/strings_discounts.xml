@@ -35,6 +35,7 @@
     <string name="discounts_map_hint">Xaritani suring — belgi joyni ko\'rsatadi</string>
     <string name="discounts_map_search_hint">Qidirish: Mega Planet, Amir Temur ko\'chasi...</string>
     <string name="discounts_searching">Qidirilmoqda...</string>
+    <string name="discounts_search_empty">Hech narsa topilmadi. Boshqacha yozib ko'ring.</string>
     <string name="discounts_map_my_location">Mening joylashuvim</string>
     <string name="discounts_map_confirm">Shu yerni tanlash</string>
     <string name="discounts_resolving_address">Manzil aniqlanmoqda...</string>

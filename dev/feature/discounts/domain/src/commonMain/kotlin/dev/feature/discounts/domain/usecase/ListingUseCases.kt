@@ -90,10 +90,18 @@ class GetListingUseCase(private val repository: ListingRepository) {
  */
 class SearchPlacesUseCase(private val geoRepository: GeoRepository) {
 
-    suspend operator fun invoke(query: String): List<PlaceSuggestion> {
+    /**
+     * [nearLat]/[nearLng] — xaritaning joriy markazi. Berilsa natijalar shu atrofga
+     * yaqinlashtiriladi (qarang: [GeoRepository.search]).
+     */
+    suspend operator fun invoke(
+        query: String,
+        nearLat: Double? = null,
+        nearLng: Double? = null,
+    ): List<PlaceSuggestion> {
         val trimmed = query.trim()
         if (trimmed.length < MIN_QUERY_LENGTH) return emptyList()
-        return (geoRepository.search(trimmed) as? Resource.Success)?.data.orEmpty()
+        return (geoRepository.search(trimmed, nearLat, nearLng) as? Resource.Success)?.data.orEmpty()
     }
 
     companion object {

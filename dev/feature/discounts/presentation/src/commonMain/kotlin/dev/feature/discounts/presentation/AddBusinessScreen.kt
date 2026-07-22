@@ -1,7 +1,5 @@
 package dev.feature.discounts.presentation
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,11 +18,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -52,13 +47,14 @@ import dev.core.uikit.resources.discounts_phone_prefix
 import dev.core.uikit.resources.discounts_resolving_address
 import dev.core.uikit.resources.discounts_saving
 import dev.core.uikit.theme.AppPalette
-import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
 import dev.feature.discounts.presentation.components.BusinessTypeChip
 import dev.feature.discounts.presentation.components.FormFieldLabel
 import dev.feature.discounts.presentation.components.LocationCard
+import dev.feature.discounts.presentation.components.MapSearchResults
+import dev.feature.discounts.presentation.components.MyLocationButton
 import dev.core.uikit.map.MapCenterRequest
 import dev.core.uikit.map.MapPicker
 import dev.core.uikit.map.MapPoint
@@ -191,7 +187,8 @@ private fun BusinessMapScreen(state: AddBusinessUiState, palette: AppPalette, vm
         Column(Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg)) {
             GlassTextField(
                 state.searchQuery,
-                vm::onSearchQuery,
+                // Qidiruv xaritaning ko'rinib turgan markazidan boshlab yaqinlashtiriladi.
+                { query -> vm.onSearchQuery(query, pickedPoint?.lat, pickedPoint?.lng) },
                 stringResource(Res.string.discounts_map_search_hint),
                 leading = AppIcons.Search,
                 height = 46.dp,
@@ -207,31 +204,25 @@ private fun BusinessMapScreen(state: AddBusinessUiState, palette: AppPalette, vm
                 modifier = Modifier.fillMaxSize(),
                 centerRequest = centerRequest,
             )
-            if (state.searchResults.isNotEmpty()) {
-                Column(
-                    Modifier.align(Alignment.TopCenter)
-                        .padding(horizontal = AppSpacing.md, vertical = AppSpacing.sm)
-                        .fillMaxWidth().clip(AppRadius.lg)
-                        // Xarita ustidagi panel — palitradagi ko'tarilgan yuza rangi.
-                        .background(palette.barSurface),
-                ) {
-                    state.searchResults.forEach { place ->
-                        Text(
-                            place.title,
-                            style = AppType.label.copy(
-                                fontWeight = AppType.buttonSecondary.fontWeight,
-                                color = palette.ink,
-                            ),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.fillMaxWidth().clickable {
-                                requestId++
-                                centerRequest = MapCenterRequest(MapPoint(place.lat, place.lng), requestId)
-                                vm.clearSearch()
-                            }.padding(horizontal = AppSpacing.md, vertical = 9.dp),
-                        )
-                    }
-                }
+            MapSearchResults(
+                results = state.searchResults,
+                searching = state.searching,
+                searched = state.searched,
+                onSelect = { place ->
+                    requestId++
+                    centerRequest = MapCenterRequest(MapPoint(place.lat, place.lng), requestId)
+                    vm.clearSearch()
+                },
+                palette = palette,
+            )
+            if (userLocation != null) {
+                MyLocationButton(
+                    onClick = {
+                        requestId++
+                        centerRequest = MapCenterRequest(userLocation, requestId)
+                    },
+                    palette = palette,
+                )
             }
         }
         Box(Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg, vertical = 10.dp)) {

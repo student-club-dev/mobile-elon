@@ -1,11 +1,9 @@
 package dev.feature.discounts.presentation
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,9 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -37,15 +33,14 @@ import dev.core.uikit.resources.common_retry
 import dev.core.uikit.resources.discounts_map_branch_title
 import dev.core.uikit.resources.discounts_map_confirm
 import dev.core.uikit.resources.discounts_map_hint
-import dev.core.uikit.resources.discounts_map_my_location
 import dev.core.uikit.resources.discounts_map_search_hint
 import dev.core.uikit.resources.discounts_resolving_address
-import dev.core.uikit.resources.discounts_searching
 import dev.core.uikit.theme.AppPalette
-import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
+import dev.feature.discounts.presentation.components.MapSearchResults
+import dev.feature.discounts.presentation.components.MyLocationButton
 import dev.feature.discounts.presentation.form.TypeListingForm
 import dev.core.uikit.map.MapCenterRequest
 import dev.core.uikit.map.MapPicker
@@ -181,7 +176,8 @@ private fun BranchMapScreen(state: PostListingUiState, palette: AppPalette, vm: 
         Column(Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg)) {
             GlassTextField(
                 state.searchQuery,
-                vm::onSearchQuery,
+                // Qidiruv xaritaning ko'rinib turgan markazidan boshlab yaqinlashtiriladi.
+                { query -> vm.onSearchQuery(query, pickedPoint?.lat, pickedPoint?.lng) },
                 stringResource(Res.string.discounts_map_search_hint),
                 leading = AppIcons.Search,
                 height = 46.dp,
@@ -199,78 +195,28 @@ private fun BranchMapScreen(state: PostListingUiState, palette: AppPalette, vm: 
                 centerRequest = centerRequest,
             )
 
-            if (state.searching || state.searchResults.isNotEmpty()) {
-                Column(
-                    Modifier.align(Alignment.TopCenter)
-                        .padding(horizontal = AppSpacing.md, vertical = AppSpacing.sm)
-                        .fillMaxWidth()
-                        .clip(AppRadius.lg)
-                        // Xarita ustidagi panel — palitradagi ko'tarilgan yuza rangi.
-                        .background(palette.barSurface),
-                ) {
-                    if (state.searching) {
-                        Text(
-                            stringResource(Res.string.discounts_searching),
-                            style = AppType.fieldLabel.copy(color = palette.inkMuted),
-                            modifier = Modifier.padding(AppSpacing.md),
-                        )
-                    }
-                    state.searchResults.forEach { place ->
-                        Column(
-                            Modifier.fillMaxWidth()
-                                .clickable {
-                                    requestId++
-                                    centerRequest = MapCenterRequest(MapPoint(place.lat, place.lng), requestId)
-                                    vm.clearSearch()
-                                }
-                                .padding(horizontal = AppSpacing.md, vertical = 9.dp),
-                            verticalArrangement = Arrangement.spacedBy(2.dp),
-                        ) {
-                            Text(
-                                place.title,
-                                style = AppType.label.copy(
-                                    fontWeight = AppType.buttonSecondary.fontWeight,
-                                    color = palette.ink,
-                                ),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                            if (place.subtitle.isNotBlank()) {
-                                Text(
-                                    place.subtitle,
-                                    style = AppType.caption.copy(fontSize = 11.sp, color = palette.inkFaint),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                            }
-                        }
-                    }
-                }
-            }
+            MapSearchResults(
+                results = state.searchResults,
+                searching = state.searching,
+                searched = state.searched,
+                onSelect = { place ->
+                    requestId++
+                    centerRequest = MapCenterRequest(MapPoint(place.lat, place.lng), requestId)
+                    vm.clearSearch()
+                },
+                palette = palette,
+            )
 
             if (userLocation != null) {
-                Row(
-                    Modifier.align(Alignment.BottomStart)
-                        .padding(start = AppSpacing.md, bottom = 92.dp)
-                        .clip(AppRadius.md)
-                        .background(palette.barSurface)
-                        .clickable {
-                            requestId++
-                            centerRequest = MapCenterRequest(userLocation, requestId)
-                        }
-                        .padding(horizontal = AppSpacing.md, vertical = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    Text("📍", style = AppType.label.copy(fontSize = 13.sp))
-                    Text(
-                        stringResource(Res.string.discounts_map_my_location),
-                        style = AppType.fieldLabel.copy(
-                            fontWeight = AppType.buttonSecondary.fontWeight,
-                            color = palette.ink,
-                        ),
-                    )
-                }
+                MyLocationButton(
+                    onClick = {
+                        requestId++
+                        centerRequest = MapCenterRequest(userLocation, requestId)
+                    },
+                    palette = palette,
+                    // Pastdagi "tasdiqlash" tugmasi ustida turadi.
+                    bottomPadding = 92.dp,
+                )
             }
         }
 

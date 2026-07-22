@@ -29,6 +29,7 @@
     <string name="discounts_map_hint">Drag the map — the pin marks the spot</string>
     <string name="discounts_map_search_hint">Search: Mega Planet, Amir Temur street...</string>
     <string name="discounts_searching">Searching...</string>
+    <string name="discounts_search_empty">Nothing found. Try a different search.</string>
     <string name="discounts_map_my_location">My location</string>
     <string name="discounts_map_confirm">Pick this spot</string>
     <string name="discounts_resolving_address">Resolving address...</string>

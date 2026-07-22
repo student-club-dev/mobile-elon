@@ -70,6 +70,8 @@ data class AddBusinessUiState(
     val searchQuery: String = "",
     val searchResults: List<PlaceSuggestion> = emptyList(),
     val searching: Boolean = false,
+    /** Kamida bir marta qidirildi — bo'sh natijani "topilmadi" deb ko'rsatish uchun. */
+    val searched: Boolean = false,
     val saving: Boolean = false,
     val saved: Boolean = false,
     val error: String? = null,
@@ -144,24 +146,33 @@ class AddBusinessViewModel(
     fun onType(t: BusinessType) = _state.update { it.copy(businessType = t, error = null) }
 
     fun openMap() = _state.update { it.copy(pickingOnMap = true) }
-    fun closeMap() = _state.update { it.copy(pickingOnMap = false, searchQuery = "", searchResults = emptyList()) }
+    fun closeMap() = _state.update {
+        it.copy(pickingOnMap = false, searchQuery = "", searchResults = emptyList(), searched = false)
+    }
 
-    fun onSearchQuery(query: String) {
+    /**
+     * [nearLat]/[nearLng] — xaritaning ko'rinib turgan markazi; natijalar shu atrofdagilarga
+     * yaqinlashtiriladi. Qidiruvdan keyin `searched` yoqiladi, shunda UI bo'sh natijani
+     * "hali qidirilmagan" holatidan ajrata oladi.
+     */
+    fun onSearchQuery(query: String, nearLat: Double? = null, nearLng: Double? = null) {
         _state.update { it.copy(searchQuery = query) }
         searchJob?.cancel()
         if (query.trim().length < SearchPlacesUseCase.MIN_QUERY_LENGTH) {
-            _state.update { it.copy(searchResults = emptyList(), searching = false) }
+            _state.update { it.copy(searchResults = emptyList(), searching = false, searched = false) }
             return
         }
         searchJob = viewModelScope.launch {
-            delay(350)
+            delay(SEARCH_DEBOUNCE_MS)
             _state.update { it.copy(searching = true) }
-            val results = searchPlaces(query)
-            _state.update { it.copy(searchResults = results, searching = false) }
+            val results = searchPlaces(query, nearLat, nearLng)
+            _state.update { it.copy(searchResults = results, searching = false, searched = true) }
         }
     }
 
-    fun clearSearch() = _state.update { it.copy(searchQuery = "", searchResults = emptyList(), searching = false) }
+    fun clearSearch() = _state.update {
+        it.copy(searchQuery = "", searchResults = emptyList(), searching = false, searched = false)
+    }
 
     fun setLocationFromMap(lat: Double, lng: Double) {
         viewModelScope.launch {

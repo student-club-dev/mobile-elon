@@ -29,6 +29,7 @@
     <string name="discounts_map_hint">Двигайте карту — метка укажет место</string>
     <string name="discounts_map_search_hint">Поиск: Mega Planet, улица Амира Темура...</string>
     <string name="discounts_searching">Идёт поиск...</string>
+    <string name="discounts_search_empty">Ничего не найдено. Попробуйте другой запрос.</string>
     <string name="discounts_map_my_location">Моё местоположение</string>
     <string name="discounts_map_confirm">Выбрать это место</string>
     <string name="discounts_resolving_address">Определяем адрес...</string>

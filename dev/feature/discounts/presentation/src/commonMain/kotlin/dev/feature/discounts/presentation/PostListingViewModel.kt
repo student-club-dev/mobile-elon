@@ -108,6 +108,8 @@ data class PostListingUiState(
     val searchQuery: String = "",
     val searchResults: List<PlaceSuggestion> = emptyList(),
     val searching: Boolean = false,
+    /** Kamida bir marta qidirildi — bo'sh natijani "topilmadi" deb ko'rsatish uchun. */
+    val searched: Boolean = false,
 
     val durationDays: Int = 30,
 
@@ -277,7 +279,7 @@ class PostListingViewModel(
     fun openMap() = _state.update { it.copy(pickingOnMap = true) }
 
     fun closeMap() = _state.update {
-        it.copy(pickingOnMap = false, searchQuery = "", searchResults = emptyList())
+        it.copy(pickingOnMap = false, searchQuery = "", searchResults = emptyList(), searched = false)
     }
 
     // -----------------------------------------------------------------------
@@ -290,26 +292,31 @@ class PostListingViewModel(
      * Har bosilgan harfda so'rov yubormaymiz: oldingi qidiruv bekor qilinadi va foydalanuvchi
      * yozishni to'xtatgandan keyingina Nominatim'ga boramiz (uning qoidasi ham shuni talab qiladi).
      */
-    fun onSearchQuery(query: String) {
+    /**
+     * [nearLat]/[nearLng] — xaritaning ko'rinib turgan markazi; natijalar shu atrofdagilarga
+     * yaqinlashtiriladi. Qidiruvdan keyin `searched` yoqiladi, shunda UI bo'sh natijani
+     * "hali qidirilmagan" holatidan ajrata oladi.
+     */
+    fun onSearchQuery(query: String, nearLat: Double? = null, nearLng: Double? = null) {
         _state.update { it.copy(searchQuery = query) }
         searchJob?.cancel()
 
         if (query.trim().length < SearchPlacesUseCase.MIN_QUERY_LENGTH) {
-            _state.update { it.copy(searchResults = emptyList(), searching = false) }
+            _state.update { it.copy(searchResults = emptyList(), searching = false, searched = false) }
             return
         }
 
         searchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_MS)
             _state.update { it.copy(searching = true) }
-            val results = searchPlaces(query)
-            _state.update { it.copy(searchResults = results, searching = false) }
+            val results = searchPlaces(query, nearLat, nearLng)
+            _state.update { it.copy(searchResults = results, searching = false, searched = true) }
         }
     }
 
     /** Natija tanlandi — qidiruv yopiladi, ekran xaritani o'sha joyga olib boradi. */
     fun clearSearch() = _state.update {
-        it.copy(searchQuery = "", searchResults = emptyList(), searching = false)
+        it.copy(searchQuery = "", searchResults = emptyList(), searching = false, searched = false)
     }
 
     /**
@@ -512,9 +519,15 @@ class PostListingViewModel(
 
     private companion object {
         const val MILLIS_PER_DAY = 24L * 60 * 60 * 1000
-        const val SEARCH_DEBOUNCE_MS = 400L
     }
 }
+
+/**
+ * Foydalanuvchi yozishni to'xtatgach kutiladigan vaqt — har harfga so'rov ketmasin.
+ * Nominatim foydalanish qoidasi soniyasiga 1 ta so'rovni so'raydi; 400 ms kutish bilan
+ * tez yozganda ham bitta so'rov chiqadi. Xaritali ikkala ekran ham shu qiymatni ishlatadi.
+ */
+internal const val SEARCH_DEBOUNCE_MS = 400L
 
 /** Raqamli maydonlarga faqat raqam kiritiladi (klaviatura turi kafolat bermaydi). */
 private fun String.digits(): String = filter { it.isDigit() }

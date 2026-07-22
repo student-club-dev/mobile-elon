@@ -22,9 +22,13 @@ class FallbackGeoRepository(
         runCatching { api.reverseGeocode(lat, lng) }.getOrNull() as? Resource.Success
             ?: nominatim.reverseGeocode(lat, lng)
 
-    override suspend fun search(query: String): Resource<List<PlaceSuggestion>> {
-        val fromApi = runCatching { api.search(query) }.getOrNull() as? Resource.Success
+    override suspend fun search(
+        query: String,
+        nearLat: Double?,
+        nearLng: Double?,
+    ): Resource<List<PlaceSuggestion>> {
+        val fromApi = runCatching { api.search(query, nearLat, nearLng) }.getOrNull() as? Resource.Success
         // Bo'sh natija ham "topilmadi" degani — bunda Nominatim'ni sinab ko'rish foydali.
-        return fromApi?.takeIf { it.data.isNotEmpty() } ?: nominatim.search(query)
+        return fromApi?.takeIf { it.data.isNotEmpty() } ?: nominatim.search(query, nearLat, nearLng)
     }
 }

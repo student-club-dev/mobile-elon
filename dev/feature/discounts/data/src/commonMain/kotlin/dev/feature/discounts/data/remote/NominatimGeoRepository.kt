@@ -28,42 +28,124 @@ class NominatimGeoRepository(
     private val httpClient: HttpClient,
 ) : GeoRepository {
 
-    override suspend fun search(query: String): Resource<List<PlaceSuggestion>> = try {
-        val results: List<NominatimSearchResult> = httpClient.get("$BASE_URL/search") {
-            parameter("q", query)
-            parameter("format", "jsonv2")
-            // Faqat O'zbekiston — talaba chegirmasi boshqa davlatda bo'lmaydi va
-            // qidiruv ancha aniqroq ishlaydi.
-            parameter("countrycodes", "uz")
-            parameter("addressdetails", 1)
-            parameter("limit", 8)
-            parameter("accept-language", "uz")
-            header("User-Agent", USER_AGENT)
-        }.body()
+    /**
+     * Bir seans ichidagi javoblar keshi.
+     *
+     * Foydalanuvchi qidiruv matnini tahrirlaganda ("chilonzo" → "chilonzor" → "chilonzo")
+     * yoki xaritani oldingi nuqtaga qaytarganda aynan bir xil so'rov takrorlanadi. Nominatim
+     * qoidasi soniyasiga 1 ta so'rovni so'raydi, shuning uchun takrorini tarmoqqa
+     * chiqarmaymiz. Kesh kichik va jarayon bilan birga o'chadi.
+     */
+    private val searchCache = LruCache<String, List<PlaceSuggestion>>(MAX_CACHE)
+    private val reverseCache = LruCache<String, ResolvedAddress>(MAX_CACHE)
 
-        Resource.Success(results.mapNotNull { it.toSuggestion() })
-    } catch (e: Exception) {
-        Resource.Error(e.message ?: "Qidirib bo'lmadi", e)
+    override suspend fun search(
+        query: String,
+        nearLat: Double?,
+        nearLng: Double?,
+    ): Resource<List<PlaceSuggestion>> {
+        val key = "${query.trim().lowercase()}|${nearLat.round()}|${nearLng.round()}"
+        searchCache[key]?.let { return Resource.Success(it) }
+
+        return try {
+            val results: List<NominatimSearchResult> = httpClient.get("$BASE_URL/search") {
+                parameter("q", query)
+                parameter("format", "jsonv2")
+                // Faqat O'zbekiston — talaba chegirmasi boshqa davlatda bo'lmaydi va
+                // qidiruv ancha aniqroq ishlaydi.
+                parameter("countrycodes", "uz")
+                parameter("addressdetails", 1)
+                parameter("limit", 8)
+                parameter("accept-language", ACCEPT_LANGUAGE)
+                header("User-Agent", USER_AGENT)
+
+                // Xarita ko'rinayotgan hududni ustun qo'yamiz. `bounded=0` — quti tashqarisidagi
+                // natijalar ham qaytadi, lekin pastroq o'rinda. Shunda "Amir Temur ko'chasi"
+                // avval shu shahardagisini, keyin boshqalarni ko'rsatadi.
+                if (nearLat != null && nearLng != null) {
+                    parameter("viewbox", viewbox(nearLat, nearLng))
+                    parameter("bounded", 0)
+                }
+            }.body()
+
+            val suggestions = results.mapNotNull { it.toSuggestion() }
+            searchCache[key] = suggestions
+            Resource.Success(suggestions)
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Qidirib bo'lmadi", e)
+        }
     }
 
-    override suspend fun reverseGeocode(lat: Double, lng: Double): Resource<ResolvedAddress> = try {
-        val response: NominatimResponse = httpClient.get("$BASE_URL/reverse") {
-            parameter("lat", lat)
-            parameter("lon", lng)
-            parameter("format", "jsonv2")
-            parameter("zoom", 18) // ko'cha/uy darajasi
-            parameter("accept-language", "uz")
-            header("User-Agent", USER_AGENT)
-        }.body()
+    override suspend fun reverseGeocode(lat: Double, lng: Double): Resource<ResolvedAddress> {
+        val key = "${lat.round()}|${lng.round()}"
+        reverseCache[key]?.let { return Resource.Success(it) }
 
-        Resource.Success(response.toResolved())
-    } catch (e: Exception) {
-        Resource.Error(e.message ?: "Manzilni aniqlab bo'lmadi", e)
+        return try {
+            val response: NominatimResponse = httpClient.get("$BASE_URL/reverse") {
+                parameter("lat", lat)
+                parameter("lon", lng)
+                parameter("format", "jsonv2")
+                parameter("zoom", 18) // ko'cha/uy darajasi
+                parameter("accept-language", ACCEPT_LANGUAGE)
+                header("User-Agent", USER_AGENT)
+            }.body()
+
+            val resolved = response.toResolved()
+            reverseCache[key] = resolved
+            Resource.Success(resolved)
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Manzilni aniqlab bo'lmadi", e)
+        }
     }
+
+    /**
+     * Nuqta atrofidagi ~40 km li quti: `min_lon,min_lat,max_lon,max_lat`.
+     * Bir shahar va uning atrofini qamraydi — foydalanuvchi qidirayotgan hudud shu.
+     */
+    private fun viewbox(lat: Double, lng: Double): String {
+        val d = VIEWBOX_DEGREES
+        return "${lng - d},${lat - d},${lng + d},${lat + d}"
+    }
+
+    /** Kesh kaliti uchun — ~11 m aniqlik yetarli, mikroharakatlar yangi so'rov chiqarmasin. */
+    private fun Double?.round(): String =
+        if (this == null) "-" else ((this * 10_000).toLong() / 10_000.0).toString()
 
     private companion object {
         const val BASE_URL = "https://nominatim.openstreetmap.org"
         const val USER_AGENT = "ElonUz/1.0 (https://elon.uz)"
+
+        /**
+         * Nominatim'da o'zbekcha nomlar to'liq emas — ko'p joyning faqat ruscha yoki inglizcha
+         * nomi bor. Ro'yxat berilganda mavjud bo'lgan birinchisi tanlanadi, ya'ni bo'sh nom
+         * o'rniga hech bo'lmasa ruscha nom qaytadi.
+         */
+        const val ACCEPT_LANGUAGE = "uz,ru;q=0.8,en;q=0.5"
+
+        const val VIEWBOX_DEGREES = 0.35
+        const val MAX_CACHE = 40
+    }
+}
+
+/**
+ * Eng kam ishlatilganini chiqarib tashlovchi oddiy kesh (`LinkedHashMap` ning
+ * `accessOrder` rejimi KMP'da yo'q, shuning uchun qo'lda).
+ */
+private class LruCache<K, V>(private val maxSize: Int) {
+    private val entries = LinkedHashMap<K, V>()
+
+    operator fun get(key: K): V? {
+        val value = entries.remove(key) ?: return null
+        entries[key] = value // eng oxirgi ishlatilgan bo'lib qayta qo'yiladi
+        return value
+    }
+
+    operator fun set(key: K, value: V) {
+        entries.remove(key)
+        entries[key] = value
+        while (entries.size > maxSize) {
+            entries.remove(entries.keys.first())
+        }
     }
 }
 

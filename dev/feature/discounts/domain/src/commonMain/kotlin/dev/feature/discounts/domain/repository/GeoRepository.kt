@@ -30,6 +30,17 @@ interface GeoRepository {
 
     suspend fun reverseGeocode(lat: Double, lng: Double): Resource<ResolvedAddress>
 
-    /** Joy nomi yoki manzil bo'yicha qidiruv (faqat O'zbekiston ichida). */
-    suspend fun search(query: String): Resource<List<PlaceSuggestion>>
+    /**
+     * Joy nomi yoki manzil bo'yicha qidiruv (faqat O'zbekiston ichida).
+     *
+     * [nearLat]/[nearLng] — xaritaning joriy markazi. Berilsa, natijalar shu atrofdagilarga
+     * yaqinlashtiriladi: "Amir Temur ko'chasi" butun respublikada o'nlab joyda bor, foydalanuvchi
+     * esa deyarli har doim ko'rib turgan hududdagisini qidiradi. Implementatsiya buni
+     * qo'llab-quvvatlamasa (masalan backend geokoderi) — e'tiborsiz qoldiradi, xato emas.
+     */
+    suspend fun search(
+        query: String,
+        nearLat: Double? = null,
+        nearLng: Double? = null,
+    ): Resource<List<PlaceSuggestion>>
 }

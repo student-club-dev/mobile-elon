@@ -155,6 +155,17 @@ object AppIcons {
         "m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z",
     )
     val Filter = strokeIcon("Filter", "M22 3H2l8 9.46V19l4 2v-8.54z")
+
+    /** Nishon (crosshair) — "mening joylashuvim" tugmasi. */
+    val Locate = strokeIcon(
+        "Locate",
+        "M19 12a7 7 0 1 1-14 0 7 7 0 0 1 14 0",
+        "M12 1.5v3",
+        "M12 19.5v3",
+        "M1.5 12h3",
+        "M19.5 12h3",
+        "M13.1 12a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0",
+    )
     val Send = strokeIcon("Send", "M22 2 11 13", "M22 2 15 22l-4-9-9-4z")
     val Settings = strokeIcon(
         "Settings",

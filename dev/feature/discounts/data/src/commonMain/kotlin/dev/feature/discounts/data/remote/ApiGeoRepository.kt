@@ -45,7 +45,16 @@ class ApiGeoRepository(
         errorOf(e.toAppException(connectivity.isOnline()))
     }
 
-    override suspend fun search(query: String): Resource<List<PlaceSuggestion>> = try {
+    /**
+     * Backend geokoderi hozircha nuqta atrofiga yaqinlashtirishni qo'llab-quvvatlamaydi
+     * (`GeocodeRequestDto` da faqat `query` va `regionId` bor), shuning uchun [nearLat]/[nearLng]
+     * e'tiborsiz qoldiriladi. Zaxira Nominatim ularni ishlatadi.
+     */
+    override suspend fun search(
+        query: String,
+        nearLat: Double?,
+        nearLng: Double?,
+    ): Resource<List<PlaceSuggestion>> = try {
         val body: List<GeocodeResultDto> = api.geocode(GeocodeRequestDto(query)).body()
         Resource.Success(body.map { it.toSuggestion() })
     } catch (e: Exception) {
