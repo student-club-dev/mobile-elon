@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -16,7 +17,9 @@ import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import dev.core.data.seed.LocalDataSeeder
+import dev.core.uikit.locale.applyAppLanguage
 import dev.core.uikit.theme.AppTheme
+import dev.core.domain.model.AppLanguage
 import dev.core.domain.model.ThemeMode
 import dev.core.domain.repository.SettingsRepository
 import dev.feature.auth.presentation.flow.AuthNavHost
@@ -68,12 +71,20 @@ private fun AppScaffold(content: @Composable () -> Unit) {
         ThemeMode.SYSTEM -> isSystemInDarkTheme()
     }
 
+    // Foydalanuvchi tanlagan til. Tanlov platformaning joriy tiliga yoziladi, chunki
+    // `stringResource` aynan shundan o'qiydi (qarang `applyAppLanguage` izohi).
+    val language by settings.observeLanguage().collectAsState(initial = AppLanguage.SYSTEM)
+    LaunchedEffect(language) { applyAppLanguage(language.tag) }
+
     AppTheme(darkTheme = isDark) {
         // Butun ilova pastki tizim navigatsiya paneli (3 tugma) / iOS home indikatori
         // ortida qolmasligi uchun global inset. Fon gradienti panel ostida ham to'liq chiziladi.
         Box(Modifier.fillMaxSize().background(appPalette.bgBrush)) {
             Box(Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.navigationBars)) {
-                content()
+                // `key(language)` — til o'zgarganda butun daraxt qaytadan yaratiladi.
+                // `stringResource` tanlangan tilni `remember` ichida keshlaydi, shuning uchun
+                // faqat platforma tilini yozish yetarli emas: kesh bekor qilinishi kerak.
+                key(language) { content() }
             }
         }
     }

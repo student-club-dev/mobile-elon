@@ -1,5 +1,6 @@
 package dev.core.domain.repository
 
+import dev.core.domain.model.AppLanguage
 import dev.core.domain.model.ThemeMode
 import kotlinx.coroutines.flow.Flow
 
@@ -10,6 +11,9 @@ import kotlinx.coroutines.flow.Flow
 interface SettingsRepository {
     fun observeThemeMode(): Flow<ThemeMode>
     suspend fun setThemeMode(mode: ThemeMode)
+
+    fun observeLanguage(): Flow<AppLanguage>
+    suspend fun setLanguage(language: AppLanguage)
 
     /** Boolean bayroq (masalan bildirishnoma sozlamalari). */
     fun observeFlag(key: String, default: Boolean): Flow<Boolean>

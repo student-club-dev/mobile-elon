@@ -44,6 +44,7 @@ import dev.core.uikit.resources.discounts_map_search_hint
 import dev.core.uikit.resources.discounts_phone_hint
 import dev.core.uikit.resources.discounts_phone_label
 import dev.core.uikit.resources.discounts_phone_prefix
+import dev.core.uikit.resources.discounts_region_label
 import dev.core.uikit.resources.discounts_resolving_address
 import dev.core.uikit.resources.discounts_saving
 import dev.core.uikit.theme.AppPalette
@@ -54,6 +55,7 @@ import dev.feature.discounts.presentation.components.BusinessTypeChip
 import dev.feature.discounts.presentation.components.FormFieldLabel
 import dev.feature.discounts.presentation.components.LocationCard
 import dev.feature.discounts.presentation.components.MapSearchResults
+import dev.feature.discounts.presentation.components.RegionSelector
 import dev.feature.discounts.presentation.components.MyLocationButton
 import dev.core.uikit.map.MapCenterRequest
 import dev.core.uikit.map.MapPicker
@@ -129,6 +131,17 @@ fun AddBusinessScreen(
                 )
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            palette = palette,
+        )
+
+        Spacer(Modifier.height(14.dp))
+        FormFieldLabel(stringResource(Res.string.discounts_region_label), palette)
+        Spacer(Modifier.height(7.dp))
+        RegionSelector(
+            regionName = state.regionName,
+            expanded = state.regionPickerOpen,
+            onToggle = { if (state.regionPickerOpen) vm.closeRegionPicker() else vm.openRegionPicker() },
+            onSelect = vm::onRegion,
             palette = palette,
         )
 

@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.core.domain.model.AppLanguage
 import dev.core.domain.model.ThemeMode
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.BackButton
@@ -45,7 +46,9 @@ import dev.core.uikit.resources.auth_settings_email
 import dev.core.uikit.resources.auth_settings_push
 import dev.core.uikit.resources.auth_settings_section_account
 import dev.core.uikit.resources.auth_settings_section_general
+import dev.core.uikit.resources.auth_settings_section_language
 import dev.core.uikit.resources.auth_settings_section_theme
+import dev.core.uikit.resources.auth_language_system
 import dev.core.uikit.resources.auth_settings_title
 import dev.core.uikit.resources.auth_settings_version
 import dev.core.uikit.resources.auth_theme_dark
@@ -64,11 +67,10 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
- * Sozlamalar ekrani (A3/C3). Hisob, bildirishnoma va ilova ma'lumotlari.
+ * Sozlamalar ekrani (A3/C3). Hisob, mavzu, til, bildirishnoma va ilova ma'lumotlari.
  *
- * Eslatma: bildirishnoma toggle'lari hozircha faqat UI holatida (local `remember`).
- * Doimiy saqlash va mavzu/til almashtirish uchun alohida `SettingsStore` + theme
- * override kerak — bu IMPLEMENTATION_PLAN.md dagi "SettingsStore" bandida bajariladi.
+ * Barcha sozlamalar local DB'da doimiy saqlanadi ([SettingsViewModel] → `SettingsRepository`).
+ * Mavzu `AppTheme` ga, til esa platformaning joriy tiliga uzatiladi (`dev.shared.App`).
  */
 @Composable
 fun SettingsScreen(
@@ -109,6 +111,10 @@ fun SettingsScreen(
             Spacer(Modifier.height(6.dp))
             SectionTitle(stringResource(Res.string.auth_settings_section_theme), palette)
             ThemeSelector(settings.themeMode, palette) { settingsVm.setThemeMode(it) }
+
+            Spacer(Modifier.height(6.dp))
+            SectionTitle(stringResource(Res.string.auth_settings_section_language), palette)
+            LanguageSelector(settings.language, palette) { settingsVm.setLanguage(it) }
 
             Spacer(Modifier.height(6.dp))
             SectionTitle(stringResource(Res.string.auth_notifications_title), palette)
@@ -180,6 +186,48 @@ private fun ThemeSelector(current: ThemeMode, palette: AppPalette, onSelect: (Th
                         fontSize = 12.5f.sp,
                         color = if (active) palette.primary else palette.inkMuted,
                     ),
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Til tanlash — mavzu tanlagichi bilan bir xil ko'rinishda.
+ *
+ * Til nomlari ATAYLAB tarjima qilinmaydi: "Русский" har doim ruscha, "English" har doim
+ * inglizcha yozilади. Foydalanuvchi tushunmaydigan tilda qolib ketsa ham, o'z tilini
+ * ro'yxatdan topa oladi.
+ */
+@Composable
+private fun LanguageSelector(current: AppLanguage, palette: AppPalette, onSelect: (AppLanguage) -> Unit) {
+    val options = listOf(
+        AppLanguage.SYSTEM to stringResource(Res.string.auth_language_system),
+        AppLanguage.UZ to "O'zbekcha",
+        AppLanguage.RU to "Русский",
+        AppLanguage.EN to "English",
+    )
+    GlassRow(
+        shape = AppRadius.lg,
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(AppSpacing.xs),
+        horizontalArrangement = Arrangement.spacedBy(AppSpacing.xs),
+        palette = palette,
+    ) {
+        options.forEach { (language, label) ->
+            val active = language == current
+            Box(
+                Modifier.weight(1f).height(38.dp).clip(RoundedCornerShape(11.dp))
+                    .background(if (active) palette.primary.copy(alpha = 0.16f) else Color.Transparent)
+                    .clickable { onSelect(language) },
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    label,
+                    style = AppType.label.copy(
+                        fontSize = 11.5f.sp,
+                        color = if (active) palette.primary else palette.inkMuted,
+                    ),
+                    maxLines = 1,
                 )
             }
         }

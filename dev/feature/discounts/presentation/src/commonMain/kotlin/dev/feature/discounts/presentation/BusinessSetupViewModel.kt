@@ -8,6 +8,7 @@ import dev.feature.discounts.domain.model.Business
 import dev.feature.discounts.domain.model.BusinessTypeInfo
 import dev.feature.discounts.domain.model.BusinessType
 import dev.feature.discounts.domain.model.Gender
+import dev.feature.discounts.domain.model.GeoCatalog
 import dev.feature.discounts.domain.model.ListingBranch
 import dev.feature.discounts.domain.model.ListingCatalog
 import dev.feature.discounts.domain.repository.PlaceSuggestion
@@ -65,6 +66,14 @@ data class AddBusinessUiState(
     /** Foydalanuvchi jinsi — tur ro'yxatini filtrlaydi (Sartaroshxona/BeautySalon). */
     val gender: Gender? = null,
     val branch: ListingBranch? = null,
+    /**
+     * Viloyat — xaritadan joy tanlanganda teskari geokodlashdan avtomatik to'ladi, lekin
+     * foydalanuvchi tuzatishi mumkin: Nominatim viloyat nomini har doim ham [GeoCatalog]
+     * bilan bog'lay olmaydi (`matchRegion` `null` qaytarishi mumkin) va bunda chegirma
+     * viloyat bo'yicha filtrga tushmay qolardi.
+     */
+    val regionId: String? = null,
+    val regionPickerOpen: Boolean = false,
     val pickingOnMap: Boolean = false,
     val resolvingAddress: Boolean = false,
     val searchQuery: String = "",
@@ -83,8 +92,12 @@ data class AddBusinessUiState(
 ) {
     val editing: Boolean get() = editId != null
     val phoneDigits: String get() = phone.filter { it.isDigit() }.take(9)
+    /** Tanlangan viloyat nomi — ko'rsatish uchun. */
+    val regionName: String? get() = GeoCatalog.region(regionId)?.name
+
     val canSave: Boolean
-        get() = name.isNotBlank() && phoneDigits.length == 9 && businessType != null && branch != null && !saving
+        get() = name.isNotBlank() && phoneDigits.length == 9 && businessType != null &&
+            branch != null && regionId != null && !saving
 }
 
 class AddBusinessViewModel(
@@ -114,6 +127,7 @@ class AddBusinessViewModel(
                     phone = biz.phone.removePrefix("+998"),
                     businessType = biz.businessType,
                     branch = biz.branches.firstOrNull(),
+                    regionId = biz.branches.firstOrNull()?.regionId,
                 )
             }
         }
@@ -178,8 +192,25 @@ class AddBusinessViewModel(
         viewModelScope.launch {
             _state.update { it.copy(resolvingAddress = true) }
             val branch = createBranch(id = "biz-${Clock.System.now().toEpochMilliseconds()}", lat = lat, lng = lng)
-            _state.update { it.copy(branch = branch, resolvingAddress = false, pickingOnMap = false) }
+            _state.update {
+                it.copy(
+                    branch = branch,
+                    // Geokoder viloyatni topsa — avtomatik to'ldiramiz. Topa olmasa foydalanuvchi
+                    // qo'lda tanlagan qiymat saqlanadi (uni bekorga o'chirmaymiz).
+                    regionId = branch.regionId ?: it.regionId,
+                    resolvingAddress = false,
+                    pickingOnMap = false,
+                )
+            }
         }
+    }
+
+    fun openRegionPicker() = _state.update { it.copy(regionPickerOpen = true) }
+
+    fun closeRegionPicker() = _state.update { it.copy(regionPickerOpen = false) }
+
+    fun onRegion(regionId: String) = _state.update {
+        it.copy(regionId = regionId, regionPickerOpen = false, error = null)
     }
 
     fun save() {
@@ -196,7 +227,9 @@ class AddBusinessViewModel(
                 name = s.name.trim(),
                 phone = "+998${s.phoneDigits}",
                 businessType = type,
-                branches = listOf(branch),
+                // Foydalanuvchi tanlagan viloyat filialga yoziladi — geokoder topgan qiymat
+                // noto'g'ri bo'lsa ham, e'lon to'g'ri viloyat filtriga tushadi.
+                branches = listOf(branch.copy(regionId = s.regionId ?: branch.regionId)),
                 createdAt = s.editCreatedAt ?: now, // tahrirlashда asl vaqt saqlanadi
                 updatedAt = now,
             )

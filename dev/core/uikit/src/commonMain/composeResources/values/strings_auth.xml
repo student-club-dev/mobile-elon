@@ -250,4 +250,6 @@
     <string name="auth_ad_description_placeholder">Batafsil ma\'lumot...</string>
     <string name="auth_ad_submit">E\'lonni joylash</string>
 
+    <string name="auth_settings_section_language">Til</string>
+    <string name="auth_language_system">Tizim</string>
 </resources>

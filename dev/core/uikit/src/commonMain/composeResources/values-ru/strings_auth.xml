@@ -233,4 +233,6 @@
     <string name="auth_ad_description_placeholder">Подробная информация...</string>
     <string name="auth_ad_submit">Разместить объявление</string>
 
+    <string name="auth_settings_section_language">Язык</string>
+    <string name="auth_language_system">Система</string>
 </resources>

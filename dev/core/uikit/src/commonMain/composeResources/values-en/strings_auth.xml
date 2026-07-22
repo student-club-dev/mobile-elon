@@ -233,4 +233,6 @@
     <string name="auth_ad_description_placeholder">Detailed information...</string>
     <string name="auth_ad_submit">Publish listing</string>
 
+    <string name="auth_settings_section_language">Language</string>
+    <string name="auth_language_system">System</string>
 </resources>

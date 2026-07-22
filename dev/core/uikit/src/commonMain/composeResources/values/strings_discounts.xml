@@ -227,4 +227,6 @@
     <string name="discounts_copy_beauty_title_hint">Xizmat: Makiyaj + soch turmagi</string>
     <string name="discounts_copy_beauty_description_hint">Usta, davomiyligi, qo\'shimcha xizmat...</string>
 
+    <string name="discounts_region_label">Viloyat</string>
+    <string name="discounts_region_select">Viloyatni tanlang</string>
 </resources>
