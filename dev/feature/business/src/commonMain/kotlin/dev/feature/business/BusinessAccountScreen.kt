@@ -34,11 +34,7 @@ import dev.core.uikit.component.HeaderIconButton
 import dev.core.uikit.component.IconTile
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.business_account_title
-import dev.core.uikit.resources.business_menu_listings
 import dev.core.uikit.resources.business_menu_settings
-import dev.core.uikit.resources.business_stat_active
-import dev.core.uikit.resources.business_stat_redemptions
-import dev.core.uikit.resources.business_stat_views
 import dev.core.uikit.resources.business_verified
 import dev.core.uikit.resources.common_back
 import dev.core.uikit.resources.common_edit
@@ -51,13 +47,11 @@ import dev.core.uikit.theme.appPalette
 import dev.feature.business.components.AccountRow
 import dev.feature.business.components.RowPaddingHorizontal
 import dev.feature.business.components.RowPaddingVertical
-import dev.feature.business.components.StatCard
 import dev.feature.profile.presentation.ProfileViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import androidx.compose.ui.unit.sp
 import dev.feature.profile.presentation.components.ProfileAvatar
-import dev.core.uikit.resources.business_profile_title
 import dev.core.uikit.resources.business_profile_no_contact
 
 /** Handoff: gradient header ostki burchagi 36dp. */
@@ -79,7 +73,6 @@ private val BlockGap = 16.dp
 fun BusinessAccountScreen(
     onBack: () -> Unit,
     onEdit: () -> Unit,
-    onOpenListings: () -> Unit,
     onOpenSettings: () -> Unit,
     onLoggedOut: () -> Unit,
     vm: ProfileViewModel = koinViewModel(),
@@ -120,8 +113,10 @@ fun BusinessAccountScreen(
                     contentDescription = stringResource(Res.string.common_back),
                 )
                 Text(
-                    stringResource(Res.string.business_profile_title),
+                    // Topbarda foydalanuvchining ISMI — "Profil" degan umumiy so'z emas.
+                    state.name,
                     modifier = Modifier.weight(1f),
+                    maxLines = 1,
                     // Gradient ustidagi matn — palitra emas, doim oq.
                     style = AppType.sheetTitle.copy(color = Color.White),
                     textAlign = TextAlign.Center,
@@ -183,15 +178,9 @@ fun BusinessAccountScreen(
                 }
             }
 
-            // Statistika
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(AppSpacing.md)) {
-                StatCard(stringResource(Res.string.business_stat_active), "0", AppIcons.Tag, palette, Modifier.weight(1f))
-                StatCard(stringResource(Res.string.business_stat_redemptions), "0", AppIcons.ScanFace, palette, Modifier.weight(1f))
-                StatCard(stringResource(Res.string.business_stat_views), "0", AppIcons.Users, palette, Modifier.weight(1f))
-            }
-
-            // Menyu
-            AccountRow(AppIcons.Tag, stringResource(Res.string.business_menu_listings), palette, onClick = onOpenListings)
+            // Menyu. Statistika (faol e'lonlar, foydalanishlar, ko'rishlar) va "Mening
+            // e'lonlarim" bu yerdan olib tashlandi — ular biznes ko'rsatkichlari, shaxsiy
+            // profilga aloqasi yo'q. E'lonlar biznes kartochkasi orqali ochiladi.
             AccountRow(AppIcons.Settings, stringResource(Res.string.business_menu_settings), palette, onClick = onOpenSettings)
 
             // Chiqish

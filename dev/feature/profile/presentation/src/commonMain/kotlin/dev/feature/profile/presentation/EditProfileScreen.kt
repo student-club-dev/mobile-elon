@@ -49,7 +49,6 @@ import dev.core.uikit.resources.profile_course_2
 import dev.core.uikit.resources.profile_course_3
 import dev.core.uikit.resources.profile_course_4
 import dev.core.uikit.resources.profile_course_master
-import dev.core.uikit.resources.profile_edit_action
 import dev.core.uikit.resources.profile_field_course
 import dev.core.uikit.resources.profile_field_first_name
 import dev.core.uikit.resources.profile_field_last_name
@@ -138,8 +137,11 @@ fun EditProfileScreen(onBack: () -> Unit, vm: ProfileViewModel = koinViewModel()
                 palette = palette,
             )
             Text(
-                stringResource(Res.string.profile_edit_action),
+                // Topbarda foydalanuvchining ISMI turadi — "Profilni tahrirlash" degan
+                // umumiy sarlavha emas. Nima tahrirlanayotgani maydonlardan aniq.
+                state.name,
                 style = AppType.topBarTitle.copy(color = palette.ink),
+                maxLines = 1,
             )
         }
         Spacer(Modifier.height(AppSpacing.xl))

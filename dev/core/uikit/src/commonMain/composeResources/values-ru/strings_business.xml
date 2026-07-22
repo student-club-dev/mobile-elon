@@ -27,13 +27,6 @@
     <string name="business_menu_settings">Настройки</string>
 
     <!-- ============ Редактирование профиля (BusinessEditScreen) ============ -->
-    <string name="business_edit_title">Редактировать профиль</string>
-    <string name="business_field_name">Название бизнеса</string>
-    <string name="business_field_name_hint">Например: Кафе Aurora</string>
-    <string name="business_field_phone">Телефон</string>
-    <string name="business_field_phone_hint">90 123 45 67</string>
-    <string name="business_field_email">Email (gmail)</string>
-    <string name="business_field_email_hint">biznes@gmail.com</string>
 
     <!-- ============ Вход для бизнеса (BusinessWelcomeScreen) ============ -->
     <string name="business_welcome_title">Вход для бизнеса</string>

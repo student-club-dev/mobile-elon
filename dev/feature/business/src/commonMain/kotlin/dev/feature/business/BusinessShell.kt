@@ -24,13 +24,14 @@ import dev.feature.discounts.presentation.AddBusinessScreen
 import dev.feature.discounts.presentation.MyBusinessesScreen
 import dev.feature.discounts.presentation.MyListingsScreen
 import dev.feature.discounts.presentation.PostListingScreen
+import dev.feature.profile.presentation.EditProfileScreen
 
 private const val BUSINESSES = "businesses"
 private const val ADD_BUSINESS = "add_business"
 private const val LISTINGS = "listings"
 private const val POST_LISTING = "post_listing"
 private const val PROFILE = "business_profile"
-private const val BUSINESS_EDIT = "business_edit"
+private const val PROFILE_EDIT = "profile_edit"
 private const val SETTINGS = "settings"
 private const val MESSAGES = "messages"
 private const val SUPPORT = "support"
@@ -125,14 +126,17 @@ fun BusinessShell(
             composable(PROFILE) {
                 BusinessAccountScreen(
                     onBack = { nav.popBackStack() },
-                    onEdit = { nav.navigate(BUSINESS_EDIT) { launchSingleTop = true } },
-                    onOpenListings = { nav.popBackStack() },
+                    onEdit = { nav.navigate(PROFILE_EDIT) { launchSingleTop = true } },
                     onOpenSettings = { nav.navigate(SETTINGS) { launchSingleTop = true } },
                     onLoggedOut = onLoggedOut,
                 )
             }
-            composable(BUSINESS_EDIT) {
-                BusinessEditScreen(onBack = { nav.popBackStack() })
+            // Profildagi qalam SHAXSIY ma'lumotni tahrirlaydi (ism, familiya, telefon).
+            // Ilgari u biznes tahrirlash ekranini ochardi — u yerda biznes nomi va turi
+            // so'ralardi, holbuki bu foydalanuvchining o'z profili. Biznes esa
+            // "Bizneslarim" ro'yxatidagi qalam orqali tahrirlanadi.
+            composable(PROFILE_EDIT) {
+                EditProfileScreen(onBack = { nav.popBackStack() })
             }
             composable(SETTINGS) {
                 settingsContent { nav.popBackStack() }

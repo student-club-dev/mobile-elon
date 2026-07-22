@@ -27,13 +27,6 @@
     <string name="business_menu_settings">Settings</string>
 
     <!-- ============ Edit profile (BusinessEditScreen) ============ -->
-    <string name="business_edit_title">Edit profile</string>
-    <string name="business_field_name">Business name</string>
-    <string name="business_field_name_hint">For example: Cafe Aurora</string>
-    <string name="business_field_phone">Phone</string>
-    <string name="business_field_phone_hint">90 123 45 67</string>
-    <string name="business_field_email">Email (gmail)</string>
-    <string name="business_field_email_hint">biznes@gmail.com</string>
 
     <!-- ============ Business sign-in (BusinessWelcomeScreen) ============ -->
     <string name="business_welcome_title">Business sign-in</string>
