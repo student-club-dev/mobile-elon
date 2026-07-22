@@ -109,11 +109,14 @@ fun discountsModule() = module {
     // Geokodlash — backend (`/geo/geocode`, `/geo/reverse-geocode`), u ishlamasa Nominatim.
     // Nominatim'ga ilovaning umumiy klienti berilmaydi: unda Firebase Bearer tokeni bor,
     // uni begona serverga yuborib bo'lmaydi.
+    //
+    // Local rejimda backend UMUMAN chaqirilmaydi: aks holda xaritadan joy tanlashda har safar
+    // mavjud bo'lmagan serverga so'rov ketib, timeout kutilardi va manzil bir necha soniyadan
+    // keyin chiqardi. Qolgan repository'lar ham shu bayroqqa amal qiladi.
     single<GeoRepository> {
-        FallbackGeoRepository(
-            api = ApiGeoRepository(get(), get()),
-            nominatim = NominatimGeoRepository(createPublicHttpClient()),
-        )
+        val nominatim = NominatimGeoRepository(createPublicHttpClient())
+        if (USE_LOCAL_DATA) nominatim
+        else FallbackGeoRepository(api = ApiGeoRepository(get(), get()), nominatim = nominatim)
     }
 
     factory { CreateBranchFromPointUseCase(get()) }

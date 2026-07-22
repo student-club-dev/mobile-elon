@@ -3,6 +3,7 @@ package dev.core.network
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.DefaultRequest
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
@@ -34,6 +35,12 @@ fun createHttpClient(
     tokenProvider: suspend () -> String? = { null },
 ): HttpClient = platformHttpClient {
     expectSuccess = true
+
+    install(HttpTimeout) {
+        requestTimeoutMillis = REQUEST_TIMEOUT_MS
+        connectTimeoutMillis = CONNECT_TIMEOUT_MS
+        socketTimeoutMillis = SOCKET_TIMEOUT_MS
+    }
 
     // BaseResponse konvertini shaffof ochadi — ContentNegotiation'DAN OLDIN o'rnatiladi,
     // shunda raw JSON'ni birinchi bo'lib shu ushlaydi (aks holda konvert bo'sh DTO'ga aylanadi).
@@ -74,8 +81,25 @@ fun createHttpClient(
  */
 fun createPublicHttpClient(): HttpClient = platformHttpClient {
     expectSuccess = true
+    install(HttpTimeout) {
+        requestTimeoutMillis = REQUEST_TIMEOUT_MS
+        connectTimeoutMillis = CONNECT_TIMEOUT_MS
+        socketTimeoutMillis = SOCKET_TIMEOUT_MS
+    }
     install(ContentNegotiation) { json(appJson) }
 }
+
+/**
+ * Tarmoq kutish chegaralari.
+ *
+ * Ilgari umuman belgilanmagan edi va engine standartlari ishlardi — Android/OkHttp'da ~10 s,
+ * iOS/Darwin'da esa **60 s**. Server javob bermasa foydalanuvchi shuncha vaqt kutардi; bu ayniqsa
+ * xaritadan joy tanlashda seziladi, chunki u yerda zaxira geokoder birinchisi tugagachgina
+ * boshlanadi.
+ */
+private const val CONNECT_TIMEOUT_MS = 8_000L
+private const val REQUEST_TIMEOUT_MS = 15_000L
+private const val SOCKET_TIMEOUT_MS = 15_000L
 
 /** Platformaga xos HTTP engine (Android: OkHttp, iOS: Darwin). */
 expect fun platformHttpClient(config: HttpClientConfig<*>.() -> Unit): HttpClient
