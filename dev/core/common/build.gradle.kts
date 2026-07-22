@@ -16,6 +16,10 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             api(libs.napier)
         }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
     }
 }
 

@@ -229,4 +229,5 @@
 
     <string name="discounts_region_label">Viloyat</string>
     <string name="discounts_region_select">Viloyatni tanlang</string>
+    <string name="discounts_name_latin_only">Biznes nomi faqat lotin alifbosida yoziladi</string>
 </resources>

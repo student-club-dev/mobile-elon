@@ -3,6 +3,7 @@ package dev.feature.discounts.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.core.common.Resource
+import dev.core.common.text.TextScript
 import dev.core.domain.repository.SettingsRepository
 import dev.core.domain.usecase.ObserveCurrentUserUseCase
 import dev.feature.discounts.domain.model.BusinessType
@@ -253,7 +254,8 @@ class PostListingViewModel(
     // Asosiy maydonlar
     // -----------------------------------------------------------------------
 
-    fun onBusinessName(v: String) = _state.update { it.copy(businessName = v) }
+    /** Biznes nomi lotin alifbosida bo'lishi shart — kirill harflari kiritilmaydi. */
+    fun onBusinessName(v: String) = _state.update { it.copy(businessName = TextScript.stripCyrillic(v)) }
     fun onTitle(v: String) = _state.update { it.copy(title = v) }
     fun onDescription(v: String) = _state.update { it.copy(description = v) }
     fun onPriceUnit(v: PriceUnit) = _state.update { it.copy(priceUnit = v) }

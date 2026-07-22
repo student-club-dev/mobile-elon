@@ -21,6 +21,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.core.uikit.component.AppScreenScaffold
 import dev.core.uikit.component.BackButton
 import dev.core.uikit.component.FieldLabel
+import dev.core.common.text.TextScript
 import dev.core.uikit.component.GlassTextField
 import dev.core.uikit.component.InlineErrorText
 import dev.core.uikit.component.PrimaryButton
@@ -72,7 +73,7 @@ fun BusinessEditScreen(
         Spacer(Modifier.height(20.dp))
         FieldLabel(stringResource(Res.string.business_field_name))
         Spacer(Modifier.height(AppSpacing.sm))
-        GlassTextField(name, { name = it }, stringResource(Res.string.business_field_name_hint))
+        GlassTextField(name, { name = TextScript.stripCyrillic(it) }, stringResource(Res.string.business_field_name_hint))
 
         Spacer(Modifier.height(AppSpacing.lg))
         FieldLabel(stringResource(Res.string.business_field_phone))

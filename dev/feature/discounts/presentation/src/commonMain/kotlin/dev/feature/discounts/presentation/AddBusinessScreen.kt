@@ -41,6 +41,7 @@ import dev.core.uikit.resources.discounts_map_business_title
 import dev.core.uikit.resources.discounts_map_confirm
 import dev.core.uikit.resources.discounts_map_hint
 import dev.core.uikit.resources.discounts_map_search_hint
+import dev.core.uikit.resources.discounts_name_latin_only
 import dev.core.uikit.resources.discounts_phone_hint
 import dev.core.uikit.resources.discounts_phone_label
 import dev.core.uikit.resources.discounts_phone_prefix
@@ -116,6 +117,13 @@ fun AddBusinessScreen(
             stringResource(Res.string.discounts_business_name_hint),
             palette = palette,
         )
+        if (state.nameCyrillicBlocked) {
+            Spacer(Modifier.height(5.dp))
+            Text(
+                stringResource(Res.string.discounts_name_latin_only),
+                style = AppType.hint.copy(color = palette.warning),
+            )
+        }
 
         Spacer(Modifier.height(14.dp))
         FormFieldLabel(stringResource(Res.string.discounts_phone_label), palette)

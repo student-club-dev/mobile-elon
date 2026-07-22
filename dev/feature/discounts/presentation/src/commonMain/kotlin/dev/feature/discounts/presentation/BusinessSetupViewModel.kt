@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.core.common.Resource
 import dev.core.domain.repository.SettingsRepository
+import dev.core.common.text.TextScript
 import dev.feature.discounts.domain.model.Business
 import dev.feature.discounts.domain.model.BusinessTypeInfo
 import dev.feature.discounts.domain.model.BusinessType
@@ -61,6 +62,8 @@ data class AddBusinessUiState(
     /** Tahrirlashда — biznesning asl yaratilgan vaqti (saqlashда qayta yozilmasligi uchun). */
     val editCreatedAt: Long? = null,
     val name: String = "",
+    /** Foydalanuvchi kirill yozuvida yozmoqchi bo'ldi — maydon ostida sabab ko'rsatiladi. */
+    val nameCyrillicBlocked: Boolean = false,
     val phone: String = "",
     val businessType: BusinessType? = null,
     /** Foydalanuvchi jinsi — tur ro'yxatini filtrlaydi (Sartaroshxona/BeautySalon). */
@@ -155,7 +158,15 @@ class AddBusinessViewModel(
         }
     }
 
-    fun onName(v: String) = _state.update { it.copy(name = v, error = null) }
+    /**
+     * Biznes nomi — kirill harflari kiritilishiga yo'l qo'yilmaydi (qarang [TextScript]).
+     * Harflar jimgina yo'qolib qolmasligi uchun `nameCyrillicBlocked` bilan maydon ostida
+     * sabab ko'rsatiladi.
+     */
+    fun onName(v: String) = _state.update {
+        val cleaned = TextScript.stripCyrillic(v)
+        it.copy(name = cleaned, nameCyrillicBlocked = cleaned != v, error = null)
+    }
     fun onPhone(v: String) = _state.update { it.copy(phone = v.filter { c -> c.isDigit() }.take(9), error = null) }
     fun onType(t: BusinessType) = _state.update { it.copy(businessType = t, error = null) }
 

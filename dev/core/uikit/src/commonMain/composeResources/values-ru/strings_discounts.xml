@@ -223,4 +223,5 @@
 
     <string name="discounts_region_label">Область</string>
     <string name="discounts_region_select">Выберите область</string>
+    <string name="discounts_name_latin_only">Название бизнеса пишется только латиницей</string>
 </resources>
