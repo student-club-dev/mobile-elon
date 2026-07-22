@@ -1,6 +1,92 @@
 package dev.feature.discounts.presentation.form
 
+import dev.core.uikit.resources.Res
+import dev.core.uikit.resources.discounts_copy_barber_about
+import dev.core.uikit.resources.discounts_copy_barber_business
+import dev.core.uikit.resources.discounts_copy_barber_business_hint
+import dev.core.uikit.resources.discounts_copy_barber_category_hint
+import dev.core.uikit.resources.discounts_copy_barber_description_hint
+import dev.core.uikit.resources.discounts_copy_barber_images
+import dev.core.uikit.resources.discounts_copy_barber_images_hint
+import dev.core.uikit.resources.discounts_copy_barber_subtitle
+import dev.core.uikit.resources.discounts_copy_barber_subtitle_regular
+import dev.core.uikit.resources.discounts_copy_barber_title
+import dev.core.uikit.resources.discounts_copy_barber_title_hint
+import dev.core.uikit.resources.discounts_copy_barber_title_regular
+import dev.core.uikit.resources.discounts_copy_beauty_about
+import dev.core.uikit.resources.discounts_copy_beauty_business
+import dev.core.uikit.resources.discounts_copy_beauty_business_hint
+import dev.core.uikit.resources.discounts_copy_beauty_category_hint
+import dev.core.uikit.resources.discounts_copy_beauty_description_hint
+import dev.core.uikit.resources.discounts_copy_beauty_images
+import dev.core.uikit.resources.discounts_copy_beauty_images_hint
+import dev.core.uikit.resources.discounts_copy_beauty_subtitle
+import dev.core.uikit.resources.discounts_copy_beauty_subtitle_regular
+import dev.core.uikit.resources.discounts_copy_beauty_title
+import dev.core.uikit.resources.discounts_copy_beauty_title_hint
+import dev.core.uikit.resources.discounts_copy_beauty_title_regular
+import dev.core.uikit.resources.discounts_copy_cafe_about
+import dev.core.uikit.resources.discounts_copy_cafe_business
+import dev.core.uikit.resources.discounts_copy_cafe_business_hint
+import dev.core.uikit.resources.discounts_copy_cafe_category_hint
+import dev.core.uikit.resources.discounts_copy_cafe_description_hint
+import dev.core.uikit.resources.discounts_copy_cafe_images
+import dev.core.uikit.resources.discounts_copy_cafe_images_hint
+import dev.core.uikit.resources.discounts_copy_cafe_subtitle
+import dev.core.uikit.resources.discounts_copy_cafe_subtitle_regular
+import dev.core.uikit.resources.discounts_copy_cafe_title
+import dev.core.uikit.resources.discounts_copy_cafe_title_hint
+import dev.core.uikit.resources.discounts_copy_cafe_title_regular
+import dev.core.uikit.resources.discounts_copy_cloth_about
+import dev.core.uikit.resources.discounts_copy_cloth_business
+import dev.core.uikit.resources.discounts_copy_cloth_business_hint
+import dev.core.uikit.resources.discounts_copy_cloth_category_hint
+import dev.core.uikit.resources.discounts_copy_cloth_description_hint
+import dev.core.uikit.resources.discounts_copy_cloth_images
+import dev.core.uikit.resources.discounts_copy_cloth_images_hint
+import dev.core.uikit.resources.discounts_copy_cloth_subtitle
+import dev.core.uikit.resources.discounts_copy_cloth_subtitle_regular
+import dev.core.uikit.resources.discounts_copy_cloth_title
+import dev.core.uikit.resources.discounts_copy_cloth_title_hint
+import dev.core.uikit.resources.discounts_copy_cloth_title_regular
+import dev.core.uikit.resources.discounts_copy_edu_about
+import dev.core.uikit.resources.discounts_copy_edu_business
+import dev.core.uikit.resources.discounts_copy_edu_business_hint
+import dev.core.uikit.resources.discounts_copy_edu_category_hint
+import dev.core.uikit.resources.discounts_copy_edu_description_hint
+import dev.core.uikit.resources.discounts_copy_edu_images
+import dev.core.uikit.resources.discounts_copy_edu_images_hint
+import dev.core.uikit.resources.discounts_copy_edu_subtitle
+import dev.core.uikit.resources.discounts_copy_edu_subtitle_regular
+import dev.core.uikit.resources.discounts_copy_edu_title
+import dev.core.uikit.resources.discounts_copy_edu_title_hint
+import dev.core.uikit.resources.discounts_copy_edu_title_regular
+import dev.core.uikit.resources.discounts_copy_ent_about
+import dev.core.uikit.resources.discounts_copy_ent_business
+import dev.core.uikit.resources.discounts_copy_ent_business_hint
+import dev.core.uikit.resources.discounts_copy_ent_category_hint
+import dev.core.uikit.resources.discounts_copy_ent_description_hint
+import dev.core.uikit.resources.discounts_copy_ent_images
+import dev.core.uikit.resources.discounts_copy_ent_images_hint
+import dev.core.uikit.resources.discounts_copy_ent_subtitle
+import dev.core.uikit.resources.discounts_copy_ent_subtitle_regular
+import dev.core.uikit.resources.discounts_copy_ent_title
+import dev.core.uikit.resources.discounts_copy_ent_title_hint
+import dev.core.uikit.resources.discounts_copy_ent_title_regular
+import dev.core.uikit.resources.discounts_copy_game_about
+import dev.core.uikit.resources.discounts_copy_game_business
+import dev.core.uikit.resources.discounts_copy_game_business_hint
+import dev.core.uikit.resources.discounts_copy_game_category_hint
+import dev.core.uikit.resources.discounts_copy_game_description_hint
+import dev.core.uikit.resources.discounts_copy_game_images
+import dev.core.uikit.resources.discounts_copy_game_images_hint
+import dev.core.uikit.resources.discounts_copy_game_subtitle
+import dev.core.uikit.resources.discounts_copy_game_subtitle_regular
+import dev.core.uikit.resources.discounts_copy_game_title
+import dev.core.uikit.resources.discounts_copy_game_title_hint
+import dev.core.uikit.resources.discounts_copy_game_title_regular
 import dev.feature.discounts.domain.model.BusinessType
+import org.jetbrains.compose.resources.StringResource
 
 /**
  * Bitta biznes turining ekrandagi **matnlari**.
@@ -9,219 +95,135 @@ import dev.feature.discounts.domain.model.BusinessType
  * "Sarlavha / Narx / Tavsif" yozuvlari ularning hech biriga to'g'ri kelmaydi. Har turning
  * o'z ekrani bor ([TypeForms]), ekranlar esa umumiy bloklardan yig'iladi va shu yerdagi
  * matnlarni oladi. Shunday qilib takrorlanish ham yo'q, yozuvlar ham har xil.
+ *
+ * Maydonlar `String` emas, [StringResource] — matnlar `strings_discounts.xml` da (uz/ru/en)
+ * yashaydi va ekranda `stringResource(copy.titleHint)` bilan olinadi.
  */
 data class ListingFormCopy(
     /** Chegirma e'loni sarlavhasi. */
-    val screenTitle: String,
-    val screenSubtitle: String,
+    val screenTitle: StringResource,
+    val screenSubtitle: StringResource,
     /** Oddiy (chegirmasiz) e'lon sarlavhasi — `isDiscount = false` bo'lganда. */
-    val screenTitleRegular: String,
-    val screenSubtitleRegular: String,
+    val screenTitleRegular: StringResource,
+    val screenSubtitleRegular: StringResource,
 
-    val businessSection: String,
-    val businessHint: String,
-    val categoryHint: String,
+    val businessSection: StringResource,
+    val businessHint: StringResource,
+    val categoryHint: StringResource,
 
-    val imagesSection: String,
-    val imagesHint: String,
+    val imagesSection: StringResource,
+    val imagesHint: StringResource,
 
-    val aboutSection: String,
-    val titleHint: String,
-    val descriptionHint: String,
-
-    val priceSection: String,
-    val priceHint: String,
-
-    val conditionsHint: String,
-
-    val detailsSection: String,
-    val detailsHint: String,
-
-    /** Qo'shimchalar bo'limi ko'rsatiladimi (kafeda "Hajm", kiyimda "O'lcham"...). */
-    val hasOptions: Boolean,
-    val optionsSection: String,
-    val optionsHint: String,
-    val optionGroupHint: String,
-    val optionItemHint: String,
+    val aboutSection: StringResource,
+    val titleHint: StringResource,
+    val descriptionHint: StringResource,
 ) {
     companion object {
         fun of(type: BusinessType): ListingFormCopy = when (type) {
 
             BusinessType.CAFE_RESTAURANT -> ListingFormCopy(
-                screenTitle = "Kafe chegirmasi",
-                screenSubtitle = "Taomga talaba chegirmasi",
-                screenTitleRegular = "Kafe e'loni",
-                screenSubtitleRegular = "Menyudagi taom e'loni",
-                businessSection = "Kafe va menyu bo'limi",
-                businessHint = "Kafe nomi: Chaykhana Navruz",
-                categoryHint = "Menyudagi bo'limni tanlang",
-                imagesSection = "Taom rasmlari",
-                imagesHint = "Birinchisi muqova bo'ladi",
-                aboutSection = "Taom haqida",
-                titleHint = "Taom nomi: Pepperoni pitsa",
-                descriptionHint = "Tarkibi, tayyorlash usuli...",
-                priceSection = "Menyudagi narx",
-                priceHint = "55000",
-                conditionsHint = "Shart: talaba ID bilan, 12:00–17:00",
-                detailsSection = "Taom tafsilotlari",
-                detailsHint = "Talaba nima olishini bilishi uchun",
-                hasOptions = true,
-                optionsSection = "Hajm va qo'shimchalar",
-                optionsHint = "Masalan: 30/35 sm, qo'shimcha pishloq",
-                optionGroupHint = "Guruh nomi: Hajmni tanlang",
-                optionItemHint = "Variant: 35 sm",
+                screenTitle = Res.string.discounts_copy_cafe_title,
+                screenSubtitle = Res.string.discounts_copy_cafe_subtitle,
+                screenTitleRegular = Res.string.discounts_copy_cafe_title_regular,
+                screenSubtitleRegular = Res.string.discounts_copy_cafe_subtitle_regular,
+                businessSection = Res.string.discounts_copy_cafe_business,
+                businessHint = Res.string.discounts_copy_cafe_business_hint,
+                categoryHint = Res.string.discounts_copy_cafe_category_hint,
+                imagesSection = Res.string.discounts_copy_cafe_images,
+                imagesHint = Res.string.discounts_copy_cafe_images_hint,
+                aboutSection = Res.string.discounts_copy_cafe_about,
+                titleHint = Res.string.discounts_copy_cafe_title_hint,
+                descriptionHint = Res.string.discounts_copy_cafe_description_hint,
             )
 
             BusinessType.GAME_CLUB -> ListingFormCopy(
-                screenTitle = "Game Club chegirmasi",
-                screenSubtitle = "O'yin sessiyasiga talaba chegirmasi",
-                screenTitleRegular = "Game Club e'loni",
-                screenSubtitleRegular = "O'yin sessiyasi e'loni",
-                businessSection = "Klub va qurilma",
-                businessHint = "Klub nomi: CyberZone",
-                categoryHint = "Qaysi qurilma yoki o'yin turi",
-                imagesSection = "Zal rasmlari",
-                imagesHint = "Zal, qurilmalar, o'yin joyi",
-                aboutSection = "Sessiya haqida",
-                titleHint = "Masalan: PS5 — 1 soat o'yin",
-                descriptionHint = "Zal sharoiti, qulayliklar...",
-                priceSection = "Bir soatlik narx",
-                priceHint = "25000",
-                conditionsHint = "Shart: talaba ID bilan, dush–juma 10:00–17:00",
-                detailsSection = "Zal va qurilma ma'lumotlari",
-                detailsHint = "Talaba nimaga o'tirishini bilsin",
-                hasOptions = true,
-                optionsSection = "Zal turi va qo'shimchalar",
-                optionsHint = "Masalan: Standart / VIP, qo'shimcha joystik",
-                optionGroupHint = "Guruh nomi: Zal turini tanlang",
-                optionItemHint = "Variant: VIP zal",
+                screenTitle = Res.string.discounts_copy_game_title,
+                screenSubtitle = Res.string.discounts_copy_game_subtitle,
+                screenTitleRegular = Res.string.discounts_copy_game_title_regular,
+                screenSubtitleRegular = Res.string.discounts_copy_game_subtitle_regular,
+                businessSection = Res.string.discounts_copy_game_business,
+                businessHint = Res.string.discounts_copy_game_business_hint,
+                categoryHint = Res.string.discounts_copy_game_category_hint,
+                imagesSection = Res.string.discounts_copy_game_images,
+                imagesHint = Res.string.discounts_copy_game_images_hint,
+                aboutSection = Res.string.discounts_copy_game_about,
+                titleHint = Res.string.discounts_copy_game_title_hint,
+                descriptionHint = Res.string.discounts_copy_game_description_hint,
             )
 
-
             BusinessType.CLOTHING -> ListingFormCopy(
-                screenTitle = "Kiyim chegirmasi",
-                screenSubtitle = "Kiyimga talaba chegirmasi",
-                screenTitleRegular = "Kiyim e'loni",
-                screenSubtitleRegular = "Kiyim mahsuloti e'loni",
-                businessSection = "Do'kon va bo'lim",
-                businessHint = "Do'kon nomi: Zara",
-                categoryHint = "Kiyim bo'limini tanlang",
-                imagesSection = "Kiyim rasmlari",
-                imagesHint = "Old va orqa ko'rinishi",
-                aboutSection = "Kiyim haqida",
-                titleHint = "Mahsulot nomi: Oversize futbolka",
-                descriptionHint = "Material, o'lcham jadvali...",
-                priceSection = "Do'kondagi narx",
-                priceHint = "199000",
-                conditionsHint = "Shart: talaba ID bilan, chegirma boshqa aksiyalar bilan qo'shilmaydi",
-                detailsSection = "Kiyim tafsilotlari",
-                detailsHint = "Brend, material, mavsum",
-                hasOptions = true,
-                optionsSection = "O'lcham va rang",
-                optionsHint = "Talaba tanlaydigan variantlar",
-                optionGroupHint = "Guruh nomi: O'lchamni tanlang",
-                optionItemHint = "Variant: M",
+                screenTitle = Res.string.discounts_copy_cloth_title,
+                screenSubtitle = Res.string.discounts_copy_cloth_subtitle,
+                screenTitleRegular = Res.string.discounts_copy_cloth_title_regular,
+                screenSubtitleRegular = Res.string.discounts_copy_cloth_subtitle_regular,
+                businessSection = Res.string.discounts_copy_cloth_business,
+                businessHint = Res.string.discounts_copy_cloth_business_hint,
+                categoryHint = Res.string.discounts_copy_cloth_category_hint,
+                imagesSection = Res.string.discounts_copy_cloth_images,
+                imagesHint = Res.string.discounts_copy_cloth_images_hint,
+                aboutSection = Res.string.discounts_copy_cloth_about,
+                titleHint = Res.string.discounts_copy_cloth_title_hint,
+                descriptionHint = Res.string.discounts_copy_cloth_description_hint,
             )
 
             BusinessType.EDUCATION_CENTER -> ListingFormCopy(
-                screenTitle = "Kurs chegirmasi",
-                screenSubtitle = "O'quv kursiga talaba chegirmasi",
-                screenTitleRegular = "Kurs e'loni",
-                screenSubtitleRegular = "O'quv kursi e'loni",
-                businessSection = "Markaz va yo'nalish",
-                businessHint = "Markaz nomi: PDP Academy",
-                categoryHint = "Kurs yo'nalishini tanlang",
-                imagesSection = "Markaz rasmlari",
-                imagesHint = "Sinf xonasi, o'quvchilar",
-                aboutSection = "Kurs haqida",
-                titleHint = "Kurs nomi: IELTS 6.5+ intensiv",
-                descriptionHint = "Dastur, natija, o'qituvchi haqida...",
-                priceSection = "Oylik to'lov",
-                priceHint = "500000",
-                conditionsHint = "Shart: faqat yangi o'quvchilar uchun",
-                detailsSection = "Kurs tafsilotlari",
-                detailsHint = "Davomiylik, format, daraja",
-                hasOptions = false,
-                optionsSection = "",
-                optionsHint = "",
-                optionGroupHint = "",
-                optionItemHint = "",
+                screenTitle = Res.string.discounts_copy_edu_title,
+                screenSubtitle = Res.string.discounts_copy_edu_subtitle,
+                screenTitleRegular = Res.string.discounts_copy_edu_title_regular,
+                screenSubtitleRegular = Res.string.discounts_copy_edu_subtitle_regular,
+                businessSection = Res.string.discounts_copy_edu_business,
+                businessHint = Res.string.discounts_copy_edu_business_hint,
+                categoryHint = Res.string.discounts_copy_edu_category_hint,
+                imagesSection = Res.string.discounts_copy_edu_images,
+                imagesHint = Res.string.discounts_copy_edu_images_hint,
+                aboutSection = Res.string.discounts_copy_edu_about,
+                titleHint = Res.string.discounts_copy_edu_title_hint,
+                descriptionHint = Res.string.discounts_copy_edu_description_hint,
             )
 
             BusinessType.ENTERTAINMENT -> ListingFormCopy(
-                screenTitle = "Ko'ngilochar chegirma",
-                screenSubtitle = "Chiptaga talaba chegirmasi",
-                screenTitleRegular = "Ko'ngilochar e'lon",
-                screenSubtitleRegular = "Chipta va seans e'loni",
-                businessSection = "Muassasa va turi",
-                businessHint = "Nomi: Cinema Park",
-                categoryHint = "Tadbir turini tanlang",
-                imagesSection = "Tadbir rasmlari",
-                imagesHint = "Afisha yoki zal rasmi",
-                aboutSection = "Tadbir haqida",
-                titleHint = "Nomi: Dune — IMAX seansi",
-                descriptionHint = "Seans, zal, qo'shimcha ma'lumot...",
-                priceSection = "Chipta narxi",
-                priceHint = "60000",
-                conditionsHint = "Shart: dush–payshanba seanslarida",
-                detailsSection = "Seans tafsilotlari",
-                detailsHint = "Format, til, yosh chegarasi",
-                hasOptions = false,
-                optionsSection = "",
-                optionsHint = "",
-                optionGroupHint = "",
-                optionItemHint = "",
+                screenTitle = Res.string.discounts_copy_ent_title,
+                screenSubtitle = Res.string.discounts_copy_ent_subtitle,
+                screenTitleRegular = Res.string.discounts_copy_ent_title_regular,
+                screenSubtitleRegular = Res.string.discounts_copy_ent_subtitle_regular,
+                businessSection = Res.string.discounts_copy_ent_business,
+                businessHint = Res.string.discounts_copy_ent_business_hint,
+                categoryHint = Res.string.discounts_copy_ent_category_hint,
+                imagesSection = Res.string.discounts_copy_ent_images,
+                imagesHint = Res.string.discounts_copy_ent_images_hint,
+                aboutSection = Res.string.discounts_copy_ent_about,
+                titleHint = Res.string.discounts_copy_ent_title_hint,
+                descriptionHint = Res.string.discounts_copy_ent_description_hint,
             )
 
-
             BusinessType.BARBERSHOP -> ListingFormCopy(
-                screenTitle = "Sartaroshxona chegirmasi",
-                screenSubtitle = "Xizmatga talaba chegirmasi",
-                screenTitleRegular = "Sartaroshxona e'loni",
-                screenSubtitleRegular = "Xizmat e'loni",
-                businessSection = "Sartaroshxona va bo'lim",
-                businessHint = "Nomi: Barber House",
-                categoryHint = "Xizmat turini tanlang",
-                imagesSection = "Ish namunalari",
-                imagesHint = "Soch turmagi / ish natijasi rasmi",
-                aboutSection = "Xizmat haqida",
-                titleHint = "Xizmat: Erkaklar soch olish + soqol",
-                descriptionHint = "Usta, davomiyligi, qo'shimcha xizmat...",
-                priceSection = "Xizmat narxi",
-                priceHint = "50000",
-                conditionsHint = "Shart: dush–juma kunlari, talaba ID bilan",
-                detailsSection = "Xizmat tafsilotlari",
-                detailsHint = "Usta darajasi, kimlar uchun, davomiyligi",
-                hasOptions = true,
-                optionsSection = "Qo'shimcha xizmatlar",
-                optionsHint = "Talaba tanlaydigan qo'shimchalar",
-                optionGroupHint = "Guruh nomi: Qo'shimcha xizmat",
-                optionItemHint = "Variant: Soch yuvish",
+                screenTitle = Res.string.discounts_copy_barber_title,
+                screenSubtitle = Res.string.discounts_copy_barber_subtitle,
+                screenTitleRegular = Res.string.discounts_copy_barber_title_regular,
+                screenSubtitleRegular = Res.string.discounts_copy_barber_subtitle_regular,
+                businessSection = Res.string.discounts_copy_barber_business,
+                businessHint = Res.string.discounts_copy_barber_business_hint,
+                categoryHint = Res.string.discounts_copy_barber_category_hint,
+                imagesSection = Res.string.discounts_copy_barber_images,
+                imagesHint = Res.string.discounts_copy_barber_images_hint,
+                aboutSection = Res.string.discounts_copy_barber_about,
+                titleHint = Res.string.discounts_copy_barber_title_hint,
+                descriptionHint = Res.string.discounts_copy_barber_description_hint,
             )
 
             BusinessType.BEAUTY_SALON -> ListingFormCopy(
-                screenTitle = "Go'zallik saloni chegirmasi",
-                screenSubtitle = "Xizmatga talaba chegirmasi",
-                screenTitleRegular = "Go'zallik saloni e'loni",
-                screenSubtitleRegular = "Xizmat e'loni",
-                businessSection = "Salon va bo'lim",
-                businessHint = "Nomi: Beauty Room",
-                categoryHint = "Xizmat turini tanlang",
-                imagesSection = "Ish namunalari",
-                imagesHint = "Xizmat natijasi rasmi",
-                aboutSection = "Xizmat haqida",
-                titleHint = "Xizmat: Makiyaj + soch turmagi",
-                descriptionHint = "Usta, davomiyligi, qo'shimcha xizmat...",
-                priceSection = "Xizmat narxi",
-                priceHint = "80000",
-                conditionsHint = "Shart: dush–juma kunlari, talaba ID bilan",
-                detailsSection = "Xizmat tafsilotlari",
-                detailsHint = "Usta, davomiyligi",
-                hasOptions = true,
-                optionsSection = "Qo'shimcha xizmatlar",
-                optionsHint = "Talaba tanlaydigan qo'shimchalar",
-                optionGroupHint = "Guruh nomi: Qo'shimcha xizmat",
-                optionItemHint = "Variant: Qosh terish",
+                screenTitle = Res.string.discounts_copy_beauty_title,
+                screenSubtitle = Res.string.discounts_copy_beauty_subtitle,
+                screenTitleRegular = Res.string.discounts_copy_beauty_title_regular,
+                screenSubtitleRegular = Res.string.discounts_copy_beauty_subtitle_regular,
+                businessSection = Res.string.discounts_copy_beauty_business,
+                businessHint = Res.string.discounts_copy_beauty_business_hint,
+                categoryHint = Res.string.discounts_copy_beauty_category_hint,
+                imagesSection = Res.string.discounts_copy_beauty_images,
+                imagesHint = Res.string.discounts_copy_beauty_images_hint,
+                aboutSection = Res.string.discounts_copy_beauty_about,
+                titleHint = Res.string.discounts_copy_beauty_title_hint,
+                descriptionHint = Res.string.discounts_copy_beauty_description_hint,
             )
         }
     }

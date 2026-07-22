@@ -27,15 +27,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
-import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,12 +40,30 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.core.domain.model.DiscountCategory
 import dev.core.domain.model.DiscountOffer
 import dev.core.domain.model.DiscountTag
-import dev.core.designsystem.components.AppFontFamily
-import dev.core.designsystem.components.AppIcons
-import dev.core.designsystem.components.GlassTextField
-import dev.core.designsystem.theme.AppPalette
-import dev.core.designsystem.theme.appPalette
+import dev.core.uikit.component.AppIcons
+import dev.core.uikit.component.BackButton
+import dev.core.uikit.component.GlassTextField
+import dev.core.uikit.component.SoftPill
+import dev.core.uikit.resources.Res
+import dev.core.uikit.resources.auth_bookmark
+import dev.core.uikit.resources.auth_copied
+import dev.core.uikit.resources.auth_copy
+import dev.core.uikit.resources.auth_discount_tag_promo
+import dev.core.uikit.resources.auth_discount_tag_student_id_short
+import dev.core.uikit.resources.auth_discounts_category_title
+import dev.core.uikit.resources.auth_discounts_offer_count
+import dev.core.uikit.resources.auth_discounts_search_placeholder
+import dev.core.uikit.resources.auth_discounts_subtitle
+import dev.core.uikit.resources.auth_discounts_title
+import dev.core.uikit.resources.common_back
+import dev.core.uikit.theme.AppPalette
+import dev.core.uikit.theme.AppRadius
+import dev.core.uikit.theme.AppSpacing
+import dev.core.uikit.theme.AppType
+import dev.core.uikit.theme.appPalette
 import dev.feature.discounts.presentation.NearbyDiscountsSection
+import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -81,12 +96,21 @@ private fun DiscountsGrid(
     palette: AppPalette,
     onOpen: (DiscountCategory) -> Unit,
 ) {
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp).padding(top = 54.dp)) {
+    Column(
+        Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+            .padding(horizontal = AppSpacing.lg).padding(top = 54.dp),
+    ) {
         // Talaba ko'rinishi — faqat chegirmalarni ko'rish. E'lon qo'yish biznesmen shell'ida.
         Column(Modifier.fillMaxWidth()) {
-            Text("Chegirmalar", style = TextStyle(fontFamily = AppFontFamily, fontSize = 24.sp, fontWeight = FontWeight.Black, color = palette.ink))
-            Spacer(Modifier.height(4.dp))
-            Text("Bo'limni tanlang — ichida takliflar ochiladi.", style = TextStyle(fontFamily = AppFontFamily, fontSize = 12.5f.sp, color = palette.inkMuted))
+            Text(
+                stringResource(Res.string.auth_discounts_title),
+                style = AppType.screenTitle.copy(letterSpacing = 0.sp, color = palette.ink),
+            )
+            Spacer(Modifier.height(AppSpacing.xs))
+            Text(
+                stringResource(Res.string.auth_discounts_subtitle),
+                style = AppType.link.copy(color = palette.inkMuted),
+            )
         }
         Spacer(Modifier.height(18.dp))
 
@@ -108,19 +132,34 @@ private fun DiscountsGrid(
 }
 
 @Composable
-private fun CategoryCard(category: DiscountCategory, palette: AppPalette, modifier: Modifier, onOpen: (DiscountCategory) -> Unit) {
+private fun CategoryCard(
+    category: DiscountCategory,
+    palette: AppPalette,
+    modifier: Modifier,
+    onOpen: (DiscountCategory) -> Unit,
+) {
+    // Aksent domendan keladi (har bir kategoriyaning o'z rangi) — palitra tokeni emas.
     val accent = Color(category.accent)
+    val shape = RoundedCornerShape(16.dp)
     Column(
-        modifier.clip(RoundedCornerShape(16.dp)).background(palette.glass).border(1.dp, palette.border, RoundedCornerShape(16.dp))
+        modifier.clip(shape).background(palette.glass).border(1.dp, palette.border, shape)
             .clickable { onOpen(category) }.padding(14.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Box(
             Modifier.size(46.dp).clip(RoundedCornerShape(13.dp)).background(accent.copy(alpha = 0.14f)),
             contentAlignment = Alignment.Center,
-        ) { Text(category.emoji, style = TextStyle(fontSize = 22.sp)) }
-        Text(category.name, style = TextStyle(fontFamily = AppFontFamily, fontSize = 13.5f.sp, fontWeight = FontWeight.ExtraBold, color = palette.ink), maxLines = 1, overflow = TextOverflow.Ellipsis)
-        Text("${category.offerCount} taklif", style = TextStyle(fontFamily = AppFontFamily, fontSize = 11.sp, color = palette.inkFaint))
+        ) { Text(category.emoji, style = AppType.screenTitle.copy(fontSize = 22.sp)) }
+        Text(
+            category.name,
+            style = AppType.label.copy(fontSize = 13.5f.sp, fontWeight = AppType.button.fontWeight, color = palette.ink),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        Text(
+            stringResource(Res.string.auth_discounts_offer_count, "${category.offerCount}"),
+            style = AppType.caption.copy(color = palette.inkFaint),
+        )
     }
 }
 
@@ -139,24 +178,31 @@ private fun CategoryOffers(
     onToggleSaved: (DiscountOffer, Boolean) -> Unit,
 ) {
     Column(Modifier.fillMaxSize()) {
-        Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 54.dp)) {
+        Column(Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg).padding(top = 54.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(11.dp)) {
-                Box(
-                    Modifier.size(40.dp).clip(RoundedCornerShape(12.dp)).background(palette.glass).border(1.dp, palette.border, RoundedCornerShape(12.dp))
-                        .clickable(onClick = onBack),
-                    contentAlignment = Alignment.Center,
-                ) { Icon(AppIcons.ArrowLeft, "Orqaga", tint = palette.ink, modifier = Modifier.size(18.dp)) }
-                Text("${category.emoji}  ${category.name} chegirmalari", style = TextStyle(fontFamily = AppFontFamily, fontSize = 17.sp, fontWeight = FontWeight.Black, color = palette.ink), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                BackButton(onBack, contentDescription = stringResource(Res.string.common_back), iconSize = 18.dp)
+                Text(
+                    stringResource(Res.string.auth_discounts_category_title, category.emoji, category.name),
+                    style = AppType.screenTitle.copy(fontSize = 17.sp, letterSpacing = 0.sp, color = palette.ink),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
             }
             Spacer(Modifier.height(14.dp))
-            GlassTextField(query, onQuery, "Restoran yoki taom qidiring", leading = AppIcons.Search, height = 46)
+            GlassTextField(
+                query,
+                onQuery,
+                stringResource(Res.string.auth_discounts_search_placeholder),
+                leading = AppIcons.Search,
+                height = 46.dp,
+            )
         }
 
         Spacer(Modifier.height(14.dp))
 
         LazyColumn(
             Modifier.fillMaxWidth().weight(1f),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 110.dp),
+            contentPadding = PaddingValues(start = AppSpacing.lg, end = AppSpacing.lg, bottom = 110.dp),
             verticalArrangement = Arrangement.spacedBy(11.dp),
         ) {
             items(offers, key = { it.id }) { offer ->
@@ -167,31 +213,53 @@ private fun CategoryOffers(
 }
 
 @Composable
-private fun OfferCard(offer: DiscountOffer, saved: Boolean, palette: AppPalette, onToggleSaved: (DiscountOffer, Boolean) -> Unit) {
+private fun OfferCard(
+    offer: DiscountOffer,
+    saved: Boolean,
+    palette: AppPalette,
+    onToggleSaved: (DiscountOffer, Boolean) -> Unit,
+) {
     val accent = Color(offer.bannerAccent)
     val clipboard = LocalClipboardManager.current
     var copied by remember(offer.id) { mutableStateOf(false) }
     LaunchedEffect(copied) { if (copied) { delay(1500); copied = false } }
+    val shape = AppRadius.card
     Column(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(palette.glass).border(1.dp, palette.border, RoundedCornerShape(18.dp)),
+        Modifier.fillMaxWidth().clip(shape).background(palette.glass).border(1.dp, palette.border, shape),
     ) {
         // Rangli banner
-        Box(Modifier.fillMaxWidth().height(64.dp).background(accent.copy(alpha = 0.16f)).padding(horizontal = 14.dp), contentAlignment = Alignment.CenterStart) {
-            Text(offer.emoji, style = TextStyle(fontSize = 30.sp))
+        Box(
+            Modifier.fillMaxWidth().height(64.dp).background(accent.copy(alpha = 0.16f))
+                .padding(horizontal = 14.dp),
+            contentAlignment = Alignment.CenterStart,
+        ) {
+            Text(offer.emoji, style = AppType.screenTitle.copy(fontSize = 30.sp))
             Box(
-                Modifier.align(Alignment.CenterEnd).clip(RoundedCornerShape(10.dp)).background(accent).padding(horizontal = 11.dp, vertical = 6.dp),
+                Modifier.align(Alignment.CenterEnd).clip(AppRadius.sm).background(accent)
+                    .padding(horizontal = 11.dp, vertical = 6.dp),
                 contentAlignment = Alignment.Center,
             ) {
-                Text("−${offer.discountPercent}%", style = TextStyle(fontFamily = AppFontFamily, fontSize = 15.sp, fontWeight = FontWeight.Black, color = Color.White))
+                // To'ldirilgan aksent USTIDAGI matn — doim oq.
+                Text(
+                    "−${offer.discountPercent}%",
+                    style = AppType.screenTitle.copy(fontSize = 15.sp, letterSpacing = 0.sp, color = palette.onPrimary),
+                )
             }
         }
-        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("${offer.merchant} — ${offer.title}", style = TextStyle(fontFamily = AppFontFamily, fontSize = 14.sp, fontWeight = FontWeight.ExtraBold, color = palette.ink), maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
+            Text(
+                "${offer.merchant} — ${offer.title}",
+                style = AppType.body.copy(fontWeight = AppType.button.fontWeight, color = palette.ink),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                val tagText = if (offer.tag == DiscountTag.STUDENT_ID) "Talaba ID" else "Promokod"
-                Box(Modifier.clip(RoundedCornerShape(8.dp)).background(palette.primary.copy(alpha = 0.10f)).padding(horizontal = 9.dp, vertical = 4.dp)) {
-                    Text(tagText, style = TextStyle(fontFamily = AppFontFamily, fontSize = 10.5f.sp, fontWeight = FontWeight.Bold, color = palette.primary))
+                val tagText = if (offer.tag == DiscountTag.STUDENT_ID) {
+                    stringResource(Res.string.auth_discount_tag_student_id_short)
+                } else {
+                    stringResource(Res.string.auth_discount_tag_promo)
                 }
+                SoftPill(tagText, backgroundAlpha = 0.10f)
                 val promo = offer.promoCode
                 if (promo != null) {
                     Spacer(Modifier.size(6.dp))
@@ -199,27 +267,39 @@ private fun OfferCard(offer: DiscountOffer, saved: Boolean, palette: AppPalette,
                         Modifier.clip(RoundedCornerShape(8.dp))
                             .background(palette.primary.copy(alpha = 0.08f))
                             .clickable { clipboard.setText(AnnotatedString(promo)); copied = true }
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                            .padding(horizontal = AppSpacing.sm, vertical = AppSpacing.xs),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(AppSpacing.xs),
                     ) {
                         Text(
-                            if (copied) "Nusxalandi ✓" else promo,
-                            style = TextStyle(fontFamily = AppFontFamily, fontSize = 10.5f.sp, fontWeight = FontWeight.ExtraBold, color = palette.primary),
+                            if (copied) stringResource(Res.string.auth_copied) else promo,
+                            style = AppType.caption.copy(
+                                fontSize = 10.5f.sp,
+                                fontWeight = AppType.button.fontWeight,
+                                color = palette.primary,
+                            ),
                         )
-                        if (!copied) Icon(AppIcons.FileText, "Nusxalash", tint = palette.primary, modifier = Modifier.size(11.dp))
+                        if (!copied) {
+                            Icon(
+                                AppIcons.FileText,
+                                stringResource(Res.string.auth_copy),
+                                tint = palette.primary,
+                                modifier = Modifier.size(11.dp),
+                            )
+                        }
                     }
                 }
                 Spacer(Modifier.weight(1f))
                 Icon(
-                    AppIcons.Bookmark, "Saqlash",
+                    AppIcons.Bookmark,
+                    stringResource(Res.string.auth_bookmark),
                     tint = if (saved) palette.primary else palette.inkFaint,
                     modifier = Modifier.size(20.dp).clickable { onToggleSaved(offer, saved) },
                 )
             }
             val meta = listOfNotNull(offer.location?.let { "📍 $it" }, offer.expiry).joinToString(" · ")
             if (meta.isNotBlank()) {
-                Text(meta, style = TextStyle(fontFamily = AppFontFamily, fontSize = 11.sp, color = palette.inkFaint))
+                Text(meta, style = AppType.caption.copy(color = palette.inkFaint))
             }
         }
     }

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ElonUz — business screens (`:dev:feature:business`) copy. ENGLISH translation.
+  The key set must match values/strings_business.xml.
+-->
+<resources>
+
+    <!-- ============ Business shell (BusinessShell) ============ -->
+    <string name="business_center_label">BUSINESS CENTER</string>
+    <string name="business_my_listings_title">My listings</string>
+    <string name="business_profile_action">Profile</string>
+    <string name="business_new_listing">Listing</string>
+
+    <!-- ============ Business profile (BusinessAccountScreen) ============ -->
+    <string name="business_account_title">Business profile</string>
+    <string name="business_type_default">Business</string>
+    <string name="business_verified">Verified</string>
+    <string name="business_rating_new">New business</string>
+    <string name="business_stat_active">Active listings</string>
+    <string name="business_stat_redemptions">Redemptions</string>
+    <string name="business_stat_views">Views</string>
+    <string name="business_info_type">Business type</string>
+    <string name="business_info_email">Email</string>
+    <string name="business_info_hours">Working hours</string>
+    <string name="business_info_hours_unset">Not set</string>
+    <string name="business_menu_listings">My listings</string>
+    <string name="business_menu_settings">Settings</string>
+
+    <!-- ============ Edit profile (BusinessEditScreen) ============ -->
+    <string name="business_edit_title">Edit profile</string>
+    <string name="business_field_name">Business name</string>
+    <string name="business_field_name_hint">For example: Cafe Aurora</string>
+    <string name="business_field_phone">Phone</string>
+    <string name="business_field_phone_hint">+998 90 123 45 67</string>
+    <string name="business_field_email">Email (gmail)</string>
+    <string name="business_field_email_hint">biznes@gmail.com</string>
+
+    <!-- ============ Business sign-in (BusinessWelcomeScreen) ============ -->
+    <string name="business_welcome_title">Business sign-in</string>
+    <string name="business_welcome_subtitle">Sign in as a business owner — post and manage your discount offers.</string>
+    <string name="business_welcome_phone_label">Phone number</string>
+    <string name="business_welcome_phone_hint">90 123 45 67</string>
+    <string name="business_welcome_phone_prefix">🇺🇿 +998</string>
+    <string name="business_welcome_get_code">Get code</string>
+    <string name="business_welcome_google">Sign in with Google</string>
+    <string name="business_welcome_email">Sign in with email</string>
+    <string name="business_welcome_student_hint">Want to sign in as a student? Go back and choose \"Student\".</string>
+    <string name="business_welcome_dev_login">🔧 Dev sign-in (test)</string>
+
+    <!-- ============ Business types (BusinessTypes) ============ -->
+    <string name="business_type_cafe">Cafes and restaurants</string>
+    <string name="business_type_grocery">Groceries</string>
+    <string name="business_type_clothing">Clothing</string>
+    <string name="business_type_game_club">Game club</string>
+    <string name="business_type_education">Learning centers</string>
+    <string name="business_type_cinema">Cinema and entertainment</string>
+    <string name="business_type_electronics">Electronics</string>
+    <string name="business_type_barber">Barbershop</string>
+    <string name="business_type_beauty">Beauty salon</string>
+    <string name="business_type_gym">Gym</string>
+    <string name="business_type_auto">Auto service</string>
+    <string name="business_type_pharmacy">Pharmacy</string>
+    <string name="business_type_flowers">Flower shop</string>
+    <string name="business_type_other">Other</string>
+
+</resources>

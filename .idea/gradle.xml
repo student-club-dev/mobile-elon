@@ -28,10 +28,10 @@
             <option value="$PROJECT_DIR$/dev/core/common" />
             <option value="$PROJECT_DIR$/dev/core/data" />
             <option value="$PROJECT_DIR$/dev/core/database" />
-            <option value="$PROJECT_DIR$/dev/core/designsystem" />
             <option value="$PROJECT_DIR$/dev/core/di" />
             <option value="$PROJECT_DIR$/dev/core/domain" />
             <option value="$PROJECT_DIR$/dev/core/network" />
+            <option value="$PROJECT_DIR$/dev/core/uikit" />
             <option value="$PROJECT_DIR$/dev/feature" />
             <option value="$PROJECT_DIR$/dev/feature/auth" />
             <option value="$PROJECT_DIR$/dev/feature/business" />

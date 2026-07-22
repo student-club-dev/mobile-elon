@@ -52,7 +52,7 @@ kotlin {
 dependencies {
     implementation(projects.dev.shared)
     implementation(projects.dev.core.di)
-    implementation(projects.dev.core.designsystem)
+    implementation(projects.dev.core.uikit)
     // OkHttpInterceptors (Chucker'ni ro'yxatga qo'shish uchun) shu modulда.
     implementation(projects.dev.core.network)
 

@@ -1,4 +1,4 @@
-// Presentation qatlami — `sc.module-ui` Compose, designsystem, Lifecycle/ViewModel, Koin'ni
+// Presentation qatlami — `sc.module-ui` Compose, uikit, Lifecycle/ViewModel, Koin'ni
 // beradi. Bu yerda ekranga xos bog'liqliklar (o'z domeni/data, network, database, Coil).
 plugins {
     id("sc.module-ui")

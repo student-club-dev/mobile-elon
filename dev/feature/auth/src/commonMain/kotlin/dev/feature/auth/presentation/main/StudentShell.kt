@@ -21,10 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavType
@@ -33,18 +30,31 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import dev.core.designsystem.components.AppFontFamily
-import dev.core.designsystem.components.AppIcons
-import dev.core.designsystem.theme.AppPalette
-import dev.core.designsystem.theme.appPalette
+import dev.core.uikit.component.AppIcons
+import dev.core.uikit.resources.Res
+import dev.core.uikit.resources.auth_post_ad
+import dev.core.uikit.resources.auth_post_ad_short
+import dev.core.uikit.resources.auth_tab_discounts
+import dev.core.uikit.resources.auth_tab_home
+import dev.core.uikit.resources.auth_tab_jobs
+import dev.core.uikit.resources.auth_tab_students
+import dev.core.uikit.theme.AppPalette
+import dev.core.uikit.theme.AppRadius
+import dev.core.uikit.theme.AppSize
+import dev.core.uikit.theme.AppSpacing
+import dev.core.uikit.theme.AppType
+import dev.core.uikit.theme.appPalette
 import dev.feature.profile.presentation.EditProfileScreen
 import dev.feature.profile.presentation.ProfileScreen
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 
-private enum class StudentTab(val route: String, val label: String, val icon: ImageVector) {
-    HOME("home", "Home", AppIcons.Home),
-    DISCOUNTS("discounts", "Chegirma", AppIcons.Tag),
-    JOBS("jobs", "Ishlar", AppIcons.Briefcase),
-    STUDENTS("students", "Student", AppIcons.Users),
+/** Pastki navigatsiya bo'limlari. Yorliq matni resursdan olinadi. */
+private enum class StudentTab(val route: String, val label: StringResource, val icon: ImageVector) {
+    HOME("home", Res.string.auth_tab_home, AppIcons.Home),
+    DISCOUNTS("discounts", Res.string.auth_tab_discounts, AppIcons.Tag),
+    JOBS("jobs", Res.string.auth_tab_jobs, AppIcons.Briefcase),
+    STUDENTS("students", Res.string.auth_tab_students, AppIcons.Users),
 }
 
 private const val POST_AD = "post_ad"
@@ -59,7 +69,7 @@ private val tabRoutes = StudentTab.entries.map { it.route }.toSet()
 /**
  * Talaba karkasi — pastki navigatsiya (Home / Chegirma / Ishlar / Student) + markaziy "Elon" FAB
  * (talaba e'lonlari: ish, sotuv, xizmat). Biznesmen chegirma e'lonlari bu yerda YO'Q — ular
- * [BusinessShell] da.
+ * BusinessShell da.
  */
 @Composable
 fun StudentShell(onLoggedOut: () -> Unit) {
@@ -143,13 +153,12 @@ private fun BottomBar(
     palette: AppPalette,
     modifier: Modifier = Modifier,
 ) {
-    val barColor = if (palette.dark) Color(0xFF1A1630) else Color.White
     Box(modifier.fillMaxWidth().height(88.dp)) {
         Row(
             Modifier.align(Alignment.BottomCenter).fillMaxWidth()
                 .height(66.dp)
-                .background(barColor, RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp))
-                .padding(horizontal = 8.dp),
+                .background(palette.barSurface, RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp))
+                .padding(horizontal = AppSpacing.sm),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             NavBarItem(StudentTab.HOME, current, onSelect, palette, Modifier.weight(1f))
@@ -170,10 +179,19 @@ private fun BottomBar(
                     .clickable(onClick = onFab),
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(AppIcons.Plus, "Elon berish", tint = Color.White, modifier = Modifier.size(26.dp))
+                // Gradient USTIDAGI ikonka — har ikkala rejimda oq.
+                Icon(
+                    AppIcons.Plus,
+                    stringResource(Res.string.auth_post_ad),
+                    tint = palette.onPrimary,
+                    modifier = Modifier.size(26.dp),
+                )
             }
             Spacer(Modifier.height(3.dp))
-            Text("Elon", style = TextStyle(fontFamily = AppFontFamily, fontSize = 9.sp, fontWeight = FontWeight.Bold, color = palette.primary))
+            Text(
+                stringResource(Res.string.auth_post_ad_short),
+                style = AppType.navLabel.copy(fontSize = 9.sp, color = palette.primary),
+            )
         }
     }
 }
@@ -188,12 +206,20 @@ private fun NavBarItem(
 ) {
     val active = current == tab.route
     val tint = if (active) palette.primary else palette.inkFaint
+    val label = stringResource(tab.label)
     Column(
-        modifier.clip(RoundedCornerShape(12.dp)).clickable { onSelect(tab.route) }.padding(vertical = 6.dp),
+        modifier.clip(AppRadius.md).clickable { onSelect(tab.route) }.padding(vertical = 6.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(3.dp),
     ) {
-        Icon(tab.icon, tab.label, tint = tint, modifier = Modifier.size(21.dp))
-        Text(tab.label, style = TextStyle(fontFamily = AppFontFamily, fontSize = 9.sp, fontWeight = if (active) FontWeight.ExtraBold else FontWeight.Bold, color = tint))
+        Icon(tab.icon, label, tint = tint, modifier = Modifier.size(AppSize.iconLg))
+        Text(
+            label,
+            style = AppType.navLabel.copy(
+                fontSize = 9.sp,
+                fontWeight = if (active) AppType.button.fontWeight else AppType.label.fontWeight,
+                color = tint,
+            ),
+        )
     }
 }

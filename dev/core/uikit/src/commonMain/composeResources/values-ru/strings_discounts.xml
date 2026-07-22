@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ElonUz — раздел «Скидки / Бизнес». РУССКИЙ перевод.
+  Ключи полностью совпадают с values/strings_discounts.xml.
+-->
+<resources>
+
+    <!-- ============ Мои объявления ============ -->
+    <string name="discounts_my_listings_title">Мои скидки</string>
+    <string name="discounts_listings_count">объявлений: %1$s</string>
+    <string name="discounts_create_cd">Добавить объявление</string>
+    <string name="discounts_offline">Нет интернета — офлайн-режим</string>
+    <string name="discounts_empty_discount_title">Скидок пока нет</string>
+    <string name="discounts_empty_discount_message">Разместите первую скидку — студенты увидят её в разделе «Скидки».</string>
+    <string name="discounts_empty_listing_title">Объявлений пока нет</string>
+    <string name="discounts_empty_listing_message">Разместите первое объявление — покажите студентам свой товар или услугу.</string>
+    <string name="discounts_add_discount">Добавить скидку</string>
+    <string name="discounts_add_listing">Добавить объявление</string>
+    <string name="discounts_price_sum">%1$s сум</string>
+    <string name="discounts_sum_suffix">сум</string>
+    <string name="discounts_branch_location">📍 %1$s</string>
+    <string name="discounts_branch_extra">  +%1$s филиал</string>
+    <string name="discounts_action_pause">Приостановить</string>
+    <string name="discounts_action_resume">Возобновить</string>
+
+    <!-- ============ Карта — выбор места ============ -->
+    <string name="discounts_map_branch_title">Место филиала</string>
+    <string name="discounts_map_business_title">Место бизнеса</string>
+    <string name="discounts_map_hint">Двигайте карту — метка укажет место</string>
+    <string name="discounts_map_search_hint">Поиск: Mega Planet, улица Амира Темура...</string>
+    <string name="discounts_searching">Идёт поиск...</string>
+    <string name="discounts_map_my_location">Моё местоположение</string>
+    <string name="discounts_map_confirm">Выбрать это место</string>
+    <string name="discounts_resolving_address">Определяем адрес...</string>
+
+    <!-- ============ Филиалы ============ -->
+    <string name="discounts_branches_title">Филиалы</string>
+    <string name="discounts_branches_subtitle">Студенту показывается ближайший — с расстоянием</string>
+    <string name="discounts_branch_remove">Удалить филиал</string>
+    <string name="discounts_branch_name_hint">Название филиала (необязательно): Чиланзарский</string>
+    <string name="discounts_branch_pick_first">Отметить филиал на карте</string>
+    <string name="discounts_branch_pick_more">Ещё один филиал</string>
+
+    <!-- ============ Форма объявления ============ -->
+    <string name="discounts_edit_listing_title">Редактировать объявление</string>
+    <string name="discounts_form_errors">Не заполнено полей: %1$s — они отмечены красным выше.</string>
+    <string name="discounts_draft">Черновик</string>
+    <string name="discounts_submitting">Отправляем...</string>
+    <string name="discounts_publish">Опубликовать</string>
+    <string name="discounts_image">Фото</string>
+    <string name="discounts_image_uploading">...</string>
+
+    <string name="discounts_mode_section">Тип объявления</string>
+    <string name="discounts_mode_subtitle">Со скидкой или обычное</string>
+    <string name="discounts_mode_discount">Объявление со скидкой</string>
+    <string name="discounts_mode_regular">Обычное объявление</string>
+
+    <string name="discounts_gender_section">Для кого одежда</string>
+    <string name="discounts_gender_subtitle">Выберите — категории подстроятся</string>
+    <string name="discounts_gender_male">Мужская</string>
+    <string name="discounts_gender_female">Женская</string>
+
+    <string name="discounts_category_section">Раздел</string>
+    <string name="discounts_category_custom_hint">На что распространяется?</string>
+
+    <string name="discounts_business_section_subtitle">Под этим названием студент увидит объявление</string>
+
+    <string name="discounts_attributes_section">Характеристики</string>
+    <string name="discounts_attributes_subtitle">Данные для выбранного раздела</string>
+    <string name="discounts_attribute_label">%1$s (%2$s)</string>
+    <string name="discounts_number_hint">0</string>
+    <string name="discounts_yes">Да</string>
+    <string name="discounts_no">Нет</string>
+
+    <string name="discounts_images_subtitle">%1$s · максимум %2$s шт.</string>
+    <string name="discounts_about_subtitle">Опишите детали свободным текстом — отдельные поля не нужны</string>
+
+    <string name="discounts_price_section">Цена</string>
+    <string name="discounts_price_subtitle_discount">Старая и новая (со скидкой) цена</string>
+    <string name="discounts_price_subtitle_regular">Цена объявления</string>
+    <string name="discounts_price_label">Цена</string>
+    <string name="discounts_price_old_label">Старая цена</string>
+    <string name="discounts_price_old_hint">Например: 50 000</string>
+    <string name="discounts_price_new_label">Новая цена (со скидкой)</string>
+    <string name="discounts_price_new_hint">Например: 35 000</string>
+    <string name="discounts_student_pays">Студент заплатит: %1$s сум</string>
+    <string name="discounts_percent_off">-%1$s%</string>
+
+    <string name="discounts_contact_subtitle">Студент позвонит на этот номер</string>
+    <string name="discounts_contact_hint">+998 90 123 45 67</string>
+
+    <string name="discounts_redemption_section">Как студент получит скидку</string>
+    <string name="discounts_promo_hint">NAVRUZ20</string>
+
+    <string name="discounts_validity_section">Срок действия</string>
+    <string name="discounts_validity_subtitle">%1$s дней начиная с сегодняшнего дня</string>
+    <string name="discounts_days">%1$s дней</string>
+
+    <!-- ============ Мои бизнесы ============ -->
+    <string name="discounts_business_hub">БИЗНЕС-ЦЕНТР</string>
+    <string name="discounts_my_businesses">Мои бизнесы</string>
+    <string name="discounts_profile">Профиль</string>
+    <string name="discounts_business">Бизнес</string>
+    <string name="discounts_business_delete_title">Удалить бизнес</string>
+    <string name="discounts_business_delete_confirm">Удалить \"%1$s\"? Это действие нельзя отменить.</string>
+    <string name="discounts_business_empty_title">Бизнесов пока нет</string>
+    <string name="discounts_business_empty_message">Добавьте первый бизнес — потом разместите к нему скидки и объявления.</string>
+    <string name="discounts_business_add">Добавить бизнес</string>
+    <string name="discounts_business_edit">Редактировать бизнес</string>
+    <string name="discounts_business_type_label">Тип бизнеса</string>
+    <string name="discounts_business_name_label">Название бизнеса</string>
+    <string name="discounts_business_name_hint">Например: Кафе Aurora</string>
+    <string name="discounts_phone_label">Номер телефона</string>
+    <string name="discounts_phone_hint">90 123 45 67</string>
+    <string name="discounts_phone_prefix">🇺🇿 +998</string>
+    <string name="discounts_location_label">Местоположение</string>
+    <string name="discounts_location_hint">Выберите место на карте</string>
+    <string name="discounts_saving">Сохраняем...</string>
+    <string name="discounts_business_save">Сохранить бизнес</string>
+
+    <!-- ============ Скидки рядом ============ -->
+    <string name="discounts_nearby_title">Скидки рядом</string>
+    <string name="discounts_location_off">геолокация выключена</string>
+
+    <!-- ============ Тексты формы — Кафе / Ресторан ============ -->
+    <string name="discounts_copy_cafe_title">Скидка в кафе</string>
+    <string name="discounts_copy_cafe_subtitle">Студенческая скидка на блюдо</string>
+    <string name="discounts_copy_cafe_title_regular">Объявление кафе</string>
+    <string name="discounts_copy_cafe_subtitle_regular">Объявление о блюде из меню</string>
+    <string name="discounts_copy_cafe_business">Кафе и раздел меню</string>
+    <string name="discounts_copy_cafe_business_hint">Название кафе: Chaykhana Navruz</string>
+    <string name="discounts_copy_cafe_category_hint">Выберите раздел меню</string>
+    <string name="discounts_copy_cafe_images">Фото блюда</string>
+    <string name="discounts_copy_cafe_images_hint">Первое станет обложкой</string>
+    <string name="discounts_copy_cafe_about">О блюде</string>
+    <string name="discounts_copy_cafe_title_hint">Название блюда: пицца «Пепперони»</string>
+    <string name="discounts_copy_cafe_description_hint">Состав, способ приготовления...</string>
+
+    <!-- ============ Тексты формы — Game Club ============ -->
+    <string name="discounts_copy_game_title">Скидка в Game Club</string>
+    <string name="discounts_copy_game_subtitle">Студенческая скидка на игровую сессию</string>
+    <string name="discounts_copy_game_title_regular">Объявление Game Club</string>
+    <string name="discounts_copy_game_subtitle_regular">Объявление об игровой сессии</string>
+    <string name="discounts_copy_game_business">Клуб и оборудование</string>
+    <string name="discounts_copy_game_business_hint">Название клуба: CyberZone</string>
+    <string name="discounts_copy_game_category_hint">Какое устройство или тип игры</string>
+    <string name="discounts_copy_game_images">Фото зала</string>
+    <string name="discounts_copy_game_images_hint">Зал, приставки, игровая зона</string>
+    <string name="discounts_copy_game_about">О сессии</string>
+    <string name="discounts_copy_game_title_hint">Например: PS5 — 1 час игры</string>
+    <string name="discounts_copy_game_description_hint">Условия зала, удобства...</string>
+
+    <!-- ============ Тексты формы — Одежда ============ -->
+    <string name="discounts_copy_cloth_title">Скидка на одежду</string>
+    <string name="discounts_copy_cloth_subtitle">Студенческая скидка на одежду</string>
+    <string name="discounts_copy_cloth_title_regular">Объявление об одежде</string>
+    <string name="discounts_copy_cloth_subtitle_regular">Объявление о товаре</string>
+    <string name="discounts_copy_cloth_business">Магазин и отдел</string>
+    <string name="discounts_copy_cloth_business_hint">Название магазина: Zara</string>
+    <string name="discounts_copy_cloth_category_hint">Выберите отдел одежды</string>
+    <string name="discounts_copy_cloth_images">Фото одежды</string>
+    <string name="discounts_copy_cloth_images_hint">Вид спереди и сзади</string>
+    <string name="discounts_copy_cloth_about">Об одежде</string>
+    <string name="discounts_copy_cloth_title_hint">Название товара: футболка оверсайз</string>
+    <string name="discounts_copy_cloth_description_hint">Материал, размерная сетка...</string>
+
+    <!-- ============ Тексты формы — Учебный центр ============ -->
+    <string name="discounts_copy_edu_title">Скидка на курс</string>
+    <string name="discounts_copy_edu_subtitle">Студенческая скидка на обучение</string>
+    <string name="discounts_copy_edu_title_regular">Объявление о курсе</string>
+    <string name="discounts_copy_edu_subtitle_regular">Объявление об учебном курсе</string>
+    <string name="discounts_copy_edu_business">Центр и направление</string>
+    <string name="discounts_copy_edu_business_hint">Название центра: PDP Academy</string>
+    <string name="discounts_copy_edu_category_hint">Выберите направление курса</string>
+    <string name="discounts_copy_edu_images">Фото центра</string>
+    <string name="discounts_copy_edu_images_hint">Аудитория, ученики</string>
+    <string name="discounts_copy_edu_about">О курсе</string>
+    <string name="discounts_copy_edu_title_hint">Название курса: IELTS 6.5+ интенсив</string>
+    <string name="discounts_copy_edu_description_hint">Программа, результат, преподаватель...</string>
+
+    <!-- ============ Тексты формы — Развлечения ============ -->
+    <string name="discounts_copy_ent_title">Скидка на развлечения</string>
+    <string name="discounts_copy_ent_subtitle">Студенческая скидка на билет</string>
+    <string name="discounts_copy_ent_title_regular">Объявление о развлечении</string>
+    <string name="discounts_copy_ent_subtitle_regular">Объявление о билете и сеансе</string>
+    <string name="discounts_copy_ent_business">Заведение и тип</string>
+    <string name="discounts_copy_ent_business_hint">Название: Cinema Park</string>
+    <string name="discounts_copy_ent_category_hint">Выберите тип мероприятия</string>
+    <string name="discounts_copy_ent_images">Фото мероприятия</string>
+    <string name="discounts_copy_ent_images_hint">Афиша или фото зала</string>
+    <string name="discounts_copy_ent_about">О мероприятии</string>
+    <string name="discounts_copy_ent_title_hint">Название: «Дюна» — сеанс IMAX</string>
+    <string name="discounts_copy_ent_description_hint">Сеанс, зал, дополнительная информация...</string>
+
+    <!-- ============ Тексты формы — Барбершоп ============ -->
+    <string name="discounts_copy_barber_title">Скидка в барбершопе</string>
+    <string name="discounts_copy_barber_subtitle">Студенческая скидка на услугу</string>
+    <string name="discounts_copy_barber_title_regular">Объявление барбершопа</string>
+    <string name="discounts_copy_barber_subtitle_regular">Объявление об услуге</string>
+    <string name="discounts_copy_barber_business">Барбершоп и раздел</string>
+    <string name="discounts_copy_barber_business_hint">Название: Barber House</string>
+    <string name="discounts_copy_barber_category_hint">Выберите тип услуги</string>
+    <string name="discounts_copy_barber_images">Примеры работ</string>
+    <string name="discounts_copy_barber_images_hint">Фото стрижки / результата работы</string>
+    <string name="discounts_copy_barber_about">Об услуге</string>
+    <string name="discounts_copy_barber_title_hint">Услуга: мужская стрижка + борода</string>
+    <string name="discounts_copy_barber_description_hint">Мастер, длительность, доп. услуги...</string>
+
+    <!-- ============ Тексты формы — Салон красоты ============ -->
+    <string name="discounts_copy_beauty_title">Скидка в салоне красоты</string>
+    <string name="discounts_copy_beauty_subtitle">Студенческая скидка на услугу</string>
+    <string name="discounts_copy_beauty_title_regular">Объявление салона красоты</string>
+    <string name="discounts_copy_beauty_subtitle_regular">Объявление об услуге</string>
+    <string name="discounts_copy_beauty_business">Салон и раздел</string>
+    <string name="discounts_copy_beauty_business_hint">Название: Beauty Room</string>
+    <string name="discounts_copy_beauty_category_hint">Выберите тип услуги</string>
+    <string name="discounts_copy_beauty_images">Примеры работ</string>
+    <string name="discounts_copy_beauty_images_hint">Фото результата услуги</string>
+    <string name="discounts_copy_beauty_about">Об услуге</string>
+    <string name="discounts_copy_beauty_title_hint">Услуга: макияж + укладка</string>
+    <string name="discounts_copy_beauty_description_hint">Мастер, длительность, доп. услуги...</string>
+
+</resources>

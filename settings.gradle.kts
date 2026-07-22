@@ -42,7 +42,7 @@ include(":dev:api-client")
 
 // Core modules
 include(":dev:core:common")
-include(":dev:core:designsystem")
+include(":dev:core:uikit")
 include(":dev:core:network")
 include(":dev:core:database")
 include(":dev:core:domain")

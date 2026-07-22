@@ -5,7 +5,7 @@ import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 // Feature PRESENTATION qatlami — kmp-library + Compose Multiplatform + umumiy UI to'plami
-// (designsystem, Compose, Lifecycle/ViewModel, Koin). Ekran/data bog'liqliklari modulda qoladi.
+// (uikit, Compose, Lifecycle/ViewModel, Koin). Ekran/data bog'liqliklari modulda qoladi.
 //
 // Compose kutubxonalari katalog orqali ulanadi (`compose.*` DSL emas), chunki Compose plugin'i
 // convention plugin orqali qo'llanganda `compose.*` DSL modul skriptida mavjud bo'lmaydi.
@@ -21,7 +21,7 @@ fun VersionCatalog.lib(alias: String) = findLibrary(alias).get()
 
 extensions.configure<KotlinMultiplatformExtension> {
     sourceSets.getByName("commonMain").dependencies {
-        implementation(project(":dev:core:designsystem"))
+        implementation(project(":dev:core:uikit"))
 
         implementation(libs.lib("compose-runtime"))
         implementation(libs.lib("compose-foundation"))

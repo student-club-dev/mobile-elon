@@ -1,15 +1,7 @@
 package dev.feature.auth.presentation.flow
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,21 +14,21 @@ import dev.feature.auth.biometric.BiometricOutcome
 import dev.feature.auth.biometric.rememberBiometricAuthenticator
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import dev.core.designsystem.components.AppFontFamily
-import dev.core.designsystem.components.AppIcons
-import dev.core.designsystem.components.AppScreenScaffold
-import dev.core.designsystem.components.AuthTab
-import dev.core.designsystem.components.LogoTile
+import dev.core.uikit.component.AppScreenScaffold
+import dev.core.uikit.component.AuthTab
+import dev.core.uikit.component.LogoTile
+import dev.core.uikit.resources.Res
+import dev.core.uikit.resources.auth_biometric_failed
+import dev.core.uikit.resources.auth_biometric_not_configured
+import dev.core.uikit.resources.auth_biometric_prompt_subtitle
+import dev.core.uikit.resources.auth_biometric_unavailable
+import dev.core.uikit.resources.auth_sign_in
+import dev.core.uikit.resources.common_cancel
 import dev.feature.auth.presentation.screens.EmailLoginScreen
 import dev.feature.auth.presentation.screens.ForgotPasswordScreen
 import dev.feature.auth.presentation.screens.OnboardingScreen
@@ -51,8 +43,8 @@ import dev.feature.business.BusinessShell
 import dev.feature.auth.presentation.main.SettingsScreen
 import dev.feature.auth.presentation.screens.SignUpScreen
 import dev.feature.auth.presentation.screens.WelcomeScreen
-import dev.core.designsystem.theme.appPalette
 import dev.feature.auth.social.rememberSocialAuthController
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 private object Route {
@@ -83,13 +75,13 @@ fun AuthNavHost(
     vm: AuthFlowViewModel = koinViewModel(),
 ) {
     // Rol-scoped oqim (Android'dagi StudentActivity/BusinessActivity) — rolni darrov o'rnatamiz,
-    // shunda ro'yxatdan o'tishда to'g'ri rol saqlanadi va rol tanlash ekrani o'tkazib yuboriladi.
+    // shunda ro'yxatdan o'tishda to'g'ri rol saqlanadi va rol tanlash ekrani o'tkazib yuboriladi.
     LaunchedEffect(flow) { if (flow != null) vm.onRoleChange(flow.role) }
 
     // Local keshdagi sessiyani tekshiramiz: kirgan bo'lsa to'g'ridan-to'g'ri HOME.
     val loggedIn by vm.loggedIn.collectAsStateWithLifecycle()
     if (loggedIn == null) {
-        BootSplash() // kesh o'qilmagунча qisqa splash
+        BootSplash() // kesh o'qilmaguncha qisqa splash
         return
     }
     val startDestination = when {
@@ -193,6 +185,14 @@ fun AuthNavHost(
         composable(Route.EMAIL) {
             val biometric = rememberBiometricAuthenticator()
             val bioScope = rememberCoroutineScope()
+            // Biometrika matnlari kompozitsiya doirasida o'qiladi — lambda ichida
+            // `stringResource` chaqirib bo'lmaydi (u @Composable emas).
+            val bioTitle = stringResource(Res.string.auth_sign_in)
+            val bioSubtitle = stringResource(Res.string.auth_biometric_prompt_subtitle)
+            val bioCancel = stringResource(Res.string.common_cancel)
+            val bioNotConfigured = stringResource(Res.string.auth_biometric_not_configured)
+            val bioFailed = stringResource(Res.string.auth_biometric_failed)
+            val bioUnavailable = stringResource(Res.string.auth_biometric_unavailable)
             EmailLoginScreen(
                 state = state, vm = vm,
                 onBack = { nav.popBackStack() },
@@ -201,13 +201,13 @@ fun AuthNavHost(
                 onForgot = { nav.navigate(Route.FORGOT) },
                 onBiometric = {
                     if (!biometric.canAuthenticate()) {
-                        vm.biometricError("Qurilmada biometrika sozlanmagan (Face ID / barmoq izi).")
+                        vm.biometricError(bioNotConfigured)
                     } else {
                         bioScope.launch {
-                            when (biometric.authenticate("Kirish", "Face ID bilan tasdiqlang", "Bekor qilish")) {
+                            when (biometric.authenticate(bioTitle, bioSubtitle, bioCancel)) {
                                 BiometricOutcome.SUCCESS -> vm.onBiometricAuthenticated()
-                                BiometricOutcome.FAILED -> vm.biometricError("Biometrika tanilmadi. Qayta urinib ko'ring.")
-                                BiometricOutcome.UNAVAILABLE -> vm.biometricError("Biometrika mavjud emas.")
+                                BiometricOutcome.FAILED -> vm.biometricError(bioFailed)
+                                BiometricOutcome.UNAVAILABLE -> vm.biometricError(bioUnavailable)
                                 BiometricOutcome.CANCELLED -> Unit
                             }
                         }
@@ -266,7 +266,7 @@ fun AuthNavHost(
         }
         composable(Route.HOME) {
             // Chiqish: Activity oqimida — ildiz router'ga qaytamiz (onExit); aks holda (iOS)
-            // oqimга mos login ekraniga qaytamiz (biznes -> biznes welcome, talaba -> welcome,
+            // oqimga mos login ekraniga qaytamiz (biznes -> biznes welcome, talaba -> welcome,
             // bo'linmagan -> rol tanlash).
             val loggedOut: () -> Unit = onExit ?: {
                 val dest = when (flow) {
@@ -299,7 +299,7 @@ fun AuthNavHost(
 private fun BootSplash() {
     AppScreenScaffold {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            LogoTile(size = 72, radius = 22, iconSize = 38)
+            LogoTile(size = 72.dp, radius = 22.dp, iconSize = 38.dp)
         }
     }
 }

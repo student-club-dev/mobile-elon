@@ -32,23 +32,52 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.core.domain.model.Ad
-import dev.core.designsystem.components.AppFontFamily
-import dev.core.designsystem.components.AppIcons
-import dev.core.designsystem.theme.AppPalette
-import dev.core.designsystem.theme.appPalette
+import dev.core.uikit.component.AppIcons
+import dev.core.uikit.component.GlassRow
+import dev.core.uikit.component.GradientHeader
+import dev.core.uikit.component.IconTile
+import dev.core.uikit.resources.Res
+import dev.core.uikit.resources.common_back
+import dev.core.uikit.resources.common_cancel
+import dev.core.uikit.resources.common_delete
+import dev.core.uikit.resources.common_edit
+import dev.core.uikit.resources.common_logout
+import dev.core.uikit.resources.profile_ad_delete_confirm
+import dev.core.uikit.resources.profile_ad_delete_title
+import dev.core.uikit.resources.profile_application_status_interview
+import dev.core.uikit.resources.profile_application_status_rejected
+import dev.core.uikit.resources.profile_application_status_sent
+import dev.core.uikit.resources.profile_application_status_viewed
+import dev.core.uikit.resources.profile_edit_action
+import dev.core.uikit.resources.profile_my_business_subtitle
+import dev.core.uikit.resources.profile_my_business_title
+import dev.core.uikit.resources.profile_section_applications
+import dev.core.uikit.resources.profile_section_my_ads
+import dev.core.uikit.resources.profile_section_saved
+import dev.core.uikit.resources.profile_settings
+import dev.core.uikit.resources.profile_title
+import dev.core.uikit.theme.AppPalette
+import dev.core.uikit.theme.AppRadius
+import dev.core.uikit.theme.AppSpacing
+import dev.core.uikit.theme.AppType
+import dev.core.uikit.theme.appPalette
 import dev.feature.profile.presentation.components.ProfileAvatar
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
-private enum class ProfileSection(val title: String) { MY_ADS("Mening e'lonlarim"), SAVED("Saqlangan chegirmalar"), APPLICATIONS("Ish arizalarim") }
+/** Profil ichidagi ro'yxat bo'limlari. Sarlavha matni resursdan olinadi. */
+private enum class ProfileSection(val title: StringResource) {
+    MY_ADS(Res.string.profile_section_my_ads),
+    SAVED(Res.string.profile_section_saved),
+    APPLICATIONS(Res.string.profile_section_applications),
+}
 
 @Composable
 fun ProfileScreen(
@@ -73,28 +102,36 @@ fun ProfileScreen(
     }
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-        // Violet header
-        Box(
-            Modifier.fillMaxWidth()
-                .background(Brush.linearGradient(listOf(Color(0xFF6C47FF), Color(0xFF7C4DFF), Color(0xFF5B34D6))), RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp))
-                .padding(start = 20.dp, end = 20.dp, top = 54.dp, bottom = 24.dp),
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(Modifier.size(40.dp).clip(RoundedCornerShape(12.dp)).background(Color.White.copy(alpha = 0.18f)).clickable(onClick = onBack), contentAlignment = Alignment.Center) {
-                    Icon(AppIcons.ArrowLeft, "Orqaga", tint = Color.White, modifier = Modifier.size(18.dp))
+        GradientHeader(palette = palette) {
+            Row(
+                Modifier.padding(start = 20.dp, end = 20.dp, top = 54.dp, bottom = AppSpacing.xl),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                // Gradient ustidagi tugma — palitra emas, oq shaffof fon (har ikkala rejimda ham).
+                Box(
+                    Modifier.size(40.dp).clip(AppRadius.md)
+                        .background(Color.White.copy(alpha = 0.18f))
+                        .clickable(onClick = onBack),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        AppIcons.ArrowLeft,
+                        stringResource(Res.string.common_back),
+                        tint = Color.White,
+                        modifier = Modifier.size(18.dp),
+                    )
                 }
-                Spacer(Modifier.width(12.dp))
-                Text("Profilim", style = TextStyle(fontFamily = AppFontFamily, fontSize = 20.sp, fontWeight = FontWeight.Black, color = Color.White))
+                Spacer(Modifier.width(AppSpacing.md))
+                Text(
+                    stringResource(Res.string.profile_title),
+                    style = AppType.screenTitle.copy(fontSize = 20.sp, color = Color.White),
+                )
             }
         }
 
-        Column(Modifier.fillMaxWidth().padding(16.dp)) {
+        Column(Modifier.fillMaxWidth().padding(AppSpacing.lg)) {
             // Profil kartasi
-            Row(
-                Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(palette.glass).border(1.dp, palette.border, RoundedCornerShape(18.dp)).padding(14.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
+            GlassRow(shape = AppRadius.card, palette = palette) {
                 ProfileAvatar(
                     name = state.name,
                     size = 60.dp,
@@ -103,97 +140,123 @@ fun ProfileScreen(
                     avatarUrl = state.profile?.avatarUrl,
                 )
                 Column(Modifier.weight(1f)) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                        Text(state.name, style = TextStyle(fontFamily = AppFontFamily, fontSize = 16.sp, fontWeight = FontWeight.Black, color = palette.ink))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                    ) {
+                        Text(state.name, style = AppType.screenTitle.copy(fontSize = 16.sp, color = palette.ink))
                         Icon(AppIcons.ShieldCheck, null, tint = palette.successDeep, modifier = Modifier.size(15.dp))
                     }
-                    val sub = listOfNotNull(state.universityMonogram, state.courseLabel).joinToString(" · ").ifBlank { state.contact }
-                    Text(sub, style = TextStyle(fontFamily = AppFontFamily, fontSize = 11.5f.sp, color = palette.inkFaint))
-                    Spacer(Modifier.height(4.dp))
+                    val sub = listOfNotNull(state.universityMonogram, state.courseLabel)
+                        .joinToString(" · ")
+                        .ifBlank { state.contact }
+                    Text(sub, style = AppType.hint.copy(color = palette.inkFaint))
+                    Spacer(Modifier.height(AppSpacing.xs))
                     Row(
                         Modifier.clip(RoundedCornerShape(8.dp)).clickable(onClick = onEditProfile),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text("Profilni tahrirlash", style = TextStyle(fontFamily = AppFontFamily, fontSize = 11.5f.sp, fontWeight = FontWeight.Bold, color = palette.primary))
+                        Text(
+                            stringResource(Res.string.profile_edit_action),
+                            style = AppType.hint.copy(fontWeight = AppType.fieldLabel.fontWeight, color = palette.primary),
+                        )
                         Icon(AppIcons.ChevronRight, null, tint = palette.primary, modifier = Modifier.size(14.dp))
                     }
                 }
             }
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(AppSpacing.lg))
 
             // Mening biznesim — chegirma e'lonlarini shu yerdan qo'yiladi.
             // Faqat biznes egasida ko'rinadi (talaba shell'ida yashirinadi — showMyBusiness=false).
             if (showMyBusiness) {
+                val highlightShape = RoundedCornerShape(16.dp)
                 Row(
                     Modifier.fillMaxWidth()
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(highlightShape)
                         .background(palette.primary.copy(alpha = 0.10f))
-                        .border(1.dp, palette.primary.copy(alpha = 0.22f), RoundedCornerShape(16.dp))
+                        .border(1.dp, palette.primary.copy(alpha = 0.22f), highlightShape)
                         .clickable(onClick = onOpenMyBusiness)
                         .padding(14.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(AppSpacing.md),
                 ) {
-                    Box(
-                        Modifier.size(40.dp).clip(RoundedCornerShape(12.dp)).background(palette.primary.copy(alpha = 0.16f)),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Icon(AppIcons.Store, null, tint = palette.primary, modifier = Modifier.size(19.dp))
-                    }
+                    IconTile(
+                        AppIcons.Store,
+                        tint = palette.primary,
+                        background = palette.primary.copy(alpha = 0.16f),
+                        size = 40.dp,
+                        iconSize = 19.dp,
+                        shape = AppRadius.md,
+                    )
                     Column(Modifier.weight(1f)) {
                         Text(
-                            "Mening biznesim",
-                            style = TextStyle(fontFamily = AppFontFamily, fontSize = 14.sp, fontWeight = FontWeight.ExtraBold, color = palette.ink),
+                            stringResource(Res.string.profile_my_business_title),
+                            style = AppType.bodyStrong.copy(fontWeight = AppType.button.fontWeight, color = palette.ink),
                         )
                         Text(
-                            "Chegirma e'loni qo'yish va boshqarish",
-                            style = TextStyle(fontFamily = AppFontFamily, fontSize = 11.5f.sp, color = palette.inkFaint),
+                            stringResource(Res.string.profile_my_business_subtitle),
+                            style = AppType.hint.copy(color = palette.inkFaint),
                         )
                     }
                     Icon(AppIcons.ChevronRight, null, tint = palette.primary, modifier = Modifier.size(17.dp))
                 }
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(AppSpacing.lg))
             }
 
             // Menyu
             Column(verticalArrangement = Arrangement.spacedBy(9.dp)) {
-                MenuRow(AppIcons.FileText, ProfileSection.MY_ADS.title, "${state.myAds.size}", palette) { section = ProfileSection.MY_ADS }
-                MenuRow(AppIcons.Bookmark, ProfileSection.SAVED.title, "${state.savedDiscounts.size}", palette) { section = ProfileSection.SAVED }
-                MenuRow(AppIcons.Briefcase, ProfileSection.APPLICATIONS.title, "${state.applications.size}", palette) { section = ProfileSection.APPLICATIONS }
-                MenuRow(AppIcons.Settings, "Sozlamalar", null, palette, onClick = onOpenSettings)
+                MenuRow(AppIcons.FileText, stringResource(ProfileSection.MY_ADS.title), "${state.myAds.size}", palette) { section = ProfileSection.MY_ADS }
+                MenuRow(AppIcons.Bookmark, stringResource(ProfileSection.SAVED.title), "${state.savedDiscounts.size}", palette) { section = ProfileSection.SAVED }
+                MenuRow(AppIcons.Briefcase, stringResource(ProfileSection.APPLICATIONS.title), "${state.applications.size}", palette) { section = ProfileSection.APPLICATIONS }
+                MenuRow(AppIcons.Settings, stringResource(Res.string.profile_settings), null, palette, onClick = onOpenSettings)
             }
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(AppSpacing.lg))
 
             // Chiqish
             Row(
-                Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(Color(0xFFDC2626).copy(alpha = 0.10f)).clickable { vm.logout(onLoggedOut) }.padding(14.dp),
+                Modifier.fillMaxWidth()
+                    .clip(AppRadius.lg)
+                    .background(palette.dangerBg)
+                    .clickable { vm.logout(onLoggedOut) }
+                    .padding(14.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                Icon(AppIcons.LogOut, null, tint = Color(0xFFDC2626), modifier = Modifier.size(18.dp))
-                Text("Chiqish", style = TextStyle(fontFamily = AppFontFamily, fontSize = 13.5f.sp, fontWeight = FontWeight.ExtraBold, color = Color(0xFFDC2626)))
+                Icon(AppIcons.LogOut, null, tint = palette.danger, modifier = Modifier.size(18.dp))
+                Text(
+                    stringResource(Res.string.common_logout),
+                    style = AppType.label.copy(fontSize = 13.5f.sp, fontWeight = AppType.button.fontWeight, color = palette.danger),
+                )
             }
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(AppSpacing.xl))
         }
     }
 }
 
 @Composable
-private fun MenuRow(icon: ImageVector, title: String, trailing: String?, palette: AppPalette, onClick: () -> Unit) {
-    Row(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(palette.glass).border(1.dp, palette.border, RoundedCornerShape(14.dp)).clickable(onClick = onClick).padding(14.dp),
-        verticalAlignment = Alignment.CenterVertically,
+private fun MenuRow(
+    icon: ImageVector,
+    title: String,
+    trailing: String?,
+    palette: AppPalette,
+    onClick: () -> Unit,
+) {
+    GlassRow(
         horizontalArrangement = Arrangement.spacedBy(11.dp),
+        onClick = onClick,
+        palette = palette,
     ) {
-        Box(Modifier.size(36.dp).clip(RoundedCornerShape(10.dp)).background(palette.primary.copy(alpha = 0.10f)), contentAlignment = Alignment.Center) {
-            Icon(icon, null, tint = palette.primary, modifier = Modifier.size(17.dp))
-        }
-        Text(title, style = TextStyle(fontFamily = AppFontFamily, fontSize = 13.5f.sp, fontWeight = FontWeight.Bold, color = palette.ink), modifier = Modifier.weight(1f))
+        IconTile(icon, tint = palette.primary)
+        Text(
+            title,
+            style = AppType.label.copy(fontSize = 13.5f.sp, color = palette.ink),
+            modifier = Modifier.weight(1f),
+        )
         if (trailing != null) {
-            Text(trailing, style = TextStyle(fontFamily = AppFontFamily, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = palette.inkFaint))
+            Text(trailing, style = AppType.fieldLabel.copy(color = palette.inkFaint))
             Spacer(Modifier.width(6.dp))
         }
         Icon(AppIcons.ChevronRight, null, tint = palette.inkFaint, modifier = Modifier.size(17.dp))
@@ -213,27 +276,49 @@ private fun SectionList(
 
     Column(Modifier.fillMaxSize()) {
         Row(
-            Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 54.dp),
+            Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg).padding(top = 54.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(11.dp),
         ) {
-            Box(Modifier.size(40.dp).clip(RoundedCornerShape(12.dp)).background(palette.glass).border(1.dp, palette.border, RoundedCornerShape(12.dp)).clickable(onClick = onBack), contentAlignment = Alignment.Center) {
-                Icon(AppIcons.ArrowLeft, "Orqaga", tint = palette.ink, modifier = Modifier.size(18.dp))
+            Box(
+                Modifier.size(40.dp).clip(AppRadius.md)
+                    .background(palette.glass)
+                    .border(1.dp, palette.border, AppRadius.md)
+                    .clickable(onClick = onBack),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    AppIcons.ArrowLeft,
+                    stringResource(Res.string.common_back),
+                    tint = palette.ink,
+                    modifier = Modifier.size(18.dp),
+                )
             }
-            Text(section.title, style = TextStyle(fontFamily = AppFontFamily, fontSize = 18.sp, fontWeight = FontWeight.Black, color = palette.ink))
+            Text(stringResource(section.title), style = AppType.screenTitle.copy(fontSize = 18.sp, color = palette.ink))
         }
         Spacer(Modifier.height(14.dp))
         LazyColumn(
             Modifier.fillMaxWidth().weight(1f),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
+            contentPadding = PaddingValues(start = AppSpacing.lg, end = AppSpacing.lg, bottom = AppSpacing.xl),
             verticalArrangement = Arrangement.spacedBy(9.dp),
         ) {
             when (section) {
                 ProfileSection.MY_ADS -> items(state.myAds, key = { it.id }) { ad ->
-                    DeletableAdRow(ad.title, "${ad.category} · ${ad.price}", ad.createdAgo, palette, onEdit = { onEditAd(ad.id) }, onDelete = { adToDelete = ad })
+                    DeletableAdRow(
+                        title = ad.title,
+                        subtitle = "${ad.category} · ${ad.price}",
+                        trailing = ad.createdAgo,
+                        palette = palette,
+                        onEdit = { onEditAd(ad.id) },
+                        onDelete = { adToDelete = ad },
+                    )
                 }
-                ProfileSection.SAVED -> items(state.savedDiscounts, key = { it.id }) { SimpleRow("${it.merchant} — ${it.title}", "−${it.discountPercent}%", it.expiry ?: "", palette) }
-                ProfileSection.APPLICATIONS -> items(state.applications, key = { it.id }) { SimpleRow(it.jobTitle, it.company, statusLabel(it.status.name), palette) }
+                ProfileSection.SAVED -> items(state.savedDiscounts, key = { it.id }) {
+                    SimpleRow("${it.merchant} — ${it.title}", "−${it.discountPercent}%", it.expiry ?: "", palette)
+                }
+                ProfileSection.APPLICATIONS -> items(state.applications, key = { it.id }) {
+                    SimpleRow(it.jobTitle, it.company, statusLabel(it.status.name), palette)
+                }
             }
         }
     }
@@ -242,16 +327,23 @@ private fun SectionList(
     if (target != null) {
         AlertDialog(
             onDismissRequest = { adToDelete = null },
-            title = { Text("E'lonni o'chirish", style = TextStyle(fontFamily = AppFontFamily, fontWeight = FontWeight.Black)) },
-            text = { Text("\"${target.title}\" e'lonini o'chirmoqchimisiz? Bu amalni ortga qaytarib bo'lmaydi.", style = TextStyle(fontFamily = AppFontFamily)) },
+            title = {
+                Text(stringResource(Res.string.profile_ad_delete_title), style = AppType.sectionTitle.copy(color = palette.ink))
+            },
+            text = {
+                Text(
+                    stringResource(Res.string.profile_ad_delete_confirm, target.title),
+                    style = AppType.body.copy(color = palette.inkMuted),
+                )
+            },
             confirmButton = {
                 TextButton(onClick = { onDeleteAd(target.id); adToDelete = null }) {
-                    Text("O'chirish", style = TextStyle(fontFamily = AppFontFamily, fontWeight = FontWeight.ExtraBold, color = Color(0xFFDC2626)))
+                    Text(stringResource(Res.string.common_delete), style = AppType.buttonSecondary.copy(color = palette.danger))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { adToDelete = null }) {
-                    Text("Bekor", style = TextStyle(fontFamily = AppFontFamily, fontWeight = FontWeight.Bold, color = palette.inkMuted))
+                    Text(stringResource(Res.string.common_cancel), style = AppType.label.copy(color = palette.inkMuted))
                 }
             },
         )
@@ -259,56 +351,60 @@ private fun SectionList(
 }
 
 @Composable
-private fun DeletableAdRow(title: String, subtitle: String, trailing: String, palette: AppPalette, onEdit: () -> Unit, onDelete: () -> Unit) {
-    Row(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(palette.glass).border(1.dp, palette.border, RoundedCornerShape(14.dp)).padding(14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
+private fun DeletableAdRow(
+    title: String,
+    subtitle: String,
+    trailing: String,
+    palette: AppPalette,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+) {
+    GlassRow(horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm), palette = palette) {
         Column(Modifier.weight(1f)) {
-            Text(title, style = TextStyle(fontFamily = AppFontFamily, fontSize = 13.5f.sp, fontWeight = FontWeight.ExtraBold, color = palette.ink))
-            Text(subtitle, style = TextStyle(fontFamily = AppFontFamily, fontSize = 11.5f.sp, color = palette.inkFaint))
+            Text(title, style = AppType.label.copy(fontSize = 13.5f.sp, fontWeight = AppType.button.fontWeight, color = palette.ink))
+            Text(subtitle, style = AppType.hint.copy(color = palette.inkFaint))
             if (trailing.isNotBlank()) {
-                Text(trailing, style = TextStyle(fontFamily = AppFontFamily, fontSize = 10.5f.sp, fontWeight = FontWeight.Bold, color = palette.primary))
+                Text(trailing, style = AppType.caption.copy(fontSize = 10.5f.sp, fontWeight = AppType.fieldLabel.fontWeight, color = palette.primary))
             }
         }
-        // Tahrirlash
-        Box(
-            Modifier.size(34.dp).clip(RoundedCornerShape(10.dp)).background(palette.primary.copy(alpha = 0.10f)).clickable(onClick = onEdit),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(AppIcons.Pencil, "Tahrirlash", tint = palette.primary, modifier = Modifier.size(15.dp))
-        }
-        // O'chirish
-        Box(
-            Modifier.size(34.dp).clip(RoundedCornerShape(10.dp)).background(Color(0xFFDC2626).copy(alpha = 0.10f)).clickable(onClick = onDelete),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(AppIcons.Close, "O'chirish", tint = Color(0xFFDC2626), modifier = Modifier.size(16.dp))
-        }
+        IconTile(
+            AppIcons.Pencil,
+            contentDescription = stringResource(Res.string.common_edit),
+            tint = palette.primary,
+            size = 34.dp,
+            iconSize = 15.dp,
+            onClick = onEdit,
+        )
+        IconTile(
+            AppIcons.Close,
+            contentDescription = stringResource(Res.string.common_delete),
+            tint = palette.danger,
+            background = palette.dangerBg,
+            size = 34.dp,
+            iconSize = 16.dp,
+            onClick = onDelete,
+        )
     }
 }
 
 @Composable
 private fun SimpleRow(title: String, subtitle: String, trailing: String, palette: AppPalette) {
-    Row(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(palette.glass).border(1.dp, palette.border, RoundedCornerShape(14.dp)).padding(14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
+    GlassRow(palette = palette) {
         Column(Modifier.weight(1f)) {
-            Text(title, style = TextStyle(fontFamily = AppFontFamily, fontSize = 13.5f.sp, fontWeight = FontWeight.ExtraBold, color = palette.ink))
-            Text(subtitle, style = TextStyle(fontFamily = AppFontFamily, fontSize = 11.5f.sp, color = palette.inkFaint))
+            Text(title, style = AppType.label.copy(fontSize = 13.5f.sp, fontWeight = AppType.button.fontWeight, color = palette.ink))
+            Text(subtitle, style = AppType.hint.copy(color = palette.inkFaint))
         }
         if (trailing.isNotBlank()) {
-            Text(trailing, style = TextStyle(fontFamily = AppFontFamily, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = palette.primary))
+            Text(trailing, style = AppType.caption.copy(fontWeight = AppType.fieldLabel.fontWeight, color = palette.primary))
         }
     }
 }
 
+@Composable
 private fun statusLabel(status: String): String = when (status) {
-    "SENT" -> "Yuborilgan"
-    "VIEWED" -> "Ko'rildi"
-    "INTERVIEW" -> "Suhbat"
-    "REJECTED" -> "Rad etildi"
+    "SENT" -> stringResource(Res.string.profile_application_status_sent)
+    "VIEWED" -> stringResource(Res.string.profile_application_status_viewed)
+    "INTERVIEW" -> stringResource(Res.string.profile_application_status_interview)
+    "REJECTED" -> stringResource(Res.string.profile_application_status_rejected)
     else -> status
 }

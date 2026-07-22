@@ -6,9 +6,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.core.designsystem.components.AppScreenScaffold
-import dev.core.designsystem.components.LogoTile
+import dev.core.uikit.component.AppScreenScaffold
+import dev.core.uikit.component.LogoTile
 import dev.feature.business.BusinessShell
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -40,7 +41,7 @@ fun RootShell(onLoggedOut: () -> Unit, vm: RootShellViewModel = koinViewModel())
 private fun BootSplash() {
     AppScreenScaffold {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            LogoTile(size = 72, radius = 22, iconSize = 38)
+            LogoTile(size = 72.dp, radius = 22.dp, iconSize = 38.dp)
         }
     }
 }

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ElonUz — biznesmen (`:dev:feature:business`) ekranlarining matnlari. ASOSIY (o'zbek) til.
+
+  Kalit prefiksi: `business_`. Umumiy matnlar (Saqlash, Orqaga, Chiqish, Tahrirlash)
+  bu yerda TAKRORLANMAYDI — ular `strings.xml` dagi `common_*` kalitlaridan olinadi.
+
+  Yangi kalit qo'shsangiz, values-ru va values-en fayllariga ham QO'SHING —
+  uchala faylda kalitlar to'plami bir xil bo'lishi shart.
+-->
+<resources>
+
+    <!-- ============ Biznes karkasi (BusinessShell) ============ -->
+    <string name="business_center_label">BIZNES MARKAZI</string>
+    <string name="business_my_listings_title">E\'lonlarim</string>
+    <string name="business_profile_action">Profil</string>
+    <string name="business_new_listing">E\'lon</string>
+
+    <!-- ============ Biznes profili (BusinessAccountScreen) ============ -->
+    <string name="business_account_title">Biznes profili</string>
+    <!-- Profilda biznes turi ko'rsatilmagan bo'lsa shu matn chiqadi. -->
+    <string name="business_type_default">Biznes</string>
+    <string name="business_verified">Tasdiqlangan</string>
+    <string name="business_rating_new">Yangi biznes</string>
+    <string name="business_stat_active">Faol e\'lonlar</string>
+    <string name="business_stat_redemptions">Foydalanishlar</string>
+    <string name="business_stat_views">Ko\'rishlar</string>
+    <string name="business_info_type">Biznes turi</string>
+    <string name="business_info_email">Email</string>
+    <string name="business_info_hours">Ish vaqti</string>
+    <string name="business_info_hours_unset">Belgilanmagan</string>
+    <string name="business_menu_listings">Mening e\'lonlarim</string>
+    <string name="business_menu_settings">Sozlamalar</string>
+
+    <!-- ============ Profilni tahrirlash (BusinessEditScreen) ============ -->
+    <string name="business_edit_title">Profilni tahrirlash</string>
+    <string name="business_field_name">Biznes nomi</string>
+    <string name="business_field_name_hint">Masalan: Kafe Aurora</string>
+    <string name="business_field_phone">Telefon</string>
+    <string name="business_field_phone_hint">+998 90 123 45 67</string>
+    <string name="business_field_email">Email (gmail)</string>
+    <string name="business_field_email_hint">biznes@gmail.com</string>
+
+    <!-- ============ Biznes uchun kirish (BusinessWelcomeScreen) ============ -->
+    <string name="business_welcome_title">Biznes uchun kirish</string>
+    <string name="business_welcome_subtitle">Biznes egasi sifatida kiring — chegirma e\'lonlaringizni joylang va boshqaring.</string>
+    <string name="business_welcome_phone_label">Telefon raqami</string>
+    <string name="business_welcome_phone_hint">90 123 45 67</string>
+    <string name="business_welcome_phone_prefix">🇺🇿 +998</string>
+    <string name="business_welcome_get_code">Kod olish</string>
+    <string name="business_welcome_google">Google bilan kirish</string>
+    <string name="business_welcome_email">Email bilan kirish</string>
+    <string name="business_welcome_student_hint">Talaba sifatida kirmoqchimisiz? Orqaga qayting va \"Talaba\" ni tanlang.</string>
+    <!-- Faqat local test rejimida ko'rinadi (USE_LOCAL_DATA). -->
+    <string name="business_welcome_dev_login">🔧 Dev kirish (test)</string>
+
+    <!-- ============ Biznes turlari (BusinessTypes) ============ -->
+    <string name="business_type_cafe">Kafe va Restoran</string>
+    <string name="business_type_grocery">Oziq-ovqat</string>
+    <string name="business_type_clothing">Kiyim-kechak</string>
+    <string name="business_type_game_club">Game Club</string>
+    <string name="business_type_education">O\'quv markazlar</string>
+    <string name="business_type_cinema">Kino va ko\'ngilochar</string>
+    <string name="business_type_electronics">Texnikalar</string>
+    <string name="business_type_barber">Sartaroshxona</string>
+    <string name="business_type_beauty">Go\'zallik saloni</string>
+    <string name="business_type_gym">Sport zal</string>
+    <string name="business_type_auto">Avto xizmat</string>
+    <string name="business_type_pharmacy">Apteka</string>
+    <string name="business_type_flowers">Gul do\'koni</string>
+    <string name="business_type_other">Boshqa</string>
+
+</resources>

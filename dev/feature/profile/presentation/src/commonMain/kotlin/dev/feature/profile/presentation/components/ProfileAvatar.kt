@@ -12,13 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import coil3.compose.AsyncImage
-import dev.core.designsystem.components.AppFontFamily
-import dev.core.designsystem.theme.AppPalette
+import dev.core.uikit.resources.Res
+import dev.core.uikit.resources.profile_avatar_content_description
+import dev.core.uikit.theme.AppPalette
+import dev.core.uikit.theme.AppType
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Profil rasmi — uchta holat, shu tartibda:
@@ -43,29 +44,25 @@ fun ProfileAvatar(
             .background(palette.primary.copy(alpha = 0.14f)),
         contentAlignment = Alignment.Center,
     ) {
+        val description = stringResource(Res.string.profile_avatar_content_description)
         when {
             localPreview != null -> Image(
                 bitmap = localPreview,
-                contentDescription = "Profil rasmi",
+                contentDescription = description,
                 modifier = Modifier.size(size),
                 contentScale = ContentScale.Crop,
             )
 
             !avatarUrl.isNullOrBlank() -> AsyncImage(
                 model = avatarUrl,
-                contentDescription = "Profil rasmi",
+                contentDescription = description,
                 modifier = Modifier.size(size),
                 contentScale = ContentScale.Crop,
             )
 
             else -> Text(
                 name.take(1).uppercase(),
-                style = TextStyle(
-                    fontFamily = AppFontFamily,
-                    fontSize = fontSize,
-                    fontWeight = FontWeight.Black,
-                    color = palette.primary,
-                ),
+                style = AppType.screenTitle.copy(fontSize = fontSize, color = palette.primary),
             )
         }
     }

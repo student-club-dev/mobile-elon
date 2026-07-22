@@ -1,5 +1,5 @@
 // Auth — birlashgan feature moduli (UI + oqim). `sc.module-ui` Compose/Koin/Lifecycle/
-// designsystem/common'ni beradi; serialization plugin qo'shimcha yoqiladi. Qolgan bog'liqliklar
+// uikit/common'ni beradi; serialization plugin qo'shimcha yoqiladi. Qolgan bog'liqliklar
 // (navigatsiya, sessiya keshi, Firebase, platforma auth) shu yerda.
 plugins {
     id("sc.module-ui")

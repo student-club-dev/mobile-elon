@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ElonUz — `:dev:feature:auth` moduli matnlari. RUS tili.
+  Kalitlar values/strings_auth.xml bilan bir xil bo'lishi SHART.
+-->
+<resources>
+
+    <!-- ============ Onboarding ============ -->
+    <string name="auth_onboarding_skip">Пропустить</string>
+    <string name="auth_onboarding_chip_order">Заказ</string>
+    <string name="auth_onboarding_chip_ai_teacher">AI-преподаватель</string>
+    <string name="auth_onboarding_title">Все сервисы в одном приложении</string>
+    <string name="auth_onboarding_subtitle">Один аккаунт вместо 7–10 приложений. От еды до учёбы, от работы до жилья.</string>
+
+    <!-- ============ Общие элементы авторизации ============ -->
+    <string name="auth_continue">Продолжить</string>
+    <string name="auth_sign_in">Войти</string>
+    <string name="auth_sign_up">Зарегистрироваться</string>
+    <string name="auth_have_account">Уже есть аккаунт?</string>
+    <string name="auth_no_account">Нет аккаунта?</string>
+    <string name="auth_field_phone_label">Ваш номер телефона</string>
+    <string name="auth_field_email_label">Электронная почта</string>
+    <string name="auth_field_password_label">Пароль</string>
+    <string name="auth_phone_placeholder">90 123 45 67</string>
+    <string name="auth_email_placeholder">aziz.karimov@edu.uz</string>
+    <string name="auth_password_placeholder">••••••••</string>
+    <string name="auth_password_short_placeholder">••••••</string>
+
+    <!-- ============ Приветствие ============ -->
+    <string name="auth_welcome_title">Добро пожаловать 👋</string>
+    <string name="auth_welcome_subtitle">Войдите в аккаунт или зарегистрируйтесь за минуту.</string>
+    <string name="auth_welcome_phone_hint">На этот номер отправим SMS с кодом подтверждения.</string>
+    <string name="auth_welcome_email_hint">Введите почту, чтобы войти или зарегистрироваться.</string>
+
+    <!-- ============ Вход по телефону ============ -->
+    <string name="auth_phone_title">Ваш номер телефона</string>
+    <string name="auth_phone_subtitle">Введите номер для входа — отправим 6-значный код по SMS.</string>
+    <string name="auth_phone_only_uz_hint">Принимаются только номера Узбекистана.</string>
+    <string name="auth_get_code">Получить код</string>
+
+    <!-- ============ Вход по почте ============ -->
+    <string name="auth_login_title">Добро пожаловать</string>
+    <string name="auth_login_subtitle">Войдите в аккаунт по почте и паролю.</string>
+    <string name="auth_remember_me">Запомнить меня</string>
+    <string name="auth_forgot_password">Забыли пароль?</string>
+    <string name="auth_face_id_login">Войти через Face ID</string>
+
+    <!-- ============ Биометрия ============ -->
+    <string name="auth_biometric_prompt_subtitle">Подтвердите через Face ID</string>
+    <string name="auth_biometric_not_configured">На устройстве не настроена биометрия (Face ID / отпечаток пальца).</string>
+    <string name="auth_biometric_failed">Биометрия не распознана. Попробуйте ещё раз.</string>
+    <string name="auth_biometric_unavailable">Биометрия недоступна.</string>
+
+    <!-- ============ Код из SMS (OTP) ============ -->
+    <string name="auth_otp_title">Код подтверждения</string>
+    <string name="auth_otp_phone_prefix">+998 %1$s </string>
+    <string name="auth_otp_sent_suffix">— введите 6-значный код, отправленный на этот номер.</string>
+    <string name="auth_resend_code">Отправить код повторно</string>
+    <string name="auth_resend_code_timer_prefix">Отправить код повторно · </string>
+    <string name="auth_resend_short_timer_prefix">Отправить повторно · </string>
+    <string name="auth_verify">Подтвердить</string>
+    <string name="auth_otp_no_sms">Код не пришёл по SMS? </string>
+    <string name="auth_otp_via_telegram">Получить в Telegram</string>
+
+    <!-- ============ Создание аккаунта ============ -->
+    <string name="auth_signup_title">Создать аккаунт</string>
+    <string name="auth_first_name">Имя</string>
+    <string name="auth_last_name">Фамилия</string>
+    <string name="auth_university_email_placeholder">aziz@tuit.uz</string>
+    <string name="auth_verified_badge">ПОДТВЕРЖДЕНО</string>
+    <string name="auth_university_email_hint">Университетская почта (необязательно) — даёт значок подтверждённого студента.</string>
+    <string name="auth_terms_prefix">Принимаю </string>
+    <string name="auth_terms_terms">Условия использования</string>
+    <string name="auth_terms_and"> и </string>
+    <string name="auth_terms_privacy">Политику конфиденциальности</string>
+    <string name="auth_terms_agree_suffix">.</string>
+
+    <!-- ============ Восстановление пароля ============ -->
+    <string name="auth_forgot_title">Восстановление пароля</string>
+    <string name="auth_forgot_subtitle">Введите адрес почты — отправим ссылку для восстановления пароля.</string>
+    <string name="auth_forgot_send">Отправить ссылку</string>
+    <string name="auth_back_to_login">Вернуться ко входу</string>
+
+    <!-- ============ Способ регистрации ============ -->
+    <string name="auth_register_choice_title">Создайте аккаунт</string>
+    <string name="auth_register_choice_subtitle">Выберите способ регистрации.</string>
+    <string name="auth_register_with_phone">По номеру телефона</string>
+    <string name="auth_register_with_email">Продолжить с почтой</string>
+    <string name="auth_register_choice_hint">По телефону придёт SMS-код, на почту — 6-значный код.</string>
+
+    <!-- ============ Подтверждение почты ============ -->
+    <string name="auth_email_verify_title">Подтвердите почту</string>
+    <string name="auth_email_verify_fallback">вашу почту</string>
+    <string name="auth_email_verify_suffix"> — введите 6-значный код, отправленный на этот адрес.</string>
+    <string name="auth_email_verify_spam_hint">Проверьте также папку «Спам».</string>
+
+    <!-- ============ Регистрация по почте и паролю ============ -->
+    <string name="auth_register_subtitle">Зарегистрируйтесь за минуту по почте и паролю.</string>
+    <string name="auth_password_min_placeholder">Минимум 6 символов</string>
+    <string name="auth_confirm_password_label">Подтвердите пароль</string>
+    <string name="auth_confirm_password_placeholder">Введите пароль ещё раз</string>
+    <string name="auth_register_hint">После регистрации вы выберете роль и заполните профиль.</string>
+
+    <!-- ============ Выбор роли ============ -->
+    <string name="auth_role_title">Кем вы продолжите?</string>
+    <string name="auth_role_subtitle">Выберите роль — приложение покажет подходящие вам разделы. Позже можно изменить в профиле.</string>
+    <string name="auth_role_student">Студент</string>
+    <string name="auth_role_student_desc">Скидки, вакансии, студенты и объявления</string>
+    <string name="auth_role_business">Предприниматель</string>
+    <string name="auth_role_business_desc">Размещение и управление скидками</string>
+
+    <!-- ============ Главный экран ============ -->
+    <string name="auth_home_greeting">Ассалому алайкум 👋</string>
+    <string name="auth_see_all">Все</string>
+    <string name="auth_more">Ещё</string>
+    <string name="auth_bookmark">Сохранить</string>
+    <string name="auth_home_offer_title">%1$s — скидка %2$s</string>
+    <string name="auth_home_jobs_subtitle">По вашим направлениям</string>
+    <string name="auth_home_students_action">Больше</string>
+    <string name="auth_home_students_subtitle">Найдите друзей по университету</string>
+    <string name="auth_home_job_meta">%1$s · %2$s · %3$s</string>
+
+    <!-- ============ Статус дружбы ============ -->
+    <string name="auth_friend_add">Добавить в друзья</string>
+    <string name="auth_friend_add_short">+ Друг</string>
+    <string name="auth_friend_pending">В ожидании</string>
+    <string name="auth_friend_single">Друг</string>
+    <string name="auth_friend_friends">Друзья</string>
+
+    <!-- ============ Сообщения ============ -->
+    <string name="auth_chat_title">Сообщения</string>
+    <string name="auth_chat_archive">Архив</string>
+    <string name="auth_chat_archive_count">Архив (%1$s)</string>
+    <string name="auth_chat_archive_action">В архив</string>
+    <string name="auth_chat_unarchive">Вернуть из архива</string>
+    <string name="auth_chat_archive_empty">Архив пуст</string>
+    <string name="auth_chat_empty">Диалогов нет</string>
+    <string name="auth_chat_delete_title">Удалить диалог</string>
+    <string name="auth_chat_delete_confirm">Диалог с «%1$s» и все сообщения будут удалены. Продолжить?</string>
+    <string name="auth_chat_online">в сети</string>
+    <string name="auth_chat_offline">не в сети</string>
+    <string name="auth_chat_input_placeholder">Напишите сообщение...</string>
+    <string name="auth_chat_send">Отправить</string>
+    <string name="auth_chat_message_delete_title">Удалить сообщение</string>
+    <string name="auth_chat_message_delete_confirm">Удалить это сообщение?</string>
+    <string name="auth_chat_clear_title">Очистить диалог</string>
+    <string name="auth_chat_clear_confirm">Все сообщения в этом диалоге будут удалены. Продолжить?</string>
+
+    <!-- ============ Студенты ============ -->
+    <string name="auth_students_title">Студенты</string>
+    <string name="auth_students_sort_my_university">Мой универ</string>
+    <string name="auth_students_sort_all">Все универы</string>
+    <string name="auth_filter">Фильтр</string>
+    <string name="auth_students_meta">%1$s · %2$s курс · %3$s</string>
+    <string name="auth_students_stat_friends">Друзья</string>
+    <string name="auth_students_stat_ads">Объявления</string>
+    <string name="auth_students_stat_rating">Рейтинг</string>
+    <string name="auth_students_interests">Интересы</string>
+    <string name="auth_message">Сообщение</string>
+
+    <!-- ============ Вакансии ============ -->
+    <string name="auth_jobs_title">Вакансии</string>
+    <string name="auth_filter_all">Все</string>
+    <string name="auth_jobs_filter_it">IT</string>
+    <string name="auth_jobs_filter_remote">Удалённо</string>
+    <string name="auth_jobs_filter_part_time">Подработка</string>
+    <string name="auth_jobs_meta">%1$s · %2$s</string>
+    <string name="auth_jobs_salary">Зарплата</string>
+    <string name="auth_jobs_detail_note">Эта вакансия подходит вашему направлению (%1$s). Полное описание — у автора объявления.</string>
+    <string name="auth_jobs_apply">Откликнуться</string>
+    <string name="auth_jobs_applied">Отклик отправлен ✓</string>
+
+    <!-- ============ Скидки ============ -->
+    <string name="auth_discounts_title">Скидки</string>
+    <string name="auth_discounts_subtitle">Выберите раздел — внутри откроются предложения.</string>
+    <string name="auth_discounts_offer_count">%1$s предложений</string>
+    <string name="auth_discounts_category_title">%1$s  Скидки: %2$s</string>
+    <string name="auth_discounts_search_placeholder">Найти ресторан или блюдо</string>
+    <string name="auth_discount_tag_student_id">По студенческому</string>
+    <string name="auth_discount_tag_student_id_short">Студенческий</string>
+    <string name="auth_discount_tag_promo">Промокод</string>
+    <string name="auth_copy">Копировать</string>
+    <string name="auth_copied">Скопировано ✓</string>
+
+    <!-- ============ Уведомления ============ -->
+    <string name="auth_notifications_title">Уведомления</string>
+    <string name="auth_notifications_mark_all_read">Прочитать все</string>
+    <string name="auth_notifications_empty_title">Пока уведомлений нет</string>
+    <string name="auth_notifications_empty_body">Новые объявления, вакансии и сообщения появятся здесь.</string>
+
+    <!-- ============ Настройки ============ -->
+    <string name="auth_settings_title">Настройки</string>
+    <string name="auth_settings_section_account">Аккаунт</string>
+    <string name="auth_settings_section_theme">Тема</string>
+    <string name="auth_theme_system">Системная</string>
+    <string name="auth_theme_light">Светлая</string>
+    <string name="auth_theme_dark">Тёмная</string>
+    <string name="auth_settings_push">Push-уведомления</string>
+    <string name="auth_settings_email">Уведомления на почту</string>
+    <string name="auth_settings_section_general">Общее</string>
+    <string name="auth_settings_about">О приложении</string>
+    <string name="auth_settings_version">Версия 1.0.0</string>
+    <string name="auth_settings_about_body">ElonUz — супер-приложение для студентов: скидки, вакансии, объявления и сообщения.\nВерсия 1.0.0</string>
+
+    <!-- ============ Нижняя навигация ============ -->
+    <string name="auth_tab_home">Главная</string>
+    <string name="auth_tab_discounts">Скидки</string>
+    <string name="auth_tab_jobs">Работа</string>
+    <string name="auth_tab_students">Студенты</string>
+
+    <!-- ============ Размещение объявления ============ -->
+    <string name="auth_post_ad_short">Подать</string>
+    <string name="auth_post_ad">Подать объявление</string>
+    <string name="auth_post_ad_question">Какое объявление вы хотите разместить?</string>
+    <string name="auth_ad_type_job">Вакансия</string>
+    <string name="auth_ad_type_job_desc">Поиск сотрудника или подработки</string>
+    <string name="auth_ad_type_rental">Аренда / Жильё</string>
+    <string name="auth_ad_type_rental_desc">Квартира, хостел, сосед по комнате</string>
+    <string name="auth_ad_type_sale">Продажа (барахолка)</string>
+    <string name="auth_ad_type_sale_desc">Книги, техника, вещи</string>
+    <string name="auth_ad_type_service">Услуга / Репетитор</string>
+    <string name="auth_ad_type_service_desc">Занятия, дизайн, перевод</string>
+    <string name="auth_ad_type_other">Другое объявление</string>
+    <string name="auth_ad_type_other_desc">Мероприятие, команда, бюро находок</string>
+    <string name="auth_ad_add_photo">Добавить фото</string>
+    <string name="auth_ad_title_label">Заголовок объявления</string>
+    <string name="auth_ad_title_placeholder">Нужен SMM-менеджер</string>
+    <string name="auth_ad_category_label">Категория</string>
+    <string name="auth_ad_category_placeholder">IT</string>
+    <string name="auth_ad_price_label">Цена / Зарплата</string>
+    <string name="auth_ad_price_placeholder">3–5 млн</string>
+    <string name="auth_ad_description_label">Описание</string>
+    <string name="auth_ad_description_placeholder">Подробная информация...</string>
+    <string name="auth_ad_submit">Разместить объявление</string>
+
+</resources>

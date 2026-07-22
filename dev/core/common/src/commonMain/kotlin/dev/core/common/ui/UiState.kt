@@ -7,7 +7,7 @@ import dev.core.common.error.AppException
  * spinner, kontent, bo'sh holat yoki xato (retry bilan).
  *
  * ViewModel `StateFlow<UiState<T>>` chiqaradi, Compose esa `when` bilan mos komponentни
- * chizadi ([dev.core.designsystem] dagi umumiy StateView orqali).
+ * chizadi ([dev.core.uikit] dagi umumiy StateView orqali).
  */
 sealed interface UiState<out T> {
     data object Loading : UiState<Nothing>

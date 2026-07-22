@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ElonUz — русский перевод. Ключи должны совпадать с values/strings.xml. -->
+<resources>
+
+    <!-- ============ Общее ============ -->
+    <string name="common_or">или</string>
+    <string name="common_save">Сохранить</string>
+    <string name="common_cancel">Отмена</string>
+    <string name="common_delete">Удалить</string>
+    <string name="common_clear">Очистить</string>
+    <string name="common_close">Закрыть</string>
+    <string name="common_back">Назад</string>
+    <string name="common_next">Далее</string>
+    <string name="common_done">Готово</string>
+    <string name="common_retry">Повторить</string>
+    <string name="common_logout">Выйти</string>
+    <string name="common_edit">Редактировать</string>
+    <string name="common_search">Поиск</string>
+    <string name="common_loading">Загрузка…</string>
+    <string name="common_error_generic">Произошла ошибка. Попробуйте ещё раз.</string>
+
+    <!-- ============ Карта ============ -->
+    <string name="map_drag_hint">Двигайте карту — метка укажет место</string>
+
+    <!-- ============ Авторизация ============ -->
+    <string name="auth_tab_phone">Телефон</string>
+    <string name="auth_tab_email">Email</string>
+
+    <!-- ============ Профиль ============ -->
+    <string name="profile_title">Мой профиль</string>
+    <string name="profile_edit_action">Редактировать профиль</string>
+    <string name="profile_settings">Настройки</string>
+    <string name="profile_my_business_title">Мой бизнес</string>
+    <string name="profile_my_business_subtitle">Размещение и управление скидками</string>
+    <string name="profile_section_my_ads">Мои объявления</string>
+    <string name="profile_section_saved">Сохранённые скидки</string>
+    <string name="profile_section_applications">Мои заявки</string>
+    <string name="profile_ad_delete_title">Удалить объявление</string>
+    <!-- %1$s — заголовок объявления -->
+    <string name="profile_ad_delete_confirm">Удалить объявление "%1$s"? Это действие нельзя отменить.</string>
+    <string name="profile_application_status_sent">Отправлено</string>
+    <string name="profile_application_status_viewed">Просмотрено</string>
+    <string name="profile_application_status_interview">Собеседование</string>
+    <string name="profile_application_status_rejected">Отклонено</string>
+
+    <!-- Редактирование профиля -->
+    <string name="profile_avatar_change">Изменить фото</string>
+    <string name="profile_avatar_uploading">Фото загружается…</string>
+    <string name="profile_saving">Сохранение…</string>
+    <string name="profile_field_first_name">Имя</string>
+    <string name="profile_field_last_name">Фамилия</string>
+    <string name="profile_field_phone">Телефон</string>
+    <string name="profile_field_phone_placeholder">+998 90 123 45 67</string>
+    <string name="profile_field_university">Университет</string>
+    <string name="profile_university_select">Выберите университет</string>
+    <string name="profile_field_course">Курс</string>
+    <string name="profile_course_1">1 курс</string>
+    <string name="profile_course_2">2 курс</string>
+    <string name="profile_course_3">3 курс</string>
+    <string name="profile_course_4">4 курс</string>
+    <string name="profile_course_master">Магистр</string>
+    <string name="profile_avatar_content_description">Фото профиля</string>
+
+</resources>

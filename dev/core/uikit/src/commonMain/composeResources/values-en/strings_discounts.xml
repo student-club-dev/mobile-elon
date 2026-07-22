@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ElonUz — "Discounts / Business" section. ENGLISH translation.
+  Keys are identical to values/strings_discounts.xml.
+-->
+<resources>
+
+    <!-- ============ My listings ============ -->
+    <string name="discounts_my_listings_title">My discounts</string>
+    <string name="discounts_listings_count">%1$s listings</string>
+    <string name="discounts_create_cd">Add a listing</string>
+    <string name="discounts_offline">No internet connection — offline mode</string>
+    <string name="discounts_empty_discount_title">No discounts yet</string>
+    <string name="discounts_empty_discount_message">Post your first discount — students will see it in the Discounts tab.</string>
+    <string name="discounts_empty_listing_title">No listings yet</string>
+    <string name="discounts_empty_listing_message">Post your first listing — show students your product or service.</string>
+    <string name="discounts_add_discount">Add discount</string>
+    <string name="discounts_add_listing">Add listing</string>
+    <string name="discounts_price_sum">%1$s UZS</string>
+    <string name="discounts_sum_suffix">UZS</string>
+    <string name="discounts_branch_location">📍 %1$s</string>
+    <string name="discounts_branch_extra">  +%1$s branches</string>
+    <string name="discounts_action_pause">Pause</string>
+    <string name="discounts_action_resume">Resume</string>
+
+    <!-- ============ Map — picking a place ============ -->
+    <string name="discounts_map_branch_title">Branch location</string>
+    <string name="discounts_map_business_title">Business location</string>
+    <string name="discounts_map_hint">Drag the map — the pin marks the spot</string>
+    <string name="discounts_map_search_hint">Search: Mega Planet, Amir Temur street...</string>
+    <string name="discounts_searching">Searching...</string>
+    <string name="discounts_map_my_location">My location</string>
+    <string name="discounts_map_confirm">Pick this spot</string>
+    <string name="discounts_resolving_address">Resolving address...</string>
+
+    <!-- ============ Branches ============ -->
+    <string name="discounts_branches_title">Branches</string>
+    <string name="discounts_branches_subtitle">Students see the nearest one with its distance</string>
+    <string name="discounts_branch_remove">Remove branch</string>
+    <string name="discounts_branch_name_hint">Branch name (optional): Chilonzor branch</string>
+    <string name="discounts_branch_pick_first">Mark a branch on the map</string>
+    <string name="discounts_branch_pick_more">One more branch</string>
+
+    <!-- ============ Listing form ============ -->
+    <string name="discounts_edit_listing_title">Edit listing</string>
+    <string name="discounts_form_errors">%1$s fields are still empty — they are marked red above.</string>
+    <string name="discounts_draft">Draft</string>
+    <string name="discounts_submitting">Submitting...</string>
+    <string name="discounts_publish">Publish listing</string>
+    <string name="discounts_image">Photo</string>
+    <string name="discounts_image_uploading">...</string>
+
+    <string name="discounts_mode_section">Listing type</string>
+    <string name="discounts_mode_subtitle">Discounted or regular listing</string>
+    <string name="discounts_mode_discount">Discount listing</string>
+    <string name="discounts_mode_regular">Regular listing</string>
+
+    <string name="discounts_gender_section">Who is the clothing for</string>
+    <string name="discounts_gender_subtitle">Pick one — categories adapt to it</string>
+    <string name="discounts_gender_male">Men</string>
+    <string name="discounts_gender_female">Women</string>
+
+    <string name="discounts_category_section">Category</string>
+    <string name="discounts_category_custom_hint">What does it apply to?</string>
+
+    <string name="discounts_business_section_subtitle">Students will see the listing under this name</string>
+
+    <string name="discounts_attributes_section">Details</string>
+    <string name="discounts_attributes_subtitle">Information for the selected category</string>
+    <string name="discounts_attribute_label">%1$s (%2$s)</string>
+    <string name="discounts_number_hint">0</string>
+    <string name="discounts_yes">Yes</string>
+    <string name="discounts_no">No</string>
+
+    <string name="discounts_images_subtitle">%1$s · up to %2$s photos</string>
+    <string name="discounts_about_subtitle">Write the details freely here — no separate fields needed</string>
+
+    <string name="discounts_price_section">Price</string>
+    <string name="discounts_price_subtitle_discount">Old and current (discounted) price</string>
+    <string name="discounts_price_subtitle_regular">Listing price</string>
+    <string name="discounts_price_label">Price</string>
+    <string name="discounts_price_old_label">Old price</string>
+    <string name="discounts_price_old_hint">For example: 50 000</string>
+    <string name="discounts_price_new_label">Current price (discounted)</string>
+    <string name="discounts_price_new_hint">For example: 35 000</string>
+    <string name="discounts_student_pays">Student pays: %1$s UZS</string>
+    <string name="discounts_percent_off">-%1$s%</string>
+
+    <string name="discounts_contact_subtitle">Students will call this number</string>
+    <string name="discounts_contact_hint">+998 90 123 45 67</string>
+
+    <string name="discounts_redemption_section">How students redeem it</string>
+    <string name="discounts_promo_hint">NAVRUZ20</string>
+
+    <string name="discounts_validity_section">How long it stays active</string>
+    <string name="discounts_validity_subtitle">%1$s days starting today</string>
+    <string name="discounts_days">%1$s days</string>
+
+    <!-- ============ My businesses ============ -->
+    <string name="discounts_business_hub">BUSINESS HUB</string>
+    <string name="discounts_my_businesses">My businesses</string>
+    <string name="discounts_profile">Profile</string>
+    <string name="discounts_business">Business</string>
+    <string name="discounts_business_delete_title">Delete business</string>
+    <string name="discounts_business_delete_confirm">Delete \"%1$s\"? This cannot be undone.</string>
+    <string name="discounts_business_empty_title">No businesses yet</string>
+    <string name="discounts_business_empty_message">Add your first business — then post discounts and listings for it.</string>
+    <string name="discounts_business_add">Add business</string>
+    <string name="discounts_business_edit">Edit business</string>
+    <string name="discounts_business_type_label">Business type</string>
+    <string name="discounts_business_name_label">Business name</string>
+    <string name="discounts_business_name_hint">For example: Cafe Aurora</string>
+    <string name="discounts_phone_label">Phone number</string>
+    <string name="discounts_phone_hint">90 123 45 67</string>
+    <string name="discounts_phone_prefix">🇺🇿 +998</string>
+    <string name="discounts_location_label">Location</string>
+    <string name="discounts_location_hint">Pick a place on the map</string>
+    <string name="discounts_saving">Saving...</string>
+    <string name="discounts_business_save">Save business</string>
+
+    <!-- ============ Nearby discounts ============ -->
+    <string name="discounts_nearby_title">Discounts nearby</string>
+    <string name="discounts_location_off">location off</string>
+
+    <!-- ============ Form copy — Cafe / Restaurant ============ -->
+    <string name="discounts_copy_cafe_title">Cafe discount</string>
+    <string name="discounts_copy_cafe_subtitle">Student discount on a dish</string>
+    <string name="discounts_copy_cafe_title_regular">Cafe listing</string>
+    <string name="discounts_copy_cafe_subtitle_regular">Listing for a dish on the menu</string>
+    <string name="discounts_copy_cafe_business">Cafe and menu section</string>
+    <string name="discounts_copy_cafe_business_hint">Cafe name: Chaykhana Navruz</string>
+    <string name="discounts_copy_cafe_category_hint">Pick a menu section</string>
+    <string name="discounts_copy_cafe_images">Dish photos</string>
+    <string name="discounts_copy_cafe_images_hint">The first one becomes the cover</string>
+    <string name="discounts_copy_cafe_about">About the dish</string>
+    <string name="discounts_copy_cafe_title_hint">Dish name: Pepperoni pizza</string>
+    <string name="discounts_copy_cafe_description_hint">Ingredients, how it is made...</string>
+
+    <!-- ============ Form copy — Game Club ============ -->
+    <string name="discounts_copy_game_title">Game Club discount</string>
+    <string name="discounts_copy_game_subtitle">Student discount on a gaming session</string>
+    <string name="discounts_copy_game_title_regular">Game Club listing</string>
+    <string name="discounts_copy_game_subtitle_regular">Listing for a gaming session</string>
+    <string name="discounts_copy_game_business">Club and equipment</string>
+    <string name="discounts_copy_game_business_hint">Club name: CyberZone</string>
+    <string name="discounts_copy_game_category_hint">Which console or game type</string>
+    <string name="discounts_copy_game_images">Venue photos</string>
+    <string name="discounts_copy_game_images_hint">Room, consoles, gaming area</string>
+    <string name="discounts_copy_game_about">About the session</string>
+    <string name="discounts_copy_game_title_hint">For example: PS5 — 1 hour of play</string>
+    <string name="discounts_copy_game_description_hint">Room conditions, amenities...</string>
+
+    <!-- ============ Form copy — Clothing ============ -->
+    <string name="discounts_copy_cloth_title">Clothing discount</string>
+    <string name="discounts_copy_cloth_subtitle">Student discount on clothing</string>
+    <string name="discounts_copy_cloth_title_regular">Clothing listing</string>
+    <string name="discounts_copy_cloth_subtitle_regular">Listing for a clothing item</string>
+    <string name="discounts_copy_cloth_business">Store and section</string>
+    <string name="discounts_copy_cloth_business_hint">Store name: Zara</string>
+    <string name="discounts_copy_cloth_category_hint">Pick a clothing section</string>
+    <string name="discounts_copy_cloth_images">Clothing photos</string>
+    <string name="discounts_copy_cloth_images_hint">Front and back view</string>
+    <string name="discounts_copy_cloth_about">About the item</string>
+    <string name="discounts_copy_cloth_title_hint">Item name: Oversize t-shirt</string>
+    <string name="discounts_copy_cloth_description_hint">Material, size chart...</string>
+
+    <!-- ============ Form copy — Education center ============ -->
+    <string name="discounts_copy_edu_title">Course discount</string>
+    <string name="discounts_copy_edu_subtitle">Student discount on a course</string>
+    <string name="discounts_copy_edu_title_regular">Course listing</string>
+    <string name="discounts_copy_edu_subtitle_regular">Listing for a training course</string>
+    <string name="discounts_copy_edu_business">Center and track</string>
+    <string name="discounts_copy_edu_business_hint">Center name: PDP Academy</string>
+    <string name="discounts_copy_edu_category_hint">Pick a course track</string>
+    <string name="discounts_copy_edu_images">Center photos</string>
+    <string name="discounts_copy_edu_images_hint">Classroom, students</string>
+    <string name="discounts_copy_edu_about">About the course</string>
+    <string name="discounts_copy_edu_title_hint">Course name: IELTS 6.5+ intensive</string>
+    <string name="discounts_copy_edu_description_hint">Curriculum, outcome, teacher...</string>
+
+    <!-- ============ Form copy — Entertainment ============ -->
+    <string name="discounts_copy_ent_title">Entertainment discount</string>
+    <string name="discounts_copy_ent_subtitle">Student discount on a ticket</string>
+    <string name="discounts_copy_ent_title_regular">Entertainment listing</string>
+    <string name="discounts_copy_ent_subtitle_regular">Listing for a ticket or show</string>
+    <string name="discounts_copy_ent_business">Venue and type</string>
+    <string name="discounts_copy_ent_business_hint">Name: Cinema Park</string>
+    <string name="discounts_copy_ent_category_hint">Pick an event type</string>
+    <string name="discounts_copy_ent_images">Event photos</string>
+    <string name="discounts_copy_ent_images_hint">Poster or venue photo</string>
+    <string name="discounts_copy_ent_about">About the event</string>
+    <string name="discounts_copy_ent_title_hint">Name: Dune — IMAX screening</string>
+    <string name="discounts_copy_ent_description_hint">Screening, hall, extra details...</string>
+
+    <!-- ============ Form copy — Barbershop ============ -->
+    <string name="discounts_copy_barber_title">Barbershop discount</string>
+    <string name="discounts_copy_barber_subtitle">Student discount on a service</string>
+    <string name="discounts_copy_barber_title_regular">Barbershop listing</string>
+    <string name="discounts_copy_barber_subtitle_regular">Listing for a service</string>
+    <string name="discounts_copy_barber_business">Barbershop and section</string>
+    <string name="discounts_copy_barber_business_hint">Name: Barber House</string>
+    <string name="discounts_copy_barber_category_hint">Pick a service type</string>
+    <string name="discounts_copy_barber_images">Work samples</string>
+    <string name="discounts_copy_barber_images_hint">Haircut / result photo</string>
+    <string name="discounts_copy_barber_about">About the service</string>
+    <string name="discounts_copy_barber_title_hint">Service: Men\'s haircut + beard</string>
+    <string name="discounts_copy_barber_description_hint">Barber, duration, extra services...</string>
+
+    <!-- ============ Form copy — Beauty salon ============ -->
+    <string name="discounts_copy_beauty_title">Beauty salon discount</string>
+    <string name="discounts_copy_beauty_subtitle">Student discount on a service</string>
+    <string name="discounts_copy_beauty_title_regular">Beauty salon listing</string>
+    <string name="discounts_copy_beauty_subtitle_regular">Listing for a service</string>
+    <string name="discounts_copy_beauty_business">Salon and section</string>
+    <string name="discounts_copy_beauty_business_hint">Name: Beauty Room</string>
+    <string name="discounts_copy_beauty_category_hint">Pick a service type</string>
+    <string name="discounts_copy_beauty_images">Work samples</string>
+    <string name="discounts_copy_beauty_images_hint">Photo of the result</string>
+    <string name="discounts_copy_beauty_about">About the service</string>
+    <string name="discounts_copy_beauty_title_hint">Service: Makeup + hairstyling</string>
+    <string name="discounts_copy_beauty_description_hint">Stylist, duration, extra services...</string>
+
+</resources>

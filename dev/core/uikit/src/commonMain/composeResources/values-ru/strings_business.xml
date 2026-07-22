@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ElonUz — тексты бизнес-экранов (`:dev:feature:business`). РУССКИЙ перевод.
+  Набор ключей должен совпадать с values/strings_business.xml.
+-->
+<resources>
+
+    <!-- ============ Каркас бизнес-раздела (BusinessShell) ============ -->
+    <string name="business_center_label">БИЗНЕС-ЦЕНТР</string>
+    <string name="business_my_listings_title">Мои объявления</string>
+    <string name="business_profile_action">Профиль</string>
+    <string name="business_new_listing">Объявление</string>
+
+    <!-- ============ Бизнес-профиль (BusinessAccountScreen) ============ -->
+    <string name="business_account_title">Бизнес-профиль</string>
+    <string name="business_type_default">Бизнес</string>
+    <string name="business_verified">Подтверждён</string>
+    <string name="business_rating_new">Новый бизнес</string>
+    <string name="business_stat_active">Активные объявления</string>
+    <string name="business_stat_redemptions">Использования</string>
+    <string name="business_stat_views">Просмотры</string>
+    <string name="business_info_type">Тип бизнеса</string>
+    <string name="business_info_email">Email</string>
+    <string name="business_info_hours">Часы работы</string>
+    <string name="business_info_hours_unset">Не указано</string>
+    <string name="business_menu_listings">Мои объявления</string>
+    <string name="business_menu_settings">Настройки</string>
+
+    <!-- ============ Редактирование профиля (BusinessEditScreen) ============ -->
+    <string name="business_edit_title">Редактировать профиль</string>
+    <string name="business_field_name">Название бизнеса</string>
+    <string name="business_field_name_hint">Например: Кафе Aurora</string>
+    <string name="business_field_phone">Телефон</string>
+    <string name="business_field_phone_hint">+998 90 123 45 67</string>
+    <string name="business_field_email">Email (gmail)</string>
+    <string name="business_field_email_hint">biznes@gmail.com</string>
+
+    <!-- ============ Вход для бизнеса (BusinessWelcomeScreen) ============ -->
+    <string name="business_welcome_title">Вход для бизнеса</string>
+    <string name="business_welcome_subtitle">Войдите как владелец бизнеса — размещайте и управляйте своими объявлениями со скидками.</string>
+    <string name="business_welcome_phone_label">Номер телефона</string>
+    <string name="business_welcome_phone_hint">90 123 45 67</string>
+    <string name="business_welcome_phone_prefix">🇺🇿 +998</string>
+    <string name="business_welcome_get_code">Получить код</string>
+    <string name="business_welcome_google">Войти через Google</string>
+    <string name="business_welcome_email">Войти по email</string>
+    <string name="business_welcome_student_hint">Хотите войти как студент? Вернитесь назад и выберите «Студент».</string>
+    <string name="business_welcome_dev_login">🔧 Dev-вход (тест)</string>
+
+    <!-- ============ Типы бизнеса (BusinessTypes) ============ -->
+    <string name="business_type_cafe">Кафе и рестораны</string>
+    <string name="business_type_grocery">Продукты питания</string>
+    <string name="business_type_clothing">Одежда</string>
+    <string name="business_type_game_club">Игровой клуб</string>
+    <string name="business_type_education">Учебные центры</string>
+    <string name="business_type_cinema">Кино и развлечения</string>
+    <string name="business_type_electronics">Техника</string>
+    <string name="business_type_barber">Барбершоп</string>
+    <string name="business_type_beauty">Салон красоты</string>
+    <string name="business_type_gym">Спортзал</string>
+    <string name="business_type_auto">Автосервис</string>
+    <string name="business_type_pharmacy">Аптека</string>
+    <string name="business_type_flowers">Цветочный магазин</string>
+    <string name="business_type_other">Другое</string>
+
+</resources>

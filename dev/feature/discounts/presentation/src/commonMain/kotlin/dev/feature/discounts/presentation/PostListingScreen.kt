@@ -11,9 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,29 +22,36 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.core.designsystem.components.AppFontFamily
-import dev.core.designsystem.components.AppIcons
-import dev.core.designsystem.components.GlassTextField
-import dev.core.designsystem.components.PrimaryButton
-import dev.core.designsystem.theme.AppPalette
-import dev.core.designsystem.theme.appPalette
-import dev.feature.discounts.domain.model.BusinessType
-import dev.feature.discounts.domain.model.ListingField
-import dev.feature.discounts.presentation.components.FormSection
-import dev.feature.discounts.presentation.components.IconSquareButton
+import dev.core.uikit.component.AppIcons
+import dev.core.uikit.component.GlassTextField
+import dev.core.uikit.component.PrimaryButton
+import dev.core.uikit.component.ScreenTopBar
+import dev.core.uikit.resources.Res
+import dev.core.uikit.resources.common_back
+import dev.core.uikit.resources.common_retry
+import dev.core.uikit.resources.discounts_map_branch_title
+import dev.core.uikit.resources.discounts_map_confirm
+import dev.core.uikit.resources.discounts_map_hint
+import dev.core.uikit.resources.discounts_map_my_location
+import dev.core.uikit.resources.discounts_map_search_hint
+import dev.core.uikit.resources.discounts_resolving_address
+import dev.core.uikit.resources.discounts_searching
+import dev.core.uikit.theme.AppPalette
+import dev.core.uikit.theme.AppRadius
+import dev.core.uikit.theme.AppSpacing
+import dev.core.uikit.theme.AppType
+import dev.core.uikit.theme.appPalette
 import dev.feature.discounts.presentation.form.TypeListingForm
-import dev.feature.discounts.presentation.map.MapCenterRequest
-import dev.feature.discounts.presentation.map.MapPicker
-import dev.feature.discounts.presentation.map.MapPoint
-import dev.feature.discounts.presentation.map.rememberUserLocation
+import dev.core.uikit.map.MapCenterRequest
+import dev.core.uikit.map.MapPicker
+import dev.core.uikit.map.MapPoint
+import dev.core.uikit.map.rememberUserLocation
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -97,7 +102,7 @@ fun PostListingScreen(
         // e'lon turi biznesdan meros olinadi.
         type == null ->
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                androidx.compose.material3.CircularProgressIndicator(color = palette.primary, strokeWidth = 3.dp)
+                CircularProgressIndicator(color = palette.primary, strokeWidth = 3.dp)
             }
         else -> TypeListingForm(type, state, palette, vm, onBack = onClose)
     }
@@ -121,109 +126,24 @@ private fun LoadFailed(
         ) {
             Text(
                 message,
-                style = TextStyle(
-                    fontFamily = AppFontFamily,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = palette.inkMuted,
-                ),
+                style = AppType.body.copy(color = palette.inkMuted),
                 textAlign = TextAlign.Center,
             )
-            if (onRetry != null) PrimaryButton("Qayta urinish", onRetry)
-            Text(
-                "Orqaga",
-                modifier = Modifier.clickable(onClick = onBack).padding(8.dp),
-                style = TextStyle(
-                    fontFamily = AppFontFamily,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = palette.primary,
-                ),
-            )
-        }
-    }
-}
-
-
-// ---------------------------------------------------------------------------
-// Filiallar — xaritadan
-// ---------------------------------------------------------------------------
-
-/**
- * Filiallar bo'limi. Manzil qo'lda yozilmaydi: "+" bosiladi, xaritadan joy tanlanadi,
- * manzil teskari geokodlash bilan o'zi to'ladi.
- */
-@Composable
-fun BranchesSection(state: PostListingUiState, palette: AppPalette, vm: PostListingViewModel) {
-    FormSection(
-        title = "Filiallar",
-        subtitle = "Talabaga eng yaqini masofasi bilan ko'rsatiladi",
-        error = state.errorFor(ListingField.LOCATION),
-    ) {
-        state.branches.forEachIndexed { index, branch ->
-            Column(
-                Modifier.fillMaxWidth().clip(RoundedCornerShape(13.dp))
-                    .background(palette.fieldBg).padding(11.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Box(
-                        Modifier.size(28.dp).clip(RoundedCornerShape(9.dp)).background(palette.primary.copy(alpha = 0.14f)),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            "${index + 1}",
-                            style = TextStyle(fontFamily = AppFontFamily, fontSize = 12.sp, fontWeight = FontWeight.Black, color = palette.primary),
-                        )
-                    }
-                    Text(
-                        branch.address,
-                        style = TextStyle(fontFamily = AppFontFamily, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = palette.ink),
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f),
-                    )
-                    Icon(
-                        AppIcons.Close,
-                        "Filialni o'chirish",
-                        tint = palette.inkFaint,
-                        modifier = Modifier.size(15.dp).clickable { vm.removeBranch(index) },
-                    )
-                }
-
-                GlassTextField(
-                    branch.name.orEmpty(),
-                    { vm.onBranchName(index, it) },
-                    "Filial nomi (ixtiyoriy): Chilonzor filiali",
-                    height = 44,
-                )
+            if (onRetry != null) {
+                PrimaryButton(stringResource(Res.string.common_retry), onRetry, palette = palette)
             }
-        }
-
-        if (state.resolvingAddress) {
             Text(
-                "Manzil aniqlanmoqda...",
-                style = TextStyle(fontFamily = AppFontFamily, fontSize = 11.5f.sp, fontWeight = FontWeight.Bold, color = palette.primary),
-            )
-        }
-
-        Row(
-            Modifier.fillMaxWidth().clip(RoundedCornerShape(13.dp))
-                .background(palette.primary.copy(alpha = 0.08f))
-                .clickable(onClick = vm::openMap)
-                .padding(vertical = 13.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Icon(AppIcons.Plus, null, tint = palette.primary, modifier = Modifier.size(17.dp))
-            Spacer(Modifier.size(7.dp))
-            Text(
-                if (state.branches.isEmpty()) "Xaritadan filial belgilash" else "Yana bitta filial",
-                style = TextStyle(fontFamily = AppFontFamily, fontSize = 12.5f.sp, fontWeight = FontWeight.ExtraBold, color = palette.primary),
+                stringResource(Res.string.common_back),
+                modifier = Modifier.clickable(onClick = onBack).padding(AppSpacing.sm),
+                style = AppType.label.copy(color = palette.primary),
             )
         }
     }
 }
+
+// ---------------------------------------------------------------------------
+// Filial joyini xaritadan tanlash
+// ---------------------------------------------------------------------------
 
 /**
  * Xaritadan joy tanlash — Yandex uslubi: belgi ekran markazida turadi, xarita suriladi,
@@ -246,31 +166,26 @@ private fun BranchMapScreen(state: PostListingUiState, palette: AppPalette, vm: 
     }
 
     Column(Modifier.fillMaxSize()) {
-        Row(
-            Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 54.dp, bottom = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(11.dp),
-        ) {
-            IconSquareButton(vm::closeMap, AppIcons.ArrowLeft, palette)
-            Column(Modifier.weight(1f)) {
-                Text(
-                    "Filial joyi",
-                    style = TextStyle(fontFamily = AppFontFamily, fontSize = 18.sp, fontWeight = FontWeight.Black, color = palette.ink),
-                )
-                Text(
-                    if (state.resolvingAddress) "Manzil aniqlanmoqda..." else "Xaritani suring — belgi joyni ko'rsatadi",
-                    style = TextStyle(fontFamily = AppFontFamily, fontSize = 11.5f.sp, color = palette.inkFaint),
-                )
-            }
-        }
+        ScreenTopBar(
+            title = stringResource(Res.string.discounts_map_branch_title),
+            subtitle = stringResource(
+                if (state.resolvingAddress) Res.string.discounts_resolving_address
+                else Res.string.discounts_map_hint,
+            ),
+            onBack = vm::closeMap,
+            backContentDescription = stringResource(Res.string.common_back),
+            modifier = Modifier.padding(horizontal = AppSpacing.lg).padding(top = 54.dp, bottom = AppSpacing.md),
+            palette = palette,
+        )
 
-        Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+        Column(Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg)) {
             GlassTextField(
                 state.searchQuery,
                 vm::onSearchQuery,
-                "Qidirish: Mega Planet, Amir Temur ko'chasi...",
+                stringResource(Res.string.discounts_map_search_hint),
                 leading = AppIcons.Search,
-                height = 46,
+                height = 46.dp,
+                palette = palette,
             )
         }
         Spacer(Modifier.height(10.dp))
@@ -278,6 +193,7 @@ private fun BranchMapScreen(state: PostListingUiState, palette: AppPalette, vm: 
         Box(Modifier.fillMaxWidth().weight(1f)) {
             MapPicker(
                 initial = userLocation,
+                dark = palette.dark,
                 onCenterChanged = { point -> pickedPoint = point },
                 modifier = Modifier.fillMaxSize(),
                 centerRequest = centerRequest,
@@ -286,16 +202,17 @@ private fun BranchMapScreen(state: PostListingUiState, palette: AppPalette, vm: 
             if (state.searching || state.searchResults.isNotEmpty()) {
                 Column(
                     Modifier.align(Alignment.TopCenter)
-                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                        .padding(horizontal = AppSpacing.md, vertical = AppSpacing.sm)
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(Color.White),
+                        .clip(AppRadius.lg)
+                        // Xarita ustidagi panel — palitradagi ko'tarilgan yuza rangi.
+                        .background(palette.barSurface),
                 ) {
                     if (state.searching) {
                         Text(
-                            "Qidirilmoqda...",
-                            style = TextStyle(fontFamily = AppFontFamily, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color(0xFF6B6880)),
-                            modifier = Modifier.padding(12.dp),
+                            stringResource(Res.string.discounts_searching),
+                            style = AppType.fieldLabel.copy(color = palette.inkMuted),
+                            modifier = Modifier.padding(AppSpacing.md),
                         )
                     }
                     state.searchResults.forEach { place ->
@@ -306,19 +223,22 @@ private fun BranchMapScreen(state: PostListingUiState, palette: AppPalette, vm: 
                                     centerRequest = MapCenterRequest(MapPoint(place.lat, place.lng), requestId)
                                     vm.clearSearch()
                                 }
-                                .padding(horizontal = 12.dp, vertical = 9.dp),
+                                .padding(horizontal = AppSpacing.md, vertical = 9.dp),
                             verticalArrangement = Arrangement.spacedBy(2.dp),
                         ) {
                             Text(
                                 place.title,
-                                style = TextStyle(fontFamily = AppFontFamily, fontSize = 13.sp, fontWeight = FontWeight.ExtraBold, color = Color(0xFF14102D)),
+                                style = AppType.label.copy(
+                                    fontWeight = AppType.buttonSecondary.fontWeight,
+                                    color = palette.ink,
+                                ),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                             )
                             if (place.subtitle.isNotBlank()) {
                                 Text(
                                     place.subtitle,
-                                    style = TextStyle(fontFamily = AppFontFamily, fontSize = 11.sp, color = Color(0xFF8A87A0)),
+                                    style = AppType.caption.copy(fontSize = 11.sp, color = palette.inkFaint),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                 )
@@ -331,52 +251,39 @@ private fun BranchMapScreen(state: PostListingUiState, palette: AppPalette, vm: 
             if (userLocation != null) {
                 Row(
                     Modifier.align(Alignment.BottomStart)
-                        .padding(start = 12.dp, bottom = 92.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color.White)
+                        .padding(start = AppSpacing.md, bottom = 92.dp)
+                        .clip(AppRadius.md)
+                        .background(palette.barSurface)
                         .clickable {
                             requestId++
                             centerRequest = MapCenterRequest(userLocation, requestId)
                         }
-                        .padding(horizontal = 12.dp, vertical = 10.dp),
+                        .padding(horizontal = AppSpacing.md, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
-                    Text("📍", style = TextStyle(fontSize = 13.sp))
+                    Text("📍", style = AppType.label.copy(fontSize = 13.sp))
                     Text(
-                        "Mening joylashuvim",
-                        style = TextStyle(fontFamily = AppFontFamily, fontSize = 12.sp, fontWeight = FontWeight.ExtraBold, color = Color(0xFF14102D)),
+                        stringResource(Res.string.discounts_map_my_location),
+                        style = AppType.fieldLabel.copy(
+                            fontWeight = AppType.buttonSecondary.fontWeight,
+                            color = palette.ink,
+                        ),
                     )
                 }
             }
         }
 
-        Box(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp)) {
+        Box(Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg, vertical = 10.dp)) {
             PrimaryButton(
-                if (state.resolvingAddress) "Manzil aniqlanmoqda..." else "Shu yerni tanlash",
+                stringResource(
+                    if (state.resolvingAddress) Res.string.discounts_resolving_address
+                    else Res.string.discounts_map_confirm,
+                ),
                 onClick = { pickedPoint?.let { vm.addBranchFromMap(it.lat, it.lng) } },
                 enabled = pickedPoint != null && !state.resolvingAddress,
+                palette = palette,
             )
         }
-    }
-}
-
-/** Bir martalik xabar (rasm xatosi, "Qoralama saqlandi"). */
-@Composable
-fun MessageBar(message: String, palette: AppPalette, onDismiss: () -> Unit) {
-    Row(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp))
-            .background(palette.primary.copy(alpha = 0.10f))
-            .clickable(onClick = onDismiss)
-            .padding(horizontal = 12.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Text(
-            message,
-            style = TextStyle(fontFamily = AppFontFamily, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = palette.primary),
-            modifier = Modifier.weight(1f),
-        )
-        Icon(AppIcons.Close, "Yopish", tint = palette.primary, modifier = Modifier.size(14.dp))
     }
 }

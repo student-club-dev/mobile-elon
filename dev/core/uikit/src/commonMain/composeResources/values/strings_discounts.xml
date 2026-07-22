@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ElonUz — "Chegirmalar / Biznes" bo'limining matnlari. ASOSIY (o'zbek) til.
+
+  Kalit prefiksi: `discounts_`. Umumiy matnlar (Saqlash, Bekor qilish, Orqaga...) bu yerda
+  TAKRORLANMAYDI — ular `strings.xml` dagi `common_*` kalitlaridan olinadi.
+
+  `discounts_copy_*` — biznes turiga qarab o'zgaradigan forma yozuvlari: kafe "taom",
+  game club "sessiya", o'quv markaz "kurs" sotadi, shuning uchun bir xil "Sarlavha / Narx"
+  yozuvlari ularning hech biriga to'g'ri kelmaydi.
+-->
+<resources>
+
+    <!-- ============ E'lonlarim ro'yxati ============ -->
+    <string name="discounts_my_listings_title">Mening chegirmalarim</string>
+    <string name="discounts_listings_count">%1$s ta e\'lon</string>
+    <string name="discounts_create_cd">Yangi e\'lon qo\'shish</string>
+    <string name="discounts_offline">Internet aloqasi yo\'q — oflayn rejim</string>
+    <string name="discounts_empty_discount_title">Hali chegirma yo\'q</string>
+    <string name="discounts_empty_discount_message">Birinchi chegirmangizni joylang — talabalar uni Chegirmalar bo\'limida ko\'radi.</string>
+    <string name="discounts_empty_listing_title">Hali e\'lon yo\'q</string>
+    <string name="discounts_empty_listing_message">Birinchi e\'loningizni joylang — mahsulot yoki xizmatingizni talabalarga ko\'rsating.</string>
+    <string name="discounts_add_discount">Chegirma qo\'shish</string>
+    <string name="discounts_add_listing">E\'lon qo\'shish</string>
+    <string name="discounts_price_sum">%1$s so\'m</string>
+    <string name="discounts_sum_suffix">so\'m</string>
+    <string name="discounts_branch_location">📍 %1$s</string>
+    <string name="discounts_branch_extra">  +%1$s filial</string>
+    <string name="discounts_action_pause">To\'xtatish</string>
+    <string name="discounts_action_resume">Yoqish</string>
+
+    <!-- ============ Xarita — joy tanlash ============ -->
+    <string name="discounts_map_branch_title">Filial joyi</string>
+    <string name="discounts_map_business_title">Biznes joyi</string>
+    <string name="discounts_map_hint">Xaritani suring — belgi joyni ko\'rsatadi</string>
+    <string name="discounts_map_search_hint">Qidirish: Mega Planet, Amir Temur ko\'chasi...</string>
+    <string name="discounts_searching">Qidirilmoqda...</string>
+    <string name="discounts_map_my_location">Mening joylashuvim</string>
+    <string name="discounts_map_confirm">Shu yerni tanlash</string>
+    <string name="discounts_resolving_address">Manzil aniqlanmoqda...</string>
+
+    <!-- ============ Filiallar bo'limi ============ -->
+    <string name="discounts_branches_title">Filiallar</string>
+    <string name="discounts_branches_subtitle">Talabaga eng yaqini masofasi bilan ko\'rsatiladi</string>
+    <string name="discounts_branch_remove">Filialni o\'chirish</string>
+    <string name="discounts_branch_name_hint">Filial nomi (ixtiyoriy): Chilonzor filiali</string>
+    <string name="discounts_branch_pick_first">Xaritadan filial belgilash</string>
+    <string name="discounts_branch_pick_more">Yana bitta filial</string>
+
+    <!-- ============ E'lon formasi ============ -->
+    <string name="discounts_edit_listing_title">E\'lonni tahrirlash</string>
+    <string name="discounts_form_errors">To\'ldirilmagan %1$s ta joy bor — yuqorida qizil bilan belgilandi.</string>
+    <string name="discounts_draft">Qoralama</string>
+    <string name="discounts_submitting">Yuborilmoqda...</string>
+    <string name="discounts_publish">E\'lonni joylash</string>
+    <string name="discounts_image">Rasm</string>
+    <string name="discounts_image_uploading">...</string>
+
+    <string name="discounts_mode_section">E\'lon turi</string>
+    <string name="discounts_mode_subtitle">Chegirmali yoki oddiy e\'lon</string>
+    <string name="discounts_mode_discount">Chegirma e\'loni</string>
+    <string name="discounts_mode_regular">Oddiy e\'lon</string>
+
+    <string name="discounts_gender_section">Kimlar uchun kiyim</string>
+    <string name="discounts_gender_subtitle">Turini tanlang — kategoriyalar shunga moslanadi</string>
+    <string name="discounts_gender_male">Erkaklar</string>
+    <string name="discounts_gender_female">Ayollar</string>
+
+    <string name="discounts_category_section">Turi</string>
+    <string name="discounts_category_custom_hint">Nimaga amal qiladi?</string>
+
+    <string name="discounts_business_section_subtitle">Talaba e\'lonni shu nom ostida ko\'radi</string>
+
+    <string name="discounts_attributes_section">Tafsilotlar</string>
+    <string name="discounts_attributes_subtitle">Tanlangan bo\'limga mos ma\'lumotlar</string>
+    <string name="discounts_attribute_label">%1$s (%2$s)</string>
+    <string name="discounts_number_hint">0</string>
+    <string name="discounts_yes">Ha</string>
+    <string name="discounts_no">Yo\'q</string>
+
+    <string name="discounts_images_subtitle">%1$s · maksimal %2$s ta</string>
+    <string name="discounts_about_subtitle">Tafsilotlarni shu yerga erkin yozing — alohida maydonlar kerak emas</string>
+
+    <string name="discounts_price_section">Narx</string>
+    <string name="discounts_price_subtitle_discount">Oldingi va hozirgi (chegirmali) narx</string>
+    <string name="discounts_price_subtitle_regular">E\'lon narxi</string>
+    <string name="discounts_price_label">Narx</string>
+    <string name="discounts_price_old_label">Oldingi narx</string>
+    <string name="discounts_price_old_hint">Masalan: 50 000</string>
+    <string name="discounts_price_new_label">Hozirgi narx (chegirmali)</string>
+    <string name="discounts_price_new_hint">Masalan: 35 000</string>
+    <string name="discounts_student_pays">Talaba to\'laydi: %1$s so\'m</string>
+    <string name="discounts_percent_off">-%1$s%</string>
+
+    <string name="discounts_contact_subtitle">Talaba shu raqamga bog\'lanadi</string>
+    <string name="discounts_contact_hint">+998 90 123 45 67</string>
+
+    <string name="discounts_redemption_section">Talaba qanday oladi</string>
+    <string name="discounts_promo_hint">NAVRUZ20</string>
+
+    <string name="discounts_validity_section">Qancha vaqt amal qiladi</string>
+    <string name="discounts_validity_subtitle">Bugundan boshlab %1$s kun</string>
+    <string name="discounts_days">%1$s kun</string>
+
+    <!-- ============ Bizneslarim ============ -->
+    <string name="discounts_business_hub">BIZNES MARKAZI</string>
+    <string name="discounts_my_businesses">Bizneslarim</string>
+    <string name="discounts_profile">Profil</string>
+    <string name="discounts_business">Biznes</string>
+    <string name="discounts_business_delete_title">Biznesni o\'chirish</string>
+    <string name="discounts_business_delete_confirm">\"%1$s\" o\'chirilsinmi? Bu amalni qaytarib bo\'lmaydi.</string>
+    <string name="discounts_business_empty_title">Hali biznes yo\'q</string>
+    <string name="discounts_business_empty_message">Birinchi biznesingizni qo\'shing — keyin unga chegirma va e\'lonlar joylaysiz.</string>
+    <string name="discounts_business_add">Biznes qo\'shish</string>
+    <string name="discounts_business_edit">Biznesni tahrirlash</string>
+    <string name="discounts_business_type_label">Biznes turi</string>
+    <string name="discounts_business_name_label">Biznes nomi</string>
+    <string name="discounts_business_name_hint">Masalan: Kafe Aurora</string>
+    <string name="discounts_phone_label">Telefon raqami</string>
+    <string name="discounts_phone_hint">90 123 45 67</string>
+    <string name="discounts_phone_prefix">🇺🇿 +998</string>
+    <string name="discounts_location_label">Joylashuv</string>
+    <string name="discounts_location_hint">Xaritadan joyni tanlang</string>
+    <string name="discounts_saving">Saqlanmoqda...</string>
+    <string name="discounts_business_save">Biznesni saqlash</string>
+
+    <!-- ============ Yaqin atrofdagi chegirmalar ============ -->
+    <string name="discounts_nearby_title">Yaqin atrofdagi chegirmalar</string>
+    <string name="discounts_location_off">joylashuv o\'chiq</string>
+
+    <!-- ============ Forma yozuvlari — Kafe / Restoran ============ -->
+    <string name="discounts_copy_cafe_title">Kafe chegirmasi</string>
+    <string name="discounts_copy_cafe_subtitle">Taomga talaba chegirmasi</string>
+    <string name="discounts_copy_cafe_title_regular">Kafe e\'loni</string>
+    <string name="discounts_copy_cafe_subtitle_regular">Menyudagi taom e\'loni</string>
+    <string name="discounts_copy_cafe_business">Kafe va menyu bo\'limi</string>
+    <string name="discounts_copy_cafe_business_hint">Kafe nomi: Chaykhana Navruz</string>
+    <string name="discounts_copy_cafe_category_hint">Menyudagi bo\'limni tanlang</string>
+    <string name="discounts_copy_cafe_images">Taom rasmlari</string>
+    <string name="discounts_copy_cafe_images_hint">Birinchisi muqova bo\'ladi</string>
+    <string name="discounts_copy_cafe_about">Taom haqida</string>
+    <string name="discounts_copy_cafe_title_hint">Taom nomi: Pepperoni pitsa</string>
+    <string name="discounts_copy_cafe_description_hint">Tarkibi, tayyorlash usuli...</string>
+
+    <!-- ============ Forma yozuvlari — Game Club ============ -->
+    <string name="discounts_copy_game_title">Game Club chegirmasi</string>
+    <string name="discounts_copy_game_subtitle">O\'yin sessiyasiga talaba chegirmasi</string>
+    <string name="discounts_copy_game_title_regular">Game Club e\'loni</string>
+    <string name="discounts_copy_game_subtitle_regular">O\'yin sessiyasi e\'loni</string>
+    <string name="discounts_copy_game_business">Klub va qurilma</string>
+    <string name="discounts_copy_game_business_hint">Klub nomi: CyberZone</string>
+    <string name="discounts_copy_game_category_hint">Qaysi qurilma yoki o\'yin turi</string>
+    <string name="discounts_copy_game_images">Zal rasmlari</string>
+    <string name="discounts_copy_game_images_hint">Zal, qurilmalar, o\'yin joyi</string>
+    <string name="discounts_copy_game_about">Sessiya haqida</string>
+    <string name="discounts_copy_game_title_hint">Masalan: PS5 — 1 soat o\'yin</string>
+    <string name="discounts_copy_game_description_hint">Zal sharoiti, qulayliklar...</string>
+
+    <!-- ============ Forma yozuvlari — Kiyim-kechak ============ -->
+    <string name="discounts_copy_cloth_title">Kiyim chegirmasi</string>
+    <string name="discounts_copy_cloth_subtitle">Kiyimga talaba chegirmasi</string>
+    <string name="discounts_copy_cloth_title_regular">Kiyim e\'loni</string>
+    <string name="discounts_copy_cloth_subtitle_regular">Kiyim mahsuloti e\'loni</string>
+    <string name="discounts_copy_cloth_business">Do\'kon va bo\'lim</string>
+    <string name="discounts_copy_cloth_business_hint">Do\'kon nomi: Zara</string>
+    <string name="discounts_copy_cloth_category_hint">Kiyim bo\'limini tanlang</string>
+    <string name="discounts_copy_cloth_images">Kiyim rasmlari</string>
+    <string name="discounts_copy_cloth_images_hint">Old va orqa ko\'rinishi</string>
+    <string name="discounts_copy_cloth_about">Kiyim haqida</string>
+    <string name="discounts_copy_cloth_title_hint">Mahsulot nomi: Oversize futbolka</string>
+    <string name="discounts_copy_cloth_description_hint">Material, o\'lcham jadvali...</string>
+
+    <!-- ============ Forma yozuvlari — O'quv markaz ============ -->
+    <string name="discounts_copy_edu_title">Kurs chegirmasi</string>
+    <string name="discounts_copy_edu_subtitle">O\'quv kursiga talaba chegirmasi</string>
+    <string name="discounts_copy_edu_title_regular">Kurs e\'loni</string>
+    <string name="discounts_copy_edu_subtitle_regular">O\'quv kursi e\'loni</string>
+    <string name="discounts_copy_edu_business">Markaz va yo\'nalish</string>
+    <string name="discounts_copy_edu_business_hint">Markaz nomi: PDP Academy</string>
+    <string name="discounts_copy_edu_category_hint">Kurs yo\'nalishini tanlang</string>
+    <string name="discounts_copy_edu_images">Markaz rasmlari</string>
+    <string name="discounts_copy_edu_images_hint">Sinf xonasi, o\'quvchilar</string>
+    <string name="discounts_copy_edu_about">Kurs haqida</string>
+    <string name="discounts_copy_edu_title_hint">Kurs nomi: IELTS 6.5+ intensiv</string>
+    <string name="discounts_copy_edu_description_hint">Dastur, natija, o\'qituvchi haqida...</string>
+
+    <!-- ============ Forma yozuvlari — Ko'ngilochar ============ -->
+    <string name="discounts_copy_ent_title">Ko\'ngilochar chegirma</string>
+    <string name="discounts_copy_ent_subtitle">Chiptaga talaba chegirmasi</string>
+    <string name="discounts_copy_ent_title_regular">Ko\'ngilochar e\'lon</string>
+    <string name="discounts_copy_ent_subtitle_regular">Chipta va seans e\'loni</string>
+    <string name="discounts_copy_ent_business">Muassasa va turi</string>
+    <string name="discounts_copy_ent_business_hint">Nomi: Cinema Park</string>
+    <string name="discounts_copy_ent_category_hint">Tadbir turini tanlang</string>
+    <string name="discounts_copy_ent_images">Tadbir rasmlari</string>
+    <string name="discounts_copy_ent_images_hint">Afisha yoki zal rasmi</string>
+    <string name="discounts_copy_ent_about">Tadbir haqida</string>
+    <string name="discounts_copy_ent_title_hint">Nomi: Dune — IMAX seansi</string>
+    <string name="discounts_copy_ent_description_hint">Seans, zal, qo\'shimcha ma\'lumot...</string>
+
+    <!-- ============ Forma yozuvlari — Sartaroshxona ============ -->
+    <string name="discounts_copy_barber_title">Sartaroshxona chegirmasi</string>
+    <string name="discounts_copy_barber_subtitle">Xizmatga talaba chegirmasi</string>
+    <string name="discounts_copy_barber_title_regular">Sartaroshxona e\'loni</string>
+    <string name="discounts_copy_barber_subtitle_regular">Xizmat e\'loni</string>
+    <string name="discounts_copy_barber_business">Sartaroshxona va bo\'lim</string>
+    <string name="discounts_copy_barber_business_hint">Nomi: Barber House</string>
+    <string name="discounts_copy_barber_category_hint">Xizmat turini tanlang</string>
+    <string name="discounts_copy_barber_images">Ish namunalari</string>
+    <string name="discounts_copy_barber_images_hint">Soch turmagi / ish natijasi rasmi</string>
+    <string name="discounts_copy_barber_about">Xizmat haqida</string>
+    <string name="discounts_copy_barber_title_hint">Xizmat: Erkaklar soch olish + soqol</string>
+    <string name="discounts_copy_barber_description_hint">Usta, davomiyligi, qo\'shimcha xizmat...</string>
+
+    <!-- ============ Forma yozuvlari — Go'zallik saloni ============ -->
+    <string name="discounts_copy_beauty_title">Go\'zallik saloni chegirmasi</string>
+    <string name="discounts_copy_beauty_subtitle">Xizmatga talaba chegirmasi</string>
+    <string name="discounts_copy_beauty_title_regular">Go\'zallik saloni e\'loni</string>
+    <string name="discounts_copy_beauty_subtitle_regular">Xizmat e\'loni</string>
+    <string name="discounts_copy_beauty_business">Salon va bo\'lim</string>
+    <string name="discounts_copy_beauty_business_hint">Nomi: Beauty Room</string>
+    <string name="discounts_copy_beauty_category_hint">Xizmat turini tanlang</string>
+    <string name="discounts_copy_beauty_images">Ish namunalari</string>
+    <string name="discounts_copy_beauty_images_hint">Xizmat natijasi rasmi</string>
+    <string name="discounts_copy_beauty_about">Xizmat haqida</string>
+    <string name="discounts_copy_beauty_title_hint">Xizmat: Makiyaj + soch turmagi</string>
+    <string name="discounts_copy_beauty_description_hint">Usta, davomiyligi, qo\'shimcha xizmat...</string>
+
+</resources>

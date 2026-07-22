@@ -10,8 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.core.designsystem.components.AppScreenScaffold
-import dev.core.designsystem.components.LogoTile
+import dev.core.uikit.component.AppScreenScaffold
+import androidx.compose.ui.unit.dp
+import dev.core.uikit.component.LogoTile
 import dev.core.domain.repository.SettingsRepository
 import dev.feature.auth.presentation.screens.RoleChoiceScreen
 import kotlinx.coroutines.flow.SharingStarted
@@ -102,7 +103,7 @@ fun RoleLauncher(
 private fun LauncherSplash() {
     AppScreenScaffold {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            LogoTile(size = 72, radius = 22, iconSize = 38)
+            LogoTile(size = 72.dp, radius = 22.dp, iconSize = 38.dp)
         }
     }
 }

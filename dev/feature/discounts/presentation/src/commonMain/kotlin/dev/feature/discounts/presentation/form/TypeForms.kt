@@ -13,26 +13,28 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import dev.core.designsystem.components.AppFontFamily
-import dev.core.designsystem.components.AppIcons
-import dev.core.designsystem.components.OutlineButton
-import dev.core.designsystem.components.PrimaryButton
-import dev.core.designsystem.media.rememberImagePicker
-import dev.core.designsystem.theme.AppPalette
+import dev.core.uikit.component.OutlineButton
+import dev.core.uikit.component.PrimaryButton
+import dev.core.uikit.component.ScreenTopBar
+import dev.core.uikit.media.rememberImagePicker
+import dev.core.uikit.resources.Res
+import dev.core.uikit.resources.common_back
+import dev.core.uikit.resources.discounts_draft
+import dev.core.uikit.resources.discounts_edit_listing_title
+import dev.core.uikit.resources.discounts_form_errors
+import dev.core.uikit.resources.discounts_publish
+import dev.core.uikit.resources.discounts_submitting
+import dev.core.uikit.theme.AppPalette
+import dev.core.uikit.theme.AppSpacing
+import dev.core.uikit.theme.AppType
 import dev.feature.discounts.domain.model.BusinessType
-import dev.feature.discounts.presentation.BranchesSection
-import dev.feature.discounts.presentation.MessageBar
 import dev.feature.discounts.presentation.PostListingUiState
 import dev.feature.discounts.presentation.PostListingViewModel
-import dev.feature.discounts.presentation.components.ErrorColor
-import dev.feature.discounts.presentation.components.IconSquareButton
+import dev.feature.discounts.presentation.components.BranchesSection
+import dev.feature.discounts.presentation.components.MessageBar
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Har bir biznes turining **o'z ekrani**.
@@ -62,7 +64,7 @@ fun TypeListingForm(
 }
 
 /**
- * Ekranning umumiy karkasi: sarlavha → 6 ta blok → tugmalar.
+ * Ekranning umumiy karkasi: sarlavha → bloklar → tugmalar.
  * Bloklarning ketma-ketligi barcha turlarda bir xil (o'rganish oson), yozuvlari — har xil.
  */
 @Composable
@@ -86,31 +88,24 @@ private fun ListingFormScaffold(
             // Flat dizayn — bo'limlar orasi kengroq; yon padding har bo'lim ichida.
             verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
-            Row(
-                Modifier.padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(11.dp),
-            ) {
-                IconSquareButton(onBack, AppIcons.ArrowLeft, palette)
-                Column {
-                    // Sarlavha rejimga ergashadi: chegirma e'lonida "Kafe chegirmasi",
-                    // oddiy e'londa "Kafe e'loni" — "chegirma" so'zi yolg'on turmasin.
-                    Text(
-                        when {
-                            state.editing -> "E'lonni tahrirlash"
-                            state.isDiscount -> copy.screenTitle
-                            else -> copy.screenTitleRegular
-                        },
-                        style = TextStyle(fontFamily = AppFontFamily, fontSize = 18.sp, fontWeight = FontWeight.Black, color = palette.ink),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    Text(
-                        if (state.isDiscount) copy.screenSubtitle else copy.screenSubtitleRegular,
-                        style = TextStyle(fontFamily = AppFontFamily, fontSize = 11.5f.sp, color = palette.inkFaint),
-                    )
-                }
-            }
+            // Sarlavha rejimga ergashadi: chegirma e'lonida "Kafe chegirmasi",
+            // oddiy e'londa "Kafe e'loni" — "chegirma" so'zi yolg'on turmasin.
+            ScreenTopBar(
+                title = stringResource(
+                    when {
+                        state.editing -> Res.string.discounts_edit_listing_title
+                        state.isDiscount -> copy.screenTitle
+                        else -> copy.screenTitleRegular
+                    },
+                ),
+                subtitle = stringResource(
+                    if (state.isDiscount) copy.screenSubtitle else copy.screenSubtitleRegular,
+                ),
+                onBack = onBack,
+                backContentDescription = stringResource(Res.string.common_back),
+                modifier = Modifier.padding(horizontal = AppSpacing.lg),
+                palette = palette,
+            )
 
             // Kiyim-kechakда — avval jins tanlash (erkak/ayol kiyimi).
             if (genderGate) ClothingGenderSection(state, palette, vm)
@@ -118,7 +113,6 @@ private fun ListingFormScaffold(
             // Jins gate: tanlanmaguncha (kiyimda) qolgan forma ko'rinmaydi.
             if (!genderGate || state.listingGender != null) {
                 // SODDALASHTIRILGAN forma: turi + nomi + rasm + narx + tel + joylashuv.
-                // E'lon turi (Chegirma / Oddiy) — faqat tab belgilamagan bo'lsa (modeLocked=false).
                 // Bo'lim (kategoriya) — horizontal scroll.
                 CategorySection(state, copy, vm)
                 // Kategoriyaga xos maydonlar — Futbolka → razmerlar, PlayStation → model (PS5/PS4).
@@ -141,33 +135,37 @@ private fun ListingFormScaffold(
 
             val message = state.message
             if (message != null) {
-                Box(Modifier.padding(horizontal = 16.dp)) {
+                Box(Modifier.padding(horizontal = AppSpacing.lg)) {
                     MessageBar(message, palette, onDismiss = vm::consumeMessage)
                 }
             }
 
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(AppSpacing.xs))
         }
 
         Column(
-            Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg, vertical = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
         ) {
             if (state.errors.isNotEmpty()) {
                 Text(
-                    "To'ldirilmagan ${state.errors.size} ta joy bor — yuqorida qizil bilan belgilandi.",
-                    style = TextStyle(fontFamily = AppFontFamily, fontSize = 11.5f.sp, fontWeight = FontWeight.Bold, color = ErrorColor),
+                    stringResource(Res.string.discounts_form_errors, "${state.errors.size}"),
+                    // Xato rangi palitradan — qorong'i rejimda ham o'qiladi.
+                    style = AppType.hint.copy(fontWeight = AppType.label.fontWeight, color = palette.danger),
                 )
             }
             Row(horizontalArrangement = Arrangement.spacedBy(9.dp)) {
                 Box(Modifier.weight(1f)) {
-                    OutlineButton("Qoralama", vm::saveDraft)
+                    OutlineButton(stringResource(Res.string.discounts_draft), vm::saveDraft, palette = palette)
                 }
                 Box(Modifier.weight(1.4f)) {
                     PrimaryButton(
-                        if (state.submitting) "Yuborilmoqda..." else "E'lonni joylash",
+                        stringResource(
+                            if (state.submitting) Res.string.discounts_submitting else Res.string.discounts_publish,
+                        ),
                         vm::publish,
                         enabled = !state.submitting,
+                        palette = palette,
                     )
                 }
             }

@@ -1,44 +1,25 @@
 package dev.feature.business
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import dev.core.designsystem.components.AppFontFamily
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import dev.core.designsystem.components.AppIcons
-import dev.core.designsystem.theme.AppPalette
-import dev.core.designsystem.theme.appPalette
+import dev.core.uikit.theme.AppSpacing
+import dev.core.uikit.theme.appPalette
+import dev.feature.business.components.BusinessTopBar
+import dev.feature.business.components.CreateFab
 import dev.feature.discounts.presentation.AddBusinessScreen
 import dev.feature.discounts.presentation.MyBusinessesScreen
 import dev.feature.discounts.presentation.MyListingsScreen
@@ -157,97 +138,8 @@ fun BusinessShell(
             CreateFab(
                 palette = palette,
                 onClick = { nav.navigate("$POST_LISTING?businessId=$businessId") { launchSingleTop = true } },
-                modifier = Modifier.align(Alignment.BottomEnd).padding(end = 18.dp, bottom = 26.dp),
+                modifier = Modifier.align(Alignment.BottomEnd).padding(end = 18.dp, bottom = AppSpacing.screenBottom),
             )
         }
-    }
-}
-
-/** Yuqori panel: back tugmasi + "E'lonlarim" sarlavhasi + gradient profil tugmasi. */
-@Composable
-private fun BusinessTopBar(
-    onBack: () -> Unit,
-    onProfile: () -> Unit,
-    palette: AppPalette,
-) {
-    Column(
-        Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 52.dp, bottom = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp),
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            // Orqaga qaytish — "Bizneslarim" ro'yxatiga.
-            Box(
-                Modifier.size(42.dp)
-                    .clip(CircleShape).background(palette.glass)
-                    .border(1.dp, palette.border, CircleShape)
-                    .clickable(onClick = onBack),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(AppIcons.ArrowLeft, "Orqaga", tint = palette.ink, modifier = Modifier.size(19.dp))
-            }
-            Spacer(Modifier.width(12.dp))
-            Column(Modifier.weight(1f)) {
-                Text(
-                    "BIZNES MARKAZI",
-                    style = TextStyle(
-                        fontFamily = AppFontFamily,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = 1.4.sp,
-                        color = palette.primary,
-                    ),
-                )
-                Spacer(Modifier.height(2.dp))
-                Text(
-                    "E'lonlarim",
-                    style = TextStyle(
-                        fontFamily = AppFontFamily,
-                        fontSize = 23.sp,
-                        fontWeight = FontWeight.Black,
-                        color = palette.ink,
-                    ),
-                )
-            }
-            // Gradient profil tugmasi.
-            Box(
-                Modifier.size(46.dp)
-                    .shadow(10.dp, CircleShape, spotColor = palette.primary.copy(alpha = 0.5f))
-                    .clip(CircleShape).background(palette.primaryBrush)
-                    .clickable(onClick = onProfile),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(AppIcons.Store, "Profil", tint = Color.White, modifier = Modifier.size(21.dp))
-            }
-        }
-        // Chegirma/E'lon segment olib tashlandi — hammasi (chegirma + oddiy) bitta ro'yxatda.
-    }
-}
-
-/** O'ng-past extended FAB — yangi e'lon (chegirma/oddiy forma ichida tanlanadi). */
-@Composable
-private fun CreateFab(
-    palette: AppPalette,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier
-            .shadow(16.dp, RoundedCornerShape(20.dp), spotColor = palette.primary.copy(alpha = 0.6f))
-            .clip(RoundedCornerShape(20.dp)).background(palette.primaryBrush)
-            .clickable(onClick = onClick)
-            .padding(start = 18.dp, end = 22.dp, top = 15.dp, bottom = 15.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(9.dp),
-    ) {
-        Icon(AppIcons.Plus, null, tint = Color.White, modifier = Modifier.size(22.dp))
-        Text(
-            "E'lon",
-            style = TextStyle(
-                fontFamily = AppFontFamily,
-                fontSize = 14.5f.sp,
-                fontWeight = FontWeight.Black,
-                color = Color.White,
-            ),
-        )
     }
 }

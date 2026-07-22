@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ElonUz — `:dev:feature:auth` moduli matnlari. INGLIZ tili.
+  Kalitlar values/strings_auth.xml bilan bir xil bo'lishi SHART.
+-->
+<resources>
+
+    <!-- ============ Onboarding ============ -->
+    <string name="auth_onboarding_skip">Skip</string>
+    <string name="auth_onboarding_chip_order">Order</string>
+    <string name="auth_onboarding_chip_ai_teacher">AI Tutor</string>
+    <string name="auth_onboarding_title">Every service in one app</string>
+    <string name="auth_onboarding_subtitle">One account instead of 7–10 apps. From food to classes, from jobs to housing.</string>
+
+    <!-- ============ Shared auth elements ============ -->
+    <string name="auth_continue">Continue</string>
+    <string name="auth_sign_in">Sign in</string>
+    <string name="auth_sign_up">Sign up</string>
+    <string name="auth_have_account">Already have an account?</string>
+    <string name="auth_no_account">Don\'t have an account?</string>
+    <string name="auth_field_phone_label">Your phone number</string>
+    <string name="auth_field_email_label">Email address</string>
+    <string name="auth_field_password_label">Password</string>
+    <string name="auth_phone_placeholder">90 123 45 67</string>
+    <string name="auth_email_placeholder">aziz.karimov@edu.uz</string>
+    <string name="auth_password_placeholder">••••••••</string>
+    <string name="auth_password_short_placeholder">••••••</string>
+
+    <!-- ============ Welcome ============ -->
+    <string name="auth_welcome_title">Welcome 👋</string>
+    <string name="auth_welcome_subtitle">Sign in to your account or register in a minute.</string>
+    <string name="auth_welcome_phone_hint">We\'ll text a verification code to this number.</string>
+    <string name="auth_welcome_email_hint">Enter your email to sign in or register.</string>
+
+    <!-- ============ Phone sign-in ============ -->
+    <string name="auth_phone_title">Your phone number</string>
+    <string name="auth_phone_subtitle">Enter your number to sign in — we\'ll text you a 6-digit code.</string>
+    <string name="auth_phone_only_uz_hint">Only Uzbekistan numbers are accepted.</string>
+    <string name="auth_get_code">Get code</string>
+
+    <!-- ============ Email sign-in ============ -->
+    <string name="auth_login_title">Welcome back</string>
+    <string name="auth_login_subtitle">Sign in with your email and password.</string>
+    <string name="auth_remember_me">Remember me</string>
+    <string name="auth_forgot_password">Forgot password?</string>
+    <string name="auth_face_id_login">Sign in with Face ID</string>
+
+    <!-- ============ Biometrics ============ -->
+    <string name="auth_biometric_prompt_subtitle">Confirm with Face ID</string>
+    <string name="auth_biometric_not_configured">Biometrics are not set up on this device (Face ID / fingerprint).</string>
+    <string name="auth_biometric_failed">Biometrics not recognised. Please try again.</string>
+    <string name="auth_biometric_unavailable">Biometrics are unavailable.</string>
+
+    <!-- ============ SMS code (OTP) ============ -->
+    <string name="auth_otp_title">Verification code</string>
+    <string name="auth_otp_phone_prefix">+998 %1$s </string>
+    <string name="auth_otp_sent_suffix">— enter the 6-digit code sent to this number.</string>
+    <string name="auth_resend_code">Resend code</string>
+    <string name="auth_resend_code_timer_prefix">Resend code · </string>
+    <string name="auth_resend_short_timer_prefix">Resend · </string>
+    <string name="auth_verify">Verify</string>
+    <string name="auth_otp_no_sms">Didn\'t get the SMS? </string>
+    <string name="auth_otp_via_telegram">Get it on Telegram</string>
+
+    <!-- ============ Create account ============ -->
+    <string name="auth_signup_title">Create account</string>
+    <string name="auth_first_name">First name</string>
+    <string name="auth_last_name">Last name</string>
+    <string name="auth_university_email_placeholder">aziz@tuit.uz</string>
+    <string name="auth_verified_badge">VERIFIED</string>
+    <string name="auth_university_email_hint">University email (optional) — unlocks the verified student badge.</string>
+    <string name="auth_terms_prefix">I agree to the </string>
+    <string name="auth_terms_terms">Terms of Use</string>
+    <string name="auth_terms_and"> and </string>
+    <string name="auth_terms_privacy">Privacy Policy</string>
+    <string name="auth_terms_agree_suffix">.</string>
+
+    <!-- ============ Password reset ============ -->
+    <string name="auth_forgot_title">Reset password</string>
+    <string name="auth_forgot_subtitle">Enter your email address — we\'ll send a password reset link.</string>
+    <string name="auth_forgot_send">Send reset link</string>
+    <string name="auth_back_to_login">Back to sign in</string>
+
+    <!-- ============ Registration method ============ -->
+    <string name="auth_register_choice_title">Create your account</string>
+    <string name="auth_register_choice_subtitle">Choose how you want to register.</string>
+    <string name="auth_register_with_phone">With phone number</string>
+    <string name="auth_register_with_email">Continue with email</string>
+    <string name="auth_register_choice_hint">By phone you get an SMS code, by email a 6-digit code.</string>
+
+    <!-- ============ Email verification ============ -->
+    <string name="auth_email_verify_title">Verify your email</string>
+    <string name="auth_email_verify_fallback">your email</string>
+    <string name="auth_email_verify_suffix"> — enter the 6-digit code sent to this address.</string>
+    <string name="auth_email_verify_spam_hint">Check your spam folder too.</string>
+
+    <!-- ============ Email + password registration ============ -->
+    <string name="auth_register_subtitle">Register in a minute with your email and password.</string>
+    <string name="auth_password_min_placeholder">At least 6 characters</string>
+    <string name="auth_confirm_password_label">Confirm password</string>
+    <string name="auth_confirm_password_placeholder">Re-enter your password</string>
+    <string name="auth_register_hint">After registering you\'ll pick a role and fill in your profile.</string>
+
+    <!-- ============ Role choice ============ -->
+    <string name="auth_role_title">How will you continue?</string>
+    <string name="auth_role_subtitle">Pick a role — the app will show the sections that fit you. You can change it later in your profile.</string>
+    <string name="auth_role_student">Student</string>
+    <string name="auth_role_student_desc">Discounts, jobs, students and listings</string>
+    <string name="auth_role_business">Business owner</string>
+    <string name="auth_role_business_desc">Post and manage discount offers</string>
+
+    <!-- ============ Home ============ -->
+    <string name="auth_home_greeting">Assalomu alaykum 👋</string>
+    <string name="auth_see_all">See all</string>
+    <string name="auth_more">More</string>
+    <string name="auth_bookmark">Save</string>
+    <string name="auth_home_offer_title">%1$s — %2$s off</string>
+    <string name="auth_home_jobs_subtitle">Matching your field</string>
+    <string name="auth_home_students_action">More</string>
+    <string name="auth_home_students_subtitle">Find friends from your university</string>
+    <string name="auth_home_job_meta">%1$s · %2$s · %3$s</string>
+
+    <!-- ============ Friend status ============ -->
+    <string name="auth_friend_add">Add friend</string>
+    <string name="auth_friend_add_short">+ Friend</string>
+    <string name="auth_friend_pending">Pending</string>
+    <string name="auth_friend_single">Friend</string>
+    <string name="auth_friend_friends">Friends</string>
+
+    <!-- ============ Messages ============ -->
+    <string name="auth_chat_title">Messages</string>
+    <string name="auth_chat_archive">Archive</string>
+    <string name="auth_chat_archive_count">Archive (%1$s)</string>
+    <string name="auth_chat_archive_action">Archive</string>
+    <string name="auth_chat_unarchive">Unarchive</string>
+    <string name="auth_chat_archive_empty">Archive is empty</string>
+    <string name="auth_chat_empty">No conversations yet</string>
+    <string name="auth_chat_delete_title">Delete conversation</string>
+    <string name="auth_chat_delete_confirm">The conversation with "%1$s" and all its messages will be deleted. Continue?</string>
+    <string name="auth_chat_online">online</string>
+    <string name="auth_chat_offline">offline</string>
+    <string name="auth_chat_input_placeholder">Write a message...</string>
+    <string name="auth_chat_send">Send</string>
+    <string name="auth_chat_message_delete_title">Delete message</string>
+    <string name="auth_chat_message_delete_confirm">Delete this message?</string>
+    <string name="auth_chat_clear_title">Clear conversation</string>
+    <string name="auth_chat_clear_confirm">All messages in this conversation will be deleted. Continue?</string>
+
+    <!-- ============ Students ============ -->
+    <string name="auth_students_title">Students</string>
+    <string name="auth_students_sort_my_university">My university</string>
+    <string name="auth_students_sort_all">All universities</string>
+    <string name="auth_filter">Filter</string>
+    <string name="auth_students_meta">%1$s · year %2$s · %3$s</string>
+    <string name="auth_students_stat_friends">Friends</string>
+    <string name="auth_students_stat_ads">Listings</string>
+    <string name="auth_students_stat_rating">Rating</string>
+    <string name="auth_students_interests">Interests</string>
+    <string name="auth_message">Message</string>
+
+    <!-- ============ Jobs ============ -->
+    <string name="auth_jobs_title">Jobs</string>
+    <string name="auth_filter_all">All</string>
+    <string name="auth_jobs_filter_it">IT</string>
+    <string name="auth_jobs_filter_remote">Remote</string>
+    <string name="auth_jobs_filter_part_time">Part-time</string>
+    <string name="auth_jobs_meta">%1$s · %2$s</string>
+    <string name="auth_jobs_salary">Salary</string>
+    <string name="auth_jobs_detail_note">This job matches your field (%1$s). The full description comes from the poster.</string>
+    <string name="auth_jobs_apply">Apply</string>
+    <string name="auth_jobs_applied">Application sent ✓</string>
+
+    <!-- ============ Discounts ============ -->
+    <string name="auth_discounts_title">Discounts</string>
+    <string name="auth_discounts_subtitle">Pick a category — offers open inside.</string>
+    <string name="auth_discounts_offer_count">%1$s offers</string>
+    <string name="auth_discounts_category_title">%1$s  %2$s discounts</string>
+    <string name="auth_discounts_search_placeholder">Search a restaurant or dish</string>
+    <string name="auth_discount_tag_student_id">With student ID</string>
+    <string name="auth_discount_tag_student_id_short">Student ID</string>
+    <string name="auth_discount_tag_promo">Promo code</string>
+    <string name="auth_copy">Copy</string>
+    <string name="auth_copied">Copied ✓</string>
+
+    <!-- ============ Notifications ============ -->
+    <string name="auth_notifications_title">Notifications</string>
+    <string name="auth_notifications_mark_all_read">Mark all read</string>
+    <string name="auth_notifications_empty_title">No notifications yet</string>
+    <string name="auth_notifications_empty_body">New listings, job offers and messages will show up here.</string>
+
+    <!-- ============ Settings ============ -->
+    <string name="auth_settings_title">Settings</string>
+    <string name="auth_settings_section_account">Account</string>
+    <string name="auth_settings_section_theme">Theme</string>
+    <string name="auth_theme_system">System</string>
+    <string name="auth_theme_light">Light</string>
+    <string name="auth_theme_dark">Dark</string>
+    <string name="auth_settings_push">Push notifications</string>
+    <string name="auth_settings_email">Email notifications</string>
+    <string name="auth_settings_section_general">General</string>
+    <string name="auth_settings_about">About the app</string>
+    <string name="auth_settings_version">Version 1.0.0</string>
+    <string name="auth_settings_about_body">ElonUz — a super-app for students: discounts, jobs, listings and messages.\nVersion 1.0.0</string>
+
+    <!-- ============ Bottom navigation ============ -->
+    <string name="auth_tab_home">Home</string>
+    <string name="auth_tab_discounts">Discounts</string>
+    <string name="auth_tab_jobs">Jobs</string>
+    <string name="auth_tab_students">Students</string>
+
+    <!-- ============ Post a listing ============ -->
+    <string name="auth_post_ad_short">Post</string>
+    <string name="auth_post_ad">Post a listing</string>
+    <string name="auth_post_ad_question">What would you like to post?</string>
+    <string name="auth_ad_type_job">Job listing</string>
+    <string name="auth_ad_type_job_desc">Hiring or looking for part-time work</string>
+    <string name="auth_ad_type_rental">Rental / Housing</string>
+    <string name="auth_ad_type_rental_desc">Flat, hostel, roommate</string>
+    <string name="auth_ad_type_sale">For sale</string>
+    <string name="auth_ad_type_sale_desc">Books, gadgets, personal items</string>
+    <string name="auth_ad_type_service">Service / Tutoring</string>
+    <string name="auth_ad_type_service_desc">Lessons, design, translation</string>
+    <string name="auth_ad_type_other">Other listing</string>
+    <string name="auth_ad_type_other_desc">Event, team, lost and found</string>
+    <string name="auth_ad_add_photo">Add a photo</string>
+    <string name="auth_ad_title_label">Listing title</string>
+    <string name="auth_ad_title_placeholder">SMM manager needed</string>
+    <string name="auth_ad_category_label">Category</string>
+    <string name="auth_ad_category_placeholder">IT</string>
+    <string name="auth_ad_price_label">Price / Salary</string>
+    <string name="auth_ad_price_placeholder">3–5 M</string>
+    <string name="auth_ad_description_label">Description</string>
+    <string name="auth_ad_description_placeholder">Detailed information...</string>
+    <string name="auth_ad_submit">Publish listing</string>
+
+</resources>

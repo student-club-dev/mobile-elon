@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Text
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,22 +14,33 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.core.designsystem.components.AppFontFamily
-import dev.core.designsystem.components.AppScreenScaffold
-import dev.core.designsystem.components.BackButton
-import dev.core.designsystem.components.FieldLabel
-import dev.core.designsystem.components.GlassTextField
-import dev.core.designsystem.components.PrimaryButton
-import dev.core.designsystem.components.ScreenTitle
-import dev.core.designsystem.theme.appPalette
+import dev.core.uikit.component.AppScreenScaffold
+import dev.core.uikit.component.BackButton
+import dev.core.uikit.component.FieldLabel
+import dev.core.uikit.component.GlassTextField
+import dev.core.uikit.component.InlineErrorText
+import dev.core.uikit.component.PrimaryButton
+import dev.core.uikit.component.ScreenTitle
+import dev.core.uikit.resources.Res
+import dev.core.uikit.resources.business_edit_title
+import dev.core.uikit.resources.business_field_email
+import dev.core.uikit.resources.business_field_email_hint
+import dev.core.uikit.resources.business_field_name
+import dev.core.uikit.resources.business_field_name_hint
+import dev.core.uikit.resources.business_field_phone
+import dev.core.uikit.resources.business_field_phone_hint
+import dev.core.uikit.resources.business_info_type
+import dev.core.uikit.resources.common_back
+import dev.core.uikit.resources.common_save
+import dev.core.uikit.theme.AppSpacing
+import dev.core.uikit.theme.appPalette
 import dev.feature.profile.domain.model.UserProfile
 import dev.feature.profile.presentation.ProfileViewModel
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -52,52 +63,50 @@ fun BusinessEditScreen(
     var saving by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
 
-    AppScreenScaffold(scroll = true, horizontalPadding = 20, topPadding = 54) {
+    AppScreenScaffold(scroll = true, horizontalPadding = 20.dp, topPadding = 54.dp) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(11.dp)) {
-            BackButton(onBack)
-            ScreenTitle("Profilni tahrirlash", size = 21)
+            BackButton(onBack, contentDescription = stringResource(Res.string.common_back))
+            ScreenTitle(stringResource(Res.string.business_edit_title), fontSize = 21.sp)
         }
 
         Spacer(Modifier.height(20.dp))
-        FieldLabel("Biznes nomi")
-        Spacer(Modifier.height(8.dp))
-        GlassTextField(name, { name = it }, "Masalan: Kafe Aurora", height = 50)
+        FieldLabel(stringResource(Res.string.business_field_name))
+        Spacer(Modifier.height(AppSpacing.sm))
+        GlassTextField(name, { name = it }, stringResource(Res.string.business_field_name_hint))
 
-        Spacer(Modifier.height(16.dp))
-        FieldLabel("Telefon")
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(AppSpacing.lg))
+        FieldLabel(stringResource(Res.string.business_field_phone))
+        Spacer(Modifier.height(AppSpacing.sm))
         GlassTextField(
-            phone, { phone = it }, "+998 90 123 45 67",
-            height = 50,
+            phone, { phone = it }, stringResource(Res.string.business_field_phone_hint),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
         )
 
-        Spacer(Modifier.height(16.dp))
-        FieldLabel("Email (gmail)")
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(AppSpacing.lg))
+        FieldLabel(stringResource(Res.string.business_field_email))
+        Spacer(Modifier.height(AppSpacing.sm))
         GlassTextField(
-            email, { email = it }, "biznes@gmail.com",
-            height = 50,
+            email, { email = it }, stringResource(Res.string.business_field_email_hint),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
         )
 
-        Spacer(Modifier.height(16.dp))
-        FieldLabel("Biznes turi")
-        Spacer(Modifier.height(8.dp))
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Spacer(Modifier.height(AppSpacing.lg))
+        FieldLabel(stringResource(Res.string.business_info_type))
+        Spacer(Modifier.height(AppSpacing.sm))
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
             items(businessTypes) { t ->
-                TypeChip(t, type == t, { type = t }, palette)
+                TypeChip(t, type == t.id, { type = t.id }, palette)
             }
         }
 
-        if (error != null) {
-            Spacer(Modifier.height(8.dp))
-            Text(error!!, style = TextStyle(fontFamily = AppFontFamily, fontSize = 12.sp, color = androidx.compose.ui.graphics.Color(0xFFE5484D)))
+        error?.let { message ->
+            Spacer(Modifier.height(AppSpacing.sm))
+            InlineErrorText(message, palette = palette)
         }
 
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(AppSpacing.xl))
         PrimaryButton(
-            "Saqlash",
+            stringResource(Res.string.common_save),
             onClick = {
                 saving = true
                 error = null

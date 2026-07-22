@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,16 +21,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.core.designsystem.components.AppFontFamily
-import dev.core.designsystem.components.AppIcons
-import dev.core.designsystem.components.AppScreenScaffold
-import dev.core.designsystem.theme.ModuleFood
-import dev.core.designsystem.theme.appPalette
+import dev.core.uikit.component.AppIcons
+import dev.core.uikit.component.AppScreenScaffold
+import dev.core.uikit.component.IconTile
+import dev.core.uikit.resources.Res
+import dev.core.uikit.resources.auth_role_business
+import dev.core.uikit.resources.auth_role_business_desc
+import dev.core.uikit.resources.auth_role_student
+import dev.core.uikit.resources.auth_role_student_desc
+import dev.core.uikit.resources.auth_role_subtitle
+import dev.core.uikit.resources.auth_role_title
+import dev.core.uikit.resources.common_back
+import dev.core.uikit.theme.AppPalette
+import dev.core.uikit.theme.AppSpacing
+import dev.core.uikit.theme.AppType
+import dev.core.uikit.theme.appPalette
 import dev.feature.auth.presentation.flow.Role
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Login'dan OLDIN chiqadigan rol tanlash — foydalanuvchi Talaba yoki Biznesmen sifatida davom etadi.
@@ -47,32 +55,34 @@ fun RoleChoiceScreen(
 
     AppScreenScaffold {
         Column(
-            Modifier.fillMaxSize().padding(horizontal = 20.dp).padding(top = 48.dp, bottom = 24.dp),
+            Modifier.fillMaxSize().padding(horizontal = 20.dp).padding(top = 48.dp, bottom = AppSpacing.xl),
         ) {
-            Box(
-                Modifier.size(40.dp).clip(RoundedCornerShape(13.dp))
-                    .background(palette.primary.copy(alpha = 0.10f))
-                    .clickable(onClick = onBack),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(AppIcons.ArrowLeft, "Orqaga", tint = palette.primary, modifier = Modifier.size(19.dp))
-            }
+            IconTile(
+                AppIcons.ArrowLeft,
+                contentDescription = stringResource(Res.string.common_back),
+                tint = palette.primary,
+                background = palette.primary.copy(alpha = 0.10f),
+                size = 40.dp,
+                iconSize = 19.dp,
+                shape = RoundedCornerShape(13.dp),
+                onClick = onBack,
+            )
 
             Spacer(Modifier.height(28.dp))
             Text(
-                "Kim sifatida davom etamiz?",
-                style = TextStyle(fontFamily = AppFontFamily, fontSize = 26.sp, fontWeight = FontWeight.Black, color = palette.ink),
+                stringResource(Res.string.auth_role_title),
+                style = AppType.screenTitle.copy(fontSize = 26.sp, letterSpacing = 0.sp, color = palette.ink),
             )
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(AppSpacing.sm))
             Text(
-                "Rolni tanlang — ilova siz uchun mos bo'limlarni ko'rsatadi. Keyinroq profildan o'zgartirish mumkin.",
-                style = TextStyle(fontFamily = AppFontFamily, fontSize = 13.sp, color = palette.inkMuted),
+                stringResource(Res.string.auth_role_subtitle),
+                style = AppType.subtitle.copy(color = palette.inkMuted),
             )
 
             Spacer(Modifier.height(28.dp))
             RoleCard(
-                title = "Talaba",
-                desc = "Chegirmalar, ishlar, studentlar va e'lonlar",
+                title = stringResource(Res.string.auth_role_student),
+                desc = stringResource(Res.string.auth_role_student_desc),
                 icon = AppIcons.GraduationCap,
                 accent = palette.primary,
                 onClick = { onPick(Role.STUDENT) },
@@ -80,10 +90,10 @@ fun RoleChoiceScreen(
             )
             Spacer(Modifier.height(14.dp))
             RoleCard(
-                title = "Biznesmen",
-                desc = "Chegirma e'lonlari qo'yish va boshqarish",
+                title = stringResource(Res.string.auth_role_business),
+                desc = stringResource(Res.string.auth_role_business_desc),
                 icon = AppIcons.Store,
-                accent = ModuleFood,
+                accent = palette.moduleFood,
                 onClick = { onPick(Role.BUSINESS) },
                 palette = palette,
             )
@@ -98,34 +108,32 @@ private fun RoleCard(
     icon: ImageVector,
     accent: Color,
     onClick: () -> Unit,
-    palette: dev.core.designsystem.theme.AppPalette,
+    palette: AppPalette,
 ) {
+    val shape = RoundedCornerShape(20.dp)
     Row(
         Modifier.fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
+            .clip(shape)
             .background(accent.copy(alpha = 0.08f))
-            .border(1.5.dp, accent.copy(alpha = 0.28f), RoundedCornerShape(20.dp))
+            .border(1.5.dp, accent.copy(alpha = 0.28f), shape)
             .clickable(onClick = onClick)
             .padding(18.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        Box(
-            Modifier.size(52.dp).clip(RoundedCornerShape(16.dp)).background(accent.copy(alpha = 0.16f)),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(icon, title, tint = accent, modifier = Modifier.size(26.dp))
-        }
+        IconTile(
+            icon,
+            contentDescription = title,
+            tint = accent,
+            background = accent.copy(alpha = 0.16f),
+            size = 52.dp,
+            iconSize = 26.dp,
+            shape = RoundedCornerShape(16.dp),
+        )
         Column(Modifier.weight(1f)) {
-            Text(
-                title,
-                style = TextStyle(fontFamily = AppFontFamily, fontSize = 17.sp, fontWeight = FontWeight.Black, color = palette.ink),
-            )
+            Text(title, style = AppType.sectionTitle.copy(fontWeight = AppType.screenTitle.fontWeight, color = palette.ink))
             Spacer(Modifier.height(3.dp))
-            Text(
-                desc,
-                style = TextStyle(fontFamily = AppFontFamily, fontSize = 12.sp, color = palette.inkFaint),
-            )
+            Text(desc, style = AppType.hint.copy(fontSize = 12.sp, color = palette.inkFaint))
         }
         Icon(AppIcons.ChevronRight, null, tint = accent, modifier = Modifier.size(20.dp))
     }
