@@ -285,8 +285,8 @@ fun AuthNavHost(
             when (flow) {
                 AuthUserFlow.BUSINESS -> BusinessShell(
                     onLoggedOut = loggedOut,
-                    settingsContent = { onBack ->
-                        SettingsScreen(onBack = onBack, onEditProfile = {}, onLoggedOut = loggedOut)
+                    settingsContent = { onBack, onEditProfile ->
+                        SettingsScreen(onBack = onBack, onEditProfile = onEditProfile, onLoggedOut = loggedOut)
                     },
                     // Chat ekranlari auth modulida — karkasga slot sifatida beriladi.
                     messagesScreen = { onBack -> dev.feature.auth.presentation.main.ChatScreen(onBack = onBack) },

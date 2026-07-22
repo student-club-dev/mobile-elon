@@ -54,7 +54,6 @@ import dev.core.uikit.resources.auth_theme_dark
 import dev.core.uikit.resources.auth_theme_light
 import dev.core.uikit.resources.common_back
 import dev.core.uikit.resources.common_logout
-import dev.core.uikit.resources.profile_edit_action
 import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSpacing
@@ -107,7 +106,9 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(9.dp),
         ) {
             GroupLabel(stringResource(Res.string.auth_settings_section_account), palette = palette)
-            SettingRow(AppIcons.Pencil, stringResource(Res.string.profile_edit_action), state.name, palette, onClick = onEditProfile)
+            // Sarlavha o'rnida foydalanuvchining ismi turadi — "Profilni tahrirlash" yozuvi
+            // ortiqcha edi, qator baribir tahrirlash ekraniga olib boradi.
+            SettingRow(AppIcons.Pencil, state.name, trailing = null, palette = palette, onClick = onEditProfile)
 
             Spacer(Modifier.height(6.dp))
             GroupLabel(stringResource(Res.string.auth_settings_section_theme), palette = palette)

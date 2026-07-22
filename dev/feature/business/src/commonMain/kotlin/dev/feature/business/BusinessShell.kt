@@ -46,7 +46,8 @@ private const val SUPPORT = "support"
 fun BusinessShell(
     onLoggedOut: () -> Unit,
     // Sozlamalar ekrani auth modulida — shu slot orqali beriladi (business auth'ga bog'lanmaydi).
-    settingsContent: @Composable (onBack: () -> Unit) -> Unit,
+    // `onEditProfile` ni karkas beradi, chunki profil tahrirlash marshruti shu yerda.
+    settingsContent: @Composable (onBack: () -> Unit, onEditProfile: () -> Unit) -> Unit,
     // Chat ekranlari ham auth modulida. Bog'liqlik faqat `auth -> business` yo'nalishida
     // bo'lgani uchun bu yerdan import qilib bo'lmaydi — ekranlar slot sifatida uzatiladi.
     messagesScreen: @Composable (onBack: () -> Unit) -> Unit = {},
@@ -143,7 +144,10 @@ fun BusinessShell(
                 )
             }
             composable(SETTINGS) {
-                settingsContent { nav.popBackStack() }
+                settingsContent(
+                    { nav.popBackStack() },
+                    { nav.navigate(PROFILE_EDIT) { launchSingleTop = true } },
+                )
             }
             // Xabarlar — suhbatlar ro'yxati (qo'llab-quvvatlashsiz).
             composable(MESSAGES) {

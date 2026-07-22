@@ -28,8 +28,8 @@ fun RootShell(onLoggedOut: () -> Unit, vm: RootShellViewModel = koinViewModel())
         state.loading -> BootSplash()
         state.isBusiness -> BusinessShell(
             onLoggedOut = onLoggedOut,
-            settingsContent = { onBack ->
-                SettingsScreen(onBack = onBack, onEditProfile = {}, onLoggedOut = onLoggedOut)
+            settingsContent = { onBack, onEditProfile ->
+                SettingsScreen(onBack = onBack, onEditProfile = onEditProfile, onLoggedOut = onLoggedOut)
             },
             // Chat ekranlari auth modulida — karkasga slot sifatida beriladi.
             messagesScreen = { onBack -> ChatScreen(onBack = onBack) },
