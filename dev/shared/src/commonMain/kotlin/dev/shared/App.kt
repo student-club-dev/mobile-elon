@@ -64,16 +64,12 @@ private fun AppScaffold(content: @Composable () -> Unit) {
 
     // Foydalanuvchi tanlagan mavzu (Sozlamalar). SYSTEM bo'lsa qurilma rejimiga ergashadi.
     val settings = koinInject<SettingsRepository>()
-    val themeMode by settings.observeThemeMode().collectAsState(initial = ThemeMode.SYSTEM)
-    val isDark = when (themeMode) {
-        ThemeMode.LIGHT -> false
-        ThemeMode.DARK -> true
-        ThemeMode.SYSTEM -> isSystemInDarkTheme()
-    }
+    val themeMode by settings.observeThemeMode().collectAsState(initial = ThemeMode.Default)
+    val isDark = themeMode == ThemeMode.DARK
 
     // Foydalanuvchi tanlagan til. Tanlov platformaning joriy tiliga yoziladi, chunki
     // `stringResource` aynan shundan o'qiydi (qarang `applyAppLanguage` izohi).
-    val language by settings.observeLanguage().collectAsState(initial = AppLanguage.SYSTEM)
+    val language by settings.observeLanguage().collectAsState(initial = AppLanguage.Default)
     LaunchedEffect(language) { applyAppLanguage(language.tag) }
 
     AppTheme(darkTheme = isDark) {

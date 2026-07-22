@@ -48,12 +48,10 @@ import dev.core.uikit.resources.auth_settings_section_account
 import dev.core.uikit.resources.auth_settings_section_general
 import dev.core.uikit.resources.auth_settings_section_language
 import dev.core.uikit.resources.auth_settings_section_theme
-import dev.core.uikit.resources.auth_language_system
 import dev.core.uikit.resources.auth_settings_title
 import dev.core.uikit.resources.auth_settings_version
 import dev.core.uikit.resources.auth_theme_dark
 import dev.core.uikit.resources.auth_theme_light
-import dev.core.uikit.resources.auth_theme_system
 import dev.core.uikit.resources.common_back
 import dev.core.uikit.resources.common_logout
 import dev.core.uikit.resources.profile_edit_action
@@ -65,6 +63,9 @@ import dev.core.uikit.theme.appPalette
 import dev.feature.profile.presentation.ProfileViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import dev.core.uikit.component.SegmentedControl
+import dev.core.uikit.component.GroupLabel
+import dev.core.uikit.component.AppToggle
 
 /**
  * Sozlamalar ekrani (A3/C3). Hisob, mavzu, til, bildirishnoma va ilova ma'lumotlari.
@@ -105,19 +106,19 @@ fun SettingsScreen(
             Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg),
             verticalArrangement = Arrangement.spacedBy(9.dp),
         ) {
-            SectionTitle(stringResource(Res.string.auth_settings_section_account), palette)
+            GroupLabel(stringResource(Res.string.auth_settings_section_account), palette = palette)
             SettingRow(AppIcons.Pencil, stringResource(Res.string.profile_edit_action), state.name, palette, onClick = onEditProfile)
 
             Spacer(Modifier.height(6.dp))
-            SectionTitle(stringResource(Res.string.auth_settings_section_theme), palette)
+            GroupLabel(stringResource(Res.string.auth_settings_section_theme), palette = palette)
             ThemeSelector(settings.themeMode, palette) { settingsVm.setThemeMode(it) }
 
             Spacer(Modifier.height(6.dp))
-            SectionTitle(stringResource(Res.string.auth_settings_section_language), palette)
+            GroupLabel(stringResource(Res.string.auth_settings_section_language), palette = palette)
             LanguageSelector(settings.language, palette) { settingsVm.setLanguage(it) }
 
             Spacer(Modifier.height(6.dp))
-            SectionTitle(stringResource(Res.string.auth_notifications_title), palette)
+            GroupLabel(stringResource(Res.string.auth_notifications_title), palette = palette)
             ToggleRow(AppIcons.Bell, stringResource(Res.string.auth_settings_push), settings.pushEnabled, palette) {
                 settingsVm.setPush(it)
             }
@@ -126,7 +127,7 @@ fun SettingsScreen(
             }
 
             Spacer(Modifier.height(6.dp))
-            SectionTitle(stringResource(Res.string.auth_settings_section_general), palette)
+            GroupLabel(stringResource(Res.string.auth_settings_section_general), palette = palette)
             SettingRow(
                 AppIcons.ShieldCheck,
                 stringResource(Res.string.auth_settings_about),
@@ -159,79 +160,39 @@ fun SettingsScreen(
     }
 }
 
+/**
+ * Mavzu tanlash. Handoff'da "Tizim" varianti YO'Q — faqat Yorug'/Tungi.
+ */
 @Composable
 private fun ThemeSelector(current: ThemeMode, palette: AppPalette, onSelect: (ThemeMode) -> Unit) {
-    val options = listOf(
-        ThemeMode.SYSTEM to stringResource(Res.string.auth_theme_system),
-        ThemeMode.LIGHT to stringResource(Res.string.auth_theme_light),
-        ThemeMode.DARK to stringResource(Res.string.auth_theme_dark),
-    )
-    GlassRow(
-        shape = AppRadius.lg,
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(AppSpacing.xs),
-        horizontalArrangement = Arrangement.spacedBy(AppSpacing.xs),
+    val modes = ThemeMode.entries
+    SegmentedControl(
+        options = listOf(
+            stringResource(Res.string.auth_theme_light),
+            stringResource(Res.string.auth_theme_dark),
+        ),
+        selectedIndex = modes.indexOf(current).coerceAtLeast(0),
+        onSelect = { onSelect(modes[it]) },
         palette = palette,
-    ) {
-        options.forEach { (mode, label) ->
-            val active = mode == current
-            Box(
-                Modifier.weight(1f).height(38.dp).clip(RoundedCornerShape(11.dp))
-                    .background(if (active) palette.primary.copy(alpha = 0.16f) else Color.Transparent)
-                    .clickable { onSelect(mode) },
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    label,
-                    style = AppType.label.copy(
-                        fontSize = 12.5f.sp,
-                        color = if (active) palette.primary else palette.inkMuted,
-                    ),
-                )
-            }
-        }
-    }
+    )
 }
 
 /**
- * Til tanlash — mavzu tanlagichi bilan bir xil ko'rinishda.
+ * Til tanlash.
  *
  * Til nomlari ATAYLAB tarjima qilinmaydi: "Русский" har doim ruscha, "English" har doim
- * inglizcha yozilади. Foydalanuvchi tushunmaydigan tilda qolib ketsa ham, o'z tilini
- * ro'yxatdan topa oladi.
+ * inglizcha yoziladi. Foydalanuvchi tushunmaydigan tilda qolib ketsa ham, o'z tilini
+ * ro'yxatdan topa oladi. Handoff'da "Tizim" varianti yo'q.
  */
 @Composable
 private fun LanguageSelector(current: AppLanguage, palette: AppPalette, onSelect: (AppLanguage) -> Unit) {
-    val options = listOf(
-        AppLanguage.SYSTEM to stringResource(Res.string.auth_language_system),
-        AppLanguage.UZ to "O'zbekcha",
-        AppLanguage.RU to "Русский",
-        AppLanguage.EN to "English",
-    )
-    GlassRow(
-        shape = AppRadius.lg,
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(AppSpacing.xs),
-        horizontalArrangement = Arrangement.spacedBy(AppSpacing.xs),
+    val languages = AppLanguage.entries
+    SegmentedControl(
+        options = listOf("O'zbekcha", "Русский", "English"),
+        selectedIndex = languages.indexOf(current).coerceAtLeast(0),
+        onSelect = { onSelect(languages[it]) },
         palette = palette,
-    ) {
-        options.forEach { (language, label) ->
-            val active = language == current
-            Box(
-                Modifier.weight(1f).height(38.dp).clip(RoundedCornerShape(11.dp))
-                    .background(if (active) palette.primary.copy(alpha = 0.16f) else Color.Transparent)
-                    .clickable { onSelect(language) },
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    label,
-                    style = AppType.label.copy(
-                        fontSize = 11.5f.sp,
-                        color = if (active) palette.primary else palette.inkMuted,
-                    ),
-                    maxLines = 1,
-                )
-            }
-        }
-    }
+    )
 }
 
 @Composable
@@ -274,23 +235,10 @@ private fun ToggleRow(icon: ImageVector, title: String, checked: Boolean, palett
         IconTile(icon, tint = palette.primary)
         Text(
             title,
-            style = AppType.label.copy(fontSize = 13.5f.sp, color = palette.ink),
+            style = AppType.rowTitle.copy(color = palette.ink),
             modifier = Modifier.weight(1f),
         )
-        SwitchTrack(checked, palette)
+        AppToggle(checked, onToggle, palette = palette)
     }
 }
 
-/** Oddiy tugmacha — Material Switch o'rniga ilova uslubidagi variant. */
-@Composable
-private fun SwitchTrack(checked: Boolean, palette: AppPalette) {
-    val knobOffset by animateDpAsState(if (checked) 20.dp else 2.dp)
-    Box(
-        Modifier.width(44.dp).height(26.dp).clip(AppRadius.pill)
-            .background(if (checked) palette.primary else palette.inkFaint.copy(alpha = 0.35f)),
-        contentAlignment = Alignment.CenterStart,
-    ) {
-        // Tugmacha to'ldirilgan yo'lakcha USTIDA — har ikkala rejimda oq.
-        Box(Modifier.padding(start = knobOffset).size(22.dp).clip(AppRadius.pill).background(palette.onPrimary))
-    }
-}

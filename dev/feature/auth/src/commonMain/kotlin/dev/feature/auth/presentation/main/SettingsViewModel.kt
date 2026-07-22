@@ -12,8 +12,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 data class SettingsUiState(
-    val themeMode: ThemeMode = ThemeMode.SYSTEM,
-    val language: AppLanguage = AppLanguage.SYSTEM,
+    val themeMode: ThemeMode = ThemeMode.Default,
+    val language: AppLanguage = AppLanguage.Default,
     val pushEnabled: Boolean = true,
     val emailEnabled: Boolean = false,
 )

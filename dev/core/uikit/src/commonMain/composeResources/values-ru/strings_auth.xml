@@ -192,7 +192,6 @@
     <string name="auth_settings_title">Настройки</string>
     <string name="auth_settings_section_account">Аккаунт</string>
     <string name="auth_settings_section_theme">Тема</string>
-    <string name="auth_theme_system">Системная</string>
     <string name="auth_theme_light">Светлая</string>
     <string name="auth_theme_dark">Тёмная</string>
     <string name="auth_settings_push">Push-уведомления</string>
@@ -234,5 +233,4 @@
     <string name="auth_ad_submit">Разместить объявление</string>
 
     <string name="auth_settings_section_language">Язык</string>
-    <string name="auth_language_system">Система</string>
 </resources>

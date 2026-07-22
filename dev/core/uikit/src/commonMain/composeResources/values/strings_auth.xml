@@ -209,7 +209,6 @@
     <string name="auth_settings_title">Sozlamalar</string>
     <string name="auth_settings_section_account">Hisob</string>
     <string name="auth_settings_section_theme">Mavzu</string>
-    <string name="auth_theme_system">Tizim</string>
     <string name="auth_theme_light">Yorug\'</string>
     <string name="auth_theme_dark">Tungi</string>
     <string name="auth_settings_push">Push bildirishnomalar</string>
@@ -251,5 +250,4 @@
     <string name="auth_ad_submit">E\'lonni joylash</string>
 
     <string name="auth_settings_section_language">Til</string>
-    <string name="auth_language_system">Tizim</string>
 </resources>

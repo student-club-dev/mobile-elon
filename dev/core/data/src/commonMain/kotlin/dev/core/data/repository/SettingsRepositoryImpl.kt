@@ -24,7 +24,7 @@ class SettingsRepositoryImpl(
 
     override fun observeThemeMode(): Flow<ThemeMode> =
         q.selectByKey(KEY_THEME_MODE).asFlow().mapToOneOrNull(dispatchers.io).map { value ->
-            value?.let { runCatching { ThemeMode.valueOf(it) }.getOrNull() } ?: ThemeMode.SYSTEM
+            ThemeMode.fromName(value)
         }
 
     override suspend fun setThemeMode(mode: ThemeMode) = withContext(dispatchers.io) {

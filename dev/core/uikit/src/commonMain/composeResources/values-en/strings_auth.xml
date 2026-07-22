@@ -192,7 +192,6 @@
     <string name="auth_settings_title">Settings</string>
     <string name="auth_settings_section_account">Account</string>
     <string name="auth_settings_section_theme">Theme</string>
-    <string name="auth_theme_system">System</string>
     <string name="auth_theme_light">Light</string>
     <string name="auth_theme_dark">Dark</string>
     <string name="auth_settings_push">Push notifications</string>
@@ -234,5 +233,4 @@
     <string name="auth_ad_submit">Publish listing</string>
 
     <string name="auth_settings_section_language">Language</string>
-    <string name="auth_language_system">System</string>
 </resources>
