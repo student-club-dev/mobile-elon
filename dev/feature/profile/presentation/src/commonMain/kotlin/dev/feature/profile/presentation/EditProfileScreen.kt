@@ -90,7 +90,15 @@ private val courseOptions = listOf(
  * o'zgarishlarni [ProfileViewModel.saveProfile] orqali backend + local keshga yozadi.
  */
 @Composable
-fun EditProfileScreen(onBack: () -> Unit, vm: ProfileViewModel = koinViewModel()) {
+fun EditProfileScreen(
+    onBack: () -> Unit,
+    /**
+     * Universitet va kurs maydonlari faqat TALABA oqimida ko'rsatiladi. Biznes egasi
+     * talaba emas — unga bu maydonlar begona, shuning uchun biznes oqimi `false` uzatadi.
+     */
+    showStudentFields: Boolean = true,
+    vm: ProfileViewModel = koinViewModel(),
+) {
     val palette = appPalette
     val state by vm.state.collectAsStateWithLifecycle()
     val profile = state.profile
@@ -209,61 +217,63 @@ fun EditProfileScreen(onBack: () -> Unit, vm: ProfileViewModel = koinViewModel()
                 type = AppFieldType.UzPhone,
             )
 
-            // Universitet tanlash
-            FieldLabel(stringResource(Res.string.profile_field_university), palette = palette)
-            val selectedUni = state.universities.firstOrNull { it.id == universityId }
-            Row(
-                // Maydon — oq yuza + yumshoq soya, chegara yo'q.
-                Modifier.fillMaxWidth().rowShadow(AppRadius.lg).clip(AppRadius.lg)
-                    .background(palette.fieldBg)
-                    .clickable { uniExpanded = !uniExpanded }
-                    .padding(horizontal = AppSpacing.md, vertical = 15.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(AppIcons.GraduationCap, null, tint = palette.inkFaint, modifier = Modifier.size(17.dp))
-                Spacer(Modifier.width(9.dp))
-                Text(
-                    selectedUni?.name ?: stringResource(Res.string.profile_university_select),
-                    style = AppType.bodyStrong.copy(
-                        color = if (selectedUni != null) palette.ink else palette.inkFaint,
-                    ),
-                    modifier = Modifier.weight(1f),
-                )
-                Icon(AppIcons.ChevronDown, null, tint = palette.inkFaint, modifier = Modifier.size(18.dp))
-            }
-            if (uniExpanded) {
-                Column(
-                    Modifier.fillMaxWidth().cardShadow(AppRadius.lg).clip(AppRadius.lg)
-                        .background(palette.card),
+            if (showStudentFields) {
+                // Universitet tanlash
+                FieldLabel(stringResource(Res.string.profile_field_university), palette = palette)
+                val selectedUni = state.universities.firstOrNull { it.id == universityId }
+                Row(
+                    // Maydon — oq yuza + yumshoq soya, chegara yo'q.
+                    Modifier.fillMaxWidth().rowShadow(AppRadius.lg).clip(AppRadius.lg)
+                        .background(palette.fieldBg)
+                        .clickable { uniExpanded = !uniExpanded }
+                        .padding(horizontal = AppSpacing.md, vertical = 15.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    state.universities.forEach { uni ->
-                        UniversityRow(uni, selected = uni.id == universityId, palette = palette) {
-                            universityId = uni.id
-                            uniExpanded = false
+                    Icon(AppIcons.GraduationCap, null, tint = palette.inkFaint, modifier = Modifier.size(17.dp))
+                    Spacer(Modifier.width(9.dp))
+                    Text(
+                        selectedUni?.name ?: stringResource(Res.string.profile_university_select),
+                        style = AppType.bodyStrong.copy(
+                            color = if (selectedUni != null) palette.ink else palette.inkFaint,
+                        ),
+                        modifier = Modifier.weight(1f),
+                    )
+                    Icon(AppIcons.ChevronDown, null, tint = palette.inkFaint, modifier = Modifier.size(18.dp))
+                }
+                if (uniExpanded) {
+                    Column(
+                        Modifier.fillMaxWidth().cardShadow(AppRadius.lg).clip(AppRadius.lg)
+                            .background(palette.card),
+                    ) {
+                        state.universities.forEach { uni ->
+                            UniversityRow(uni, selected = uni.id == universityId, palette = palette) {
+                                universityId = uni.id
+                                uniExpanded = false
+                            }
                         }
                     }
                 }
-            }
 
-            // Kurs tanlash
-            FieldLabel(stringResource(Res.string.profile_field_course), palette = palette)
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
-                courseOptions.forEach { opt ->
-                    val active = opt.value == courseYear
-                    Box(
-                        // Tanlangani ochiq ko'k aksent fonda; chegara o'rniga soya.
-                        Modifier.weight(1f).height(42.dp).rowShadow(AppRadius.md).clip(AppRadius.md)
-                            .background(if (active) palette.accentBg else palette.card)
-                            .clickable { courseYear = opt.value },
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            stringResource(opt.label),
-                            style = AppType.hint.copy(
-                                fontWeight = AppType.fieldLabel.fontWeight,
-                                color = if (active) palette.primary else palette.inkMuted,
-                            ),
-                        )
+                // Kurs tanlash
+                FieldLabel(stringResource(Res.string.profile_field_course), palette = palette)
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
+                    courseOptions.forEach { opt ->
+                        val active = opt.value == courseYear
+                        Box(
+                            // Tanlangani ochiq ko'k aksent fonda; chegara o'rniga soya.
+                            Modifier.weight(1f).height(42.dp).rowShadow(AppRadius.md).clip(AppRadius.md)
+                                .background(if (active) palette.accentBg else palette.card)
+                                .clickable { courseYear = opt.value },
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                stringResource(opt.label),
+                                style = AppType.hint.copy(
+                                    fontWeight = AppType.fieldLabel.fontWeight,
+                                    color = if (active) palette.primary else palette.inkMuted,
+                                ),
+                            )
+                        }
                     }
                 }
             }

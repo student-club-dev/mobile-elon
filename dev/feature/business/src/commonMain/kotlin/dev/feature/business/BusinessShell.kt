@@ -136,7 +136,11 @@ fun BusinessShell(
             // so'ralardi, holbuki bu foydalanuvchining o'z profili. Biznes esa
             // "Bizneslarim" ro'yxatidagi qalam orqali tahrirlanadi.
             composable(PROFILE_EDIT) {
-                EditProfileScreen(onBack = { nav.popBackStack() })
+                EditProfileScreen(
+                    onBack = { nav.popBackStack() },
+                    // Biznes egasi talaba emas — universitet va kurs so'ralmaydi.
+                    showStudentFields = false,
+                )
             }
             composable(SETTINGS) {
                 settingsContent { nav.popBackStack() }
