@@ -206,30 +206,24 @@ object AppIcons {
     )
 
     /**
-     * Qo'llab-quvvatlash — garnitura (naushnik + mikrofon) va ichida suhbat pufagi.
+     * Qo'llab-quvvatlash — garnitura: bosh kamar, ikkita quloqchin va pastga tushuvchi
+     * mikrofon shtangasi og'izchasi bilan.
      *
-     * Bizneslarim ekranidagi "Qo'llab-quvvatlash" tugmasi uchun. Ilgari u telefon go'shagi
-     * bilan chizilardi va oddiy qo'ng'iroqdan farq qilmasdi.
-     *
-     * Uch nuqta `h 0.01` bo'lagi bilan chizilgan: [strokeIcon] faqat chiziq qo'yadi, dumaloq
-     * uchli (`StrokeCap.Round`) juda qisqa chiziq esa aynan nuqta bo'lib ko'rinadi.
+     * Chizma ataylab sodda (suhbat pufagi va nuqtalarsiz): 24dp da har bir chiziq ajralib
+     * turishi kerak, zich shakl kichik dog'ga aylanadi.
      */
     val Support = strokeIcon(
         "Support",
         // Bosh kamar
-        "M 4 14 v -2.5 a 8 8 0 0 1 16 0 V 14",
-        // Chap va o'ng quloqchin
-        "M 4 11.5 a 2 2 0 0 1 2 2 v 2.5 a 2 2 0 0 1 -4 0 v -2.5 a 2 2 0 0 1 2 -2 z",
-        "M 20 11.5 a 2 2 0 0 1 2 2 v 2.5 a 2 2 0 0 1 -4 0 v -2.5 a 2 2 0 0 1 2 -2 z",
-        // Mikrofon shtangasi va og'izcha
-        "M 21 18 v 1 a 2.5 2.5 0 0 1 -2.5 2.5 H 16",
-        "M 12.5 20 h 3 a 1.5 1.5 0 0 1 0 3 h -3 a 1.5 1.5 0 0 1 0 -3 z",
-        // Suhbat pufagi (pastki chap tomonida dumchasi bilan)
-        "M 9 6.5 h 6 a 2 2 0 0 1 2 2 v 3.5 a 2 2 0 0 1 -2 2 h -4 l -2.5 2.5 V 14 a 2 2 0 0 1 -1.5 -2 V 8.5 a 2 2 0 0 1 2 -2 z",
-        // Uch nuqta
-        "M 10 10.5 h 0.01",
-        "M 12 10.5 h 0.01",
-        "M 14 10.5 h 0.01",
+        "M 3.5 10.5 V 9 a 8.5 8.5 0 0 1 17 0 v 1.5",
+        // Chap quloqchin
+        "M 2.8 10 h 1.4 a 1.6 1.6 0 0 1 1.6 1.6 v 4.8 a 1.6 1.6 0 0 1 -1.6 1.6 h -1.4 a 1.6 1.6 0 0 1 -1.6 -1.6 v -4.8 a 1.6 1.6 0 0 1 1.6 -1.6 z",
+        // O'ng quloqchin
+        "M 19.8 10 h 1.4 a 1.6 1.6 0 0 1 1.6 1.6 v 4.8 a 1.6 1.6 0 0 1 -1.6 1.6 h -1.4 a 1.6 1.6 0 0 1 -1.6 -1.6 v -4.8 a 1.6 1.6 0 0 1 1.6 -1.6 z",
+        // Mikrofon shtangasi — o'ng quloqchindan pastga va chapga
+        "M 21 18 v 0.8 a 2.5 2.5 0 0 1 -2.5 2.5 h -3.2",
+        // Mikrofon og'izchasi
+        "M 10.1 21.3 a 2.6 2.6 0 1 0 5.2 0 a 2.6 2.6 0 1 0 -5.2 0",
     )
 
     /** `ic_send_enter` — xabar yuborish tugmasi (matn yozilganda). */
