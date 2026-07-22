@@ -65,7 +65,6 @@ import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
-import dev.core.uikit.util.PhoneVisualTransformation
 import dev.core.uikit.util.formatUzPhone
 import dev.feature.auth.presentation.flow.AuthFlowState
 import dev.feature.auth.presentation.flow.AuthFlowViewModel
@@ -77,6 +76,7 @@ import dev.feature.auth.presentation.screens.components.PhonePrefix
 import dev.feature.auth.presentation.screens.components.ResendRow
 import dev.feature.auth.presentation.screens.components.clickableNoRipple
 import org.jetbrains.compose.resources.stringResource
+import dev.core.uikit.component.AppFieldType
 
 // ===========================================================================
 // 1g — OTP
@@ -195,8 +195,7 @@ fun SignUpScreen(
             placeholder = stringResource(Res.string.auth_phone_placeholder),
             leadingContent = { PhonePrefix(palette) },
             height = 46.dp,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-            visualTransformation = PhoneVisualTransformation(),
+            type = AppFieldType.UzPhone,
         )
         Spacer(Modifier.height(9.dp))
         GlassTextField(

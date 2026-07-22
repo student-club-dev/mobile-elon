@@ -88,7 +88,7 @@
     <string name="discounts_percent_off">-%1$s%</string>
 
     <string name="discounts_contact_subtitle">Студент позвонит на этот номер</string>
-    <string name="discounts_contact_hint">+998 90 123 45 67</string>
+    <string name="discounts_contact_hint">90 123 45 67</string>
 
     <string name="discounts_redemption_section">Как студент получит скидку</string>
     <string name="discounts_promo_hint">NAVRUZ20</string>

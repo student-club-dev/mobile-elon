@@ -24,6 +24,10 @@ kotlin {
             implementation(compose.materialIconsExtended)
         }
 
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
+
         androidMain.dependencies {
             // Galereyadan rasm tanlash (`media/ImagePicker`) — ActivityResultContracts.PickVisualMedia.
             // Xarita uchun joylashuv ruxsatini so'rash (`map/UserLocation`) ham shu API'da.

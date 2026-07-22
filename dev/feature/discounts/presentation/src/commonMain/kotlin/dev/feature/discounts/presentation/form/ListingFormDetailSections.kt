@@ -56,6 +56,8 @@ import dev.feature.discounts.presentation.components.FormSection
 import dev.feature.discounts.presentation.components.ImageThumb
 import dev.feature.discounts.presentation.components.SelectChip
 import org.jetbrains.compose.resources.stringResource
+import dev.core.uikit.component.AppFieldType
+import dev.core.uikit.util.UZ_DIALING_CODE
 
 /**
  * E'lon formasining ikkinchi yarmi: rasm, tavsif, narx, aloqa, olish usuli va muddat.
@@ -108,8 +110,8 @@ fun AboutSection(
         subtitle = stringResource(Res.string.discounts_about_subtitle),
         error = state.errorFor(ListingField.TITLE),
     ) {
-        GlassTextField(state.title, vm::onTitle, stringResource(copy.titleHint), height = 48.dp)
-        GlassTextField(state.description, vm::onDescription, stringResource(copy.descriptionHint), height = 110.dp)
+        GlassTextField(state.title, vm::onTitle, stringResource(copy.titleHint), height = 48.dp, type = AppFieldType.LatinText)
+        GlassTextField(state.description, vm::onDescription, stringResource(copy.descriptionHint), height = 110.dp, type = AppFieldType.LatinText)
     }
 }
 
@@ -196,7 +198,8 @@ fun ContactSection(state: PostListingUiState, vm: PostListingViewModel) {
         GlassTextField(
             state.contactPhone, vm::onContactPhone, stringResource(Res.string.discounts_contact_hint),
             height = 48.dp,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            leadingContent = { Text(UZ_DIALING_CODE, style = AppType.bodyStrong.copy(color = appPalette.ink)) },
+            type = AppFieldType.UzPhone,
         )
     }
 }

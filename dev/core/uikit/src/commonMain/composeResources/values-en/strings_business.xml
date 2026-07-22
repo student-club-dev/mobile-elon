@@ -31,7 +31,7 @@
     <string name="business_field_name">Business name</string>
     <string name="business_field_name_hint">For example: Cafe Aurora</string>
     <string name="business_field_phone">Phone</string>
-    <string name="business_field_phone_hint">+998 90 123 45 67</string>
+    <string name="business_field_phone_hint">90 123 45 67</string>
     <string name="business_field_email">Email (gmail)</string>
     <string name="business_field_email_hint">biznes@gmail.com</string>
 

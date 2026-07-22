@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.core.uikit.component.AppIcons
+import dev.core.uikit.component.rememberKeyboardDismiss
 import dev.core.uikit.component.SoftPill
 import dev.core.uikit.resources.Res
 import dev.core.uikit.theme.AppPalette
@@ -97,6 +98,8 @@ fun SelectChip(
     onClick: () -> Unit,
     palette: AppPalette = appPalette,
 ) {
+    // Chip bosilganda klaviatura yopiladi — u ochiq bo'lsa variantlar ostida qolib ketadi.
+    val dismissKeyboard = rememberKeyboardDismiss()
     val shape = RoundedCornerShape(14.dp)
     Row(
         Modifier
@@ -104,7 +107,7 @@ fun SelectChip(
             .clip(shape)
             .background(if (selected) palette.primary else palette.fieldBg)
             .then(if (selected) Modifier else Modifier.border(1.dp, palette.border, shape))
-            .clickable(onClick = onClick)
+            .clickable { dismissKeyboard(); onClick() }
             .padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),

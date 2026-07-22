@@ -50,7 +50,7 @@
     <string name="profile_field_first_name">Имя</string>
     <string name="profile_field_last_name">Фамилия</string>
     <string name="profile_field_phone">Телефон</string>
-    <string name="profile_field_phone_placeholder">+998 90 123 45 67</string>
+    <string name="profile_field_phone_placeholder">90 123 45 67</string>
     <string name="profile_field_university">Университет</string>
     <string name="profile_university_select">Выберите университет</string>
     <string name="profile_field_course">Курс</string>

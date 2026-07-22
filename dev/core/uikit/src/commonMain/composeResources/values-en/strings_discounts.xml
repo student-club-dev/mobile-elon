@@ -88,7 +88,7 @@
     <string name="discounts_percent_off">-%1$s%</string>
 
     <string name="discounts_contact_subtitle">Students will call this number</string>
-    <string name="discounts_contact_hint">+998 90 123 45 67</string>
+    <string name="discounts_contact_hint">90 123 45 67</string>
 
     <string name="discounts_redemption_section">How students redeem it</string>
     <string name="discounts_promo_hint">NAVRUZ20</string>

@@ -50,7 +50,7 @@
     <string name="profile_field_first_name">First name</string>
     <string name="profile_field_last_name">Last name</string>
     <string name="profile_field_phone">Phone</string>
-    <string name="profile_field_phone_placeholder">+998 90 123 45 67</string>
+    <string name="profile_field_phone_placeholder">90 123 45 67</string>
     <string name="profile_field_university">University</string>
     <string name="profile_university_select">Select a university</string>
     <string name="profile_field_course">Year</string>

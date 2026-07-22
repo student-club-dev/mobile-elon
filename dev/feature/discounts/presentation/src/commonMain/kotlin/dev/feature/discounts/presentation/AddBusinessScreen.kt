@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,7 +18,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -64,6 +62,8 @@ import dev.core.uikit.map.MapPoint
 import dev.core.uikit.map.rememberUserLocation
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import dev.core.uikit.component.AppFieldType
+import dev.core.uikit.component.HintText
 
 // ===========================================================================
 // Biznes qo'shish — nom, telefon, TUR (majburiy), lokatsiya
@@ -115,15 +115,14 @@ fun AddBusinessScreen(
             state.name,
             vm::onName,
             stringResource(Res.string.discounts_business_name_hint),
+            type = AppFieldType.LatinText,
             palette = palette,
         )
-        if (state.nameCyrillicBlocked) {
-            Spacer(Modifier.height(5.dp))
-            Text(
-                stringResource(Res.string.discounts_name_latin_only),
-                style = AppType.hint.copy(color = palette.warning),
-            )
-        }
+        // Qoida OLDINDAN ko'rsatiladi. Ilgari u faqat kirill yozilgandan keyin chiqardi, lekin
+        // endi `AppFieldType.LatinText` harfni maydonga umuman kiritmaydi — foydalanuvchi
+        // "nega yozilmayapti?" deb qolmasligi uchun sabab doim ko'rinib turadi.
+        Spacer(Modifier.height(5.dp))
+        HintText(stringResource(Res.string.discounts_name_latin_only), palette = palette)
 
         Spacer(Modifier.height(14.dp))
         FormFieldLabel(stringResource(Res.string.discounts_phone_label), palette)
@@ -138,7 +137,7 @@ fun AddBusinessScreen(
                     style = AppType.body.copy(fontWeight = AppType.label.fontWeight, color = palette.ink),
                 )
             },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            type = AppFieldType.UzPhone,
             palette = palette,
         )
 

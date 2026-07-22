@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import dev.core.uikit.component.AppIcons
+import dev.core.uikit.component.rememberKeyboardDismiss
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.discounts_region_select
 import dev.core.uikit.theme.AppPalette
@@ -47,13 +48,15 @@ fun RegionSelector(
     palette: AppPalette,
     modifier: Modifier = Modifier,
 ) {
+    // Ro'yxat ochilganda klaviatura yopiladi — aks holda u variantlarni to'sib qoladi.
+    val dismissKeyboard = rememberKeyboardDismiss()
     Column(modifier.fillMaxWidth()) {
         Row(
             Modifier.fillMaxWidth()
                 .clip(AppRadius.lg)
                 .background(palette.fieldBg)
                 .border(1.dp, palette.border, AppRadius.lg)
-                .clickable(onClick = onToggle)
+                .clickable { dismissKeyboard(); onToggle() }
                 .padding(horizontal = AppSpacing.md, vertical = 15.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {

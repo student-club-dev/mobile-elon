@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -30,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -72,6 +70,10 @@ import dev.feature.profile.presentation.components.ProfileAvatar
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import dev.core.uikit.component.AppFieldType
+import dev.core.uikit.util.UZ_DIALING_CODE
+import dev.core.uikit.util.nationalPhoneDigits
+import dev.core.uikit.util.fullUzPhoneOrNull
 
 /** Kurs tanlash varianti — yorlig'i resursdan olinadi. */
 private data class CourseOption(val value: String, val label: StringResource)
@@ -96,7 +98,7 @@ fun EditProfileScreen(onBack: () -> Unit, vm: ProfileViewModel = koinViewModel()
 
     var firstName by remember(profile) { mutableStateOf(profile?.firstName.orEmpty()) }
     var lastName by remember(profile) { mutableStateOf(profile?.lastName.orEmpty()) }
-    var phone by remember(profile) { mutableStateOf(profile?.phoneNumber.orEmpty()) }
+    var phone by remember(profile) { mutableStateOf(nationalPhoneDigits(profile?.phoneNumber)) }
     var universityId by remember(profile) { mutableStateOf(profile?.universityId) }
     var courseYear by remember(profile) { mutableStateOf(profile?.courseYear) }
 
@@ -190,19 +192,19 @@ fun EditProfileScreen(onBack: () -> Unit, vm: ProfileViewModel = koinViewModel()
         ) {
             val firstNameLabel = stringResource(Res.string.profile_field_first_name)
             FieldLabel(firstNameLabel, palette = palette)
-            GlassTextField(firstName, { firstName = it }, firstNameLabel, leading = AppIcons.Pencil)
+            GlassTextField(firstName, { firstName = it }, firstNameLabel, leading = AppIcons.Pencil, type = AppFieldType.LatinText)
 
             val lastNameLabel = stringResource(Res.string.profile_field_last_name)
             FieldLabel(lastNameLabel, palette = palette)
-            GlassTextField(lastName, { lastName = it }, lastNameLabel, leading = AppIcons.Pencil)
+            GlassTextField(lastName, { lastName = it }, lastNameLabel, leading = AppIcons.Pencil, type = AppFieldType.LatinText)
 
             FieldLabel(stringResource(Res.string.profile_field_phone), palette = palette)
             GlassTextField(
                 phone,
                 { phone = it },
                 stringResource(Res.string.profile_field_phone_placeholder),
-                leading = AppIcons.Phone,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                leadingContent = { Text(UZ_DIALING_CODE, style = AppType.bodyStrong.copy(color = palette.ink)) },
+                type = AppFieldType.UzPhone,
             )
 
             // Universitet tanlash
@@ -275,7 +277,7 @@ fun EditProfileScreen(onBack: () -> Unit, vm: ProfileViewModel = koinViewModel()
                     val updated = (profile ?: UserProfile()).copy(
                         firstName = firstName.trim().ifBlank { null },
                         lastName = lastName.trim().ifBlank { null },
-                        phoneNumber = phone.trim().ifBlank { null },
+                        phoneNumber = fullUzPhoneOrNull(phone),
                         universityId = universityId,
                         courseYear = courseYear,
                     )

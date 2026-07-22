@@ -21,7 +21,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.core.uikit.component.AppScreenScaffold
 import dev.core.uikit.component.BackButton
 import dev.core.uikit.component.FieldLabel
-import dev.core.common.text.TextScript
 import dev.core.uikit.component.GlassTextField
 import dev.core.uikit.component.InlineErrorText
 import dev.core.uikit.component.PrimaryButton
@@ -43,6 +42,12 @@ import dev.feature.profile.domain.model.UserProfile
 import dev.feature.profile.presentation.ProfileViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import dev.core.uikit.component.AppFieldType
+import dev.core.uikit.util.UZ_DIALING_CODE
+import dev.core.uikit.util.nationalPhoneDigits
+import dev.core.uikit.util.fullUzPhoneOrNull
+import androidx.compose.material3.Text
+import dev.core.uikit.theme.AppType
 
 /**
  * Biznes profilini tahrirlash — biznes nomi, telefon, email (gmail), biznes turi.
@@ -58,7 +63,7 @@ fun BusinessEditScreen(
     val profile = state.profile
 
     var name by remember(profile) { mutableStateOf(profile?.businessName ?: state.name) }
-    var phone by remember(profile) { mutableStateOf(profile?.phoneNumber ?: "") }
+    var phone by remember(profile) { mutableStateOf(nationalPhoneDigits(profile?.phoneNumber)) }
     var email by remember(profile) { mutableStateOf(profile?.email ?: "") }
     var type by remember(profile) { mutableStateOf(profile?.businessType ?: "") }
     var saving by remember { mutableStateOf(false) }
@@ -73,14 +78,15 @@ fun BusinessEditScreen(
         Spacer(Modifier.height(20.dp))
         FieldLabel(stringResource(Res.string.business_field_name))
         Spacer(Modifier.height(AppSpacing.sm))
-        GlassTextField(name, { name = TextScript.stripCyrillic(it) }, stringResource(Res.string.business_field_name_hint))
+        GlassTextField(name, { name = it }, stringResource(Res.string.business_field_name_hint), type = AppFieldType.LatinText)
 
         Spacer(Modifier.height(AppSpacing.lg))
         FieldLabel(stringResource(Res.string.business_field_phone))
         Spacer(Modifier.height(AppSpacing.sm))
         GlassTextField(
             phone, { phone = it }, stringResource(Res.string.business_field_phone_hint),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            leadingContent = { Text(UZ_DIALING_CODE, style = AppType.bodyStrong.copy(color = appPalette.ink)) },
+            type = AppFieldType.UzPhone,
         )
 
         Spacer(Modifier.height(AppSpacing.lg))
@@ -113,7 +119,7 @@ fun BusinessEditScreen(
                 error = null
                 val updated = (profile ?: UserProfile(role = "BUSINESS")).copy(
                     businessName = name.ifBlank { null },
-                    phoneNumber = phone.ifBlank { null },
+                    phoneNumber = fullUzPhoneOrNull(phone),
                     email = email.ifBlank { null },
                     businessType = type.ifBlank { null },
                     role = "BUSINESS",

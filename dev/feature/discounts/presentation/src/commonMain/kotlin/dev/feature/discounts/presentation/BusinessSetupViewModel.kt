@@ -62,8 +62,6 @@ data class AddBusinessUiState(
     /** Tahrirlashда — biznesning asl yaratilgan vaqti (saqlashда qayta yozilmasligi uchun). */
     val editCreatedAt: Long? = null,
     val name: String = "",
-    /** Foydalanuvchi kirill yozuvida yozmoqchi bo'ldi — maydon ostida sabab ko'rsatiladi. */
-    val nameCyrillicBlocked: Boolean = false,
     val phone: String = "",
     val businessType: BusinessType? = null,
     /** Foydalanuvchi jinsi — tur ro'yxatini filtrlaydi (Sartaroshxona/BeautySalon). */
@@ -102,6 +100,12 @@ data class AddBusinessUiState(
         get() = name.isNotBlank() && phoneDigits.length == 9 && businessType != null &&
             branch != null && regionId != null && !saving
 }
+
+/**
+ * Biznes qo'shishда oldindan tanlanadigan tur. Kiyim-kechak — eng ko'p uchraydigan tur,
+ * shuning uchun forma darrov ishlashga tayyor holatда ochiladi.
+ */
+private val DEFAULT_BUSINESS_TYPE = BusinessType.CLOTHING
 
 class AddBusinessViewModel(
     private val saveBusiness: SaveBusinessUseCase,
@@ -154,18 +158,27 @@ class AddBusinessViewModel(
     private fun loadTypes(gender: Gender?) {
         viewModelScope.launch {
             val types = getBusinessTypes(gender)
-            _state.update { it.copy(availableTypes = types) }
+            _state.update { state ->
+                state.copy(
+                    availableTypes = types,
+                    // Yangi biznesда tur oldindan tanlangan bo'ladi — foydalanuvchi ko'pincha
+                    // uni o'zgartirmaydi va bo'sh tanlov saqlashga to'sqinlik qilardi.
+                    // Tahrirlashда yoki foydalanuvchi allaqachon tanlaganда tegilmaydi.
+                    businessType = state.businessType
+                        ?: types.firstOrNull { it.type == DEFAULT_BUSINESS_TYPE }?.type
+                        ?: types.firstOrNull()?.type,
+                )
+            }
         }
     }
 
     /**
-     * Biznes nomi — kirill harflari kiritilishiga yo'l qo'yilmaydi (qarang [TextScript]).
-     * Harflar jimgina yo'qolib qolmasligi uchun `nameCyrillicBlocked` bilan maydon ostida
-     * sabab ko'rsatiladi.
+     * Biznes nomi. Maydon `AppFieldType.LatinText` bilan kelgani uchun kirill bu yerga
+     * yetib kelmaydi; `stripCyrillic` — dasturiy to'ldirishlar (backenddan prefill) uchun
+     * qo'shimcha himoya.
      */
     fun onName(v: String) = _state.update {
-        val cleaned = TextScript.stripCyrillic(v)
-        it.copy(name = cleaned, nameCyrillicBlocked = cleaned != v, error = null)
+        it.copy(name = TextScript.stripCyrillic(v), error = null)
     }
     fun onPhone(v: String) = _state.update { it.copy(phone = v.filter { c -> c.isDigit() }.take(9), error = null) }
     fun onType(t: BusinessType) = _state.update { it.copy(businessType = t, error = null) }

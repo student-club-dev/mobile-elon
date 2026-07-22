@@ -5,6 +5,22 @@ import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 
+/** O'zbekiston xalqaro kodi — saqlangan raqamlar shu prefiks bilan yoziladi. */
+const val UZ_DIALING_CODE = "+998"
+
+/**
+ * Saqlangan to'liq raqamdan ("+998901234567") maydonga mos 9 xonali milliy qismni ajratadi.
+ *
+ * Maydon faqat milliy qismni saqlaydi, `+998` esa yorliq sifatida yonida turadi. To'liq raqamni
+ * maydonga shundoq berib bo'lmaydi: `998901234` bo'lib kesilib qolardi.
+ */
+fun nationalPhoneDigits(stored: String?): String =
+    stored.orEmpty().removePrefix(UZ_DIALING_CODE).filter { it.isDigit() }.takeLast(9)
+
+/** Maydondagi milliy qismni saqlash uchun to'liq raqamga aylantiradi. Bo'sh bo'lsa `null`. */
+fun fullUzPhoneOrNull(nationalDigits: String): String? =
+    nationalDigits.filter { it.isDigit() }.takeIf { it.isNotBlank() }?.let { "$UZ_DIALING_CODE$it" }
+
 /** 9 xonali milliy raqamni "90 123 45 67" ko'rinishida formatlaydi. */
 fun formatUzPhone(digits: String): String {
     val d = digits.filter { it.isDigit() }.take(9)

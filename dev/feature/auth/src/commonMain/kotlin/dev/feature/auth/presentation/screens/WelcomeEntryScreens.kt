@@ -67,13 +67,13 @@ import dev.core.uikit.theme.AppSize
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
-import dev.core.uikit.util.PhoneVisualTransformation
 import dev.feature.auth.presentation.flow.AuthFlowState
 import dev.feature.auth.presentation.flow.AuthFlowViewModel
 import dev.feature.auth.presentation.screens.components.CheckBoxSmall
 import dev.feature.auth.presentation.screens.components.PhonePrefix
 import dev.feature.auth.presentation.screens.components.clickableNoRipple
 import org.jetbrains.compose.resources.stringResource
+import dev.core.uikit.component.AppFieldType
 
 // ===========================================================================
 // 1a — WELCOME (to'liq forma, tab bilan)
@@ -111,8 +111,7 @@ fun WelcomeScreen(
                 onValueChange = vm::onPhoneChange,
                 placeholder = stringResource(Res.string.auth_phone_placeholder),
                 leadingContent = { PhonePrefix(palette) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                visualTransformation = PhoneVisualTransformation(),
+                type = AppFieldType.UzPhone,
                 textLetterSpacing = 0.5f,
             )
             Spacer(Modifier.height(AppSpacing.sm))
@@ -188,8 +187,7 @@ fun PhoneScreen(
             leadingContent = { PhonePrefix(palette) },
             focused = true,
             height = 56.dp,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-            visualTransformation = PhoneVisualTransformation(),
+            type = AppFieldType.UzPhone,
             textLetterSpacing = 0.5f,
         )
         Spacer(Modifier.height(9.dp))

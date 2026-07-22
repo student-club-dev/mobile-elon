@@ -37,7 +37,7 @@
     <string name="business_field_name">Biznes nomi</string>
     <string name="business_field_name_hint">Masalan: Kafe Aurora</string>
     <string name="business_field_phone">Telefon</string>
-    <string name="business_field_phone_hint">+998 90 123 45 67</string>
+    <string name="business_field_phone_hint">90 123 45 67</string>
     <string name="business_field_email">Email (gmail)</string>
     <string name="business_field_email_hint">biznes@gmail.com</string>
 

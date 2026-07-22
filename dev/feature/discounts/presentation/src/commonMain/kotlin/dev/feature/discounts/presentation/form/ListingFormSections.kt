@@ -49,6 +49,7 @@ import dev.feature.discounts.presentation.components.SectionHPad
 import dev.feature.discounts.presentation.components.SectionHeader
 import dev.feature.discounts.presentation.components.SelectChip
 import org.jetbrains.compose.resources.stringResource
+import dev.core.uikit.component.AppFieldType
 
 /**
  * E'lon formasining boshlang'ich bloklari: e'lon turi, jins darvozasi, kategoriya,
@@ -208,6 +209,7 @@ fun CategorySection(
                     vm::onCustomCategory,
                     stringResource(Res.string.discounts_category_custom_hint),
                     height = 46.dp,
+                    type = AppFieldType.LatinText,
                     palette = palette,
                 )
             }
@@ -232,6 +234,7 @@ fun BusinessAndScopeSection(
             vm::onBusinessName,
             stringResource(copy.businessHint),
             height = 48.dp,
+            type = AppFieldType.LatinText,
         )
     }
 }

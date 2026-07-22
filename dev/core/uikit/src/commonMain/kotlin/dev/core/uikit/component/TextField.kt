@@ -48,8 +48,13 @@ fun GlassTextField(
     trailing: @Composable (() -> Unit)? = null,
     focused: Boolean = false,
     height: Dp = AppSize.fieldHeight,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
+    /**
+     * Maydon turi — klaviatura, niqob va kiritishni tozalashni birga beradi.
+     * Quyidagi ikki parametr undan kelib chiqadi, kerak bo'lsa alohida bekor qilinadi.
+     */
+    type: AppFieldType = AppFieldType.Text,
+    keyboardOptions: KeyboardOptions = type.keyboardOptions,
+    visualTransformation: VisualTransformation = type.visualTransformation,
     textLetterSpacing: Float = 0f,
     palette: AppPalette = appPalette,
 ) {
@@ -80,7 +85,9 @@ fun GlassTextField(
             }
             BasicTextField(
                 value = value,
-                onValueChange = onValueChange,
+                // Tur qoidasi kiritishning O'ZIDA qo'llanadi — ruxsatsiz belgi holatga
+                // umuman tushmaydi, ekran uni alohida tozalashi shart emas.
+                onValueChange = { onValueChange(type.sanitize(it)) },
                 singleLine = true,
                 textStyle = AppType.bodyStrong.copy(
                     color = palette.ink,
