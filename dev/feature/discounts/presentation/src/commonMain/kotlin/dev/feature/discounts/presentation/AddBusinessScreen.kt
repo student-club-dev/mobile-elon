@@ -66,6 +66,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import dev.core.uikit.component.AppFieldType
 import dev.core.uikit.component.HintText
+import dev.core.uikit.component.AppBackHandler
 
 // ===========================================================================
 // Biznes qo'shish — nom, telefon, TUR (majburiy), lokatsiya
@@ -84,6 +85,15 @@ fun AddBusinessScreen(
 
     LaunchedEffect(businessId) { if (businessId != null) vm.loadForEdit(businessId) }
     LaunchedEffect(state.saved) { if (state.saved) onSaved() }
+
+    // Tizim "orqaga" ishorasi ekran ichidagi qatlamlarni birma-bir yopadi: avval ochiq
+    // sheet, keyin xarita. Ular navigatsiya manzili emas, shuning uchun aks holda butun
+    // forma yopilib ketardi.
+    AppBackHandler(enabled = state.typePickerOpen) { vm.closeTypePicker() }
+    AppBackHandler(enabled = !state.typePickerOpen && state.regionPickerOpen) { vm.closeRegionPicker() }
+    AppBackHandler(
+        enabled = !state.typePickerOpen && !state.regionPickerOpen && state.pickingOnMap,
+    ) { vm.closeMap() }
 
     if (state.pickingOnMap) {
         BusinessMapScreen(state, palette, vm)

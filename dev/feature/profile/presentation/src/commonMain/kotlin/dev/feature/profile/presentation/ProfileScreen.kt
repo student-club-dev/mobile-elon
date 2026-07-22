@@ -53,6 +53,7 @@ import dev.feature.profile.presentation.components.ProfileSection
 import dev.feature.profile.presentation.components.SectionList
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import dev.core.uikit.component.AppBackHandler
 
 @Composable
 fun ProfileScreen(
@@ -70,6 +71,9 @@ fun ProfileScreen(
     val palette = appPalette
     val state by vm.state.collectAsStateWithLifecycle()
     var section by remember { mutableStateOf<ProfileSection?>(null) }
+
+    // Bo'lim ro'yxati ochiq bo'lsa "orqaga" profilga qaytaradi, ekrandan chiqarmaydi.
+    AppBackHandler(enabled = section != null) { section = null }
 
     if (section != null) {
         SectionList(section!!, state, palette, onBack = { section = null }, onDeleteAd = vm::deleteAd, onEditAd = onEditAd)

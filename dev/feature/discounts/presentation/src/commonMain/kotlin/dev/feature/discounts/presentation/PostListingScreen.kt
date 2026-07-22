@@ -48,6 +48,7 @@ import dev.core.uikit.map.MapPoint
 import dev.core.uikit.map.rememberUserLocation
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import dev.core.uikit.component.AppBackHandler
 
 /**
  * E'lon qo'yish. Tur biznesdan **meros** olinadi (tur tanlash grid'i yo'q) — forma darrov
@@ -81,6 +82,9 @@ fun PostListingScreen(
 
     val type = state.businessType
     val loadError = state.loadError
+
+    // Xarita ochiq bo'lsa "orqaga" faqat xaritani yopadi, formani emas.
+    AppBackHandler(enabled = state.pickingOnMap) { vm.closeMap() }
 
     when {
         // Xarita hamma narsadan ustun — joy tanlanmaguncha forma ko'rinmaydi.

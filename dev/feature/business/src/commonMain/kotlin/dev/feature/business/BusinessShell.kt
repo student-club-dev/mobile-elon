@@ -61,10 +61,10 @@ fun BusinessShell(
             // 1. Bosh ekran — Mening bizneslarim (ro'yxat + "+" tugma).
             composable(BUSINESSES) {
                 MyBusinessesScreen(
-                    onOpenBusiness = { biz -> nav.navigate("$LISTINGS/${biz.id}") },
-                    onEditBusiness = { biz -> nav.navigate("$ADD_BUSINESS?businessId=${biz.id}") },
-                    onAddBusiness = { nav.navigate(ADD_BUSINESS) },
-                    onProfile = { nav.navigate(PROFILE) },
+                    onOpenBusiness = { biz -> nav.navigate("$LISTINGS/${biz.id}") { launchSingleTop = true } },
+                    onEditBusiness = { biz -> nav.navigate("$ADD_BUSINESS?businessId=${biz.id}") { launchSingleTop = true } },
+                    onAddBusiness = { nav.navigate(ADD_BUSINESS) { launchSingleTop = true } },
+                    onProfile = { nav.navigate(PROFILE) { launchSingleTop = true } },
                     onMessages = { nav.navigate(MESSAGES) { launchSingleTop = true } },
                     onSupport = { nav.navigate(SUPPORT) { launchSingleTop = true } },
                 )
@@ -89,7 +89,7 @@ fun BusinessShell(
                 Column(Modifier.fillMaxSize()) {
                     BusinessTopBar(
                         onBack = { nav.popBackStack() },
-                        onProfile = { nav.navigate(PROFILE) },
+                        onProfile = { nav.navigate(PROFILE) { launchSingleTop = true } },
                         palette = palette,
                     )
                     MyListingsScreen(
@@ -125,9 +125,9 @@ fun BusinessShell(
             composable(PROFILE) {
                 BusinessAccountScreen(
                     onBack = { nav.popBackStack() },
-                    onEdit = { nav.navigate(BUSINESS_EDIT) },
+                    onEdit = { nav.navigate(BUSINESS_EDIT) { launchSingleTop = true } },
                     onOpenListings = { nav.popBackStack() },
-                    onOpenSettings = { nav.navigate(SETTINGS) },
+                    onOpenSettings = { nav.navigate(SETTINGS) { launchSingleTop = true } },
                     onLoggedOut = onLoggedOut,
                 )
             }

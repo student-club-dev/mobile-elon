@@ -99,12 +99,12 @@ fun AuthNavHost(
     LaunchedEffect(Unit) {
         vm.events.collect { event ->
             when (event) {
-                AuthEvent.OtpSent -> nav.navigate(Route.OTP)
+                AuthEvent.OtpSent -> nav.navigate(Route.OTP) { launchSingleTop = true }
                 // Kod ishlatildi — orqaga qaytib bekor bo'lgan OTP ekraniga tushmasin.
                 AuthEvent.OtpVerified -> nav.navigate(Route.SIGNUP) {
                     popUpTo(Route.OTP) { inclusive = true }
                 }
-                AuthEvent.EmailVerificationSent -> nav.navigate(Route.VERIFY_EMAIL)
+                AuthEvent.EmailVerificationSent -> nav.navigate(Route.VERIFY_EMAIL) { launchSingleTop = true }
                 // Hisob yaratildi — biznes profili to'ldirish qadami olib tashlandi;
                 // to'g'ridan-to'g'ri asosiy ekranga (biznes ma'lumoti keyin "Biznes qo'shish" orqali).
                 AuthEvent.Registered -> nav.navigate(Route.HOME) {
@@ -127,7 +127,10 @@ fun AuthNavHost(
     NavHost(navController = nav, startDestination = startDestination) {
         composable(Route.ONBOARDING) {
             // Rol-scoped oqimda (Activity) rol allaqachon tanlangan — to'g'ridan-to'g'ri login'ga.
-            val afterOnboarding = { if (flow == null) nav.navigate(Route.ROLE) else nav.navigate(Route.WELCOME) }
+            val afterOnboarding = {
+                val next = if (flow == null) Route.ROLE else Route.WELCOME
+                nav.navigate(next) { launchSingleTop = true }
+            }
             OnboardingScreen(
                 onNext = afterOnboarding,
                 onSkip = afterOnboarding,
@@ -138,8 +141,8 @@ fun AuthNavHost(
             RoleChoiceScreen(
                 onPick = { role ->
                     vm.onRoleChange(role)
-                    if (role == Role.BUSINESS) nav.navigate(Route.BUSINESS_WELCOME)
-                    else nav.navigate(Route.WELCOME)
+                    if (role == Role.BUSINESS) nav.navigate(Route.BUSINESS_WELCOME) { launchSingleTop = true }
+                    else nav.navigate(Route.WELCOME) { launchSingleTop = true }
                 },
                 onBack = { nav.popBackStack() },
             )
@@ -153,7 +156,7 @@ fun AuthNavHost(
                 onBack = { nav.popBackStack() },
                 onGetCode = { vm.sendOtp(socialAuth) },
                 onGoogle = { vm.signInWithGoogle(socialAuth) },
-                onEmail = { nav.navigate(Route.EMAIL) },
+                onEmail = { nav.navigate(Route.EMAIL) { launchSingleTop = true } },
                 onDevLogin = if (dev.core.domain.USE_LOCAL_DATA) ({ vm.devLogin() }) else null,
             )
         }
@@ -162,9 +165,9 @@ fun AuthNavHost(
                 state = state, vm = vm, tab = welcomeTab, onTab = { welcomeTab = it },
                 onContinue = {
                     if (welcomeTab == AuthTab.PHONE) vm.sendOtp(socialAuth)
-                    else nav.navigate(Route.EMAIL)
+                    else nav.navigate(Route.EMAIL) { launchSingleTop = true }
                 },
-                onSignUp = { nav.navigate(Route.REGISTER_CHOICE) },
+                onSignUp = { nav.navigate(Route.REGISTER_CHOICE) { launchSingleTop = true } },
                 onGoogle = { vm.signInWithGoogle(socialAuth) },
                 onApple = { vm.signInWithApple(socialAuth) },
                 onTelegram = { vm.signInWithTelegram(socialAuth) },
@@ -174,9 +177,9 @@ fun AuthNavHost(
             PhoneScreen(
                 state = state, vm = vm,
                 onBack = { nav.popBackStack() },
-                onSwitchEmail = { nav.navigate(Route.EMAIL) },
+                onSwitchEmail = { nav.navigate(Route.EMAIL) { launchSingleTop = true } },
                 onGetCode = { vm.sendOtp(socialAuth) },
-                onSignIn = { nav.navigate(Route.EMAIL) },
+                onSignIn = { nav.navigate(Route.EMAIL) { launchSingleTop = true } },
                 onGoogle = { vm.signInWithGoogle(socialAuth) },
                 onApple = { vm.signInWithApple(socialAuth) },
                 onTelegram = { vm.signInWithTelegram(socialAuth) },
@@ -196,9 +199,9 @@ fun AuthNavHost(
             EmailLoginScreen(
                 state = state, vm = vm,
                 onBack = { nav.popBackStack() },
-                onSwitchPhone = { nav.navigate(Route.PHONE) },
+                onSwitchPhone = { nav.navigate(Route.PHONE) { launchSingleTop = true } },
                 onLogin = { vm.login() },
-                onForgot = { nav.navigate(Route.FORGOT) },
+                onForgot = { nav.navigate(Route.FORGOT) { launchSingleTop = true } },
                 onBiometric = {
                     if (!biometric.canAuthenticate()) {
                         vm.biometricError(bioNotConfigured)
@@ -213,7 +216,7 @@ fun AuthNavHost(
                         }
                     }
                 },
-                onSignUp = { nav.navigate(Route.REGISTER_CHOICE) },
+                onSignUp = { nav.navigate(Route.REGISTER_CHOICE) { launchSingleTop = true } },
             )
         }
         composable(Route.OTP) {
@@ -235,9 +238,9 @@ fun AuthNavHost(
         composable(Route.REGISTER_CHOICE) {
             RegisterChoiceScreen(
                 onBack = { nav.popBackStack() },
-                onPhone = { nav.navigate(Route.PHONE) },
-                onEmail = { nav.navigate(Route.REGISTER) },
-                onSignIn = { nav.navigate(Route.EMAIL) },
+                onPhone = { nav.navigate(Route.PHONE) { launchSingleTop = true } },
+                onEmail = { nav.navigate(Route.REGISTER) { launchSingleTop = true } },
+                onSignIn = { nav.navigate(Route.EMAIL) { launchSingleTop = true } },
             )
         }
         composable(Route.REGISTER) {
@@ -245,7 +248,7 @@ fun AuthNavHost(
                 state = state, vm = vm,
                 onBack = { nav.popBackStack() },
                 onCreate = { vm.registerWithEmail() },
-                onSignIn = { nav.navigate(Route.EMAIL) },
+                onSignIn = { nav.navigate(Route.EMAIL) { launchSingleTop = true } },
             )
         }
         composable(Route.VERIFY_EMAIL) {

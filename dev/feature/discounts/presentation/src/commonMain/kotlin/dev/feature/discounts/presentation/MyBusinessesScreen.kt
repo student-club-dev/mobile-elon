@@ -50,6 +50,7 @@ import dev.feature.discounts.domain.model.Business
 import dev.feature.discounts.presentation.components.BusinessCard
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import androidx.compose.ui.unit.sp
 
 /** Handoff: yuqoridagi oq harakat tugmalari 44dp, ichidagi ikonka 20dp. */
 private val TopActionSize = 44.dp
@@ -85,7 +86,7 @@ fun MyBusinessesScreen(
                 Modifier.fillMaxWidth()
                     .padding(horizontal = AppSpacing.screenHorizontal)
                     .padding(top = 54.dp, bottom = AppSpacing.sm),
-                // Sarlavha ikki qatorli — tugmalar uning YUQORISIGA tekislanadi.
+                // Tugmalar sarlavha blokining YUQORISIGA tekislanadi.
                 verticalAlignment = Alignment.Top,
             ) {
                 Column(Modifier.weight(1f)) {
@@ -95,7 +96,11 @@ fun MyBusinessesScreen(
                     )
                     Text(
                         stringResource(Res.string.discounts_my_businesses),
-                        style = AppType.screenTitle.copy(color = palette.ink),
+                        // 26sp — handoff H1 oralig'ining (26-30) pastki chegarasi. 30sp da
+                        // "Bizneslarim" tor ekranlarda (360dp) uchta tugma yonida sig'maydi va
+                        // ikki qatorga bo'linib ketardi; `maxLines` buni butunlay taqiqlaydi.
+                        style = AppType.screenTitle.copy(fontSize = 26.sp, color = palette.ink),
+                        maxLines = 1,
                     )
                 }
                 Row(

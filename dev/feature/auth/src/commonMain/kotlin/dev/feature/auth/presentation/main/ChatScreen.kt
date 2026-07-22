@@ -11,6 +11,7 @@ import dev.core.uikit.theme.appPalette
 import dev.feature.auth.presentation.main.components.ChatThread
 import dev.feature.auth.presentation.main.components.ConversationList
 import org.koin.compose.viewmodel.koinViewModel
+import dev.core.uikit.component.AppBackHandler
 
 /**
  * Xabarlar oqimi — suhbatlar ro'yxati (handoff, 5-ekran) va tanlangan suhbat (6-ekran).
@@ -21,6 +22,9 @@ import org.koin.compose.viewmodel.koinViewModel
 fun ChatScreen(onBack: () -> Unit, vm: ChatViewModel = koinViewModel()) {
     val palette = appPalette
     val state by vm.state.collectAsStateWithLifecycle()
+
+    // Suhbat ochiq bo'lsa "orqaga" ro'yxatga qaytaradi, chat ekranidan chiqarmaydi.
+    AppBackHandler(enabled = state.selected != null) { vm.close() }
 
     if (state.selected == null) {
         ConversationList(
