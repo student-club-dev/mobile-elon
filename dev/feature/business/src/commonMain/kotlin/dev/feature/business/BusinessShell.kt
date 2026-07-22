@@ -16,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import dev.core.uikit.component.EdgeSwipeBack
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.appPalette
 import dev.feature.business.components.BusinessTopBar
@@ -58,116 +59,119 @@ fun BusinessShell(
     val backStack by nav.currentBackStackEntryAsState()
     val current = backStack?.destination?.route ?: BUSINESSES
 
-    Box(Modifier.fillMaxSize().background(palette.bgBrush)) {
-        NavHost(navController = nav, startDestination = BUSINESSES, modifier = Modifier.fillMaxSize()) {
-            // 1. Bosh ekran — Mening bizneslarim (ro'yxat + "+" tugma).
-            composable(BUSINESSES) {
-                MyBusinessesScreen(
-                    onOpenBusiness = { biz -> nav.navigate("$LISTINGS/${biz.id}") { launchSingleTop = true } },
-                    onEditBusiness = { biz -> nav.navigate("$ADD_BUSINESS?businessId=${biz.id}") { launchSingleTop = true } },
-                    onAddBusiness = { nav.navigate(ADD_BUSINESS) { launchSingleTop = true } },
-                    onProfile = { nav.navigate(PROFILE) { launchSingleTop = true } },
-                    onMessages = { nav.navigate(MESSAGES) { launchSingleTop = true } },
-                    onSupport = { nav.navigate(SUPPORT) { launchSingleTop = true } },
-                )
-            }
-            // 2. Biznes qo'shish / tahrirlash (nom, telefon, tur, lokatsiya).
-            composable(
-                route = "$ADD_BUSINESS?businessId={businessId}",
-                arguments = listOf(navArgument("businessId") { type = NavType.StringType; nullable = true; defaultValue = null }),
-            ) { entry ->
-                AddBusinessScreen(
-                    onClose = { nav.popBackStack() },
-                    onSaved = { nav.popBackStack() },
-                    businessId = entry.arguments?.getString("businessId"),
-                )
-            }
-            // 3. Bitta biznesning e'lonlari.
-            composable(
-                route = "$LISTINGS/{businessId}",
-                arguments = listOf(navArgument("businessId") { type = NavType.StringType }),
-            ) { entry ->
-                val businessId = entry.arguments?.getString("businessId").orEmpty()
-                Column(Modifier.fillMaxSize()) {
-                    BusinessTopBar(
-                        onBack = { nav.popBackStack() },
+    // iOS'da chap chetdan surib orqaga qaytish (Androidda hech narsa qilmaydi).
+    EdgeSwipeBack(onBack = { if (nav.previousBackStackEntry != null) nav.popBackStack() }) {
+        Box(Modifier.fillMaxSize().background(palette.bgBrush)) {
+            NavHost(navController = nav, startDestination = BUSINESSES, modifier = Modifier.fillMaxSize()) {
+                // 1. Bosh ekran — Mening bizneslarim (ro'yxat + "+" tugma).
+                composable(BUSINESSES) {
+                    MyBusinessesScreen(
+                        onOpenBusiness = { biz -> nav.navigate("$LISTINGS/${biz.id}") { launchSingleTop = true } },
+                        onEditBusiness = { biz -> nav.navigate("$ADD_BUSINESS?businessId=${biz.id}") { launchSingleTop = true } },
+                        onAddBusiness = { nav.navigate(ADD_BUSINESS) { launchSingleTop = true } },
                         onProfile = { nav.navigate(PROFILE) { launchSingleTop = true } },
-                        palette = palette,
-                    )
-                    MyListingsScreen(
-                        // launchSingleTop — tez ikki marta bosishда ekran ikki nusxada ochilmasin.
-                        onCreate = { nav.navigate("$POST_LISTING?businessId=$businessId") { launchSingleTop = true } },
-                        onEdit = { listingId ->
-                            nav.navigate("$POST_LISTING?listingId=$listingId&businessId=$businessId") { launchSingleTop = true }
-                        },
-                        showHeaderCreate = false,
-                        showHeader = false,
-                        // Chegirma + oddiy e'lonlar — hammasi bitta ro'yxatda.
-                        filterDiscount = null,
-                        businessId = businessId,
+                        onMessages = { nav.navigate(MESSAGES) { launchSingleTop = true } },
+                        onSupport = { nav.navigate(SUPPORT) { launchSingleTop = true } },
                     )
                 }
+                // 2. Biznes qo'shish / tahrirlash (nom, telefon, tur, lokatsiya).
+                composable(
+                    route = "$ADD_BUSINESS?businessId={businessId}",
+                    arguments = listOf(navArgument("businessId") { type = NavType.StringType; nullable = true; defaultValue = null }),
+                ) { entry ->
+                    AddBusinessScreen(
+                        onClose = { nav.popBackStack() },
+                        onSaved = { nav.popBackStack() },
+                        businessId = entry.arguments?.getString("businessId"),
+                    )
+                }
+                // 3. Bitta biznesning e'lonlari.
+                composable(
+                    route = "$LISTINGS/{businessId}",
+                    arguments = listOf(navArgument("businessId") { type = NavType.StringType }),
+                ) { entry ->
+                    val businessId = entry.arguments?.getString("businessId").orEmpty()
+                    Column(Modifier.fillMaxSize()) {
+                        BusinessTopBar(
+                            onBack = { nav.popBackStack() },
+                            onProfile = { nav.navigate(PROFILE) { launchSingleTop = true } },
+                            palette = palette,
+                        )
+                        MyListingsScreen(
+                            // launchSingleTop — tez ikki marta bosishда ekran ikki nusxada ochilmasin.
+                            onCreate = { nav.navigate("$POST_LISTING?businessId=$businessId") { launchSingleTop = true } },
+                            onEdit = { listingId ->
+                                nav.navigate("$POST_LISTING?listingId=$listingId&businessId=$businessId") { launchSingleTop = true }
+                            },
+                            showHeaderCreate = false,
+                            showHeader = false,
+                            // Chegirma + oddiy e'lonlar — hammasi bitta ro'yxatda.
+                            filterDiscount = null,
+                            businessId = businessId,
+                        )
+                    }
+                }
+                composable(
+                    route = "$POST_LISTING?listingId={listingId}&discount={discount}&businessId={businessId}",
+                    arguments = listOf(
+                        navArgument("listingId") { type = NavType.StringType; nullable = true; defaultValue = null },
+                        navArgument("discount") { type = NavType.StringType; nullable = true; defaultValue = null },
+                        navArgument("businessId") { type = NavType.StringType; nullable = true; defaultValue = null },
+                    ),
+                ) { entry ->
+                    PostListingScreen(
+                        onClose = { nav.popBackStack() },
+                        onPublished = { nav.popBackStack() },
+                        editListingId = entry.arguments?.getString("listingId"),
+                        initialDiscount = entry.arguments?.getString("discount")?.toBooleanStrictOrNull(),
+                        businessId = entry.arguments?.getString("businessId"),
+                    )
+                }
+                composable(PROFILE) {
+                    BusinessAccountScreen(
+                        onBack = { nav.popBackStack() },
+                        onEdit = { nav.navigate(PROFILE_EDIT) { launchSingleTop = true } },
+                        onOpenSettings = { nav.navigate(SETTINGS) { launchSingleTop = true } },
+                        onLoggedOut = onLoggedOut,
+                    )
+                }
+                // Profildagi qalam SHAXSIY ma'lumotni tahrirlaydi (ism, familiya, telefon).
+                // Ilgari u biznes tahrirlash ekranini ochardi — u yerda biznes nomi va turi
+                // so'ralardi, holbuki bu foydalanuvchining o'z profili. Biznes esa
+                // "Bizneslarim" ro'yxatidagi qalam orqali tahrirlanadi.
+                composable(PROFILE_EDIT) {
+                    EditProfileScreen(
+                        onBack = { nav.popBackStack() },
+                        // Biznes egasi talaba emas — universitet va kurs so'ralmaydi.
+                        showStudentFields = false,
+                    )
+                }
+                composable(SETTINGS) {
+                    settingsContent(
+                        { nav.popBackStack() },
+                        { nav.navigate(PROFILE_EDIT) { launchSingleTop = true } },
+                    )
+                }
+                // Xabarlar — suhbatlar ro'yxati (qo'llab-quvvatlashsiz).
+                composable(MESSAGES) {
+                    messagesScreen { nav.popBackStack() }
+                }
+                // Qo'llab-quvvatlash — ro'yxatsiz, to'g'ridan-to'g'ri support suhbati.
+                composable(SUPPORT) {
+                    supportScreen { nav.popBackStack() }
+                }
             }
-            composable(
-                route = "$POST_LISTING?listingId={listingId}&discount={discount}&businessId={businessId}",
-                arguments = listOf(
-                    navArgument("listingId") { type = NavType.StringType; nullable = true; defaultValue = null },
-                    navArgument("discount") { type = NavType.StringType; nullable = true; defaultValue = null },
-                    navArgument("businessId") { type = NavType.StringType; nullable = true; defaultValue = null },
-                ),
-            ) { entry ->
-                PostListingScreen(
-                    onClose = { nav.popBackStack() },
-                    onPublished = { nav.popBackStack() },
-                    editListingId = entry.arguments?.getString("listingId"),
-                    initialDiscount = entry.arguments?.getString("discount")?.toBooleanStrictOrNull(),
-                    businessId = entry.arguments?.getString("businessId"),
-                )
-            }
-            composable(PROFILE) {
-                BusinessAccountScreen(
-                    onBack = { nav.popBackStack() },
-                    onEdit = { nav.navigate(PROFILE_EDIT) { launchSingleTop = true } },
-                    onOpenSettings = { nav.navigate(SETTINGS) { launchSingleTop = true } },
-                    onLoggedOut = onLoggedOut,
-                )
-            }
-            // Profildagi qalam SHAXSIY ma'lumotni tahrirlaydi (ism, familiya, telefon).
-            // Ilgari u biznes tahrirlash ekranini ochardi — u yerda biznes nomi va turi
-            // so'ralardi, holbuki bu foydalanuvchining o'z profili. Biznes esa
-            // "Bizneslarim" ro'yxatidagi qalam orqali tahrirlanadi.
-            composable(PROFILE_EDIT) {
-                EditProfileScreen(
-                    onBack = { nav.popBackStack() },
-                    // Biznes egasi talaba emas — universitet va kurs so'ralmaydi.
-                    showStudentFields = false,
-                )
-            }
-            composable(SETTINGS) {
-                settingsContent(
-                    { nav.popBackStack() },
-                    { nav.navigate(PROFILE_EDIT) { launchSingleTop = true } },
-                )
-            }
-            // Xabarlar — suhbatlar ro'yxati (qo'llab-quvvatlashsiz).
-            composable(MESSAGES) {
-                messagesScreen { nav.popBackStack() }
-            }
-            // Qo'llab-quvvatlash — ro'yxatsiz, to'g'ridan-to'g'ri support suhbati.
-            composable(SUPPORT) {
-                supportScreen { nav.popBackStack() }
-            }
-        }
 
-        // O'ng-past: "Yangi" extended pill — faqat bitta biznes e'lonlari ekranida.
-        // (Bizneslarim ro'yxati o'z "+" tugmasiga ega.)
-        if (current.startsWith("$LISTINGS/")) {
-            val businessId = backStack?.arguments?.getString("businessId").orEmpty()
-            CreateFab(
-                palette = palette,
-                onClick = { nav.navigate("$POST_LISTING?businessId=$businessId") { launchSingleTop = true } },
-                modifier = Modifier.align(Alignment.BottomEnd).padding(end = 18.dp, bottom = AppSpacing.screenBottom),
-            )
+            // O'ng-past: "Yangi" extended pill — faqat bitta biznes e'lonlari ekranida.
+            // (Bizneslarim ro'yxati o'z "+" tugmasiga ega.)
+            if (current.startsWith("$LISTINGS/")) {
+                val businessId = backStack?.arguments?.getString("businessId").orEmpty()
+                CreateFab(
+                    palette = palette,
+                    onClick = { nav.navigate("$POST_LISTING?businessId=$businessId") { launchSingleTop = true } },
+                    modifier = Modifier.align(Alignment.BottomEnd).padding(end = 18.dp, bottom = AppSpacing.screenBottom),
+                )
+            }
         }
     }
 }

@@ -30,6 +30,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dev.core.uikit.component.AppIcons
+import dev.core.uikit.component.EdgeSwipeBack
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.auth_post_ad
 import dev.core.uikit.resources.auth_post_ad_short
@@ -87,145 +88,148 @@ fun StudentShell(onLoggedOut: () -> Unit) {
         }
     }
 
-    Box(Modifier.fillMaxSize().background(palette.bgBrush)) {
-        NavHost(navController = nav, startDestination = StudentTab.HOME.route, modifier = Modifier.fillMaxSize()) {
-            composable(StudentTab.HOME.route) {
-                HomeScreen(
-                    onOpenProfile = { nav.navigate(PROFILE) },
-                    onOpenChat = { nav.navigate(CHAT) },
-                    onOpenNotifications = { nav.navigate(NOTIFICATIONS) },
-                    onOpenDiscounts = { selectTab(StudentTab.DISCOUNTS.route) },
-                    onOpenJobs = { selectTab(StudentTab.JOBS.route) },
-                    onOpenStudents = { selectTab(StudentTab.STUDENTS.route) },
-                )
+    // iOS'da chap chetdan surib orqaga qaytish (Androidda hech narsa qilmaydi).
+    EdgeSwipeBack(onBack = { if (nav.previousBackStackEntry != null) nav.popBackStack() }) {
+        Box(Modifier.fillMaxSize().background(palette.bgBrush)) {
+            NavHost(navController = nav, startDestination = StudentTab.HOME.route, modifier = Modifier.fillMaxSize()) {
+                composable(StudentTab.HOME.route) {
+                    HomeScreen(
+                        onOpenProfile = { nav.navigate(PROFILE) },
+                        onOpenChat = { nav.navigate(CHAT) },
+                        onOpenNotifications = { nav.navigate(NOTIFICATIONS) },
+                        onOpenDiscounts = { selectTab(StudentTab.DISCOUNTS.route) },
+                        onOpenJobs = { selectTab(StudentTab.JOBS.route) },
+                        onOpenStudents = { selectTab(StudentTab.STUDENTS.route) },
+                    )
+                }
+                composable(StudentTab.DISCOUNTS.route) {
+                    // Talaba faqat chegirmalarni ko'radi (e'lon qo'yish — biznesmen shell'ida).
+                    DiscountsScreen()
+                }
+                composable(StudentTab.JOBS.route) { JobsScreen() }
+                composable(StudentTab.STUDENTS.route) { StudentsScreen() }
+                composable(
+                    route = "$POST_AD?adId={adId}",
+                    arguments = listOf(navArgument("adId") { type = NavType.StringType; nullable = true; defaultValue = null }),
+                ) { entry ->
+                    PostAdScreen(onClose = { nav.popBackStack() }, editAdId = entry.arguments?.getString("adId"))
+                }
+                composable(PROFILE) {
+                    ProfileScreen(
+                        onBack = { nav.popBackStack() },
+                        onLoggedOut = onLoggedOut,
+                        onEditProfile = { nav.navigate(EDIT_PROFILE) },
+                        onOpenSettings = { nav.navigate(SETTINGS) },
+                        onEditAd = { adId -> nav.navigate("$POST_AD?adId=$adId") },
+                        // Talabada biznes bo'limi ko'rinmaydi.
+                        showMyBusiness = false,
+                    )
+                }
+                composable(CHAT) { ChatScreen(onBack = { nav.popBackStack() }) }
+                composable(NOTIFICATIONS) { NotificationsScreen(onBack = { nav.popBackStack() }) }
+                composable(EDIT_PROFILE) { EditProfileScreen(onBack = { nav.popBackStack() }) }
+                composable(SETTINGS) {
+                    SettingsScreen(
+                        onBack = { nav.popBackStack() },
+                        onEditProfile = { nav.navigate(EDIT_PROFILE) },
+                        onLoggedOut = onLoggedOut,
+                    )
+                }
             }
-            composable(StudentTab.DISCOUNTS.route) {
-                // Talaba faqat chegirmalarni ko'radi (e'lon qo'yish — biznesmen shell'ida).
-                DiscountsScreen()
-            }
-            composable(StudentTab.JOBS.route) { JobsScreen() }
-            composable(StudentTab.STUDENTS.route) { StudentsScreen() }
-            composable(
-                route = "$POST_AD?adId={adId}",
-                arguments = listOf(navArgument("adId") { type = NavType.StringType; nullable = true; defaultValue = null }),
-            ) { entry ->
-                PostAdScreen(onClose = { nav.popBackStack() }, editAdId = entry.arguments?.getString("adId"))
-            }
-            composable(PROFILE) {
-                ProfileScreen(
-                    onBack = { nav.popBackStack() },
-                    onLoggedOut = onLoggedOut,
-                    onEditProfile = { nav.navigate(EDIT_PROFILE) },
-                    onOpenSettings = { nav.navigate(SETTINGS) },
-                    onEditAd = { adId -> nav.navigate("$POST_AD?adId=$adId") },
-                    // Talabada biznes bo'limi ko'rinmaydi.
-                    showMyBusiness = false,
-                )
-            }
-            composable(CHAT) { ChatScreen(onBack = { nav.popBackStack() }) }
-            composable(NOTIFICATIONS) { NotificationsScreen(onBack = { nav.popBackStack() }) }
-            composable(EDIT_PROFILE) { EditProfileScreen(onBack = { nav.popBackStack() }) }
-            composable(SETTINGS) {
-                SettingsScreen(
-                    onBack = { nav.popBackStack() },
-                    onEditProfile = { nav.navigate(EDIT_PROFILE) },
-                    onLoggedOut = onLoggedOut,
+
+            if (current in tabRoutes) {
+                BottomBar(
+                    current = current,
+                    onSelect = selectTab,
+                    onFab = { nav.navigate(POST_AD) { launchSingleTop = true } },
+                    palette = palette,
+                    modifier = Modifier.align(Alignment.BottomCenter),
                 )
             }
         }
-
-        if (current in tabRoutes) {
-            BottomBar(
-                current = current,
-                onSelect = selectTab,
-                onFab = { nav.navigate(POST_AD) { launchSingleTop = true } },
-                palette = palette,
-                modifier = Modifier.align(Alignment.BottomCenter),
-            )
-        }
-    }
-}
-
-@Composable
-private fun BottomBar(
-    current: String,
-    onSelect: (String) -> Unit,
-    onFab: () -> Unit,
-    palette: AppPalette,
-    modifier: Modifier = Modifier,
-) {
-    // Panel yuqori burchaklari yumaloq, uni kontentdan soya ajratadi (chegara emas).
-    val barShape = RoundedCornerShape(topStart = AppSpacing.section, topEnd = AppSpacing.section)
-    Box(modifier.fillMaxWidth().height(88.dp)) {
-        Row(
-            Modifier.align(Alignment.BottomCenter).fillMaxWidth()
-                .height(66.dp)
-                .cardShadow(barShape)
-                .clip(barShape)
-                .background(palette.card)
-                .padding(horizontal = AppSpacing.sm),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            NavBarItem(StudentTab.HOME, current, onSelect, palette, Modifier.weight(1f))
-            NavBarItem(StudentTab.DISCOUNTS, current, onSelect, palette, Modifier.weight(1f))
-            Spacer(Modifier.weight(1f)) // markaziy FAB uchun joy
-            NavBarItem(StudentTab.JOBS, current, onSelect, palette, Modifier.weight(1f))
-            NavBarItem(StudentTab.STUDENTS, current, onSelect, palette, Modifier.weight(1f))
-        }
-
-        // Markaziy "Elon" FAB — talaba e'loni (ish/sotuv/xizmat)
-        Column(
-            Modifier.align(Alignment.TopCenter).offset(y = 6.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Box(
-                Modifier.size(AppSize.iconButtonLarge)
-                    .ctaShadow(AppRadius.lg)
-                    .clip(AppRadius.lg)
-                    .background(palette.primaryBrush)
-                    .clickable(onClick = onFab),
-                contentAlignment = Alignment.Center,
-            ) {
-                // Gradient USTIDAGI ikonka — har ikkala rejimda oq.
-                Icon(
-                    AppIcons.Plus,
-                    stringResource(Res.string.auth_post_ad),
-                    tint = palette.onPrimary,
-                    modifier = Modifier.size(AppSize.iconFab),
-                )
-            }
-            Spacer(Modifier.height(3.dp))
-            Text(
-                stringResource(Res.string.auth_post_ad_short),
-                style = AppType.navLabel.copy(color = palette.primary),
-            )
         }
     }
-}
 
-@Composable
-private fun NavBarItem(
-    tab: StudentTab,
-    current: String,
-    onSelect: (String) -> Unit,
-    palette: AppPalette,
-    modifier: Modifier = Modifier,
-) {
-    val active = current == tab.route
-    val tint = if (active) palette.primary else palette.inkFaint
-    val label = stringResource(tab.label)
-    Column(
-        modifier.clip(AppRadius.md).clickable { onSelect(tab.route) }.padding(vertical = 6.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(3.dp),
+    @Composable
+    private fun BottomBar(
+        current: String,
+        onSelect: (String) -> Unit,
+        onFab: () -> Unit,
+        palette: AppPalette,
+        modifier: Modifier = Modifier,
     ) {
-        Icon(tab.icon, label, tint = tint, modifier = Modifier.size(AppSize.iconLg))
-        Text(
-            label,
-            style = AppType.navLabel.copy(
-                fontWeight = if (active) AppType.button.fontWeight else AppType.label.fontWeight,
-                color = tint,
-            ),
-        )
+        // Panel yuqori burchaklari yumaloq, uni kontentdan soya ajratadi (chegara emas).
+        val barShape = RoundedCornerShape(topStart = AppSpacing.section, topEnd = AppSpacing.section)
+        Box(modifier.fillMaxWidth().height(88.dp)) {
+            Row(
+                Modifier.align(Alignment.BottomCenter).fillMaxWidth()
+                    .height(66.dp)
+                    .cardShadow(barShape)
+                    .clip(barShape)
+                    .background(palette.card)
+                    .padding(horizontal = AppSpacing.sm),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                NavBarItem(StudentTab.HOME, current, onSelect, palette, Modifier.weight(1f))
+                NavBarItem(StudentTab.DISCOUNTS, current, onSelect, palette, Modifier.weight(1f))
+                Spacer(Modifier.weight(1f)) // markaziy FAB uchun joy
+                NavBarItem(StudentTab.JOBS, current, onSelect, palette, Modifier.weight(1f))
+                NavBarItem(StudentTab.STUDENTS, current, onSelect, palette, Modifier.weight(1f))
+            }
+
+            // Markaziy "Elon" FAB — talaba e'loni (ish/sotuv/xizmat)
+            Column(
+                Modifier.align(Alignment.TopCenter).offset(y = 6.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Box(
+                    Modifier.size(AppSize.iconButtonLarge)
+                        .ctaShadow(AppRadius.lg)
+                        .clip(AppRadius.lg)
+                        .background(palette.primaryBrush)
+                        .clickable(onClick = onFab),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    // Gradient USTIDAGI ikonka — har ikkala rejimda oq.
+                    Icon(
+                        AppIcons.Plus,
+                        stringResource(Res.string.auth_post_ad),
+                        tint = palette.onPrimary,
+                        modifier = Modifier.size(AppSize.iconFab),
+                    )
+                }
+                Spacer(Modifier.height(3.dp))
+                Text(
+                    stringResource(Res.string.auth_post_ad_short),
+                    style = AppType.navLabel.copy(color = palette.primary),
+                )
+            }
+        }
+    }
+
+    @Composable
+    private fun NavBarItem(
+        tab: StudentTab,
+        current: String,
+        onSelect: (String) -> Unit,
+        palette: AppPalette,
+        modifier: Modifier = Modifier,
+    ) {
+        val active = current == tab.route
+        val tint = if (active) palette.primary else palette.inkFaint
+        val label = stringResource(tab.label)
+        Column(
+            modifier.clip(AppRadius.md).clickable { onSelect(tab.route) }.padding(vertical = 6.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(3.dp),
+        ) {
+            Icon(tab.icon, label, tint = tint, modifier = Modifier.size(AppSize.iconLg))
+            Text(
+                label,
+                style = AppType.navLabel.copy(
+                    fontWeight = if (active) AppType.button.fontWeight else AppType.label.fontWeight,
+                    color = tint,
+                ),
+            )
     }
 }
