@@ -5,11 +5,9 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.unit.dp
 
 /**
- * Masofa va o'lcham tokenlari.
+ * Masofa va o'lcham tokenlari (`design_handoff_studentclub_elonuz`).
  *
- * Ilgari komponentlar `horizontalPadding: Int = 22` kabi `Int` parametr olib, ichida `.dp`
- * qo'shardi — bu tur xavfsizligini yo'qotadi (`22` nima: dp, px, sp?). Endi hamma joyda
- * `Dp` ishlatiladi.
+ * Hamma joyda `Dp` ishlatiladi — `Int` emas, aks holda birlik noaniq qoladi.
  */
 @Immutable
 object AppSpacing {
@@ -22,49 +20,88 @@ object AppSpacing {
     /** 12.dp — karta ichidagi standart oraliq. */
     val md = 12.dp
 
-    /** 16.dp — bloklar orasi. */
+    /** 16.dp — karta ichki paddingi. */
     val lg = 16.dp
 
-    /** 22.dp — ekranning yon paddingi. */
-    val screenHorizontal = 22.dp
+    /** 20.dp — ekranning yon paddingi. */
+    val screenHorizontal = 20.dp
+
+    /** 22.dp — bo'limlar orasi. */
+    val section = 22.dp
 
     /** 26.dp — ekranning pastki paddingi. */
     val screenBottom = 26.dp
 
-    /** 56.dp — ekranning tepa paddingi (status bar ostidan). */
-    val screenTop = 56.dp
-
-    /** 24.dp — katta bo'limlar orasi. */
-    val xl = 24.dp
+    /** 18.dp — topbar ostidagi bo'shliq. */
+    val xl = 18.dp
 }
 
-/** Komponent balandliklari — tegish maydoni 44.dp dan kichik bo'lmasligi kerak. */
+/** Komponent o'lchamlari — tegish maydoni 44.dp dan kichik bo'lmasligi kerak. */
 @Immutable
 object AppSize {
+    /** CTA tugma. */
     val buttonHeight = 52.dp
     val buttonSecondaryHeight = 50.dp
-    val fieldHeight = 50.dp
+
+    /** Input maydoni. */
+    val fieldHeight = 54.dp
+
+    /** Topbar'dagi kvadrat tugma. */
     val iconButton = 40.dp
-    val tabHeight = 38.dp
 
-    /** Ikonka o'lchamlari. */
-    val iconSm = 15.dp
-    val iconMd = 18.dp
-    val iconLg = 21.dp
+    /** Bizneslarim ekranidagi kattaroq profil tugmasi. */
+    val iconButtonLarge = 54.dp
 
-    /** Dekorativ blob. */
-    val blob = 210.dp
+    /** Karta ichidagi ikonka nishoni. */
+    val iconTile = 42.dp
+
+    /** Biznes kartasidagi katta kategoriya nishoni. */
+    val categoryTile = 56.dp
+
+    val tabHeight = 44.dp
+
+    /** Ikonka o'lchamlari (handoff: ro'yxatda 24, topbarda 22, FABda 26). */
+    val iconSm = 17.dp
+    val iconMd = 19.dp
+    val iconLg = 22.dp
+    val iconFab = 26.dp
+
+    /** Toggle tugmachasi. */
+    val toggleWidth = 44.dp
+    val toggleHeight = 26.dp
 }
 
-/** Burchak radiuslari. */
+/**
+ * Burchak radiuslari.
+ *
+ * Handoff: katta karta 20–26, kichik chip/tugma 14–18, to'liq aylana pill.
+ */
 @Immutable
 object AppRadius {
-    val sm = RoundedCornerShape(10.dp)
-    val md = RoundedCornerShape(12.dp)
-    val lg = RoundedCornerShape(14.dp)
-    val button = RoundedCornerShape(15.dp)
-    val card = RoundedCornerShape(18.dp)
+    /** 14.dp — kichik ikonka tugmasi, chip. */
+    val sm = RoundedCornerShape(14.dp)
 
-    /** To'liq dumaloq — avatar, nuqta, pill. */
+    /** 16.dp — nishon (icon tile). */
+    val md = RoundedCornerShape(16.dp)
+
+    /** 18.dp — input maydoni, segment konteyneri. */
+    val lg = RoundedCornerShape(18.dp)
+
+    /** 20.dp — ro'yxat qatori kartasi. */
+    val row = RoundedCornerShape(20.dp)
+
+    /** 24.dp — asosiy karta. */
+    val card = RoundedCornerShape(24.dp)
+
+    /** 26.dp — CTA tugma (deyarli pill). */
+    val button = RoundedCornerShape(26.dp)
+
+    /** Gradient header ostki burchaklari. */
+    val headerBottom = RoundedCornerShape(bottomStart = 36.dp, bottomEnd = 36.dp)
+
+    /** Modal sheet ustki burchaklari. */
+    val sheetTop = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
+
+    /** To'liq dumaloq — avatar, nuqta, toggle. */
     val pill = RoundedCornerShape(999.dp)
 }

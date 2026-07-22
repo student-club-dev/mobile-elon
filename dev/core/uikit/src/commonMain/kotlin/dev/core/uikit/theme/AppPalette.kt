@@ -8,12 +8,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
 /**
- * Ilovaning dizayn tokenlari — Material sxemasi ushlab turmaydigan gradient, shisha (glass)
- * yuza, blob va holat (danger/warning) ranglari. Har bir token yorug' va qorong'i rejim
- * uchun ALOHIDA qiymatga ega.
+ * Ilovaning dizayn tokenlari (`design_handoff_studentclub_elonuz`).
  *
- * Ekranlarda faqat shu tokenlar ishlatiladi — `Color(0xFF...)` yozilmaydi. Yangi rang kerak
- * bo'lsa avval shu yerga token qo'shiladi, keyin ekranda ishlatiladi.
+ * Vizual til: **oq kartalar och ko'k-kulrang fon ustida**, TBC ko'k aksent, yumshoq va uzoq
+ * soyalar. Ekranlarda faqat shu tokenlar ishlatiladi — `Color(0xFF...)` yozilmaydi. Yangi rang
+ * kerak bo'lsa avval shu yerga token qo'shiladi.
  */
 @Immutable
 data class AppPalette(
@@ -22,57 +21,101 @@ data class AppPalette(
     val ink: Color,
     val inkMuted: Color,
     val inkFaint: Color,
-    val label: Color,
+    val inactive: Color,
     // Brend
     val primary: Color,
     val primaryGradient: List<Color>,
     val headerGradient: List<Color>,
-    // Fon va yuzalar
+    // Yuzalar
+    val screenBg: Color,
     val bgGradient: List<Color>,
-    val blobPrimary: Color,
-    val blobCyan: Color,
-    val glass: Color,
-    val glassStrong: Color,
-    val barSurface: Color,
-    val border: Color,
-    val borderStrong: Color,
-    val tabTrack: Color,
-    val chipTrack: Color,
+    val card: Color,
+    /** Ikonka nishoni va chip foni — ochiq ko'k. */
+    val accentBg: Color,
+    val divider: Color,
+    /** Karta ustidagi maydon foni (input). */
     val fieldBg: Color,
-    val fieldFocusGlow: Color,
-    val chevron: Color,
     // Holatlar
     val success: Color,
-    val successDeep: Color,
-    val successBg: Color,
     val danger: Color,
     val dangerBg: Color,
     val warning: Color,
+    val successBg: Color,
     val warningBg: Color,
-    val amber: Color,
-    val badge: Color,
     // Kontent
     val onPrimary: Color,
-    val onGlass: Color,
-    /**
-     * Rasm ustidagi quyuq qoplama — thumbnail burchagidagi "o'chirish" tugmasi kabi.
-     * Fon rasm bo'lgani uchun qiymat ikkala rejimda ham qora qoladi, faqat quyuqligi farq qiladi.
-     */
+    /** Modal ostidagi qoraytiruvchi qatlam. */
     val scrim: Color,
-    // Modul aksentlari (bildirishnoma turlari, rol kartalari)
-    val moduleFood: Color,
-    val moduleStudy: Color,
-    val moduleEmployer: Color,
-    val moduleHousing: Color,
-    val moduleMedical: Color,
+    // Kategoriya aksentlari
+    val accentFood: Color,
+    val accentGame: Color,
+    val accentClothing: Color,
+    val accentStudy: Color,
+    val accentCinema: Color,
+    val accentBeauty: Color,
+    val accentBarber: Color,
 ) {
-    /** 135° primary gradient — tugmalar va logo uchun. */
+    // -----------------------------------------------------------------------
+    // Eski nomlar — yangi dizaynga moslashtirilgan
+    //
+    // Ilova binafsha "liquid glass" tilida yozilgan edi va 400 dan ortiq joyda shu nomlar
+    // ishlatiladi. Ularni yangi qiymatlarga bog'lab qo'yamiz: ekranlar o'zgarmasdan yangi
+    // ko'rinishga o'tadi. Yangi kod to'g'ridan-to'g'ri yuqoridagi tokenlarni ishlatsin.
+    // -----------------------------------------------------------------------
+
+    /** Ilgari yarim shaffof "shisha" yuza edi — endi oq karta. */
+    val glass: Color get() = card
+    val glassStrong: Color get() = card
+
+    /** Ilgari nozik binafsha chegara — endi ochiq kulrang ajratgich. */
+    val border: Color get() = divider
+    val borderStrong: Color get() = primary
+
+    /** Ilgari ko'tarilgan yuza (pastki panel) — endi oddiy karta. */
+    val barSurface: Color get() = card
+
+    /** Tanlanmagan tab/chip foni. */
+    val tabTrack: Color get() = accentBg
+    val chipTrack: Color get() = accentBg
+
+    /** Shisha yuza ustidagi matn. */
+    val onGlass: Color get() = ink
+
+    /** Maydon yorlig'i va chevron — ikkinchi darajali matn rangi. */
+    val label: Color get() = inkMuted
+    val chevron: Color get() = inkMuted
+
+    /** Fokusdagi maydon yaltirashi. */
+    val fieldFocusGlow: Color get() = primary.copy(alpha = 0.15f)
+
+    /** Ilgari to'q yashil edi — yangi palitrada bitta success rangi bor. */
+    val successDeep: Color get() = success
+
+    /** Reyting yulduzi va o'qilmagan nuqta. */
+    val amber: Color get() = warning
+    val badge: Color get() = danger
+
+    /**
+     * Eski fon "bloblari" — yangi dizaynda dekorativ dog'lar yo'q, fon toza gradient.
+     * Ular hali chizilayotgan joylarda ko'rinmas bo'lib qoladi.
+     */
+    val blobPrimary: Color get() = Color.Transparent
+    val blobCyan: Color get() = Color.Transparent
+
+    /** Eski modul aksentlari — yangi kategoriya ranglariga bog'landi. */
+    val moduleFood: Color get() = accentFood
+    val moduleStudy: Color get() = accentStudy
+    val moduleEmployer: Color get() = warning
+    val moduleHousing: Color get() = success
+    val moduleMedical: Color get() = accentBeauty
+
+    /** 135° brend gradienti — CTA tugmalar, FAB, faol tab. */
     val primaryBrush: Brush get() = Brush.linearGradient(primaryGradient)
 
-    /** 168° fon gradienti. */
+    /** Ekran foni — yuqori chapdan ochiq ko'k yorug'lik. */
     val bgBrush: Brush get() = Brush.linearGradient(bgGradient)
 
-    /** Ekran yuqorisidagi sarlavha bloki gradienti. */
+    /** Ekran tepasidagi gradientli sarlavha bloki. */
     val headerBrush: Brush get() = Brush.linearGradient(headerGradient)
 }
 
@@ -81,82 +124,64 @@ private val LightAppPalette = AppPalette(
     ink = Ink,
     inkMuted = InkMuted,
     inkFaint = InkFaint,
-    label = LabelInk,
+    inactive = Inactive,
     primary = Primary,
-    primaryGradient = listOf(Primary, PrimaryGradientEnd),
-    headerGradient = listOf(HeaderStart, HeaderMid, HeaderEnd),
+    primaryGradient = listOf(PrimaryLight, PrimaryDeep),
+    headerGradient = listOf(PrimaryLight, Primary, PrimaryDeep),
+    screenBg = ScreenBg,
     bgGradient = listOf(BgTopLight, BgMidLight, BgBottomLight),
-    blobPrimary = Primary.copy(alpha = 0.28f),
-    blobCyan = Cyan.copy(alpha = 0.22f),
-    glass = Color.White.copy(alpha = 0.82f),
-    glassStrong = Color.White.copy(alpha = 0.90f),
-    barSurface = BarSurfaceLight,
-    border = Primary.copy(alpha = 0.16f),
-    borderStrong = Primary,
-    tabTrack = Primary.copy(alpha = 0.09f),
-    chipTrack = ChipTrackLight,
-    fieldBg = Color.White.copy(alpha = 0.85f),
-    fieldFocusGlow = Primary.copy(alpha = 0.10f),
-    chevron = InkFaint,
+    card = CardBg,
+    accentBg = AccentBg,
+    divider = Divider,
+    fieldBg = CardBg,
     success = Success,
-    successDeep = SuccessDeep,
-    successBg = SuccessDeep.copy(alpha = 0.06f),
     danger = Danger,
-    dangerBg = Danger.copy(alpha = 0.10f),
+    dangerBg = DangerBg,
     warning = Warning,
-    warningBg = WarningBgLight,
-    amber = Amber,
-    badge = BadgeDot,
+    successBg = Success.copy(alpha = 0.10f),
+    warningBg = Warning.copy(alpha = 0.14f),
     onPrimary = Color.White,
-    onGlass = OnGlassLight,
-    scrim = ScrimBlack.copy(alpha = 0.55f),
-    moduleFood = ModuleFood,
-    moduleStudy = ModuleStudy,
-    moduleEmployer = ModuleEmployer,
-    moduleHousing = ModuleHousing,
-    moduleMedical = ModuleMedical,
+    scrim = Obsidian.copy(alpha = 0.45f),
+    accentFood = AccentFood,
+    accentGame = AccentGame,
+    accentClothing = AccentClothing,
+    accentStudy = AccentStudy,
+    accentCinema = AccentCinema,
+    accentBeauty = AccentBeauty,
+    accentBarber = AccentBarber,
 )
 
 private val DarkAppPalette = AppPalette(
     dark = true,
-    ink = TextDark,
-    inkMuted = TextMutedDark,
-    inkFaint = TextFaintDark,
-    label = LabelDark,
-    primary = PrimaryDark,
-    primaryGradient = listOf(PrimaryDark, PrimaryAccent),
-    headerGradient = listOf(HeaderStartDark, HeaderMidDark, HeaderEndDark),
+    ink = InkDark,
+    inkMuted = InkMutedDark,
+    inkFaint = InkFaintDark,
+    inactive = InkFaintDark,
+    // Quyuq fonda #00ADEE xiralashadi — bir pog'ona yorqinroq ko'k olinadi.
+    primary = PrimaryOnDark,
+    primaryGradient = listOf(PrimaryLight, Primary),
+    headerGradient = listOf(Color(0xFF0E6A9B), Color(0xFF0A5A85), Color(0xFF083F5E)),
+    screenBg = ScreenBgDark,
     bgGradient = listOf(BgTopDark, BgMidDark, BgBottomDark),
-    blobPrimary = PrimaryDark.copy(alpha = 0.40f),
-    blobCyan = Cyan.copy(alpha = 0.20f),
-    glass = Color.White.copy(alpha = 0.06f),
-    glassStrong = Color.White.copy(alpha = 0.08f),
-    barSurface = BarSurfaceDark,
-    border = Color.White.copy(alpha = 0.10f),
-    borderStrong = PrimaryDark,
-    tabTrack = Color.White.copy(alpha = 0.06f),
-    chipTrack = Color.White.copy(alpha = 0.04f),
-    fieldBg = Color.White.copy(alpha = 0.06f),
-    fieldFocusGlow = PrimaryDark.copy(alpha = 0.18f),
-    chevron = TextFaintDark,
+    card = CardBgDark,
+    accentBg = AccentBgDark,
+    divider = DividerDark,
+    fieldBg = CardBgDark,
     success = Success,
-    successDeep = Success,
-    successBg = Success.copy(alpha = 0.10f),
-    danger = DangerDark,
-    dangerBg = DangerDark.copy(alpha = 0.14f),
-    warning = WarningDark,
-    warningBg = WarningDark.copy(alpha = 0.14f),
-    amber = Amber,
-    badge = BadgeDot,
+    danger = Color(0xFFF06A82),
+    dangerBg = DangerBgDark,
+    warning = Warning,
+    successBg = SuccessBgDark,
+    warningBg = WarningBgDark,
     onPrimary = Color.White,
-    // Qorong'ida shisha yuza ustidagi matn oddiy ink bilan bir xil — alohida rang shart emas.
-    onGlass = TextDark,
-    scrim = ScrimBlack.copy(alpha = 0.62f),
-    moduleFood = ModuleFood,
-    moduleStudy = ModuleStudy,
-    moduleEmployer = ModuleEmployer,
-    moduleHousing = ModuleHousing,
-    moduleMedical = ModuleMedical,
+    scrim = Color.Black.copy(alpha = 0.60f),
+    accentFood = AccentFood,
+    accentGame = AccentGame,
+    accentClothing = AccentClothing,
+    accentStudy = AccentStudy,
+    accentCinema = AccentCinema,
+    accentBeauty = AccentBeauty,
+    accentBarber = AccentBarber,
 )
 
 /** Joriy rejimga mos palitra (foydalanuvchi mavzu tanloviga ergashadi, aks holda tizim). */

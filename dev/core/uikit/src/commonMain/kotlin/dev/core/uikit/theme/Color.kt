@@ -3,92 +3,85 @@ package dev.core.uikit.theme
 import androidx.compose.ui.graphics.Color
 
 /**
- * ElonUz — brend palitrasining XOM qiymatlari.
+ * ElonUz — brend palitrasining XOM qiymatlari (`design_handoff_studentclub_elonuz`).
  *
  * Bu fayl faqat "bo'yoq bankasi" — ekranlar bu konstantalarga TO'G'RIDAN-TO'G'RI murojaat
  * qilmasligi kerak. Ular [AppPalette] orqali yorug'/qorong'i rejimga moslab beriladi:
  * ekranda `appPalette.danger` ishlating, `Danger` emas. Aks holda qorong'i rejim buziladi.
+ *
+ * YORUG' rejim qiymatlari handoff'dan bir-bir olingan. QORONG'I rejim qiymatlari handoff'da
+ * yo'q edi — ular shu ko'k oiladan hosil qilingan (fon quyuq ko'k-kulrang, kartalar bir
+ * pog'ona ochroq, aksent esa yorqinroq ko'k, chunki quyuq fonda #00ADEE xiralashadi).
  */
 
-// ---- Brand violet ----
-val Primary = Color(0xFF6C47FF)
-val PrimaryGradientEnd = Color(0xFF8E6BFF)
-val PrimaryAccent = Color(0xFFA78BFA)
-val PrimaryDark = Color(0xFF8B6DFF)
-val LinkDark = Color(0xFFB9A6FF)
+// ---- Brend ko'k (TBC) ----
+val Primary = Color(0xFF00ADEE)
+val PrimaryLight = Color(0xFF23C3F5)
+val PrimaryDeep = Color(0xFF0091D8)
 
-// ---- Header gradient (profil / talabalar / biznes sarlavhalari) ----
-val HeaderStart = Color(0xFF6C47FF)
-val HeaderMid = Color(0xFF7C4DFF)
-val HeaderEnd = Color(0xFF5B34D6)
-val HeaderStartDark = Color(0xFF4B32B8)
-val HeaderMidDark = Color(0xFF5A38C9)
-val HeaderEndDark = Color(0xFF3E2496)
+/** Qorong'ida asosiy rang ochroq — quyuq fonda kontrast yetarli bo'lsin. */
+val PrimaryOnDark = Color(0xFF3FC8F7)
 
-// ---- Ink / text (light) ----
-val Ink = Color(0xFF1E1B4B)
-val InkMuted = Color(0xFF6E698C)
-val InkFaint = Color(0xFF8B86A6)
-val LabelInk = Color(0xFF565278)
+// ---- Matn (yorug') ----
+val Ink = Color(0xFF0F2A43)
+val InkMuted = Color(0xFF8A98A8)
+val InkFaint = Color(0xFFB0B9C4)
 
-// ---- Text (dark) ----
-val TextDark = Color(0xFFF0EEFF)
-val TextMutedDark = Color(0xFFA29DB8)
-val TextFaintDark = Color(0xFF8781A0)
-val LabelDark = Color(0xFFB4AECD)
+/** Nofaol tab / ikonka. */
+val Inactive = Color(0xFF93A2B2)
 
-// ---- Surfaces ----
-val SurfaceLight = Color(0xFFFAFAFB)
-val SurfaceDark = Color(0xFF0F0F1A)
+// ---- Matn (qorong'i) ----
+val InkDark = Color(0xFFE8F1F8)
+val InkMutedDark = Color(0xFF93A6BA)
+val InkFaintDark = Color(0xFF6C7F94)
 
-/** Pastki navigatsiya paneli / ko'tarilgan yuzalar. */
-val BarSurfaceLight = Color.White
-val BarSurfaceDark = Color(0xFF1A1630)
+// ---- Yuzalar (yorug') ----
+/** Ekran foni — kartalar shu fon ustida turadi. */
+val ScreenBg = Color(0xFFEEF3F8)
+val CardBg = Color(0xFFFFFFFF)
 
-/** Tanlanmagan chip / bosqich indikatori foni. */
-val ChipTrackLight = Color(0xFFF4F2FC)
+/** Ikonka nishoni / chip foni — ochiq ko'k. */
+val AccentBg = Color(0xFFEAF7FD)
+val Divider = Color(0xFFE4EBF2)
 
-// ---- Background gradient stops (light) ----
-val BgTopLight = Color(0xFFF3F0FF)
-val BgMidLight = Color(0xFFFBFAFE)
-val BgBottomLight = Color(0xFFEBF6FF)
+/** Ekran foni gradienti (yuqori chapdan ochiq ko'k yorug'lik). */
+val BgTopLight = Color(0xFFE7F7FD)
+val BgMidLight = Color(0xFFEEF3F8)
+val BgBottomLight = Color(0xFFEAF0F6)
 
-// ---- Background gradient stops (dark) ----
-val BgTopDark = Color(0xFF171331)
-val BgMidDark = Color(0xFF0F0F1A)
-val BgBottomDark = Color(0xFF150F26)
+// ---- Yuzalar (qorong'i) ----
+val ScreenBgDark = Color(0xFF0F1B2A)
+val CardBgDark = Color(0xFF17273C)
+val AccentBgDark = Color(0xFF11304A)
+val DividerDark = Color(0xFF223349)
 
-// ---- Feedback ----
-val Success = Color(0xFF10B981)
-val SuccessDeep = Color(0xFF059669)
+val BgTopDark = Color(0xFF10222F)
+val BgMidDark = Color(0xFF0F1B2A)
+val BgBottomDark = Color(0xFF0C1622)
 
-/** Xato / o'chirish / chiqish. Qorong'ida ochroq variant — qora fonda kontrast yetarli bo'lsin. */
-val Danger = Color(0xFFDC2626)
-val DangerDark = Color(0xFFF87171)
+/** Telefon bezeli / eng quyuq yuza. */
+val Obsidian = Color(0xFF0B1622)
 
-/** Ogohlantirish (moderatsiya kutilmoqda, muddati tugayapti). */
-val Warning = Color(0xFFB45309)
-val WarningBgLight = Color(0xFFFEF3C7)
-val WarningDark = Color(0xFFFBBF24)
+// ---- Holatlar ----
+val Success = Color(0xFF16B364)
+val Danger = Color(0xFFE0405F)
+val DangerBg = Color(0xFFFCEAEE)
+val Warning = Color(0xFFF0A62B)
 
-/** Reyting yulduzi. */
-val Amber = Color(0xFFF59E0B)
+/** Qorong'ida holat foni — och pastel o'rniga shaffof aksent. */
+val DangerBgDark = Color(0xFF3A1F28)
+val SuccessBgDark = Color(0xFF12301F)
+val WarningBgDark = Color(0xFF3A2E15)
 
-/** O'qilmagan bildirishnoma nuqtasi. */
-val BadgeDot = Color(0xFFFF5A5A)
+// ---- Kategoriya aksentlari (biznes turi kartalari) ----
+val AccentFood = Color(0xFFE38B2C)
+val AccentGame = Color(0xFF7C5CFF)
+val AccentClothing = Color(0xFFEC4899)
+val AccentStudy = Color(0xFF3B82F6)
+val AccentCinema = Color(0xFFEF4444)
+val AccentBeauty = Color(0xFFF472B6)
+val AccentBarber = Color(0xFF14B8A6)
 
-/** Yorug' rejimda shisha yuza ustidagi matn (outline tugma). */
-val OnGlassLight = Color(0xFF4A3F86)
-
-/** Rasm ustidagi qoplama asosi — shaffofligi [AppPalette.scrim] da beriladi. */
-val ScrimBlack = Color(0xFF000000)
-
-// ---- Dekorativ ----
-val Cyan = Color(0xFF22D3EE)
-
-// ---- Module accents (rol / success kartalar / bildirishnoma turlari) ----
-val ModuleFood = Color(0xFFF97316)
-val ModuleStudy = Color(0xFF2563EB)
-val ModuleEmployer = Color(0xFFD97706)
-val ModuleHousing = Color(0xFF059669)
-val ModuleMedical = Color(0xFFBE185D)
+/** Kategoriya ikonkasi ortidagi yumshoq gradient (masalan kafe — pushti-sariq). */
+val TileFoodStart = Color(0xFFFBD8C5)
+val TileFoodEnd = Color(0xFFF7B98C)
