@@ -26,12 +26,14 @@ import androidx.compose.ui.unit.sp
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppType
+import dev.core.uikit.util.UZ_DIALING_CODE
 
 /** Telefon maydonining "🇺🇿 +998 |" prefiksi. */
 @Composable
 fun PhonePrefix(palette: AppPalette) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text("🇺🇿 +998", style = AppType.bodyStrong.copy(fontWeight = AppType.label.fontWeight, color = palette.ink))
+        // Bayroq emojisi olib tashlandi: Compose iOS uni chiza olmaydi va ikkita "?" bo'lib chiqadi.
+        Text(UZ_DIALING_CODE, style = AppType.bodyStrong.copy(fontWeight = AppType.label.fontWeight, color = palette.ink))
         Spacer(Modifier.width(9.dp))
         Box(Modifier.width(1.dp).height(22.dp).background(palette.border))
     }

@@ -113,7 +113,7 @@
     <string name="discounts_business_name_hint">For example: Cafe Aurora</string>
     <string name="discounts_phone_label">Phone number</string>
     <string name="discounts_phone_hint">90 123 45 67</string>
-    <string name="discounts_phone_prefix">🇺🇿 +998</string>
+    <string name="discounts_phone_prefix">+998</string>
     <string name="discounts_location_label">Location</string>
     <string name="discounts_location_hint">Pick a place on the map</string>
     <string name="discounts_saving">Saving...</string>

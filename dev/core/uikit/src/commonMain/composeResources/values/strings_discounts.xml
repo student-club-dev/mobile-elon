@@ -119,7 +119,7 @@
     <string name="discounts_business_name_hint">Masalan: Kafe Aurora</string>
     <string name="discounts_phone_label">Telefon raqami</string>
     <string name="discounts_phone_hint">90 123 45 67</string>
-    <string name="discounts_phone_prefix">🇺🇿 +998</string>
+    <string name="discounts_phone_prefix">+998</string>
     <string name="discounts_location_label">Joylashuv</string>
     <string name="discounts_location_hint">Xaritadan joyni tanlang</string>
     <string name="discounts_saving">Saqlanmoqda...</string>
