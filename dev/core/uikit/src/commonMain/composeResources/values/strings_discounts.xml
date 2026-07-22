@@ -230,4 +230,13 @@
     <string name="discounts_region_label">Viloyat</string>
     <string name="discounts_region_select">Viloyatni tanlang</string>
     <string name="discounts_name_latin_only">Biznes nomi faqat lotin alifbosida yoziladi</string>
+
+    <!-- Biznes turlari -->
+    <string name="discounts_type_game_club">Game Club</string>
+    <string name="discounts_type_clothing">Kiyim-kechak</string>
+    <string name="discounts_type_cafe_restaurant">Kafe va Restoran</string>
+    <string name="discounts_type_education_center">O\'quv markaz</string>
+    <string name="discounts_type_entertainment">Kino va ko\'ngilochar</string>
+    <string name="discounts_type_barbershop">Sartaroshxona</string>
+    <string name="discounts_type_beauty_salon">Go\'zallik saloni</string>
 </resources>

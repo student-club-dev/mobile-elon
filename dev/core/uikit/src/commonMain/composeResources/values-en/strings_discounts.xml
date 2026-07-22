@@ -224,4 +224,13 @@
     <string name="discounts_region_label">Region</string>
     <string name="discounts_region_select">Select a region</string>
     <string name="discounts_name_latin_only">Business name must use the Latin alphabet</string>
+
+    <!-- Biznes turlari -->
+    <string name="discounts_type_game_club">Game club</string>
+    <string name="discounts_type_clothing">Clothing</string>
+    <string name="discounts_type_cafe_restaurant">Cafés &amp; restaurants</string>
+    <string name="discounts_type_education_center">Education centre</string>
+    <string name="discounts_type_entertainment">Cinema &amp; entertainment</string>
+    <string name="discounts_type_barbershop">Barbershop</string>
+    <string name="discounts_type_beauty_salon">Beauty salon</string>
 </resources>

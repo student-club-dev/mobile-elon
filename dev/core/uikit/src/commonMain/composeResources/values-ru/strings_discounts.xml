@@ -224,4 +224,13 @@
     <string name="discounts_region_label">Область</string>
     <string name="discounts_region_select">Выберите область</string>
     <string name="discounts_name_latin_only">Название бизнеса пишется только латиницей</string>
+
+    <!-- Biznes turlari -->
+    <string name="discounts_type_game_club">Игровой клуб</string>
+    <string name="discounts_type_clothing">Одежда</string>
+    <string name="discounts_type_cafe_restaurant">Кафе и рестораны</string>
+    <string name="discounts_type_education_center">Учебный центр</string>
+    <string name="discounts_type_entertainment">Кино и развлечения</string>
+    <string name="discounts_type_barbershop">Барбершоп</string>
+    <string name="discounts_type_beauty_salon">Салон красоты</string>
 </resources>

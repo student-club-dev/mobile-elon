@@ -6,6 +6,13 @@ package dev.feature.discounts.domain.model
  * ([ListingCatalog.attributes]) aynan shunga bog'liq.
  */
 enum class BusinessType(
+    /**
+     * O'zbekcha zaxira nom — backend nom bermaganda ishlatiladi.
+     *
+     * Ekranda TO'G'RIDAN-TO'G'RI ko'rsatilmaydi: domain tarjimani bilmaydi, shuning uchun
+     * ruscha/inglizcha rejimda bu qiymat o'zbekcha bo'lib qolardi. UI'da
+     * `BusinessType.localizedLabel()` (presentation qatlamida) ishlatiladi.
+     */
     val label: String,
     val emoji: String,
     val accent: Long,

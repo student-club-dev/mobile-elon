@@ -37,6 +37,7 @@ import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.feature.discounts.domain.model.Business
 import dev.feature.discounts.domain.model.BusinessTypeInfo
+import dev.feature.discounts.presentation.localizedLabel
 import org.jetbrains.compose.resources.stringResource
 
 /** Biznes turi topilmaganda ko'rsatiladigan zaxira belgisi (matn emas — ikonka o'rnida). */
@@ -78,7 +79,7 @@ fun BusinessCard(
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                biz.businessType?.label ?: stringResource(Res.string.discounts_business),
+                biz.businessType?.localizedLabel() ?: stringResource(Res.string.discounts_business),
                 style = AppType.hint.copy(fontWeight = AppType.label.fontWeight, color = accent),
             )
             biz.primaryBranch?.address?.takeIf { it.isNotBlank() }?.let {
@@ -133,7 +134,8 @@ fun BusinessTypeChip(
     ) {
         Text(type.emoji, style = TextStyle(fontSize = 15.sp))
         Text(
-            type.nameUz,
+            // `nameUz` backenddan keladi va faqat o'zbekcha — tarjima uchun enum'dan olamiz.
+            type.type.localizedLabel(),
             style = AppType.link.copy(
                 fontWeight = AppType.label.fontWeight,
                 // Brend fon USTIDA — kontent rangi `onPrimary` dan olinadi.
