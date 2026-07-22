@@ -57,6 +57,12 @@ private val TopActionSize = 44.dp
 private val TopActionIconSize = 20.dp
 
 /**
+ * Qo'llab-quvvatlash ikonkasi qolganidan kattaroq: u garnitura + suhbat pufagidan iborat,
+ * ya'ni chiziqlari zich. 20dp da u kichik dog'ga aylanib, nima ekani o'qilmasdi.
+ */
+private val SupportIconSize = 26.dp
+
+/**
  * "Bizneslarim" — biznes egasining barcha bizneslari. Har biriga alohida chegirma va
  * e'lonlar joylanadi, shuning uchun bu ekran butun biznes oqimining kirish nuqtasi.
  *
@@ -108,6 +114,15 @@ fun MyBusinessesScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(9.dp),
                 ) {
+                    // Hisob (profil) — guruhning CHAP chekkasida, urg'uli: kattaroq va ko'k
+                    // gradient (handoff: 54dp, radius 20).
+                    GradientIconButton(
+                        AppIcons.Users,
+                        onClick = onProfile,
+                        contentDescription = stringResource(Res.string.discounts_profile),
+                        shape = AppRadius.row,
+                        palette = palette,
+                    )
                     IconActionButton(
                         AppIcons.MessageSquare,
                         onClick = onMessages,
@@ -121,15 +136,7 @@ fun MyBusinessesScreen(
                         onClick = onSupport,
                         contentDescription = stringResource(Res.string.discounts_business_support),
                         size = TopActionSize,
-                        iconSize = TopActionIconSize,
-                        palette = palette,
-                    )
-                    // Uchinchisi urg'uli — kattaroq va ko'k gradient (handoff: 54dp, radius 20).
-                    GradientIconButton(
-                        AppIcons.Users,
-                        onClick = onProfile,
-                        contentDescription = stringResource(Res.string.discounts_profile),
-                        shape = AppRadius.row,
+                        iconSize = SupportIconSize,
                         palette = palette,
                     )
                 }
