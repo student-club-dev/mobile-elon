@@ -105,7 +105,7 @@
     <string name="discounts_business_support">Support</string>
     <string name="discounts_business">Business</string>
     <string name="discounts_business_delete_title">Delete business</string>
-    <string name="discounts_business_delete_confirm">Delete \"%1$s\"? This cannot be undone.</string>
+    <string name="discounts_business_delete_confirm">Delete "%1$s"? This cannot be undone.</string>
     <string name="discounts_business_empty_title">No businesses yet</string>
     <string name="discounts_business_empty_message">Add your first business — then post discounts and listings for it.</string>
     <string name="discounts_business_add">Add business</string>

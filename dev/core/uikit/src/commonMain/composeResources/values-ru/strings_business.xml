@@ -40,7 +40,7 @@
     <string name="business_welcome_subtitle">Войдите как владелец бизнеса — размещайте и управляйте своими объявлениями со скидками.</string>
     <string name="business_welcome_phone_label">Номер телефона</string>
     <string name="business_welcome_phone_hint">90 123 45 67</string>
-    <string name="business_welcome_phone_prefix">🇺🇿 +998</string>
+    <string name="business_welcome_phone_prefix">+998</string>
     <string name="business_welcome_get_code">Получить код</string>
     <string name="business_welcome_google">Войти через Google</string>
     <string name="business_welcome_email">Войти по email</string>

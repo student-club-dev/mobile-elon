@@ -117,6 +117,6 @@ internal fun AccountRow(icon: ImageVector, title: String, palette: AppPalette, o
             style = AppType.rowTitle.copy(color = palette.ink),
             modifier = Modifier.weight(1f),
         )
-        Icon(AppIcons.ChevronRight, null, tint = palette.chevron, modifier = Modifier.size(17.dp))
+        Icon(AppIcons.ChevronRight, null, tint = palette.inkMuted, modifier = Modifier.size(17.dp))
     }
 }

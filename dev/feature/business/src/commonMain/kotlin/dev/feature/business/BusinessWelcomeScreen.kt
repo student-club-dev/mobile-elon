@@ -96,7 +96,7 @@ fun BusinessWelcomeScreen(
         Spacer(Modifier.height(AppSpacing.xl))
         Text(
             stringResource(Res.string.business_welcome_phone_label),
-            style = AppType.fieldLabel.copy(fontSize = 13.sp, color = palette.label),
+            style = AppType.fieldLabel.copy(fontSize = 13.sp, color = palette.inkMuted),
         )
         Spacer(Modifier.height(AppSpacing.sm))
         GlassTextField(
@@ -159,7 +159,7 @@ fun BusinessWelcomeScreen(
     }
 }
 
-/** Telefon maydonining "🇺🇿 +998 |" prefiksi (auth'dagining nusxasi — modul mustaqil bo'lishi uchun). */
+/** Telefon maydonining "+998 |" prefiksi (auth'dagining nusxasi — modul mustaqil bo'lishi uchun). */
 @Composable
 private fun PhonePrefix(palette: AppPalette) {
     Row(verticalAlignment = Alignment.CenterVertically) {

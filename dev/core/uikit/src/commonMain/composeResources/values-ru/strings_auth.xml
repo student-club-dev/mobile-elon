@@ -137,14 +137,19 @@
     <string name="auth_chat_empty">Диалогов нет</string>
     <string name="auth_chat_delete_title">Удалить диалог</string>
     <string name="auth_chat_delete_confirm">Диалог с «%1$s» и все сообщения будут удалены. Продолжить?</string>
-    <string name="auth_chat_online">в сети</string>
-    <string name="auth_chat_offline">не в сети</string>
+    <string name="auth_chat_online">Онлайн</string>
+    <string name="auth_chat_offline">Не в сети</string>
     <string name="auth_chat_input_placeholder">Напишите сообщение...</string>
     <string name="auth_chat_send">Отправить</string>
     <string name="auth_chat_message_delete_title">Удалить сообщение</string>
     <string name="auth_chat_message_delete_confirm">Удалить это сообщение?</string>
     <string name="auth_chat_clear_title">Очистить диалог</string>
     <string name="auth_chat_clear_confirm">Все сообщения в этом диалоге будут удалены. Продолжить?</string>
+    <string name="auth_chat_today">Сегодня</string>
+    <string name="auth_chat_call">Позвонить</string>
+    <string name="auth_chat_attach">Прикрепить</string>
+    <string name="auth_chat_typing">Печатает</string>
+    <string name="auth_chat_support">Поддержка</string>
 
     <!-- ============ Студенты ============ -->
     <string name="auth_students_title">Студенты</string>

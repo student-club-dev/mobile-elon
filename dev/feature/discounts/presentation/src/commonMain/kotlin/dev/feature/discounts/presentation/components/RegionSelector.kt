@@ -79,7 +79,7 @@ fun SelectorField(
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
-        Icon(trailingIcon, null, tint = palette.chevron, modifier = Modifier.size(16.dp))
+        Icon(trailingIcon, null, tint = palette.inkMuted, modifier = Modifier.size(16.dp))
     }
 }
 

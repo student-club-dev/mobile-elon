@@ -35,6 +35,8 @@ data class AppPalette(
     val divider: Color,
     /** Karta ustidagi maydon foni (input). */
     val fieldBg: Color,
+    /** OQ panel ichidagi maydon yo'lakchasi — chat kiritish paneli kabi. */
+    val fieldTrack: Color,
     // Holatlar
     val success: Color,
     val danger: Color,
@@ -55,60 +57,6 @@ data class AppPalette(
     val accentBeauty: Color,
     val accentBarber: Color,
 ) {
-    // -----------------------------------------------------------------------
-    // Eski nomlar — yangi dizaynga moslashtirilgan
-    //
-    // Ilova binafsha "liquid glass" tilida yozilgan edi va 400 dan ortiq joyda shu nomlar
-    // ishlatiladi. Ularni yangi qiymatlarga bog'lab qo'yamiz: ekranlar o'zgarmasdan yangi
-    // ko'rinishga o'tadi. Yangi kod to'g'ridan-to'g'ri yuqoridagi tokenlarni ishlatsin.
-    // -----------------------------------------------------------------------
-
-    /** Ilgari yarim shaffof "shisha" yuza edi — endi oq karta. */
-    val glass: Color get() = card
-    val glassStrong: Color get() = card
-
-    /** Ilgari nozik binafsha chegara — endi ochiq kulrang ajratgich. */
-    val border: Color get() = divider
-    val borderStrong: Color get() = primary
-
-    /** Ilgari ko'tarilgan yuza (pastki panel) — endi oddiy karta. */
-    val barSurface: Color get() = card
-
-    /** Tanlanmagan tab/chip foni. */
-    val tabTrack: Color get() = accentBg
-    val chipTrack: Color get() = accentBg
-
-    /** Shisha yuza ustidagi matn. */
-    val onGlass: Color get() = ink
-
-    /** Maydon yorlig'i va chevron — ikkinchi darajali matn rangi. */
-    val label: Color get() = inkMuted
-    val chevron: Color get() = inkMuted
-
-    /** Fokusdagi maydon yaltirashi. */
-    val fieldFocusGlow: Color get() = primary.copy(alpha = 0.15f)
-
-    /** Ilgari to'q yashil edi — yangi palitrada bitta success rangi bor. */
-    val successDeep: Color get() = success
-
-    /** Reyting yulduzi va o'qilmagan nuqta. */
-    val amber: Color get() = warning
-    val badge: Color get() = danger
-
-    /**
-     * Eski fon "bloblari" — yangi dizaynda dekorativ dog'lar yo'q, fon toza gradient.
-     * Ular hali chizilayotgan joylarda ko'rinmas bo'lib qoladi.
-     */
-    val blobPrimary: Color get() = Color.Transparent
-    val blobCyan: Color get() = Color.Transparent
-
-    /** Eski modul aksentlari — yangi kategoriya ranglariga bog'landi. */
-    val moduleFood: Color get() = accentFood
-    val moduleStudy: Color get() = accentStudy
-    val moduleEmployer: Color get() = warning
-    val moduleHousing: Color get() = success
-    val moduleMedical: Color get() = accentBeauty
-
     /** 135° brend gradienti — CTA tugmalar, FAB, faol tab. */
     val primaryBrush: Brush get() = Brush.linearGradient(primaryGradient)
 
@@ -134,6 +82,7 @@ private val LightAppPalette = AppPalette(
     accentBg = AccentBg,
     divider = Divider,
     fieldBg = CardBg,
+    fieldTrack = FieldTrack,
     success = Success,
     danger = Danger,
     dangerBg = DangerBg,
@@ -167,6 +116,7 @@ private val DarkAppPalette = AppPalette(
     accentBg = AccentBgDark,
     divider = DividerDark,
     fieldBg = CardBgDark,
+    fieldTrack = FieldTrackDark,
     success = Success,
     danger = Color(0xFFF06A82),
     dangerBg = DangerBgDark,

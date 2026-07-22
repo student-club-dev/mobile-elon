@@ -25,6 +25,7 @@ class LocalDataSeeder(
         seedStudents()
         seedAds()
         seedChat()
+        seedSupportChat()
         seedNotifications()
     }
 
@@ -121,6 +122,39 @@ class LocalDataSeeder(
             q.insertMessage("c-dilnoza-2", "c-dilnoza", "Ha, bor! Hozir yuboraman", true.toDb(), "14:21", 2000)
             q.insertMessage("c-dilnoza-3", "c-dilnoza", "Ertaga kutubxonada uchrashamizmi?", false.toDb(), "14:22", 3000)
             q.insertMessage("c-dilnoza-4", "c-dilnoza", "Albatta, soat 10 da", true.toDb(), "14:22", 4000)
+        }
+    }
+
+    /**
+     * Qo'llab-quvvatlash suhbati — handoff'ning 7-ekrani.
+     *
+     * Alohida seed: u boshqa suhbatlardan MUSTAQIL tekshiriladi, chunki chat allaqachon
+     * to'ldirilgan bazaga ham qo'shilishi kerak (aks holda eski o'rnatishlarda "Qo'llab-quvvatlash"
+     * tugmasi bo'sh ekran ochardi).
+     */
+    private fun seedSupportChat() {
+        val q = db.chatQueries
+        if (q.countConversationsByType(ConversationType.SUPPORT.name).executeAsOne() > 0) return
+        q.transaction {
+            q.upsertConversation(
+                "c-support", "Qo'llab-quvvatlash", "Q", ConversationType.SUPPORT.name, true.toDb(),
+                "Tekshirib ko'ramiz, biroz kuting.", "10:24", 0,
+            )
+            q.insertMessage(
+                "c-support-1", "c-support",
+                "Assalomu alaykum! Qo'llab-quvvatlash xizmatiga xush kelibsiz. Sizga qanday yordam bera olamiz?",
+                false.toDb(), "10:20", 1000,
+            )
+            q.insertMessage(
+                "c-support-2", "c-support",
+                "Assalomu alaykum, e'lonim tasdiqlanmayapti, sabab bilsam bo'ladimi?",
+                true.toDb(), "10:22", 2000,
+            )
+            q.insertMessage(
+                "c-support-3", "c-support",
+                "Tekshirib ko'ramiz, biroz kuting. Odatda 1 soat ichida javob beramiz.",
+                false.toDb(), "10:24", 3000,
+            )
         }
     }
 

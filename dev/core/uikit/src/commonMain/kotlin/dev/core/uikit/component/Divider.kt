@@ -31,8 +31,8 @@ fun OrDivider(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(AppSpacing.md),
     ) {
-        Box(Modifier.weight(1f).height(1.dp).background(palette.border))
+        Box(Modifier.weight(1f).height(1.dp).background(palette.divider))
         Text(text, style = AppType.hint.copy(color = palette.inkFaint))
-        Box(Modifier.weight(1f).height(1.dp).background(palette.border))
+        Box(Modifier.weight(1f).height(1.dp).background(palette.divider))
     }
 }

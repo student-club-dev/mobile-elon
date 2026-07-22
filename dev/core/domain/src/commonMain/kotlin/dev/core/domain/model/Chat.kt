@@ -1,7 +1,12 @@
 package dev.core.domain.model
 
-/** Suhbat turi — oddiy student yoki kompaniya HR. */
-enum class ConversationType { PEER, HR }
+/**
+ * Suhbat turi — oddiy student, kompaniya HR yoki ilova qo'llab-quvvatlash xizmati.
+ *
+ * [SUPPORT] suhbatlar ro'yxatida KO'RINMAYDI (handoff, 5-ekran): u faqat "Bizneslarim"
+ * ekranidagi alohida tugma orqali ochiladi.
+ */
+enum class ConversationType { PEER, HR, SUPPORT }
 
 /** Xabarlar ro'yxatidagi bitta suhbat. */
 data class Conversation(

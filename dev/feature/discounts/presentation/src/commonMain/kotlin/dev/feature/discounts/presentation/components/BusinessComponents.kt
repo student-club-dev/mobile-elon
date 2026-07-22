@@ -203,5 +203,5 @@ fun LocationCard(address: String?, palette: AppPalette, onPick: () -> Unit) {
 /** Maydon ustidagi yorliq — forma bo'ylab bir xil 12.5sp o'lcham. */
 @Composable
 fun FormFieldLabel(text: String, palette: AppPalette) {
-    Text(text, style = AppType.fieldLabel.copy(fontSize = 12.5f.sp, color = palette.label))
+    Text(text, style = AppType.fieldLabel.copy(fontSize = 12.5f.sp, color = palette.inkMuted))
 }

@@ -285,6 +285,9 @@ fun AuthNavHost(
                     settingsContent = { onBack ->
                         SettingsScreen(onBack = onBack, onEditProfile = {}, onLoggedOut = loggedOut)
                     },
+                    // Chat ekranlari auth modulida — karkasga slot sifatida beriladi.
+                    messagesScreen = { onBack -> dev.feature.auth.presentation.main.ChatScreen(onBack = onBack) },
+                    supportScreen = { onBack -> dev.feature.auth.presentation.main.SupportChatScreen(onBack = onBack) },
                 )
                 AuthUserFlow.STUDENT -> dev.feature.auth.presentation.main.StudentShell(onLoggedOut = loggedOut)
                 // iOS / bo'linmagan rejim — rolga qarab RootShell hal qiladi.

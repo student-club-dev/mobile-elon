@@ -105,7 +105,7 @@
     <string name="discounts_business_support">Поддержка</string>
     <string name="discounts_business">Бизнес</string>
     <string name="discounts_business_delete_title">Удалить бизнес</string>
-    <string name="discounts_business_delete_confirm">Удалить \"%1$s\"? Это действие нельзя отменить.</string>
+    <string name="discounts_business_delete_confirm">Удалить "%1$s"? Это действие нельзя отменить.</string>
     <string name="discounts_business_empty_title">Бизнесов пока нет</string>
     <string name="discounts_business_empty_message">Добавьте первый бизнес — потом разместите к нему скидки и объявления.</string>
     <string name="discounts_business_add">Добавить бизнес</string>

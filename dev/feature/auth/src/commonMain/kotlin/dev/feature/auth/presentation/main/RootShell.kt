@@ -31,6 +31,9 @@ fun RootShell(onLoggedOut: () -> Unit, vm: RootShellViewModel = koinViewModel())
             settingsContent = { onBack ->
                 SettingsScreen(onBack = onBack, onEditProfile = {}, onLoggedOut = onLoggedOut)
             },
+            // Chat ekranlari auth modulida — karkasga slot sifatida beriladi.
+            messagesScreen = { onBack -> ChatScreen(onBack = onBack) },
+            supportScreen = { onBack -> SupportChatScreen(onBack = onBack) },
         )
         else -> StudentShell(onLoggedOut = onLoggedOut)
     }

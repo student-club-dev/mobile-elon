@@ -20,6 +20,7 @@ import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSize
 import dev.core.uikit.theme.appPalette
+import dev.core.uikit.theme.rowShadow
 
 /** Ijtimoiy tarmoq orqali kirish qatori — Google / Apple / Telegram. */
 @Composable
@@ -55,8 +56,8 @@ private fun SocialButton(
         modifier
             .height(AppSize.buttonSecondaryHeight)
             .clip(shape)
-            .background(palette.glass)
-            .border(1.dp, palette.border, shape)
+            .rowShadow(shape)
+            .background(palette.card)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) { content() }

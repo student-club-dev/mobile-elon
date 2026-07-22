@@ -43,8 +43,8 @@ fun StatusBanner(
     val (background: Color, foreground: Color) = when (tone) {
         BannerTone.WARNING -> palette.warningBg to palette.warning
         BannerTone.DANGER -> palette.dangerBg to palette.danger
-        BannerTone.SUCCESS -> palette.successBg to palette.successDeep
-        BannerTone.INFO -> palette.tabTrack to palette.primary
+        BannerTone.SUCCESS -> palette.successBg to palette.success
+        BannerTone.INFO -> palette.accentBg to palette.primary
     }
     Row(
         modifier

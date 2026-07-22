@@ -149,14 +149,19 @@
     <string name="auth_chat_delete_title">Suhbatni o'chirish</string>
     <!-- %1$s — suhbatdosh ismi -->
     <string name="auth_chat_delete_confirm">"%1$s" bilan suhbat va barcha xabarlar o'chiriladi. Davom etasizmi?</string>
-    <string name="auth_chat_online">online</string>
-    <string name="auth_chat_offline">oflayn</string>
+    <string name="auth_chat_online">Onlayn</string>
+    <string name="auth_chat_offline">Oflayn</string>
     <string name="auth_chat_input_placeholder">Xabar yozing...</string>
     <string name="auth_chat_send">Yuborish</string>
     <string name="auth_chat_message_delete_title">Xabarni o'chirish</string>
     <string name="auth_chat_message_delete_confirm">Bu xabarni o'chirmoqchimisiz?</string>
     <string name="auth_chat_clear_title">Suhbatni tozalash</string>
     <string name="auth_chat_clear_confirm">Bu suhbatdagi barcha xabarlar o'chiriladi. Davom etasizmi?</string>
+    <string name="auth_chat_today">Bugun</string>
+    <string name="auth_chat_call">Qo'ng'iroq</string>
+    <string name="auth_chat_attach">Biriktirish</string>
+    <string name="auth_chat_typing">Yozmoqda</string>
+    <string name="auth_chat_support">Qo'llab-quvvatlash</string>
 
     <!-- ============ Studentlar ============ -->
     <string name="auth_students_title">Studentlar</string>

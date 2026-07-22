@@ -34,6 +34,9 @@ SELECT * FROM MessageEntity WHERE conversationId = ? ORDER BY createdAt ASC;
 countConversations:
 SELECT count(*) FROM ConversationEntity;
 
+countConversationsByType:
+SELECT count(*) FROM ConversationEntity WHERE type = ?;
+
 upsertConversation:
 INSERT OR REPLACE INTO ConversationEntity(id, peerName, peerInitial, type, online, lastMessage, lastTime, unreadCount)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?);

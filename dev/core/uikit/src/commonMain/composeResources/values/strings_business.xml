@@ -46,11 +46,11 @@
     <string name="business_welcome_subtitle">Biznes egasi sifatida kiring — chegirma e'lonlaringizni joylang va boshqaring.</string>
     <string name="business_welcome_phone_label">Telefon raqami</string>
     <string name="business_welcome_phone_hint">90 123 45 67</string>
-    <string name="business_welcome_phone_prefix">🇺🇿 +998</string>
+    <string name="business_welcome_phone_prefix">+998</string>
     <string name="business_welcome_get_code">Kod olish</string>
     <string name="business_welcome_google">Google bilan kirish</string>
     <string name="business_welcome_email">Email bilan kirish</string>
-    <string name="business_welcome_student_hint">Talaba sifatida kirmoqchimisiz? Orqaga qayting va \"Talaba\" ni tanlang.</string>
+    <string name="business_welcome_student_hint">Talaba sifatida kirmoqchimisiz? Orqaga qayting va "Talaba" ni tanlang.</string>
     <!-- Faqat local test rejimida ko'rinadi (USE_LOCAL_DATA). -->
     <string name="business_welcome_dev_login">Dev kirish (test)</string>
 

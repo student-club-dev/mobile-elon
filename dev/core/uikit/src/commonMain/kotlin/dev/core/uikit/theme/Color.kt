@@ -44,6 +44,9 @@ val CardBg = Color(0xFFFFFFFF)
 val AccentBg = Color(0xFFEAF7FD)
 val Divider = Color(0xFFE4EBF2)
 
+/** Oq panel ICHIDAGI kiritish maydoni (chat input) — kartadan bir pog'ona quyuqroq neytral. */
+val FieldTrack = Color(0xFFF3F6FA)
+
 /** Ekran foni gradienti (yuqori chapdan ochiq ko'k yorug'lik). */
 val BgTopLight = Color(0xFFE7F7FD)
 val BgMidLight = Color(0xFFEEF3F8)
@@ -54,6 +57,7 @@ val ScreenBgDark = Color(0xFF0F1B2A)
 val CardBgDark = Color(0xFF17273C)
 val AccentBgDark = Color(0xFF11304A)
 val DividerDark = Color(0xFF223349)
+val FieldTrackDark = Color(0xFF1E3047)
 
 val BgTopDark = Color(0xFF10222F)
 val BgMidDark = Color(0xFF0F1B2A)

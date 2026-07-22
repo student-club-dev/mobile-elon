@@ -3,6 +3,7 @@ package dev.feature.auth.presentation.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.core.domain.model.Conversation
+import dev.core.domain.model.ConversationType
 import dev.core.domain.model.Message
 import dev.core.domain.repository.ChatRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,8 +21,11 @@ import kotlinx.datetime.toLocalDateTime
 
 /** Chat (1x ro'yxat + 1y suhbat) holati. */
 data class ChatUiState(
+    /** Ro'yxatda ko'rinadigan faol suhbatlar — qo'llab-quvvatlashsiz. */
     val conversations: List<Conversation> = emptyList(),
     val archivedConversations: List<Conversation> = emptyList(),
+    /** Qo'llab-quvvatlash suhbati — ro'yxatda emas, alohida ekran orqali ochiladi. */
+    val support: Conversation? = null,
     val selected: Conversation? = null,
     val messages: List<Message> = emptyList(),
     val draft: String = "",
@@ -50,10 +54,14 @@ class ChatViewModel(
         messagesFlow,
         draft,
     ) { conversations, archived, id, messages, d ->
+        // Qo'llab-quvvatlash suhbati ro'yxatdan CHIQARIB tashlanadi (handoff, 5-ekran), lekin
+        // tanlash uchun to'liq ro'yxat kerak — shuning uchun avval `all` yig'iladi.
+        val all = conversations + archived
         ChatUiState(
-            conversations = conversations,
-            archivedConversations = archived,
-            selected = (conversations + archived).firstOrNull { it.id == id },
+            conversations = conversations.filterNot { it.type == ConversationType.SUPPORT },
+            archivedConversations = archived.filterNot { it.type == ConversationType.SUPPORT },
+            support = all.firstOrNull { it.type == ConversationType.SUPPORT },
+            selected = all.firstOrNull { it.id == id },
             messages = messages,
             draft = d,
         )

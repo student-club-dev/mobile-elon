@@ -137,14 +137,19 @@
     <string name="auth_chat_empty">No conversations yet</string>
     <string name="auth_chat_delete_title">Delete conversation</string>
     <string name="auth_chat_delete_confirm">The conversation with "%1$s" and all its messages will be deleted. Continue?</string>
-    <string name="auth_chat_online">online</string>
-    <string name="auth_chat_offline">offline</string>
+    <string name="auth_chat_online">Online</string>
+    <string name="auth_chat_offline">Offline</string>
     <string name="auth_chat_input_placeholder">Write a message...</string>
     <string name="auth_chat_send">Send</string>
     <string name="auth_chat_message_delete_title">Delete message</string>
     <string name="auth_chat_message_delete_confirm">Delete this message?</string>
     <string name="auth_chat_clear_title">Clear conversation</string>
     <string name="auth_chat_clear_confirm">All messages in this conversation will be deleted. Continue?</string>
+    <string name="auth_chat_today">Today</string>
+    <string name="auth_chat_call">Call</string>
+    <string name="auth_chat_attach">Attach</string>
+    <string name="auth_chat_typing">Typing</string>
+    <string name="auth_chat_support">Support</string>
 
     <!-- ============ Students ============ -->
     <string name="auth_students_title">Students</string>

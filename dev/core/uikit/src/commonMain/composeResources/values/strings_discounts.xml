@@ -112,7 +112,7 @@
     <string name="discounts_business_support">Qo'llab-quvvatlash</string>
     <string name="discounts_business">Biznes</string>
     <string name="discounts_business_delete_title">Biznesni o'chirish</string>
-    <string name="discounts_business_delete_confirm">\"%1$s\" o'chirilsinmi? Bu amalni qaytarib bo'lmaydi.</string>
+    <string name="discounts_business_delete_confirm">"%1$s" o'chirilsinmi? Bu amalni qaytarib bo'lmaydi.</string>
     <string name="discounts_business_empty_title">Hali biznes yo'q</string>
     <string name="discounts_business_empty_message">Birinchi biznesingizni qo'shing — keyin unga chegirma va e'lonlar joylaysiz.</string>
     <string name="discounts_business_add">Biznes qo'shish</string>

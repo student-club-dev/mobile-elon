@@ -30,7 +30,7 @@ import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.rowShadow
 import dev.core.uikit.util.UZ_DIALING_CODE
 
-/** Telefon maydonining "🇺🇿 +998 |" prefiksi. */
+/** Telefon maydonining "+998 |" prefiksi. */
 @Composable
 fun PhonePrefix(palette: AppPalette) {
     Row(verticalAlignment = Alignment.CenterVertically) {

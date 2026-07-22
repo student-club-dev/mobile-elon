@@ -32,6 +32,8 @@ private const val POST_LISTING = "post_listing"
 private const val PROFILE = "business_profile"
 private const val BUSINESS_EDIT = "business_edit"
 private const val SETTINGS = "settings"
+private const val MESSAGES = "messages"
+private const val SUPPORT = "support"
 
 /**
  * Biznesmen karkasi. Oqim: **Bizneslarim** (ro'yxat + "+") → biznesga bosilса uning
@@ -44,6 +46,10 @@ fun BusinessShell(
     onLoggedOut: () -> Unit,
     // Sozlamalar ekrani auth modulida — shu slot orqali beriladi (business auth'ga bog'lanmaydi).
     settingsContent: @Composable (onBack: () -> Unit) -> Unit,
+    // Chat ekranlari ham auth modulida. Bog'liqlik faqat `auth -> business` yo'nalishida
+    // bo'lgani uchun bu yerdan import qilib bo'lmaydi — ekranlar slot sifatida uzatiladi.
+    messagesScreen: @Composable (onBack: () -> Unit) -> Unit = {},
+    supportScreen: @Composable (onBack: () -> Unit) -> Unit = {},
 ) {
     val palette = appPalette
     val nav = rememberNavController()
@@ -59,6 +65,8 @@ fun BusinessShell(
                     onEditBusiness = { biz -> nav.navigate("$ADD_BUSINESS?businessId=${biz.id}") },
                     onAddBusiness = { nav.navigate(ADD_BUSINESS) },
                     onProfile = { nav.navigate(PROFILE) },
+                    onMessages = { nav.navigate(MESSAGES) { launchSingleTop = true } },
+                    onSupport = { nav.navigate(SUPPORT) { launchSingleTop = true } },
                 )
             }
             // 2. Biznes qo'shish / tahrirlash (nom, telefon, tur, lokatsiya).
@@ -128,6 +136,14 @@ fun BusinessShell(
             }
             composable(SETTINGS) {
                 settingsContent { nav.popBackStack() }
+            }
+            // Xabarlar — suhbatlar ro'yxati (qo'llab-quvvatlashsiz).
+            composable(MESSAGES) {
+                messagesScreen { nav.popBackStack() }
+            }
+            // Qo'llab-quvvatlash — ro'yxatsiz, to'g'ridan-to'g'ri support suhbati.
+            composable(SUPPORT) {
+                supportScreen { nav.popBackStack() }
             }
         }
 

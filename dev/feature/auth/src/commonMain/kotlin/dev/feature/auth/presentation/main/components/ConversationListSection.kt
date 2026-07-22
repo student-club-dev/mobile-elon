@@ -27,7 +27,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import dev.core.domain.model.Conversation
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.BackButton
@@ -72,28 +74,41 @@ internal fun ConversationList(
     val list = if (showArchived) archivedConversations else conversations
 
     Column(Modifier.fillMaxSize()) {
-        Row(
-            Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg).padding(top = 54.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(11.dp),
-        ) {
-            BackButton(
-                onClick = { if (showArchived) showArchived = false else onBack() },
-                contentDescription = stringResource(Res.string.common_back),
-                iconSize = 18.dp,
-            )
-            Text(
-                if (showArchived) {
-                    stringResource(Res.string.auth_chat_archive)
-                } else {
-                    stringResource(Res.string.auth_chat_title)
-                },
-                style = AppType.topBarTitle.copy(color = palette.ink),
-                modifier = Modifier.weight(1f),
-            )
-            if (!showArchived && archivedConversations.isNotEmpty()) {
-                ArchiveButton(archivedConversations.size, palette) { showArchived = true }
+        // Yopishqoq sarlavha — ro'yxat ustida QOTIB turadi (scroll ostiga ketmaydi),
+        // ostida ajratuvchi chiziq (handoff, 5-ekran).
+        Column(Modifier.fillMaxWidth()) {
+            Row(
+                Modifier.fillMaxWidth()
+                    .padding(horizontal = AppSpacing.screenHorizontal)
+                    .padding(top = 54.dp, bottom = 14.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(11.dp),
+            ) {
+                BackButton(
+                    onClick = { if (showArchived) showArchived = false else onBack() },
+                    contentDescription = stringResource(Res.string.common_back),
+                    iconSize = 18.dp,
+                )
+                Text(
+                    if (showArchived) {
+                        stringResource(Res.string.auth_chat_archive)
+                    } else {
+                        stringResource(Res.string.auth_chat_title)
+                    },
+                    style = AppType.screenTitle.copy(
+                        fontSize = 26.sp,
+                        letterSpacing = (-0.5).sp,
+                        color = palette.ink,
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f),
+                )
+                if (!showArchived && archivedConversations.isNotEmpty()) {
+                    ArchiveButton(archivedConversations.size, palette) { showArchived = true }
+                }
             }
+            Box(Modifier.fillMaxWidth().height(1.dp).background(palette.divider))
         }
         Spacer(Modifier.height(14.dp))
         if (list.isEmpty()) {
@@ -110,8 +125,12 @@ internal fun ConversationList(
         } else {
             LazyColumn(
                 Modifier.fillMaxWidth().weight(1f),
-                contentPadding = PaddingValues(start = AppSpacing.lg, end = AppSpacing.lg, bottom = AppSpacing.xl),
-                verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+                contentPadding = PaddingValues(
+                    start = AppSpacing.lg,
+                    end = AppSpacing.lg,
+                    bottom = AppSpacing.screenBottom,
+                ),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 items(list, key = { it.id }) { c ->
                     ConversationRow(c, palette, onClick = { onOpen(c) }, onLongPress = { conversationForAction = c })

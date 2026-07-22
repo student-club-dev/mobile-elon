@@ -45,7 +45,7 @@ fun SegmentedTabs(
         modifier
             .fillMaxWidth()
             .clip(AppRadius.lg)
-            .background(palette.tabTrack)
+            .background(palette.accentBg)
             .padding(4.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
@@ -83,7 +83,7 @@ private fun TabPill(
         active && palette.dark -> Modifier.background(palette.primaryBrush, shape)
         active -> Modifier
             .shadow(6.dp, shape, spotColor = palette.primary.copy(alpha = 0.4f))
-            .background(palette.barSurface, shape)
+            .background(palette.card, shape)
         else -> Modifier
     }
     val contentColor = when {

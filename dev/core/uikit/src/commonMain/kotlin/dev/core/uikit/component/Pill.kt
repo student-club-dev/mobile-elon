@@ -39,8 +39,7 @@ fun FilterPill(
     Box(
         modifier
             .clip(shape)
-            .background(if (active) palette.primary else palette.glass)
-            .then(if (active) Modifier else Modifier.border(1.dp, palette.border, shape))
+            .background(if (active) palette.primary else palette.card)
             .clickable(onClick = onClick)
             .padding(horizontal = 15.dp, vertical = 8.dp),
         contentAlignment = Alignment.Center,
