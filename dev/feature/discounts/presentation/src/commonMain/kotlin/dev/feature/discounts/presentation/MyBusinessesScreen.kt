@@ -53,14 +53,18 @@ import org.koin.compose.viewmodel.koinViewModel
 import androidx.compose.ui.unit.sp
 
 /** Handoff: yuqoridagi oq harakat tugmalari 44dp, ichidagi ikonka 20dp. */
-private val TopActionSize = 44.dp
+private val TopActionSize = 40.dp
 private val TopActionIconSize = 20.dp
 
 /**
  * Qo'llab-quvvatlash ikonkasi qolganidan kattaroq: u garnitura + suhbat pufagidan iborat,
  * ya'ni chiziqlari zich. 20dp da u kichik dog'ga aylanib, nima ekani o'qilmasdi.
  */
-private val SupportIconSize = 26.dp
+private val SupportIconSize = 24.dp
+
+/** Hisob tugmasi — urg'uli, lekin sarlavhaga joy qoldirishi kerak. */
+private val AccountButtonSize = 46.dp
+private val AccountIconSize = 24.dp
 
 /**
  * "Bizneslarim" — biznes egasining barcha bizneslari. Har biriga alohida chegirma va
@@ -92,9 +96,19 @@ fun MyBusinessesScreen(
                 Modifier.fillMaxWidth()
                     .padding(horizontal = AppSpacing.screenHorizontal)
                     .padding(top = 54.dp, bottom = AppSpacing.sm),
-                // Tugmalar sarlavha blokining YUQORISIGA tekislanadi.
-                verticalAlignment = Alignment.Top,
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(AppSpacing.md),
             ) {
+                // Ketma-ketlik: hisob → sarlavha → xabarlar → qo'llab-quvvatlash.
+                GradientIconButton(
+                    AppIcons.User,
+                    onClick = onProfile,
+                    contentDescription = stringResource(Res.string.discounts_profile),
+                    size = AccountButtonSize,
+                    iconSize = AccountIconSize,
+                    shape = AppRadius.md,
+                    palette = palette,
+                )
                 Column(Modifier.weight(1f)) {
                     Text(
                         stringResource(Res.string.discounts_business_hub),
@@ -102,27 +116,17 @@ fun MyBusinessesScreen(
                     )
                     Text(
                         stringResource(Res.string.discounts_my_businesses),
-                        // 26sp — handoff H1 oralig'ining (26-30) pastki chegarasi. 30sp da
-                        // "Bizneslarim" tor ekranlarda (360dp) uchta tugma yonida sig'maydi va
-                        // ikki qatorga bo'linib ketardi; `maxLines` buni butunlay taqiqlaydi.
-                        style = AppType.screenTitle.copy(fontSize = 26.sp, color = palette.ink),
+                        // Sarlavha tugmalar ORASIDA turadi, shuning uchun katta H1 (26-30sp)
+                        // sig'maydi — panel sarlavhasi uchun mo'ljallangan token olinadi.
+                        // `maxLines` ikki qatorga bo'linishni butunlay taqiqlaydi.
+                        style = AppType.topBarTitle.copy(color = palette.ink),
                         maxLines = 1,
                     )
                 }
                 Row(
-                    Modifier.padding(top = AppSpacing.xs),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(9.dp),
                 ) {
-                    // Hisob (profil) — guruhning CHAP chekkasida, urg'uli: kattaroq va ko'k
-                    // gradient (handoff: 54dp, radius 20).
-                    GradientIconButton(
-                        AppIcons.Users,
-                        onClick = onProfile,
-                        contentDescription = stringResource(Res.string.discounts_profile),
-                        shape = AppRadius.row,
-                        palette = palette,
-                    )
                     IconActionButton(
                         AppIcons.MessageSquare,
                         onClick = onMessages,

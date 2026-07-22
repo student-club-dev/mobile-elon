@@ -160,6 +160,18 @@ object AppIcons {
         "M 14.1 8.5 a 1.4 1.4 0 1 0 2.8 0 a 1.4 1.4 0 1 0 -2.8 0",
     )
 
+    /**
+     * Bitta foydalanuvchi — hisob/profil tugmasi.
+     *
+     * Handoff'ning "Bizneslarim" ekranidagi profil tugmasidan olingan: bosh (doira) va
+     * yelka chizig'i. `Users` (ikki kishi) jamoa/a'zolar uchun, shaxsiy hisob uchun emas.
+     */
+    val User = strokeIcon(
+        "User",
+        "M 8 8 a 4 4 0 1 0 8 0 a 4 4 0 1 0 -8 0",
+        "M 4 20 c 0 -4.4 3.6 -7 8 -7 s 8 2.6 8 7",
+    )
+
     /** `ic_users` — studentlar/do'stlar, klub a'zolari. */
     val Users = strokeIcon(
         "Users",
