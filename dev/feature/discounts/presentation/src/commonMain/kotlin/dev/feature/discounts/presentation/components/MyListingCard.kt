@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,7 +22,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -44,6 +44,7 @@ import dev.core.uikit.theme.AppType
 import dev.feature.discounts.domain.model.Listing
 import dev.feature.discounts.domain.model.ListingStatus
 import dev.feature.discounts.domain.model.formatSum
+import dev.feature.discounts.presentation.icon
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -119,7 +120,7 @@ fun MyListingCard(
             val first = listing.branches.firstOrNull()
             if (first != null) {
                 val extra = listing.branches.size - 1
-                // Bir nechta filial bo'lsa: "📍 Chilonzor filiali — ... +2 filial"
+                // Bir nechta filial bo'lsa: "Chilonzor filiali — ... +2 filial"
                 val extraLabel =
                     if (extra > 0) stringResource(Res.string.discounts_branch_extra, "$extra") else ""
                 Text(
@@ -171,7 +172,7 @@ private fun ListingCover(
             if (cover != null) {
                 ListingImage(cover, Modifier.fillMaxSize().clip(shape))
             } else {
-                Text(listing.businessType.emoji, style = TextStyle(fontSize = 28.sp))
+                Icon(listing.businessType.icon, null, tint = accent, modifier = Modifier.size(30.dp))
             }
         }
         if (isDiscount) {

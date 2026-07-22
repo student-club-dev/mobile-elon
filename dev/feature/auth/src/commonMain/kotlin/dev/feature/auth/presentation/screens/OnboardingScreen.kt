@@ -78,19 +78,19 @@ fun OnboardingScreen(
                 Icon(AppIcons.GraduationCap, null, tint = palette.onPrimary, modifier = Modifier.size(52.dp))
             }
             FloatingChip(
-                "🍕",
+                AppIcons.Cafe,
                 stringResource(Res.string.auth_onboarding_chip_order),
                 Modifier.align(Alignment.TopStart).offset(x = 4.dp, y = 40.dp),
                 palette,
             )
             FloatingChip(
-                "📚",
+                AppIcons.Book,
                 stringResource(Res.string.auth_onboarding_chip_ai_teacher),
                 Modifier.align(Alignment.CenterEnd).offset(x = (-4).dp, y = 30.dp),
                 palette,
             )
-            FloatingChip("🏠", null, Modifier.align(Alignment.TopEnd).offset(x = (-30).dp, y = 4.dp), palette)
-            FloatingChip("💼", null, Modifier.align(Alignment.BottomStart).offset(x = 20.dp, y = (-8).dp), palette)
+            FloatingChip(AppIcons.HomeFilled, null, Modifier.align(Alignment.TopEnd).offset(x = (-30).dp, y = 4.dp), palette)
+            FloatingChip(AppIcons.Briefcase, null, Modifier.align(Alignment.BottomStart).offset(x = 20.dp, y = (-8).dp), palette)
         }
 
         Spacer(Modifier.weight(1f))

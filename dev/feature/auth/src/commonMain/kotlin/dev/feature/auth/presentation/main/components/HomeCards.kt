@@ -146,7 +146,12 @@ private fun CategoryChip(category: DiscountCategory, palette: AppPalette, onClic
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        Text(category.emoji, style = AppType.body.copy(fontSize = 14.sp))
+        Icon(
+            AppIcons.forCatalog(category.id),
+            null,
+            tint = Color(category.accent),
+            modifier = Modifier.size(15.dp),
+        )
         Text(category.name, style = AppType.fieldLabel.copy(color = palette.ink))
     }
 }
@@ -165,7 +170,7 @@ private fun FeaturedOfferCard(offer: DiscountOffer, palette: AppPalette, onClick
         Box(
             Modifier.size(52.dp).clip(AppRadius.lg).background(accent.copy(alpha = 0.15f)),
             contentAlignment = Alignment.Center,
-        ) { Text(offer.emoji, style = AppType.screenTitle.copy(fontSize = 24.sp)) }
+        ) { Icon(AppIcons.forCatalog(offer.categoryId), null, tint = accent, modifier = Modifier.size(26.dp)) }
         Column(Modifier.weight(1f)) {
             Text(
                 stringResource(Res.string.auth_home_offer_title, offer.merchant, "${offer.discountPercent}%"),

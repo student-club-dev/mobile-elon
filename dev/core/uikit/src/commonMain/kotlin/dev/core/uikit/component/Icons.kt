@@ -9,9 +9,16 @@ import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.unit.dp
 
 /**
- * Lucide ikonalari — dizayndagi aynan SVG `d` yo'llari [PathParser] orqali
+ * Ilova ikonalari — dizayndagi aynan SVG `d` yo'llari [PathParser] orqali
  * [ImageVector] ga aylantirilgan. Chiziqli (stroke) ikonalar `Icon(tint=...)` bilan
  * bo'yaladi; ko'p rangli logolar `Image` bilan chiziladi.
+ *
+ * Manba: `design_handoff_studentclub_elonuz/icons/ic_*.svg` (36 ta) va Lucide.
+ * Handoff SVG'laridagi `<circle>`/`<rect>` shakllari shu yerda qo'lda `d` yo'liga
+ * aylantirilgan, chunki [strokeIcon] faqat path qabul qiladi.
+ *
+ * MUHIM: ilovada emoji ISHLATILMAYDI — iOS'da Compose emoji chiza olmaydi va har bir
+ * emoji `?` kvadratchaga aylanadi. Har qanday belgi shu yerdagi ikonka bilan beriladi.
  */
 private fun strokeIcon(name: String, vararg paths: String, viewport: Float = 24f): ImageVector =
     ImageVector.Builder(
@@ -33,177 +40,401 @@ private fun strokeIcon(name: String, vararg paths: String, viewport: Float = 24f
     }.build()
 
 object AppIcons {
+    /** `ic_university` — universitet/bitiruv qalpog'i (bottom nav "Universitet"). */
     val GraduationCap = strokeIcon(
         "GraduationCap",
-        "M22 10 12 5 2 10l10 5 10-5Z",
-        "M6 12v5c0 1 2 3 6 3s6-2 6-3v-5",
+        "M 12 4 L 2 9 l 10 5 l 8 -4",
+        "M 6 12 v 4 c 0 1 2.7 3 6 3 s 6 -2 6 -3 v -4",
     )
+
+    /** `ic_call` — telefon go'shagi. */
     val Phone = strokeIcon(
         "Phone",
-        "M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z",
+        "M 6.5 4 h 3 l 1.5 4 l -2 1.5 a 11 11 0 0 0 5.5 5.5 l 1.5 -2 l 4 1.5 v 3 a 2 2 0 0 1 -2.2 2 A 16 16 0 0 1 4.5 6.2 A 2 2 0 0 1 6.5 4 z",
     )
     val Mail = strokeIcon(
         "Mail",
-        "M2 6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z",
-        "m22 7-10 5L2 7",
+        "M 2 6 a 2 2 0 0 1 2 -2 h 16 a 2 2 0 0 1 2 2 v 12 a 2 2 0 0 1 -2 2 H 4 a 2 2 0 0 1 -2 -2 z",
+        "m 22 7 l -10 5 L 2 7",
     )
     val Lock = strokeIcon(
         "Lock",
-        "M5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2z",
-        "M7 11V7a5 5 0 0 1 10 0v4",
+        "M 5 11 h 14 a 2 2 0 0 1 2 2 v 7 a 2 2 0 0 1 -2 2 H 5 a 2 2 0 0 1 -2 -2 v -7 a 2 2 0 0 1 2 -2 z",
+        "M 7 11 V 7 a 5 5 0 0 1 10 0 v 4",
     )
     val Eye = strokeIcon(
         "Eye",
-        "M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z",
-        "M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z",
+        "M 2 12 s 3 -7 10 -7 s 10 7 10 7 s -3 7 -10 7 s -10 -7 -10 -7 Z",
+        "M 15 12 a 3 3 0 1 1 -6 0 a 3 3 0 0 1 6 0 z",
     )
     val EyeOff = strokeIcon(
         "EyeOff",
-        "M9.88 9.88a3 3 0 0 0 4.24 4.24",
-        "M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68",
-        "M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61",
-        "M2 2l20 20",
+        "M 9.88 9.88 a 3 3 0 0 0 4.24 4.24",
+        "M 10.73 5.08 A 10.43 10.43 0 0 1 12 5 c 7 0 10 7 10 7 a 13.16 13.16 0 0 1 -1.67 2.68",
+        "M 6.61 6.61 A 13.526 13.526 0 0 0 2 12 s 3 7 10 7 a 9.74 9.74 0 0 0 5.39 -1.61",
+        "M 2 2 l 20 20",
     )
-    val ArrowRight = strokeIcon("ArrowRight", "M5 12h14", "m12 5 7 7-7 7")
-    val ArrowLeft = strokeIcon("ArrowLeft", "M19 12H5", "m12 19-7-7 7-7")
-    val Check = strokeIcon("Check", "M20 6 9 17l-5-5")
+    val ArrowRight = strokeIcon("ArrowRight", "M 5 12 h 14", "m 12 5 l 7 7 l -7 7")
+
+    /** `ic_back` — orqaga qaytish. Handoff qoidasi: orqaga **doim `<`**, hech qachon `✕`. */
+    val ArrowLeft = strokeIcon("ArrowLeft", "M 15 5 l -7 7 l 7 7")
+    val Check = strokeIcon("Check", "M 20 6 L 9 17 l -5 -5")
     val Clock = strokeIcon(
         "Clock",
-        "M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z",
-        "M12 6v6l4 2",
+        "M 12 2 a 10 10 0 1 0 0 20 a 10 10 0 0 0 0 -20 z",
+        "M 12 6 v 6 l 4 2",
     )
     val Calendar = strokeIcon(
         "Calendar",
-        "M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z",
-        "M16 2v4",
-        "M8 2v4",
-        "M3 10h18",
+        "M 5 4 h 14 a 2 2 0 0 1 2 2 v 14 a 2 2 0 0 1 -2 2 H 5 a 2 2 0 0 1 -2 -2 V 6 a 2 2 0 0 1 2 -2 z",
+        "M 16 2 v 4",
+        "M 8 2 v 4",
+        "M 3 10 h 18",
     )
+
+    /** `ic_search` — qidiruv (doira `<circle>` dan arc yo'liga aylantirilgan). */
     val Search = strokeIcon(
         "Search",
-        "M11 3a8 8 0 1 0 0 16 8 8 0 0 0 0-16z",
-        "m21 21-4.3-4.3",
+        "M 4 11 a 7 7 0 1 0 14 0 a 7 7 0 1 0 -14 0",
+        "M 20 20 l -3.5 -3.5",
     )
     val ShieldCheck = strokeIcon(
         "ShieldCheck",
-        "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z",
-        "m9 12 2 2 4-4",
+        "M 12 22 s 8 -4 8 -10 V 5 l -8 -3 l -8 3 v 7 c 0 6 8 10 8 10 Z",
+        "m 9 12 l 2 2 l 4 -4",
     )
-    val ChevronDown = strokeIcon("ChevronDown", "m6 9 6 6 6-6")
-    val Close = strokeIcon("Close", "M18 6 6 18", "M6 6l12 12")
-    val MessageSquare = strokeIcon(
-        "MessageSquare",
-        "M7 8h10",
-        "M7 12h6",
-        "M4 4h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-6l-4 4v-4H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z",
-    )
+    val ChevronDown = strokeIcon("ChevronDown", "m 6 9 l 6 6 l 6 -6")
+
+    /** `ic_close` — faqat modal/dialog/to'liq ekranli qidiruvni yopish uchun. */
+    val Close = strokeIcon("Close", "M 6 6 l 12 12", "M 18 6 L 6 18")
+
+    /** `ic_messages` — to'rtburchak suhbat pufagi (bottom nav "Xabarlar"). */
+    val MessageSquare = strokeIcon("MessageSquare", "M 4 5 h 16 v 11 H 8 l -4 4 V 5 z")
     val ScanFace = strokeIcon(
         "ScanFace",
-        "M4 8V6a2 2 0 0 1 2-2h2",
-        "M4 16v2a2 2 0 0 0 2 2h2",
-        "M16 4h2a2 2 0 0 1 2 2v2",
-        "M16 20h2a2 2 0 0 0 2-2v-2",
-        "M8 14s1.5 2 4 2 4-2 4-2",
-        "M9 9h.01",
-        "M15 9h.01",
+        "M 4 8 V 6 a 2 2 0 0 1 2 -2 h 2",
+        "M 4 16 v 2 a 2 2 0 0 0 2 2 h 2",
+        "M 16 4 h 2 a 2 2 0 0 1 2 2 v 2",
+        "M 16 20 h 2 a 2 2 0 0 0 2 -2 v -2",
+        "M 8 14 s 1.5 2 4 2 s 4 -2 4 -2",
+        "M 9 9 h 0.01",
+        "M 15 9 h 0.01",
     )
+
+    /** `ic_briefcase` — ish e'lonlari (`<rect rx=2.5>` yumaloq burchakli yo'lga aylantirilgan). */
     val Briefcase = strokeIcon(
         "Briefcase",
-        "M4 7h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z",
-        "M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16",
+        "M 5.5 7 h 13 a 2.5 2.5 0 0 1 2.5 2.5 v 8 a 2.5 2.5 0 0 1 -2.5 2.5 h -13 a 2.5 2.5 0 0 1 -2.5 -2.5 v -8 a 2.5 2.5 0 0 1 2.5 -2.5 z",
+        "M 8 7 V 6 a 2 2 0 0 1 2 -2 h 4 a 2 2 0 0 1 2 2 v 1",
+        "M 3 12 h 18",
     )
     val Store = strokeIcon(
         "Store",
-        "M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z",
-        "M3 6h18",
-        "M16 10a4 4 0 0 1-8 0",
+        "M 6 2 L 3 6 v 14 a 2 2 0 0 0 2 2 h 14 a 2 2 0 0 0 2 -2 V 6 l -3 -4 Z",
+        "M 3 6 h 18",
+        "M 16 10 a 4 4 0 0 1 -8 0",
     )
     val Building = strokeIcon(
         "Building",
-        "M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18",
-        "M2 22h20",
-        "M10 7h4",
-        "M10 11h4",
-        "M10 15h4",
+        "M 6 22 V 4 a 2 2 0 0 1 2 -2 h 8 a 2 2 0 0 1 2 2 v 18",
+        "M 2 22 h 20",
+        "M 10 7 h 4",
+        "M 10 11 h 4",
+        "M 10 15 h 4",
     )
-    val Home = strokeIcon(
-        "Home",
-        "M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z",
-        "M9 21v-8h6v8",
-    )
+
+    /** `ic_home` — bosh sahifa (kontur uy). */
+    val Home = strokeIcon("Home", "M 3 10 l 9 -7 l 9 7 v 9 a 1 1 0 0 1 -1 1 h -5 v -6 H 9 v 6 H 4 a 1 1 0 0 1 -1 -1 v -9 z")
+
+    /** `ic_bell` — bildirishnomalar. */
     val Bell = strokeIcon(
         "Bell",
-        "M10.268 21a2 2 0 0 0 3.464 0",
-        "M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326z",
+        "M 18 8 a 6 6 0 1 0 -12 0 c 0 7 -3 9 -3 9 h 18 s -3 -2 -3 -9",
+        "M 13.7 21 a 2 2 0 0 1 -3.4 0",
     )
+
+    /** `ic_tag` — chegirma/narx yorlig'i, kategoriya chipi. */
     val Tag = strokeIcon(
         "Tag",
-        "M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z",
-        "M7.5 7.5h.01",
+        "M 3 12 l 8 -8 h 8 v 8 l -8 8 l -8 -8 z",
+        "M 14.1 8.5 a 1.4 1.4 0 1 0 2.8 0 a 1.4 1.4 0 1 0 -2.8 0",
     )
+
+    /** `ic_users` — studentlar/do'stlar, klub a'zolari. */
     val Users = strokeIcon(
         "Users",
-        "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2",
-        "M9 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z",
-        "M22 21v-2a4 4 0 0 0-3-3.87",
-        "M16 3.13a4 4 0 0 1 0 7.75",
+        "M 6 8 a 3 3 0 1 0 6 0 a 3 3 0 1 0 -6 0",
+        "M 3 20 c 0 -3.3 2.7 -5 6 -5 s 6 1.7 6 5",
+        "M 16 6 a 3 3 0 0 1 0 5.6",
+        "M 18 20 c 0 -2.6 -1.3 -4.2 -3.4 -4.8",
     )
-    val Plus = strokeIcon("Plus", "M5 12h14", "M12 5v14")
-    val ChevronRight = strokeIcon("ChevronRight", "m9 18 6-6-6-6")
+
+    /** `ic_add` — markaziy FAB "Elon" va barcha "qo'shish" tugmalari. */
+    val Plus = strokeIcon("Plus", "M 12 5 v 14", "M 5 12 h 14")
+
+    /** `ic_chevron_right` — "Barchasi ›", ro'yxat qatori oxiri. */
+    val ChevronRight = strokeIcon("ChevronRight", "M 9 6 l 6 6 l -6 6")
     val Bookmark = strokeIcon(
         "Bookmark",
-        "m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z",
+        "m 19 21 l -7 -4 l -7 4 V 5 a 2 2 0 0 1 2 -2 h 10 a 2 2 0 0 1 2 2 z",
     )
-    val Filter = strokeIcon("Filter", "M22 3H2l8 9.46V19l4 2v-8.54z")
+
+    /** `ic_filter` — qidiruv yonidagi filtr tugmasi. */
+    val Filter = strokeIcon("Filter", "M 3 5 h 18 l -7 8 v 5 l -4 2 v -7 L 3 5 z")
 
     /** Nishon (crosshair) — "mening joylashuvim" tugmasi. */
     val Locate = strokeIcon(
         "Locate",
-        "M19 12a7 7 0 1 1-14 0 7 7 0 0 1 14 0",
-        "M12 1.5v3",
-        "M12 19.5v3",
-        "M1.5 12h3",
-        "M19.5 12h3",
-        "M13.1 12a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0",
+        "M 19 12 a 7 7 0 1 1 -14 0 a 7 7 0 0 1 14 0",
+        "M 12 1.5 v 3",
+        "M 12 19.5 v 3",
+        "M 1.5 12 h 3",
+        "M 19.5 12 h 3",
+        "M 13.1 12 a 1.1 1.1 0 1 1 -2.2 0 a 1.1 1.1 0 0 1 2.2 0",
     )
-    val Send = strokeIcon("Send", "M22 2 11 13", "M22 2 15 22l-4-9-9-4z")
+
+    /** `ic_send_enter` — xabar yuborish tugmasi (matn yozilganda). */
+    val Send = strokeIcon(
+        "Send",
+        "M 9 10 V 7 a 1 1 0 0 1 1 -1 h 9",
+        "M 19 6 v 6 a 1 1 0 0 1 -1 1 H 6",
+        "M 9 10 l -3 3 l 3 3",
+    )
     val Settings = strokeIcon(
         "Settings",
-        "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z",
-        "M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z",
+        "M 12 15 a 3 3 0 1 0 0 -6 a 3 3 0 0 0 0 6 z",
+        "M 19.4 15 a 1.65 1.65 0 0 0 0.33 1.82 l 0.06 0.06 a 2 2 0 1 1 -2.83 2.83 l -0.06 -0.06 a 1.65 1.65 0 0 0 -1.82 -0.33 a 1.65 1.65 0 0 0 -1 1.51 V 21 a 2 2 0 0 1 -4 0 v -0.09 A 1.65 1.65 0 0 0 9 19.4 a 1.65 1.65 0 0 0 -1.82 0.33 l -0.06 0.06 a 2 2 0 1 1 -2.83 -2.83 l 0.06 -0.06 a 1.65 1.65 0 0 0 0.33 -1.82 a 1.65 1.65 0 0 0 -1.51 -1 H 3 a 2 2 0 0 1 0 -4 h 0.09 A 1.65 1.65 0 0 0 4.6 9 a 1.65 1.65 0 0 0 -0.33 -1.82 l -0.06 -0.06 a 2 2 0 1 1 2.83 -2.83 l 0.06 0.06 a 1.65 1.65 0 0 0 1.82 0.33 H 9 a 1.65 1.65 0 0 0 1 -1.51 V 3 a 2 2 0 0 1 4 0 v 0.09 a 1.65 1.65 0 0 0 1 1.51 a 1.65 1.65 0 0 0 1.82 -0.33 l 0.06 -0.06 a 2 2 0 1 1 2.83 2.83 l -0.06 0.06 a 1.65 1.65 0 0 0 -0.33 1.82 V 9 a 1.65 1.65 0 0 0 1.51 1 H 21 a 2 2 0 0 1 0 4 h -0.09 a 1.65 1.65 0 0 0 -1.51 1 z",
     )
-    val LogOut = strokeIcon("LogOut", "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", "m16 17 5-5-5-5", "M21 12H9")
+    val LogOut = strokeIcon("LogOut", "M 9 21 H 5 a 2 2 0 0 1 -2 -2 V 5 a 2 2 0 0 1 2 -2 h 4", "m 16 17 l 5 -5 l -5 -5", "M 21 12 H 9")
     val FileText = strokeIcon(
         "FileText",
-        "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z",
-        "M14 2v6h6",
-        "M9 13h6",
-        "M9 17h6",
+        "M 14 2 H 6 a 2 2 0 0 0 -2 2 v 16 a 2 2 0 0 0 2 2 h 12 a 2 2 0 0 0 2 -2 V 8 z",
+        "M 14 2 v 6 h 6",
+        "M 9 13 h 6",
+        "M 9 17 h 6",
     )
     val Pencil = strokeIcon(
         "Pencil",
-        "M12 20h9",
-        "M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z",
+        "M 12 20 h 9",
+        "M 16.5 3.5 a 2.121 2.121 0 0 1 3 3 L 7 19 l -4 1 l 1 -4 z",
     )
-    val Star = strokeIcon("Star", "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01z")
+    val Star = strokeIcon("Star", "M 12 2 l 3.09 6.26 L 22 9.27 l -5 4.87 l 1.18 6.88 L 12 17.77 l -6.18 3.25 L 7 14.14 l -5 -4.87 l 6.91 -1.01 z")
     val Camera = strokeIcon(
         "Camera",
-        "M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z",
-        "M15 13a3 3 0 1 1-6 0 3 3 0 0 1 6 0z",
+        "M 14.5 4 h -5 L 7 7 H 4 a 2 2 0 0 0 -2 2 v 9 a 2 2 0 0 0 2 2 h 16 a 2 2 0 0 0 2 -2 V 9 a 2 2 0 0 0 -2 -2 h -3 l -2.5 -3 z",
+        "M 15 13 a 3 3 0 1 1 -6 0 a 3 3 0 0 1 6 0 z",
     )
     val ImageIcon = strokeIcon(
         "Image",
-        "M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z",
-        "M8.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z",
-        "m21 15-5-5L5 21",
+        "M 5 3 h 14 a 2 2 0 0 1 2 2 v 14 a 2 2 0 0 1 -2 2 H 5 a 2 2 0 0 1 -2 -2 V 5 a 2 2 0 0 1 2 -2 z",
+        "M 8.5 10 a 1.5 1.5 0 1 0 0 -3 a 1.5 1.5 0 0 0 0 3 z",
+        "m 21 15 l -5 -5 L 5 21",
     )
     val UserPlus = strokeIcon(
         "UserPlus",
-        "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2",
-        "M9 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z",
-        "M19 8v6",
-        "M22 11h-6",
+        "M 16 21 v -2 a 4 4 0 0 0 -4 -4 H 6 a 4 4 0 0 0 -4 4 v 2",
+        "M 9 3 a 4 4 0 1 0 0 8 a 4 4 0 0 0 0 -8 z",
+        "M 19 8 v 6",
+        "M 22 11 h -6",
     )
+
+    // -----------------------------------------------------------------------
+    // Dizayn handoff ikonalari (`icons/ic_*.svg`) — yangi qo'shilganlari
+    // -----------------------------------------------------------------------
+
+    /** `ic_ads` — "Mening e'lonlarim" bo'limi (varaq + qatorlar). */
+    val Ads = strokeIcon(
+        "Ads",
+        "M 6 3 h 8 l 4 4 v 14 H 6 V 3 z",
+        "M 14 3 v 4 h 4",
+        "M 9 13 h 6",
+        "M 9 16 h 4",
+    )
+
+    /** `ic_attach` — xabar maydonida fayl/rasm biriktirish (qisqich). */
+    val Attach = strokeIcon(
+        "Attach",
+        "M 21 11 l -8.5 8.5 a 5 5 0 0 1 -7 -7 L 14 4 a 3.3 3.3 0 0 1 4.7 4.7 l -8.5 8.5 a 1.6 1.6 0 0 1 -2.3 -2.3 l 7.8 -7.8",
+    )
+
+    /** `ic_backspace` — klaviaturada o'chirish. */
+    val Backspace = strokeIcon(
+        "Backspace",
+        "M 21 5 H 9 L 3 12 l 6 7 h 12 V 5 z",
+        "M 12 9.5 l 5 5",
+        "M 17 9.5 l -5 5",
+    )
+
+    /** `ic_ball` — sport klubi (doira + ichki beshburchak bo'lagi). */
+    val Ball = strokeIcon(
+        "Ball",
+        "M 3.5 12 a 8.5 8.5 0 1 0 17 0 a 8.5 8.5 0 1 0 -17 0",
+        "M 12 7 l 2.4 1.7 l -0.9 2.8 h -3 l -0.9 -2.8 L 12 7 z",
+    )
+
+    /** `ic_book` — yordam e'lonlari (referat, kurs ishi) va o'quv markazlari. */
+    val Book = strokeIcon(
+        "Book",
+        "M 4 5.5 A 1.5 1.5 0 0 1 5.5 4 H 11 v 15 H 5.5 A 1.5 1.5 0 0 1 4 17.5 v -12 z",
+        "M 13 4 h 5.5 A 1.5 1.5 0 0 1 20 5.5 v 12 a 1.5 1.5 0 0 1 -1.5 1.5 H 13 V 4 z",
+    )
+
+    /** `ic_cafe` — kafe va restoran kategoriyasi. */
+    val Cafe = strokeIcon(
+        "Cafe",
+        "M 4 8 h 13 a 3 3 0 0 1 0 6 h -1 M 4 8 v 7 a 4 4 0 0 0 4 4 h 4 a 4 4 0 0 0 4 -4",
+        "M 8 3 v 2",
+        "M 11 3 v 2",
+    )
+
+    /** `ic_cart` — oziq-ovqat / xarid / kiyim-kechak savati. */
+    val Cart = strokeIcon(
+        "Cart",
+        "M 3 4 h 2 l 2 12 h 11 l 2 -8 H 6",
+        "M 7.6 20 a 1.4 1.4 0 1 0 2.8 0 a 1.4 1.4 0 1 0 -2.8 0",
+        "M 15.6 20 a 1.4 1.4 0 1 0 2.8 0 a 1.4 1.4 0 1 0 -2.8 0",
+    )
+
+    /** `ic_chat` — topbardagi "chatlarga o'tish" tugmasi (dumaloq pufak). */
+    val Chat = strokeIcon(
+        "Chat",
+        "M 21 11.5 a 8.4 8.4 0 0 1 -11.9 7.6 L 4 21 l 1.9 -5.1 A 8.4 8.4 0 1 1 21 11.5 z",
+    )
+
+    /** `ic_check_double` — xabar yetkazildi/o'qildi belgisi (ikki galochka). */
+    val CheckDouble = strokeIcon(
+        "CheckDouble",
+        "M 1 12 l 5 5 L 15 7",
+        "M 9 17 L 18.5 7",
+    )
+
+    /** `ic_chevron_updown` — tanlov/dropdown (universitet, shahar, saralash). */
+    val ChevronUpDown = strokeIcon("ChevronUpDown", "M 8 9 l 4 -4 l 4 4 M 8 15 l 4 4 l 4 -4")
+
+    /** `ic_debate` — debat klubi (pufak + matn qatorlari). */
+    val Debate = strokeIcon(
+        "Debate",
+        "M 4 5 h 16 v 11 H 8 l -4 4 V 5 z",
+        "M 8 9 h 8",
+        "M 8 12 h 5",
+    )
+
+    /** `ic_emoji` — xabar maydonida emoji tanlash tugmasi. */
+    val Emoji = strokeIcon(
+        "Emoji",
+        "M 3 12 a 9 9 0 1 0 18 0 a 9 9 0 1 0 -18 0",
+        "M 7.9 10 a 1.1 1.1 0 1 0 2.2 0 a 1.1 1.1 0 1 0 -2.2 0",
+        "M 13.9 10 a 1.1 1.1 0 1 0 2.2 0 a 1.1 1.1 0 1 0 -2.2 0",
+        "M 8.5 14 c 0.9 1.2 2.1 1.8 3.5 1.8 s 2.6 -0.6 3.5 -1.8",
+    )
+
+    /** `ic_gamepad` — Game Club / GameZone. */
+    val Gamepad = strokeIcon(
+        "Gamepad",
+        "M 7 7 h 10 a 5 5 0 0 1 5 5 a 5 5 0 0 1 -5 5 h -10 a 5 5 0 0 1 -5 -5 a 5 5 0 0 1 5 -5 z",
+        "M 7 11 v 2",
+        "M 6 12 h 2",
+        "M 15 11.5 a 1 1 0 1 0 2 0 a 1 1 0 1 0 -2 0",
+        "M 17 13.5 a 1 1 0 1 0 2 0 a 1 1 0 1 0 -2 0",
+    )
+
+    /** `ic_home_filled` — ijara kvartira kartochkasi (to'ldirilgan uy). */
+    val HomeFilled = strokeIcon(
+        "HomeFilled",
+        "M 4 11 l 8 -6 l 8 6 v 8 a 1 1 0 0 1 -1 1 H 5 a 1 1 0 0 1 -1 -1 v -8 z",
+        "M 10 20 v -5 h 4 v 5",
+    )
+
+    /** `ic_laptop` — IT klub / IT xizmatlari / texnika. */
+    val Laptop = strokeIcon(
+        "Laptop",
+        "M 5.5 5 h 13 a 2.5 2.5 0 0 1 2.5 2.5 v 7 a 2.5 2.5 0 0 1 -2.5 2.5 h -13 a 2.5 2.5 0 0 1 -2.5 -2.5 v -7 a 2.5 2.5 0 0 1 2.5 -2.5 z",
+        "M 2 21 h 20",
+        "M 9 10 l -2 2 l 2 2 M 13 10 l 2 2 l -2 2",
+    )
+
+    /** `ic_map` — xarita ko'rinishi / joylashuv bo'yicha qidiruv. */
+    val Map = strokeIcon(
+        "Map",
+        "M 9 3 L 3 5 v 16 l 6 -2 l 6 2 l 6 -2 V 3 l -6 2 l -6 -2 z",
+        "M 9 3 v 16",
+        "M 15 5 v 16",
+    )
+
+    /** `ic_mic` — ovozli xabar (matn bo'sh bo'lganda). */
+    val Mic = strokeIcon(
+        "Mic",
+        "M 12 3 a 3 3 0 0 1 3 3 v 5 a 3 3 0 0 1 -3 3 a 3 3 0 0 1 -3 -3 v -5 a 3 3 0 0 1 3 -3 z",
+        "M 6 11 a 6 6 0 0 0 12 0",
+        "M 12 17 v 3",
+    )
+
+    /** `ic_more` — qo'shimcha menyu (uch nuqta). */
+    val More = strokeIcon(
+        "More",
+        "M 10.4 5 a 1.6 1.6 0 1 0 3.2 0 a 1.6 1.6 0 1 0 -3.2 0",
+        "M 10.4 12 a 1.6 1.6 0 1 0 3.2 0 a 1.6 1.6 0 1 0 -3.2 0",
+        "M 10.4 19 a 1.6 1.6 0 1 0 3.2 0 a 1.6 1.6 0 1 0 -3.2 0",
+    )
+
+    /** `ic_pin` — manzil / geolokatsiya belgisi. */
+    val Pin = strokeIcon(
+        "Pin",
+        "M 12 21 s 7 -6.3 7 -11 a 7 7 0 1 0 -14 0 c 0 4.7 7 11 7 11 z",
+        "M 9.6 10 a 2.4 2.4 0 1 0 4.8 0 a 2.4 2.4 0 1 0 -4.8 0",
+    )
+
+    /** `ic_shift` — klaviaturada katta harf. */
+    val Shift = strokeIcon("Shift", "M 12 5 l 7 7 h -4 v 6 H 9 v -6 H 5 l 7 -7 z")
+
+    /** `ic_tools` — xizmat e'lonlari (usta, ta'mirlash, sartaroshxona). */
+    val Tools = strokeIcon(
+        "Tools",
+        "M 14.5 6 a 3.5 3.5 0 0 0 -4.8 4.3 l -5 5 a 1.5 1.5 0 0 0 2.1 2.1 l 5 -5 A 3.5 3.5 0 0 0 18 8.5 l -2.3 2.3 l -1.8 -1.8 L 16.2 6.7 A 3.5 3.5 0 0 0 14.5 6 z",
+    )
+
+    /**
+     * Erkak belgisi (Mars). Handoff to'plamida jins ikonkalari yo'q — Lucide'dan olindi,
+     * chunki kiyim-kechak e'lonida jins tanlash 👨/👩 emojisidan xoli bo'lishi kerak.
+     */
+    val Mars = strokeIcon(
+        "Mars",
+        "M 4 14 a 6 6 0 1 0 12 0 a 6 6 0 1 0 -12 0",
+        "M 16 3 h 5 v 5",
+        "M 21 3 l -6.8 6.8",
+    )
+
+    /** Ayol belgisi (Venus) — [Mars] bilan juft. */
+    val Venus = strokeIcon(
+        "Venus",
+        "M 7 9 a 5 5 0 1 0 10 0 a 5 5 0 1 0 -10 0",
+        "M 12 14 v 7",
+        "M 9 18 h 6",
+    )
+
+    /**
+     * Katalog kaliti (kategoriya/taklif `id`) bo'yicha ikonka.
+     *
+     * Chegirma kategoriyalari va takliflari backenddan **barqaror ASCII id** bilan keladi
+     * (`"ovqat"`, `"kiyim"`, ...). Ilgari ular yonida emoji chizilardi — iOS'da u `?` bo'lib
+     * ko'rinadi, shuning uchun endi shu jadval orqali ikonkaga aylantiriladi.
+     *
+     * Noma'lum kalit uchun zaxira — [Tag] (chegirma yorlig'i).
+     */
+    fun forCatalog(key: String): ImageVector = when (key.lowercase()) {
+        "ovqat", "food", "cafe", "restaurant" -> Cafe
+        "kiyim", "clothing" -> Cart
+        "kurslar", "education", "courses" -> Book
+        "kino", "entertainment", "cinema" -> Camera
+        "transport" -> Map
+        "texnika", "it", "tech" -> Laptop
+        "sport" -> Ball
+        "uy", "ijara", "rent" -> HomeFilled
+        "ish", "job" -> Briefcase
+        "xizmat", "service" -> Tools
+        "gameclub", "game" -> Gamepad
+        else -> Tag
+    }
 
     /** Apple logo — bitta to'ldirilgan yo'l; `Icon(tint=...)` bilan bo'yaladi. */
     val Apple: ImageVector = ImageVector.Builder(
@@ -211,7 +442,7 @@ object AppIcons {
     ).apply {
         addPath(
             pathData = PathParser().parsePathString(
-                "M17.05 12.04c-.03-2.94 2.4-4.35 2.51-4.42-1.37-2-3.5-2.28-4.26-2.31-1.81-.18-3.53 1.07-4.45 1.07-.92 0-2.33-1.04-3.83-1.01-1.97.03-3.79 1.15-4.8 2.91-2.05 3.55-.52 8.8 1.47 11.68.97 1.41 2.13 2.99 3.64 2.93 1.46-.06 2.01-.94 3.78-.94 1.76 0 2.26.94 3.8.91 1.57-.03 2.56-1.43 3.52-2.85 1.11-1.63 1.57-3.21 1.59-3.29-.03-.02-3.05-1.17-3.08-4.66zM14.13 3.57c.81-.98 1.36-2.34 1.21-3.7-1.17.05-2.59.78-3.43 1.76-.75.87-1.41 2.26-1.23 3.59 1.3.1 2.64-.66 3.45-1.65z",
+                "M 17.05 12.04 c -0.03 -2.94 2.4 -4.35 2.51 -4.42 c -1.37 -2 -3.5 -2.28 -4.26 -2.31 c -1.81 -0.18 -3.53 1.07 -4.45 1.07 c -0.92 0 -2.33 -1.04 -3.83 -1.01 c -1.97 0.03 -3.79 1.15 -4.8 2.91 c -2.05 3.55 -0.52 8.8 1.47 11.68 c 0.97 1.41 2.13 2.99 3.64 2.93 c 1.46 -0.06 2.01 -0.94 3.78 -0.94 c 1.76 0 2.26 0.94 3.8 0.91 c 1.57 -0.03 2.56 -1.43 3.52 -2.85 c 1.11 -1.63 1.57 -3.21 1.59 -3.29 c -0.03 -0.02 -3.05 -1.17 -3.08 -4.66 z M 14.13 3.57 c 0.81 -0.98 1.36 -2.34 1.21 -3.7 c -1.17 0.05 -2.59 0.78 -3.43 1.76 c -0.75 0.87 -1.41 2.26 -1.23 3.59 c 1.3 0.1 2.64 -0.66 3.45 -1.65 z",
             ).toNodes(),
             fill = SolidColor(Color.Black),
         )
@@ -222,19 +453,19 @@ object AppIcons {
         "Google", 24.dp, 24.dp, 48f, 48f,
     ).apply {
         addPath(
-            PathParser().parsePathString("M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.7-.4-3.9z").toNodes(),
+            PathParser().parsePathString("M 43.6 20.1 H 42 V 20 H 24 v 8 h 11.3 C 33.7 32.7 29.3 36 24 36 c -6.6 0 -12 -5.4 -12 -12 s 5.4 -12 12 -12 c 3.1 0 5.8 1.2 7.9 3 l 5.7 -5.7 C 34 6.1 29.3 4 24 4 C 13 4 4 13 4 24 s 9 20 20 20 s 20 -9 20 -20 c 0 -1.3 -0.1 -2.7 -0.4 -3.9 z").toNodes(),
             fill = SolidColor(Color(0xFFFFC107)),
         )
         addPath(
-            PathParser().parsePathString("m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z").toNodes(),
+            PathParser().parsePathString("m 6.3 14.7 l 6.6 4.8 C 14.7 15.1 19 12 24 12 c 3.1 0 5.8 1.2 7.9 3 l 5.7 -5.7 C 34 6.1 29.3 4 24 4 C 16.3 4 9.7 8.3 6.3 14.7 z").toNodes(),
             fill = SolidColor(Color(0xFFFF3D00)),
         )
         addPath(
-            PathParser().parsePathString("M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z").toNodes(),
+            PathParser().parsePathString("M 24 44 c 5.2 0 9.9 -2 13.4 -5.2 l -6.2 -5.2 C 29.2 35.1 26.7 36 24 36 c -5.2 0 -9.6 -3.3 -11.3 -7.9 l -6.5 5 C 9.5 39.6 16.2 44 24 44 z").toNodes(),
             fill = SolidColor(Color(0xFF4CAF50)),
         )
         addPath(
-            PathParser().parsePathString("M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C36.9 40.2 44 34 44 24c0-1.3-.1-2.7-.4-3.9z").toNodes(),
+            PathParser().parsePathString("M 43.6 20.1 H 42 V 20 H 24 v 8 h 11.3 c -0.8 2.2 -2.2 4.2 -4.1 5.6 l 6.2 5.2 C 36.9 40.2 44 34 44 24 c 0 -1.3 -0.1 -2.7 -0.4 -3.9 z").toNodes(),
             fill = SolidColor(Color(0xFF1976D2)),
         )
     }.build()
@@ -244,11 +475,11 @@ object AppIcons {
         "Telegram", 24.dp, 24.dp, 24f, 24f,
     ).apply {
         addPath(
-            PathParser().parsePathString("M12 1a11 11 0 1 0 0 22 11 11 0 0 0 0-22z").toNodes(),
+            PathParser().parsePathString("M 12 1 a 11 11 0 1 0 0 22 a 11 11 0 0 0 0 -22 z").toNodes(),
             fill = SolidColor(Color(0xFF229ED9)),
         )
         addPath(
-            PathParser().parsePathString("M5.6 11.7l11-4.24c.51-.19.96.12.79.9l-1.87 8.82c-.13.6-.5.75-1 .47l-2.76-2.03-1.33 1.28c-.15.15-.27.27-.55.27l.2-2.8 5.12-4.62c.22-.2-.05-.31-.34-.11L9.9 13.5l-2.73-.85c-.59-.19-.6-.59.13-.87z").toNodes(),
+            PathParser().parsePathString("M 5.6 11.7 l 11 -4.24 c 0.51 -0.19 0.96 0.12 0.79 0.9 l -1.87 8.82 c -0.13 0.6 -0.5 0.75 -1 0.47 l -2.76 -2.03 l -1.33 1.28 c -0.15 0.15 -0.27 0.27 -0.55 0.27 l 0.2 -2.8 l 5.12 -4.62 c 0.22 -0.2 -0.05 -0.31 -0.34 -0.11 L 9.9 13.5 l -2.73 -0.85 c -0.59 -0.19 -0.6 -0.59 0.13 -0.87 z").toNodes(),
             fill = SolidColor(Color.White),
         )
     }.build()

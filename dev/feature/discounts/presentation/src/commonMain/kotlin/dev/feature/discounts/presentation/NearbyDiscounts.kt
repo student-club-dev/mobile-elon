@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -40,7 +40,9 @@ import dev.feature.discounts.domain.model.DiscountCard
 import dev.feature.discounts.domain.model.DiscountQuery
 import dev.feature.discounts.domain.model.formatSum
 import dev.feature.discounts.domain.usecase.GetNearbyDiscountsUseCase
+import dev.core.uikit.component.AppIcons
 import dev.feature.discounts.presentation.components.ListingImage
+import dev.feature.discounts.presentation.icon
 import dev.core.uikit.map.rememberUserLocation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -139,7 +141,7 @@ private fun NearbyDiscountCard(
             if (cover != null) {
                 ListingImage(cover, Modifier.fillMaxSize().clip(coverShape))
             } else {
-                Text(card.businessType.emoji, style = TextStyle(fontSize = 22.sp))
+                Icon(card.businessType.icon, null, tint = accent, modifier = Modifier.size(24.dp))
             }
         }
 

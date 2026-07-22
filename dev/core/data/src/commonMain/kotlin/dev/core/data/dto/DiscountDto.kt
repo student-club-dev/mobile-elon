@@ -8,11 +8,16 @@ import kotlinx.serialization.Serializable
  * Real API spek (`elon-uz.json`) kelganda: maydon nomlarini serverinikiga moslang
  * (kerak bo'lsa `@SerialName("...")`), qolgan oqim (RemoteDataSource → refresh → DB) o'zgarmaydi.
  */
+/**
+ * Eslatma: `emoji` maydoni **ekranlarda ishlatilmaydi** — iOS'da Compose emoji chiza olmaydi.
+ * Ikonka `id` bo'yicha `AppIcons.forCatalog(id)` orqali tanlanadi. Maydon faqat DB ustuni
+ * (`DiscountCategoryEntity.emoji`) bilan moslik uchun qoldirilgan.
+ */
 @Serializable
 data class DiscountCategoryDto(
     val id: String,
     val name: String,
-    val emoji: String = "🏷️",
+    val emoji: String = "",
     val offerCount: Int = 0,
     val accent: Long = 0xFF6C47FF,
 )
@@ -28,7 +33,7 @@ data class DiscountOfferDto(
     val promoCode: String? = null,
     val location: String? = null,
     val expiry: String? = null,
-    val emoji: String = "🎁",
+    val emoji: String = "",
     val bannerAccent: Long = 0xFF6C47FF,
     val featured: Boolean = false,
 )

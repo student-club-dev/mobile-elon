@@ -1,6 +1,8 @@
 package dev.feature.discounts.presentation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
+import dev.core.uikit.component.AppIcons
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.discounts_type_barbershop
 import dev.core.uikit.resources.discounts_type_beauty_salon
@@ -38,3 +40,23 @@ val BusinessType.labelRes: StringResource
 /** Joriy tildagi nomi — ekranlarda shu ishlatiladi. */
 @Composable
 fun BusinessType.localizedLabel(): String = stringResource(labelRes)
+
+/**
+ * Biznes turining ikonkasi (dizayn handoff `ic_*.svg` to'plamidan).
+ *
+ * Nima uchun bu yerda, `BusinessType.emoji` o'rniga: emoji iOS'da Compose bilan
+ * chizilmaydi va `?` kvadratcha bo'lib ko'rinadi. `BusinessType` esa **domain** modeli —
+ * unga `ImageVector` qo'shib bo'lmaydi (domain Compose'dan qaram bo'lib qolardi), shuning
+ * uchun ikonka moslamasi [labelRes] kabi shu presentation faylida turadi. Enumdagi `emoji`
+ * maydoni backend/ma'lumot uchun qoladi, lekin ekranlarda ISHLATILMAYDI.
+ */
+val BusinessType.icon: ImageVector
+    get() = when (this) {
+        BusinessType.GAME_CLUB -> AppIcons.Gamepad
+        BusinessType.CLOTHING -> AppIcons.Cart
+        BusinessType.CAFE_RESTAURANT -> AppIcons.Cafe
+        BusinessType.EDUCATION_CENTER -> AppIcons.Book
+        BusinessType.ENTERTAINMENT -> AppIcons.Camera
+        BusinessType.BARBERSHOP -> AppIcons.Tools
+        BusinessType.BEAUTY_SALON -> AppIcons.Star
+    }

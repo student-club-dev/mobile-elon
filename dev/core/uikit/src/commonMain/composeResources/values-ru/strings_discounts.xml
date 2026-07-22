@@ -18,7 +18,7 @@
     <string name="discounts_add_listing">Добавить объявление</string>
     <string name="discounts_price_sum">%1$s сум</string>
     <string name="discounts_sum_suffix">сум</string>
-    <string name="discounts_branch_location">📍 %1$s</string>
+    <string name="discounts_branch_location">%1$s</string>
     <string name="discounts_branch_extra">  +%1$s филиал</string>
     <string name="discounts_action_pause">Приостановить</string>
     <string name="discounts_action_resume">Возобновить</string>

@@ -14,6 +14,13 @@ enum class BusinessType(
      * `BusinessType.localizedLabel()` (presentation qatlamida) ishlatiladi.
      */
     val label: String,
+    /**
+     * Ma'lumot (backend/eksport) uchun emoji belgisi.
+     *
+     * **Ekranlarda ISHLATILMAYDI**: iOS'da Compose emoji chiza olmaydi va har biri `?`
+     * kvadratchaga aylanadi. UI'da `BusinessType.icon` (presentation qatlamidagi
+     * `BusinessTypeLabels.kt`) ikonkasi chiziladi.
+     */
     val emoji: String,
     val accent: Long,
     val defaultPriceUnit: PriceUnit,

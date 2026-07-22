@@ -58,7 +58,7 @@
     <string name="profile_course_2">Year 2</string>
     <string name="profile_course_3">Year 3</string>
     <string name="profile_course_4">Year 4</string>
-    <string name="profile_course_master">Master\'s</string>
+    <string name="profile_course_master">Master's</string>
     <string name="profile_avatar_content_description">Profile photo</string>
 
 </resources>

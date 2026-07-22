@@ -54,19 +54,19 @@ class LocalDataSeeder(
         val q = db.discountQueries
         if (q.countCategories().executeAsOne() > 0) return
         q.transaction {
-            q.upsertCategory("ovqat", "Ovqat", "🍔", 124, 0xFFF97316)
-            q.upsertCategory("kiyim", "Kiyim-kechak", "👕", 86, 0xFFBE185D)
-            q.upsertCategory("kurslar", "Kurslar", "📚", 52, 0xFF2563EB)
-            q.upsertCategory("kino", "Kino & Ko‘ngil", "🎬", 33, 0xFF059669)
-            q.upsertCategory("transport", "Transport", "🚌", 18, 0xFF0EA5E9)
-            q.upsertCategory("texnika", "Texnika", "💻", 41, 0xFFD97706)
+            q.upsertCategory("ovqat", "Ovqat", "", 124, 0xFFF97316)
+            q.upsertCategory("kiyim", "Kiyim-kechak", "", 86, 0xFFBE185D)
+            q.upsertCategory("kurslar", "Kurslar", "", 52, 0xFF2563EB)
+            q.upsertCategory("kino", "Kino & Ko‘ngil", "", 33, 0xFF059669)
+            q.upsertCategory("transport", "Transport", "", 18, 0xFF0EA5E9)
+            q.upsertCategory("texnika", "Texnika", "", 41, 0xFFD97706)
 
-            // id, categoryId, merchant, title, %, tag, promo, location, expiry, emoji, banner, featured
-            q.upsertOffer("of-evos", "ovqat", "Evos", "barcha pitsalarga", 30, DiscountTag.STUDENT_ID.name, null, "5 filial", "bugun tugaydi", "🍕", 0xFFF97316, 1)
-            q.upsertOffer("of-chopar", "ovqat", "Chopar", "shirinliklar", 20, DiscountTag.PROMO_CODE.name, "STUDENT20", "yetkazib berish", null, "🍰", 0xFFBE185D, 0)
-            q.upsertOffer("of-zara", "kiyim", "Zara", "yangi kolleksiya", 15, DiscountTag.STUDENT_ID.name, null, "Samarqand Darvoza", null, "👕", 0xFFBE185D, 0)
-            q.upsertOffer("of-udemy", "kurslar", "Udemy", "online kurslar", 50, DiscountTag.PROMO_CODE.name, "STUD50", null, "shu oy", "📚", 0xFF2563EB, 1)
-            q.upsertOffer("of-nebo", "kino", "NEBO Cinema", "kechki seanslar", 25, DiscountTag.STUDENT_ID.name, null, "Chilonzor", null, "🎬", 0xFF059669, 0)
+            // id, categoryId, merchant, title, %, tag, promo, location, expiry, iconKey, banner, featured
+            q.upsertOffer("of-evos", "ovqat", "Evos", "barcha pitsalarga", 30, DiscountTag.STUDENT_ID.name, null, "5 filial", "bugun tugaydi", "", 0xFFF97316, 1)
+            q.upsertOffer("of-chopar", "ovqat", "Chopar", "shirinliklar", 20, DiscountTag.PROMO_CODE.name, "STUDENT20", "yetkazib berish", null, "", 0xFFBE185D, 0)
+            q.upsertOffer("of-zara", "kiyim", "Zara", "yangi kolleksiya", 15, DiscountTag.STUDENT_ID.name, null, "Samarqand Darvoza", null, "", 0xFFBE185D, 0)
+            q.upsertOffer("of-udemy", "kurslar", "Udemy", "online kurslar", 50, DiscountTag.PROMO_CODE.name, "STUD50", null, "shu oy", "", 0xFF2563EB, 1)
+            q.upsertOffer("of-nebo", "kino", "NEBO Cinema", "kechki seanslar", 25, DiscountTag.STUDENT_ID.name, null, "Chilonzor", null, "", 0xFF059669, 0)
         }
     }
 
@@ -89,7 +89,7 @@ class LocalDataSeeder(
         q.transaction {
             // id, first, last, initial, uniId, uniMono, course, faculty, friendStatus, interests, friends, ads, rating
             q.upsert("st-dilnoza", "Dilnoza", "Rahimova", "D", "tatu", "TATU", 2, "IT", FriendStatus.NONE.name,
-                listOf("🎨 Dizayn", "💻 Frontend", "📷 Foto", "🏀 Sport").joinDb(), 148, 12, 4.9)
+                listOf("Dizayn", "Frontend", "Foto", "Sport").joinDb(), 148, 12, 4.9)
             q.upsert("st-sardor", "Sardor", "Aliyev", "S", "tatu", "TATU", 3, "Telekom", FriendStatus.NONE.name, "", 96, 3, 4.7)
             q.upsert("st-malika", "Malika", "Yo‘ldosheva", "M", "nuu", "O‘zMU", 2, "Iqtisod", FriendStatus.PENDING.name, "", 54, 1, 4.5)
             q.upsert("st-kamron", "Kamron", "Yusupov", "K", "tatu", "TATU", 2, "Dasturiy inj.", FriendStatus.NONE.name, "", 71, 5, 4.8)
@@ -112,15 +112,15 @@ class LocalDataSeeder(
         val q = db.chatQueries
         if (q.countConversations().executeAsOne() > 0) return
         q.transaction {
-            q.upsertConversation("c-dilnoza", "Dilnoza Rahimova", "D", ConversationType.PEER.name, true.toDb(), "Konspekt bormi? 😊", "14:22", 2)
+            q.upsertConversation("c-dilnoza", "Dilnoza Rahimova", "D", ConversationType.PEER.name, true.toDb(), "Konspekt bormi?", "14:22", 2)
             q.upsertConversation("c-sardor", "Sardor Aliyev", "S", ConversationType.PEER.name, false.toDb(), "Rahmat, ko‘rishguncha!", "12:05", 0)
             q.upsertConversation("c-uzumhr", "Uzum Market · HR", "U", ConversationType.HR.name, false.toDb(), "Suhbatga taklif qilamiz", "Kecha", 1)
 
             // Dilnoza suhbati xabarlari
-            q.insertMessage("c-dilnoza-1", "c-dilnoza", "Salom! Diskret matematikadan konspekt bormi? 😊", false.toDb(), "14:20", 1000)
-            q.insertMessage("c-dilnoza-2", "c-dilnoza", "Ha, bor! Hozir yuboraman 👍", true.toDb(), "14:21", 2000)
+            q.insertMessage("c-dilnoza-1", "c-dilnoza", "Salom! Diskret matematikadan konspekt bormi?", false.toDb(), "14:20", 1000)
+            q.insertMessage("c-dilnoza-2", "c-dilnoza", "Ha, bor! Hozir yuboraman", true.toDb(), "14:21", 2000)
             q.insertMessage("c-dilnoza-3", "c-dilnoza", "Ertaga kutubxonada uchrashamizmi?", false.toDb(), "14:22", 3000)
-            q.insertMessage("c-dilnoza-4", "c-dilnoza", "Albatta, soat 10 da 👌", true.toDb(), "14:22", 4000)
+            q.insertMessage("c-dilnoza-4", "c-dilnoza", "Albatta, soat 10 da", true.toDb(), "14:22", 4000)
         }
     }
 
@@ -132,7 +132,7 @@ class LocalDataSeeder(
             q.insert("nt-2", "Chegirma tugayapti", "Chorsu Cafe'dagi 25% chegirma bugun tugaydi.", "DISCOUNT", "2 soat oldin", 2, 0)
             q.insert("nt-3", "Yangi xabar", "Dilnoza Rahimova sizga xabar yozdi.", "CHAT", "3 soat oldin", 3, 0)
             q.insert("nt-4", "E'loningiz ko'rildi", "\"MacBook Air M1\" e'loningizni 12 kishi ko'rdi.", "AD", "kecha", 4, 1)
-            q.insert("nt-5", "Xush kelibsiz! 🎉", "ElonUz'ga xush kelibsiz. Profilingizni to'ldiring.", "SYSTEM", "2 kun oldin", 5, 1)
+            q.insert("nt-5", "Xush kelibsiz!", "ElonUz'ga xush kelibsiz. Profilingizni to'ldiring.", "SYSTEM", "2 kun oldin", 5, 1)
         }
     }
 

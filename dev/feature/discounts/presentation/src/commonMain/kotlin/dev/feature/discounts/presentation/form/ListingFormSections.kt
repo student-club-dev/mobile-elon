@@ -10,17 +10,20 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.GlassTextField
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.discounts_business_section_subtitle
@@ -117,7 +120,7 @@ fun ClothingGenderSection(state: PostListingUiState, palette: AppPalette, vm: Po
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             GenderCard(
-                "👨",
+                AppIcons.Mars,
                 stringResource(Res.string.discounts_gender_male),
                 state.listingGender == Gender.MALE,
                 { vm.onListingGender(Gender.MALE) },
@@ -125,7 +128,7 @@ fun ClothingGenderSection(state: PostListingUiState, palette: AppPalette, vm: Po
                 palette,
             )
             GenderCard(
-                "👩",
+                AppIcons.Venus,
                 stringResource(Res.string.discounts_gender_female),
                 state.listingGender == Gender.FEMALE,
                 { vm.onListingGender(Gender.FEMALE) },
@@ -138,7 +141,7 @@ fun ClothingGenderSection(state: PostListingUiState, palette: AppPalette, vm: Po
 
 @Composable
 private fun GenderCard(
-    emoji: String,
+    icon: ImageVector,
     label: String,
     active: Boolean,
     onClick: () -> Unit,
@@ -156,7 +159,13 @@ private fun GenderCard(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
     ) {
-        Text(emoji, style = TextStyle(fontSize = 30.sp))
+        Icon(
+            icon,
+            null,
+            // Brend fon USTIDA — kontent rangi `onPrimary` dan olinadi.
+            tint = if (active) palette.onPrimary else palette.primary,
+            modifier = Modifier.size(30.dp),
+        )
         Text(
             label,
             style = AppType.body.copy(

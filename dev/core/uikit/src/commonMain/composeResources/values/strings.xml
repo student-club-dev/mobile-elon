@@ -14,7 +14,7 @@
     <string name="common_or">yoki</string>
     <string name="common_save">Saqlash</string>
     <string name="common_cancel">Bekor qilish</string>
-    <string name="common_delete">O\'chirish</string>
+    <string name="common_delete">O'chirish</string>
     <string name="common_clear">Tozalash</string>
     <string name="common_close">Yopish</string>
     <string name="common_back">Orqaga</string>
@@ -25,10 +25,10 @@
     <string name="common_edit">Tahrirlash</string>
     <string name="common_search">Qidirish</string>
     <string name="common_loading">Yuklanmoqda…</string>
-    <string name="common_error_generic">Xatolik yuz berdi. Qayta urinib ko\'ring.</string>
+    <string name="common_error_generic">Xatolik yuz berdi. Qayta urinib ko'ring.</string>
 
     <!-- ============ Xarita ============ -->
-    <string name="map_drag_hint">Xaritani suring — belgi joyni ko\'rsatadi</string>
+    <string name="map_drag_hint">Xaritani suring — belgi joyni ko'rsatadi</string>
 
     <!-- ============ Auth — kirish usuli tanlash ============ -->
     <string name="auth_tab_phone">Telefon</string>
@@ -39,20 +39,20 @@
     <string name="profile_edit_action">Profilni tahrirlash</string>
     <string name="profile_settings">Sozlamalar</string>
     <string name="profile_my_business_title">Mening biznesim</string>
-    <string name="profile_my_business_subtitle">Chegirma e\'loni qo\'yish va boshqarish</string>
-    <string name="profile_section_my_ads">Mening e\'lonlarim</string>
+    <string name="profile_my_business_subtitle">Chegirma e'loni qo'yish va boshqarish</string>
+    <string name="profile_section_my_ads">Mening e'lonlarim</string>
     <string name="profile_section_saved">Saqlangan chegirmalar</string>
     <string name="profile_section_applications">Ish arizalarim</string>
-    <string name="profile_ad_delete_title">E\'lonni o\'chirish</string>
+    <string name="profile_ad_delete_title">E'lonni o'chirish</string>
     <!-- %1$s — e'lon sarlavhasi -->
-    <string name="profile_ad_delete_confirm">"%1$s" e\'lonini o\'chirmoqchimisiz? Bu amalni ortga qaytarib bo\'lmaydi.</string>
+    <string name="profile_ad_delete_confirm">"%1$s" e'lonini o'chirmoqchimisiz? Bu amalni ortga qaytarib bo'lmaydi.</string>
     <string name="profile_application_status_sent">Yuborilgan</string>
-    <string name="profile_application_status_viewed">Ko\'rildi</string>
+    <string name="profile_application_status_viewed">Ko'rildi</string>
     <string name="profile_application_status_interview">Suhbat</string>
     <string name="profile_application_status_rejected">Rad etildi</string>
 
     <!-- Profilni tahrirlash -->
-    <string name="profile_avatar_change">Rasmni o\'zgartirish</string>
+    <string name="profile_avatar_change">Rasmni o'zgartirish</string>
     <string name="profile_avatar_uploading">Rasm yuklanmoqda…</string>
     <string name="profile_saving">Saqlanmoqda…</string>
     <string name="profile_field_first_name">Ism</string>

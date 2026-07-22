@@ -27,7 +27,7 @@
     <string name="auth_password_short_placeholder">••••••</string>
 
     <!-- ============ Приветствие ============ -->
-    <string name="auth_welcome_title">Добро пожаловать 👋</string>
+    <string name="auth_welcome_title">Добро пожаловать</string>
     <string name="auth_welcome_subtitle">Войдите в аккаунт или зарегистрируйтесь за минуту.</string>
     <string name="auth_welcome_phone_hint">На этот номер отправим SMS с кодом подтверждения.</string>
     <string name="auth_welcome_email_hint">Введите почту, чтобы войти или зарегистрироваться.</string>
@@ -110,7 +110,7 @@
     <string name="auth_role_business_desc">Размещение и управление скидками</string>
 
     <!-- ============ Главный экран ============ -->
-    <string name="auth_home_greeting">Ассалому алайкум 👋</string>
+    <string name="auth_home_greeting">Ассалому алайкум</string>
     <string name="auth_see_all">Все</string>
     <string name="auth_more">Ещё</string>
     <string name="auth_bookmark">Сохранить</string>
@@ -168,19 +168,19 @@
     <string name="auth_jobs_salary">Зарплата</string>
     <string name="auth_jobs_detail_note">Эта вакансия подходит вашему направлению (%1$s). Полное описание — у автора объявления.</string>
     <string name="auth_jobs_apply">Откликнуться</string>
-    <string name="auth_jobs_applied">Отклик отправлен ✓</string>
+    <string name="auth_jobs_applied">Отклик отправлен</string>
 
     <!-- ============ Скидки ============ -->
     <string name="auth_discounts_title">Скидки</string>
     <string name="auth_discounts_subtitle">Выберите раздел — внутри откроются предложения.</string>
     <string name="auth_discounts_offer_count">%1$s предложений</string>
-    <string name="auth_discounts_category_title">%1$s  Скидки: %2$s</string>
+    <string name="auth_discounts_category_title">Скидки: %1$s</string>
     <string name="auth_discounts_search_placeholder">Найти ресторан или блюдо</string>
     <string name="auth_discount_tag_student_id">По студенческому</string>
     <string name="auth_discount_tag_student_id_short">Студенческий</string>
     <string name="auth_discount_tag_promo">Промокод</string>
     <string name="auth_copy">Копировать</string>
-    <string name="auth_copied">Скопировано ✓</string>
+    <string name="auth_copied">Скопировано</string>
 
     <!-- ============ Уведомления ============ -->
     <string name="auth_notifications_title">Уведомления</string>

@@ -149,7 +149,7 @@ private fun CategoryCard(
         Box(
             Modifier.size(46.dp).clip(RoundedCornerShape(13.dp)).background(accent.copy(alpha = 0.14f)),
             contentAlignment = Alignment.Center,
-        ) { Text(category.emoji, style = AppType.screenTitle.copy(fontSize = 22.sp)) }
+        ) { Icon(AppIcons.forCatalog(category.id), null, tint = accent, modifier = Modifier.size(23.dp)) }
         Text(
             category.name,
             style = AppType.label.copy(fontSize = 13.5f.sp, fontWeight = AppType.button.fontWeight, color = palette.ink),
@@ -181,8 +181,15 @@ private fun CategoryOffers(
         Column(Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg).padding(top = 54.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(11.dp)) {
                 BackButton(onBack, contentDescription = stringResource(Res.string.common_back), iconSize = 18.dp)
+                // Ilgari sarlavha oldida emoji turardi — endi kategoriya ikonkasi.
+                Icon(
+                    AppIcons.forCatalog(category.id),
+                    null,
+                    tint = Color(category.accent),
+                    modifier = Modifier.size(20.dp),
+                )
                 Text(
-                    stringResource(Res.string.auth_discounts_category_title, category.emoji, category.name),
+                    stringResource(Res.string.auth_discounts_category_title, category.name),
                     style = AppType.screenTitle.copy(fontSize = 17.sp, letterSpacing = 0.sp, color = palette.ink),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -233,7 +240,7 @@ private fun OfferCard(
                 .padding(horizontal = 14.dp),
             contentAlignment = Alignment.CenterStart,
         ) {
-            Text(offer.emoji, style = AppType.screenTitle.copy(fontSize = 30.sp))
+            Icon(AppIcons.forCatalog(offer.categoryId), null, tint = accent, modifier = Modifier.size(30.dp))
             Box(
                 Modifier.align(Alignment.CenterEnd).clip(AppRadius.sm).background(accent)
                     .padding(horizontal = 11.dp, vertical = 6.dp),
@@ -297,9 +304,15 @@ private fun OfferCard(
                     modifier = Modifier.size(20.dp).clickable { onToggleSaved(offer, saved) },
                 )
             }
-            val meta = listOfNotNull(offer.location?.let { "📍 $it" }, offer.expiry).joinToString(" · ")
+            // Manzil oldidagi belgi emoji emas — `ic_pin` ikonkasi (iOS'da emoji chizilmaydi).
+            val meta = listOfNotNull(offer.location, offer.expiry).joinToString(" · ")
             if (meta.isNotBlank()) {
-                Text(meta, style = AppType.caption.copy(color = palette.inkFaint))
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    if (offer.location != null) {
+                        Icon(AppIcons.Pin, null, tint = palette.inkFaint, modifier = Modifier.size(12.dp))
+                    }
+                    Text(meta, style = AppType.caption.copy(color = palette.inkFaint))
+                }
             }
         }
     }

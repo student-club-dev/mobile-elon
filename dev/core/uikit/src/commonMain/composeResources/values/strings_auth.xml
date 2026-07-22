@@ -11,18 +11,18 @@
 <resources>
 
     <!-- ============ Onboarding ============ -->
-    <string name="auth_onboarding_skip">O\'tkazib yuborish</string>
+    <string name="auth_onboarding_skip">O'tkazib yuborish</string>
     <string name="auth_onboarding_chip_order">Buyurtma</string>
     <string name="auth_onboarding_chip_ai_teacher">AI Muallim</string>
     <string name="auth_onboarding_title">Hamma xizmat bitta ilovada</string>
-    <string name="auth_onboarding_subtitle">7-10 ta ilova o\'rniga bitta hisob. Ovqatdan darsgacha, ishdan turar joygacha.</string>
+    <string name="auth_onboarding_subtitle">7-10 ta ilova o'rniga bitta hisob. Ovqatdan darsgacha, ishdan turar joygacha.</string>
 
     <!-- ============ Umumiy auth elementlari ============ -->
     <string name="auth_continue">Davom etish</string>
     <string name="auth_sign_in">Kirish</string>
-    <string name="auth_sign_up">Ro\'yxatdan o\'tish</string>
+    <string name="auth_sign_up">Ro'yxatdan o'tish</string>
     <string name="auth_have_account">Hisobingiz bormi?</string>
-    <string name="auth_no_account">Hisobingiz yo\'qmi?</string>
+    <string name="auth_no_account">Hisobingiz yo'qmi?</string>
     <string name="auth_field_phone_label">Telefon raqamingiz</string>
     <string name="auth_field_email_label">Email manzil</string>
     <string name="auth_field_password_label">Parol</string>
@@ -32,15 +32,15 @@
     <string name="auth_password_short_placeholder">••••••</string>
 
     <!-- ============ Xush kelibsiz (tab bilan) ============ -->
-    <string name="auth_welcome_title">Xush kelibsiz 👋</string>
-    <string name="auth_welcome_subtitle">Hisobingizga kiring yoki bir daqiqada ro\'yxatdan o\'ting.</string>
+    <string name="auth_welcome_title">Xush kelibsiz</string>
+    <string name="auth_welcome_subtitle">Hisobingizga kiring yoki bir daqiqada ro'yxatdan o'ting.</string>
     <string name="auth_welcome_phone_hint">Ushbu raqamga tasdiqlash uchun SMS kod yuboramiz.</string>
-    <string name="auth_welcome_email_hint">Kirish yoki ro\'yxatdan o\'tish uchun email kiriting.</string>
+    <string name="auth_welcome_email_hint">Kirish yoki ro'yxatdan o'tish uchun email kiriting.</string>
 
     <!-- ============ Telefon bilan kirish ============ -->
     <string name="auth_phone_title">Telefon raqamingiz</string>
     <string name="auth_phone_subtitle">Kirish uchun raqamingizni kiriting — SMS orqali 6 xonali kod yuboramiz.</string>
-    <string name="auth_phone_only_uz_hint">Faqat O\'zbekiston raqamlari qabul qilinadi.</string>
+    <string name="auth_phone_only_uz_hint">Faqat O'zbekiston raqamlari qabul qilinadi.</string>
     <string name="auth_get_code">Kod olish</string>
 
     <!-- ============ Email bilan kirish ============ -->
@@ -53,7 +53,7 @@
     <!-- ============ Biometrika ============ -->
     <string name="auth_biometric_prompt_subtitle">Face ID bilan tasdiqlang</string>
     <string name="auth_biometric_not_configured">Qurilmada biometrika sozlanmagan (Face ID / barmoq izi).</string>
-    <string name="auth_biometric_failed">Biometrika tanilmadi. Qayta urinib ko\'ring.</string>
+    <string name="auth_biometric_failed">Biometrika tanilmadi. Qayta urinib ko'ring.</string>
     <string name="auth_biometric_unavailable">Biometrika mavjud emas.</string>
 
     <!-- ============ SMS kodi (OTP) ============ -->
@@ -91,7 +91,7 @@
 
     <!-- ============ Ro'yxatdan o'tish usuli ============ -->
     <string name="auth_register_choice_title">Hisob yarating</string>
-    <string name="auth_register_choice_subtitle">Ro\'yxatdan o\'tish usulini tanlang.</string>
+    <string name="auth_register_choice_subtitle">Ro'yxatdan o'tish usulini tanlang.</string>
     <string name="auth_register_with_phone">Telefon raqami bilan</string>
     <string name="auth_register_with_email">Email bilan davom etish</string>
     <string name="auth_register_choice_hint">Telefon orqali SMS kod, email orqali 6 xonali kod yuboriladi.</string>
@@ -103,39 +103,39 @@
     <string name="auth_email_verify_spam_hint">Spam papkasini ham tekshiring.</string>
 
     <!-- ============ Email + parol bilan ro'yxatdan o'tish ============ -->
-    <string name="auth_register_subtitle">Email va parol bilan bir daqiqada ro\'yxatdan o\'ting.</string>
+    <string name="auth_register_subtitle">Email va parol bilan bir daqiqada ro'yxatdan o'ting.</string>
     <string name="auth_password_min_placeholder">Kamida 6 belgi</string>
     <string name="auth_confirm_password_label">Parolni tasdiqlang</string>
     <string name="auth_confirm_password_placeholder">Parolni qayta kiriting</string>
-    <string name="auth_register_hint">Ro\'yxatdan o\'tgach rol va profil ma\'lumotlarini to\'ldirasiz.</string>
+    <string name="auth_register_hint">Ro'yxatdan o'tgach rol va profil ma'lumotlarini to'ldirasiz.</string>
 
     <!-- ============ Rol tanlash ============ -->
     <string name="auth_role_title">Kim sifatida davom etamiz?</string>
-    <string name="auth_role_subtitle">Rolni tanlang — ilova siz uchun mos bo\'limlarni ko\'rsatadi. Keyinroq profildan o\'zgartirish mumkin.</string>
+    <string name="auth_role_subtitle">Rolni tanlang — ilova siz uchun mos bo'limlarni ko'rsatadi. Keyinroq profildan o'zgartirish mumkin.</string>
     <string name="auth_role_student">Talaba</string>
-    <string name="auth_role_student_desc">Chegirmalar, ishlar, studentlar va e\'lonlar</string>
+    <string name="auth_role_student_desc">Chegirmalar, ishlar, studentlar va e'lonlar</string>
     <string name="auth_role_business">Biznesmen</string>
-    <string name="auth_role_business_desc">Chegirma e\'lonlari qo\'yish va boshqarish</string>
+    <string name="auth_role_business_desc">Chegirma e'lonlari qo'yish va boshqarish</string>
 
     <!-- ============ Asosiy ekran (Home) ============ -->
-    <string name="auth_home_greeting">Assalomu alaykum 👋</string>
+    <string name="auth_home_greeting">Assalomu alaykum</string>
     <string name="auth_see_all">Barchasi</string>
     <string name="auth_more">Yana</string>
     <string name="auth_bookmark">Saqlash</string>
     <!-- %1$s — do'kon nomi, %2$s — chegirma foizi (masalan "20%") -->
     <string name="auth_home_offer_title">%1$s — %2$s chegirma</string>
-    <string name="auth_home_jobs_subtitle">Sizning bo\'limlaringiz bo\'yicha</string>
-    <string name="auth_home_students_action">Ko\'proq</string>
-    <string name="auth_home_students_subtitle">Universitet bo\'yicha do\'st toping</string>
+    <string name="auth_home_jobs_subtitle">Sizning bo'limlaringiz bo'yicha</string>
+    <string name="auth_home_students_action">Ko'proq</string>
+    <string name="auth_home_students_subtitle">Universitet bo'yicha do'st toping</string>
     <!-- %1$s — kompaniya, %2$s — joylashuv, %3$s — soha -->
     <string name="auth_home_job_meta">%1$s · %2$s · %3$s</string>
 
     <!-- ============ Do'stlik holati ============ -->
-    <string name="auth_friend_add">Do\'st qo\'shish</string>
-    <string name="auth_friend_add_short">+ Do\'st</string>
+    <string name="auth_friend_add">Do'st qo'shish</string>
+    <string name="auth_friend_add_short">+ Do'st</string>
     <string name="auth_friend_pending">Kutilmoqda</string>
-    <string name="auth_friend_single">Do\'st</string>
-    <string name="auth_friend_friends">Do\'stlar</string>
+    <string name="auth_friend_single">Do'st</string>
+    <string name="auth_friend_friends">Do'stlar</string>
 
     <!-- ============ Xabarlar (chat) ============ -->
     <string name="auth_chat_title">Xabarlar</string>
@@ -144,19 +144,19 @@
     <string name="auth_chat_archive_count">Arxiv (%1$s)</string>
     <string name="auth_chat_archive_action">Arxivlash</string>
     <string name="auth_chat_unarchive">Arxivdan chiqarish</string>
-    <string name="auth_chat_archive_empty">Arxiv bo\'sh</string>
-    <string name="auth_chat_empty">Suhbatlar yo\'q</string>
-    <string name="auth_chat_delete_title">Suhbatni o\'chirish</string>
+    <string name="auth_chat_archive_empty">Arxiv bo'sh</string>
+    <string name="auth_chat_empty">Suhbatlar yo'q</string>
+    <string name="auth_chat_delete_title">Suhbatni o'chirish</string>
     <!-- %1$s — suhbatdosh ismi -->
-    <string name="auth_chat_delete_confirm">"%1$s" bilan suhbat va barcha xabarlar o\'chiriladi. Davom etasizmi?</string>
+    <string name="auth_chat_delete_confirm">"%1$s" bilan suhbat va barcha xabarlar o'chiriladi. Davom etasizmi?</string>
     <string name="auth_chat_online">online</string>
     <string name="auth_chat_offline">oflayn</string>
     <string name="auth_chat_input_placeholder">Xabar yozing...</string>
     <string name="auth_chat_send">Yuborish</string>
-    <string name="auth_chat_message_delete_title">Xabarni o\'chirish</string>
-    <string name="auth_chat_message_delete_confirm">Bu xabarni o\'chirmoqchimisiz?</string>
+    <string name="auth_chat_message_delete_title">Xabarni o'chirish</string>
+    <string name="auth_chat_message_delete_confirm">Bu xabarni o'chirmoqchimisiz?</string>
     <string name="auth_chat_clear_title">Suhbatni tozalash</string>
-    <string name="auth_chat_clear_confirm">Bu suhbatdagi barcha xabarlar o\'chiriladi. Davom etasizmi?</string>
+    <string name="auth_chat_clear_confirm">Bu suhbatdagi barcha xabarlar o'chiriladi. Davom etasizmi?</string>
 
     <!-- ============ Studentlar ============ -->
     <string name="auth_students_title">Studentlar</string>
@@ -165,8 +165,8 @@
     <string name="auth_filter">Filtr</string>
     <!-- %1$s — universitet qisqartmasi, %2$s — kurs, %3$s — fakultet -->
     <string name="auth_students_meta">%1$s · %2$s-kurs · %3$s</string>
-    <string name="auth_students_stat_friends">Do\'stlar</string>
-    <string name="auth_students_stat_ads">E\'lonlar</string>
+    <string name="auth_students_stat_friends">Do'stlar</string>
+    <string name="auth_students_stat_ads">E'lonlar</string>
     <string name="auth_students_stat_rating">Reyting</string>
     <string name="auth_students_interests">Qiziqishlar</string>
     <string name="auth_message">Xabar</string>
@@ -181,42 +181,42 @@
     <string name="auth_jobs_meta">%1$s · %2$s</string>
     <string name="auth_jobs_salary">Maosh</string>
     <!-- %1$s — soha nomi -->
-    <string name="auth_jobs_detail_note">Bu ish sizning bo\'limingizga (%1$s) mos keladi. To\'liq tavsif e\'lon egasidan.</string>
+    <string name="auth_jobs_detail_note">Bu ish sizning bo'limingizga (%1$s) mos keladi. To'liq tavsif e'lon egasidan.</string>
     <string name="auth_jobs_apply">Ariza berish</string>
-    <string name="auth_jobs_applied">Ariza yuborildi ✓</string>
+    <string name="auth_jobs_applied">Ariza yuborildi</string>
 
     <!-- ============ Chegirmalar ============ -->
     <string name="auth_discounts_title">Chegirmalar</string>
-    <string name="auth_discounts_subtitle">Bo\'limni tanlang — ichida takliflar ochiladi.</string>
+    <string name="auth_discounts_subtitle">Bo'limni tanlang — ichida takliflar ochiladi.</string>
     <!-- %1$s — takliflar soni -->
     <string name="auth_discounts_offer_count">%1$s taklif</string>
     <!-- %1$s — emoji, %2$s — kategoriya nomi -->
-    <string name="auth_discounts_category_title">%1$s  %2$s chegirmalari</string>
+    <string name="auth_discounts_category_title">%1$s chegirmalari</string>
     <string name="auth_discounts_search_placeholder">Restoran yoki taom qidiring</string>
     <string name="auth_discount_tag_student_id">Talaba ID bilan</string>
     <string name="auth_discount_tag_student_id_short">Talaba ID</string>
     <string name="auth_discount_tag_promo">Promokod</string>
     <string name="auth_copy">Nusxalash</string>
-    <string name="auth_copied">Nusxalandi ✓</string>
+    <string name="auth_copied">Nusxalandi</string>
 
     <!-- ============ Bildirishnomalar ============ -->
     <string name="auth_notifications_title">Bildirishnomalar</string>
-    <string name="auth_notifications_mark_all_read">Hammasini o\'qildi</string>
-    <string name="auth_notifications_empty_title">Hozircha bildirishnoma yo\'q</string>
-    <string name="auth_notifications_empty_body">Yangi elonlar, ish takliflari va xabarlar shu yerda ko\'rinadi.</string>
+    <string name="auth_notifications_mark_all_read">Hammasini o'qildi</string>
+    <string name="auth_notifications_empty_title">Hozircha bildirishnoma yo'q</string>
+    <string name="auth_notifications_empty_body">Yangi elonlar, ish takliflari va xabarlar shu yerda ko'rinadi.</string>
 
     <!-- ============ Sozlamalar ============ -->
     <string name="auth_settings_title">Sozlamalar</string>
     <string name="auth_settings_section_account">Hisob</string>
     <string name="auth_settings_section_theme">Mavzu</string>
-    <string name="auth_theme_light">Yorug\'</string>
+    <string name="auth_theme_light">Yorug'</string>
     <string name="auth_theme_dark">Tungi</string>
     <string name="auth_settings_push">Push bildirishnomalar</string>
     <string name="auth_settings_email">Email xabarnomalar</string>
     <string name="auth_settings_section_general">Umumiy</string>
     <string name="auth_settings_about">Ilova haqida</string>
     <string name="auth_settings_version">Versiya 1.0.0</string>
-    <string name="auth_settings_about_body">ElonUz — talabalar uchun super-app: chegirmalar, ishlar, e\'lonlar va xabarlar.\nVersiya 1.0.0</string>
+    <string name="auth_settings_about_body">ElonUz — talabalar uchun super-app: chegirmalar, ishlar, e'lonlar va xabarlar.\nVersiya 1.0.0</string>
 
     <!-- ============ Pastki navigatsiya (talaba karkasi) ============ -->
     <string name="auth_tab_home">Home</string>
@@ -227,8 +227,8 @@
     <!-- ============ E'lon berish ============ -->
     <string name="auth_post_ad_short">Elon</string>
     <string name="auth_post_ad">Elon berish</string>
-    <string name="auth_post_ad_question">Qanday e\'lon joylamoqchisiz?</string>
-    <string name="auth_ad_type_job">Ish e\'loni</string>
+    <string name="auth_post_ad_question">Qanday e'lon joylamoqchisiz?</string>
+    <string name="auth_ad_type_job">Ish e'loni</string>
     <string name="auth_ad_type_job_desc">Xodim yoki part-time izlash</string>
     <string name="auth_ad_type_rental">Ijara / Turar joy</string>
     <string name="auth_ad_type_rental_desc">Kvartira, hostel, room-mate</string>
@@ -236,18 +236,18 @@
     <string name="auth_ad_type_sale_desc">Kitob, texnika, buyum sotish</string>
     <string name="auth_ad_type_service">Xizmat / Repetitor</string>
     <string name="auth_ad_type_service_desc">Dars berish, dizayn, tarjima</string>
-    <string name="auth_ad_type_other">Boshqa e\'lon</string>
-    <string name="auth_ad_type_other_desc">Tadbir, jamoa, yo\'qoldi-topildi</string>
-    <string name="auth_ad_add_photo">Rasm qo\'shish</string>
-    <string name="auth_ad_title_label">E\'lon sarlavhasi</string>
+    <string name="auth_ad_type_other">Boshqa e'lon</string>
+    <string name="auth_ad_type_other_desc">Tadbir, jamoa, yo'qoldi-topildi</string>
+    <string name="auth_ad_add_photo">Rasm qo'shish</string>
+    <string name="auth_ad_title_label">E'lon sarlavhasi</string>
     <string name="auth_ad_title_placeholder">SMM menejer kerak</string>
     <string name="auth_ad_category_label">Kategoriya</string>
     <string name="auth_ad_category_placeholder">IT</string>
     <string name="auth_ad_price_label">Narx / Maosh</string>
     <string name="auth_ad_price_placeholder">3–5 mln</string>
     <string name="auth_ad_description_label">Tavsif</string>
-    <string name="auth_ad_description_placeholder">Batafsil ma\'lumot...</string>
-    <string name="auth_ad_submit">E\'lonni joylash</string>
+    <string name="auth_ad_description_placeholder">Batafsil ma'lumot...</string>
+    <string name="auth_ad_submit">E'lonni joylash</string>
 
     <string name="auth_settings_section_language">Til</string>
 </resources>

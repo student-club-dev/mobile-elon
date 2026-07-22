@@ -102,9 +102,9 @@ internal fun Dot(active: Boolean, palette: AppPalette) {
     )
 }
 
-/** Onboarding illyustratsiyasi ustida suzuvchi emoji chipi. */
+/** Onboarding illyustratsiyasi ustida suzuvchi ikonka chipi (ilgari emoji edi). */
 @Composable
-internal fun FloatingChip(emoji: String, label: String?, modifier: Modifier, palette: AppPalette) {
+internal fun FloatingChip(icon: ImageVector, label: String?, modifier: Modifier, palette: AppPalette) {
     val shape = RoundedCornerShape(15.dp)
     Row(
         modifier.clip(shape)
@@ -114,7 +114,7 @@ internal fun FloatingChip(emoji: String, label: String?, modifier: Modifier, pal
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Text(emoji, style = AppType.body.copy(fontSize = 15.sp))
+        Icon(icon, null, tint = palette.primary, modifier = Modifier.size(16.dp))
         if (label != null) {
             Text(label, style = AppType.caption.copy(fontWeight = AppType.label.fontWeight, color = palette.ink))
         }

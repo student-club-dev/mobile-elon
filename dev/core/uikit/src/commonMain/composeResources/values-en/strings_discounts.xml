@@ -18,7 +18,7 @@
     <string name="discounts_add_listing">Add listing</string>
     <string name="discounts_price_sum">%1$s UZS</string>
     <string name="discounts_sum_suffix">UZS</string>
-    <string name="discounts_branch_location">📍 %1$s</string>
+    <string name="discounts_branch_location">%1$s</string>
     <string name="discounts_branch_extra">  +%1$s branches</string>
     <string name="discounts_action_pause">Pause</string>
     <string name="discounts_action_resume">Resume</string>
@@ -204,7 +204,7 @@
     <string name="discounts_copy_barber_images">Work samples</string>
     <string name="discounts_copy_barber_images_hint">Haircut / result photo</string>
     <string name="discounts_copy_barber_about">About the service</string>
-    <string name="discounts_copy_barber_title_hint">Service: Men\'s haircut + beard</string>
+    <string name="discounts_copy_barber_title_hint">Service: Men's haircut + beard</string>
     <string name="discounts_copy_barber_description_hint">Barber, duration, extra services...</string>
 
     <!-- ============ Form copy — Beauty salon ============ -->

@@ -17,7 +17,7 @@ data class Student(
     val course: Int,             // 1..4 (Mag = 5)
     val faculty: String,         // "IT", "Telekom", "Dasturiy inj."
     val friendStatus: FriendStatus = FriendStatus.NONE,
-    val interests: List<String> = emptyList(), // ["🎨 Dizayn", "💻 Frontend"]
+    val interests: List<String> = emptyList(), // ["Dizayn", "Frontend"]
     val friendsCount: Int = 0,
     val adsCount: Int = 0,
     val rating: Double = 0.0,

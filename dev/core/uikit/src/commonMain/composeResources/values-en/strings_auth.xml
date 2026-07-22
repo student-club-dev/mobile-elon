@@ -17,7 +17,7 @@
     <string name="auth_sign_in">Sign in</string>
     <string name="auth_sign_up">Sign up</string>
     <string name="auth_have_account">Already have an account?</string>
-    <string name="auth_no_account">Don\'t have an account?</string>
+    <string name="auth_no_account">Don't have an account?</string>
     <string name="auth_field_phone_label">Your phone number</string>
     <string name="auth_field_email_label">Email address</string>
     <string name="auth_field_password_label">Password</string>
@@ -27,14 +27,14 @@
     <string name="auth_password_short_placeholder">••••••</string>
 
     <!-- ============ Welcome ============ -->
-    <string name="auth_welcome_title">Welcome 👋</string>
+    <string name="auth_welcome_title">Welcome</string>
     <string name="auth_welcome_subtitle">Sign in to your account or register in a minute.</string>
-    <string name="auth_welcome_phone_hint">We\'ll text a verification code to this number.</string>
+    <string name="auth_welcome_phone_hint">We'll text a verification code to this number.</string>
     <string name="auth_welcome_email_hint">Enter your email to sign in or register.</string>
 
     <!-- ============ Phone sign-in ============ -->
     <string name="auth_phone_title">Your phone number</string>
-    <string name="auth_phone_subtitle">Enter your number to sign in — we\'ll text you a 6-digit code.</string>
+    <string name="auth_phone_subtitle">Enter your number to sign in — we'll text you a 6-digit code.</string>
     <string name="auth_phone_only_uz_hint">Only Uzbekistan numbers are accepted.</string>
     <string name="auth_get_code">Get code</string>
 
@@ -59,7 +59,7 @@
     <string name="auth_resend_code_timer_prefix">Resend code · </string>
     <string name="auth_resend_short_timer_prefix">Resend · </string>
     <string name="auth_verify">Verify</string>
-    <string name="auth_otp_no_sms">Didn\'t get the SMS? </string>
+    <string name="auth_otp_no_sms">Didn't get the SMS? </string>
     <string name="auth_otp_via_telegram">Get it on Telegram</string>
 
     <!-- ============ Create account ============ -->
@@ -77,7 +77,7 @@
 
     <!-- ============ Password reset ============ -->
     <string name="auth_forgot_title">Reset password</string>
-    <string name="auth_forgot_subtitle">Enter your email address — we\'ll send a password reset link.</string>
+    <string name="auth_forgot_subtitle">Enter your email address — we'll send a password reset link.</string>
     <string name="auth_forgot_send">Send reset link</string>
     <string name="auth_back_to_login">Back to sign in</string>
 
@@ -99,7 +99,7 @@
     <string name="auth_password_min_placeholder">At least 6 characters</string>
     <string name="auth_confirm_password_label">Confirm password</string>
     <string name="auth_confirm_password_placeholder">Re-enter your password</string>
-    <string name="auth_register_hint">After registering you\'ll pick a role and fill in your profile.</string>
+    <string name="auth_register_hint">After registering you'll pick a role and fill in your profile.</string>
 
     <!-- ============ Role choice ============ -->
     <string name="auth_role_title">How will you continue?</string>
@@ -110,7 +110,7 @@
     <string name="auth_role_business_desc">Post and manage discount offers</string>
 
     <!-- ============ Home ============ -->
-    <string name="auth_home_greeting">Assalomu alaykum 👋</string>
+    <string name="auth_home_greeting">Assalomu alaykum</string>
     <string name="auth_see_all">See all</string>
     <string name="auth_more">More</string>
     <string name="auth_bookmark">Save</string>
@@ -168,19 +168,19 @@
     <string name="auth_jobs_salary">Salary</string>
     <string name="auth_jobs_detail_note">This job matches your field (%1$s). The full description comes from the poster.</string>
     <string name="auth_jobs_apply">Apply</string>
-    <string name="auth_jobs_applied">Application sent ✓</string>
+    <string name="auth_jobs_applied">Application sent</string>
 
     <!-- ============ Discounts ============ -->
     <string name="auth_discounts_title">Discounts</string>
     <string name="auth_discounts_subtitle">Pick a category — offers open inside.</string>
     <string name="auth_discounts_offer_count">%1$s offers</string>
-    <string name="auth_discounts_category_title">%1$s  %2$s discounts</string>
+    <string name="auth_discounts_category_title">%1$s discounts</string>
     <string name="auth_discounts_search_placeholder">Search a restaurant or dish</string>
     <string name="auth_discount_tag_student_id">With student ID</string>
     <string name="auth_discount_tag_student_id_short">Student ID</string>
     <string name="auth_discount_tag_promo">Promo code</string>
     <string name="auth_copy">Copy</string>
-    <string name="auth_copied">Copied ✓</string>
+    <string name="auth_copied">Copied</string>
 
     <!-- ============ Notifications ============ -->
     <string name="auth_notifications_title">Notifications</string>

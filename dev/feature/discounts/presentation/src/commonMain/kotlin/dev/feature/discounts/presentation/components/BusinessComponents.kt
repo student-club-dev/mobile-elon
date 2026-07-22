@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -38,11 +37,12 @@ import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.feature.discounts.domain.model.Business
 import dev.feature.discounts.domain.model.BusinessTypeInfo
+import dev.feature.discounts.presentation.icon
 import dev.feature.discounts.presentation.localizedLabel
 import org.jetbrains.compose.resources.stringResource
 
-/** Biznes turi topilmaganda ko'rsatiladigan zaxira belgisi (matn emas — ikonka o'rnida). */
-private const val BUSINESS_FALLBACK_EMOJI = "🏢"
+/** Biznes turi noma'lum bo'lganda ko'rsatiladigan zaxira ikonka. */
+private val BusinessFallbackIcon = AppIcons.Building
 
 /** "Bizneslarim" ro'yxatidagi karta — nom, tur, manzil va ikkita harakat tugmasi. */
 @Composable
@@ -70,7 +70,12 @@ fun BusinessCard(
             Modifier.size(52.dp).clip(RoundedCornerShape(15.dp)).background(accent.copy(alpha = 0.14f)),
             contentAlignment = Alignment.Center,
         ) {
-            Text(biz.businessType?.emoji ?: BUSINESS_FALLBACK_EMOJI, style = TextStyle(fontSize = 24.sp))
+            Icon(
+                biz.businessType?.icon ?: BusinessFallbackIcon,
+                null,
+                tint = accent,
+                modifier = Modifier.size(26.dp),
+            )
         }
         Column(Modifier.weight(1f)) {
             Text(
@@ -115,7 +120,7 @@ fun BusinessCard(
     }
 }
 
-/** Biznes turi chipi — emoji + nom, tanlanганда brend fon. */
+/** Biznes turi chipi — ikonka + nom, tanlanганда brend fon. */
 @Composable
 fun BusinessTypeChip(
     type: BusinessTypeInfo,
@@ -135,7 +140,13 @@ fun BusinessTypeChip(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        Text(type.emoji, style = TextStyle(fontSize = 15.sp))
+        Icon(
+            type.type.icon,
+            null,
+            // Brend fon USTIDA — kontent rangi `onPrimary` dan olinadi.
+            tint = if (active) palette.onPrimary else palette.inkMuted,
+            modifier = Modifier.size(16.dp),
+        )
         Text(
             // `nameUz` backenddan keladi va faqat o'zbekcha — tarjima uchun enum'dan olamiz.
             type.type.localizedLabel(),
@@ -159,7 +170,7 @@ fun LocationCard(address: String?, palette: AppPalette, onPick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Text("📍", style = TextStyle(fontSize = 18.sp))
+        Icon(AppIcons.Pin, null, tint = palette.primary, modifier = Modifier.size(18.dp))
         Text(
             address?.takeIf { it.isNotBlank() } ?: stringResource(Res.string.discounts_location_hint),
             style = AppType.label.copy(

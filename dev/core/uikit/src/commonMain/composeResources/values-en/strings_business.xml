@@ -45,7 +45,7 @@
     <string name="business_welcome_google">Sign in with Google</string>
     <string name="business_welcome_email">Sign in with email</string>
     <string name="business_welcome_student_hint">Want to sign in as a student? Go back and choose \"Student\".</string>
-    <string name="business_welcome_dev_login">🔧 Dev sign-in (test)</string>
+    <string name="business_welcome_dev_login">Dev sign-in (test)</string>
 
     <!-- ============ Business types (BusinessTypes) ============ -->
     <string name="business_type_cafe">Cafes and restaurants</string>
