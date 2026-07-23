@@ -1,18 +1,19 @@
 package dev.feature.discounts.data.repository
 
 import dev.core.common.Resource
-import dev.core.common.errorOf
 import dev.core.common.error.AppException
 import dev.core.common.error.toAppException
+import dev.core.common.errorOf
 import dev.core.common.network.NetworkConnectivity
 import dev.core.network.generated.api.BranchesApi
 import dev.core.network.generated.api.BusinessApi
 import dev.core.network.generated.model.BranchDto
 import dev.core.network.generated.model.BranchRequestDto
+import dev.core.network.generated.model.BranchTradeCenterFieldInputDto
 import dev.core.network.generated.model.BusinessDto
-import dev.core.network.generated.model.CreateBusinessRequestDto
+import dev.core.network.generated.model.CreateBusinessDto
 import dev.core.network.generated.model.LocationDto
-import dev.core.network.generated.model.UpdateBusinessRequestDto
+import dev.core.network.generated.model.UpdateBusinessDto
 import dev.feature.discounts.domain.model.Business
 import dev.feature.discounts.domain.model.BusinessType
 import dev.feature.discounts.domain.model.ListingBranch
@@ -24,9 +25,9 @@ import kotlinx.coroutines.flow.flow
 /**
  * Biznes repository'sining **backend** implementatsiyasi.
  *
- * Biznes va filiallar backendда alohida resurslar (`/business` va `/business/{id}/branches`),
- * lekin domen [Business] ularni bitta model sifatida ko'radi — shuning uchun bu yerда
- * ikkala API birlashtiriladi.
+ * Biznes va filiallar backendда alohida resurslar (`/v1/business` va
+ * `/v1/business/{id}/branches`), lekin domen [Business] ularni bitta model sifatida
+ * ko'radi — shuning uchun bu yerда ikkala API birlashtiriladi.
  *
  * Xato **yutilmaydi** — [Resource.Error] qaytadi va UseCase zaxira ma'lumotga o'tadi
  * ([ApiCatalogRepository] bilan bir xil naqsh).
@@ -39,18 +40,18 @@ class ApiBusinessRepository(
 
     /**
      * REST'да obuna yo'q — ro'yxat bir marta o'qiladi va emit qilinadi. Ekran yangilanishi
-     * kerak bo'lsa flow qayta yig'iladi (Firestore `.snapshots` real-time'idan farqi shu).
+     * kerak bo'lsa flow qayta yig'iladi (real-time manba'dan farqi shu).
      *
      * Xato **yutilmaydi**: flow uni tashqariga chiqaradi, UseCase esa zaxiraga o'tadi.
      * Bo'sh ro'yxat — haqiqiy javob (foydalanuvchida hali biznes yo'q), xato emas.
      */
     override fun observeMine(): Flow<List<Business>> = flow {
-        val businesses: List<BusinessDto> = businessApi.getMyBusinesses().body()
+        val businesses: List<BusinessDto> = businessApi.getMy().body()
         emit(businesses.map { it.toDomain(branchesOf(it.id)) }.sortedByDescending { it.createdAt })
     }
 
     override suspend fun byId(id: String): Business? = try {
-        val dto: BusinessDto = businessApi.getBusiness(id).body()
+        val dto: BusinessDto = businessApi.getById(id).body()
         dto.toDomain(branchesOf(id))
     } catch (e: Exception) {
         null
@@ -64,17 +65,17 @@ class ApiBusinessRepository(
         return try {
             // Tur faqat yaratishда beriladi — backend uni keyin o'zgartirmaydi (BUSINESS_TYPE_IMMUTABLE).
             val saved: BusinessDto = if (business.id.isBlank()) {
-                businessApi.createBusiness(
-                    CreateBusinessRequestDto(
+                businessApi.businessCreate(
+                    CreateBusinessDto(
                         type = type.name,
                         name = business.name,
                         phone = business.phone,
                     ),
                 ).body()
             } else {
-                businessApi.updateBusiness(
+                businessApi.businessUpdate(
                     business.id,
-                    UpdateBusinessRequestDto(name = business.name, phone = business.phone),
+                    UpdateBusinessDto(name = business.name, phone = business.phone),
                 ).body()
             }
 
@@ -89,7 +90,7 @@ class ApiBusinessRepository(
     override suspend fun delete(id: String): Resource<Unit> {
         if (!connectivity.isOnline()) return errorOf(AppException.NoInternet())
         return try {
-            businessApi.archiveBusiness(id)
+            businessApi.archive(id)
             Resource.Success(Unit)
         } catch (e: Exception) {
             errorOf(e.toAppException(connectivity.isOnline()))
@@ -97,7 +98,7 @@ class ApiBusinessRepository(
     }
 
     private suspend fun branchesOf(businessId: String): List<BranchDto> = try {
-        branchesApi.getBranches(businessId).body()
+        branchesApi.branchesList(businessId).body()
     } catch (e: Exception) {
         emptyList()
     }
@@ -112,14 +113,14 @@ class ApiBusinessRepository(
         val saved = wanted.map { branch ->
             val request = branch.toRequest()
             if (branch.id.isNotBlank() && existing.containsKey(branch.id)) {
-                branchesApi.updateBranch(businessId, branch.id, request).body()
+                branchesApi.branchesUpdate(businessId, branch.id, request).body()
             } else {
-                branchesApi.createBranch(businessId, request).body()
+                branchesApi.branchesCreate(businessId, request).body()
             }
         }
 
         (existing.keys - saved.map { it.id }.toSet()).forEach { removed ->
-            runCatching { branchesApi.deleteBranch(businessId, removed) }
+            runCatching { branchesApi.branchesDelete(businessId, removed) }
         }
         return saved
     }
@@ -131,13 +132,13 @@ class ApiBusinessRepository(
 
 private fun BusinessDto.toDomain(branches: List<BranchDto>) = Business(
     id = id,
-    ownerId = ownerUserId.orEmpty(),
+    ownerId = ownerUserId,
     name = name,
     phone = phone,
     businessType = BusinessType.entries.firstOrNull { it.name == type },
     branches = branches.map { it.toDomain() },
-    createdAt = createdAt?.toEpochMilliseconds() ?: 0L,
-    updatedAt = createdAt?.toEpochMilliseconds() ?: 0L,
+    createdAt = createdAt.toEpochMilliseconds(),
+    updatedAt = createdAt.toEpochMilliseconds(),
 )
 
 private fun BranchDto.toDomain() = ListingBranch(
@@ -149,11 +150,17 @@ private fun BranchDto.toDomain() = ListingBranch(
     landmark = location.landmark,
     regionId = location.regionId,
     districtId = location.districtId,
+    tradeCenterId = tradeCenter?.id,
+    tradeCenterName = tradeCenter?.name,
+    tradeCenterFields = tradeCenterFields.associate { it.label to it.value },
 )
 
 /**
  * Domen filiali → so'rov. Ish vaqti hozircha formaда yo'q — backend bo'sh ro'yxatni
  * "belgilanmagan" deb qabul qiladi.
+ *
+ * Savdo markazi maydonlari domenда `label → qiymat` ko'rinishida yotadi, backend esa
+ * `fieldId` kutadi: shuning uchun forma to'ldirganда id saqlangan bo'lsa o'sha ishlatiladi.
  */
 private fun ListingBranch.toRequest() = BranchRequestDto(
     name = name.orEmpty(),
@@ -166,4 +173,8 @@ private fun ListingBranch.toRequest() = BranchRequestDto(
         landmark = landmark,
     ),
     workingHours = emptyList(),
+    tradeCenterId = tradeCenterId,
+    tradeCenterFields = tradeCenterFieldIds.map { (fieldId, value) ->
+        BranchTradeCenterFieldInputDto(fieldId = fieldId, value = value)
+    },
 )

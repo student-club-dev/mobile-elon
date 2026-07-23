@@ -12,6 +12,8 @@ import dev.feature.discounts.domain.model.Gender
 import dev.feature.discounts.domain.model.GeoCatalog
 import dev.feature.discounts.domain.model.ListingBranch
 import dev.feature.discounts.domain.model.ListingCatalog
+import dev.feature.discounts.domain.model.Region
+import dev.feature.discounts.domain.repository.RegionRepository
 import dev.feature.discounts.domain.repository.PlaceSuggestion
 import dev.feature.discounts.domain.usecase.CreateBranchFromPointUseCase
 import dev.feature.discounts.domain.usecase.GetBusinessTypesUseCase
@@ -93,11 +95,16 @@ data class AddBusinessUiState(
      * bermasa UseCase klient katalogini beradi — ro'yxat hech qachon bo'sh qolmaydi.
      */
     val availableTypes: List<BusinessTypeInfo> = emptyList(),
+    /**
+     * Viloyatlar (`GET /v1/regions`). Backend javob bermasa repository klient katalogini
+     * beradi — ro'yxat hech qachon bo'sh qolmaydi.
+     */
+    val regions: List<Region> = GeoCatalog.regions(),
 ) {
     val editing: Boolean get() = editId != null
     val phoneDigits: String get() = phone.filter { it.isDigit() }.take(9)
     /** Tanlangan viloyat nomi — ko'rsatish uchun. */
-    val regionName: String? get() = GeoCatalog.region(regionId)?.name
+    val regionName: String? get() = regions.firstOrNull { it.id == regionId }?.name
 
     val canSave: Boolean
         get() = name.isNotBlank() && phoneDigits.length == 9 && businessType != null &&
@@ -117,6 +124,7 @@ class AddBusinessViewModel(
     private val settings: SettingsRepository,
     private val getBusiness: dev.feature.discounts.domain.usecase.GetBusinessUseCase,
     private val getBusinessTypes: GetBusinessTypesUseCase,
+    private val regionRepository: RegionRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AddBusinessUiState())
@@ -144,6 +152,11 @@ class AddBusinessViewModel(
     }
 
     init {
+        // Viloyat/tuman ro'yxati serverdan (filial id'lari server ro'yxatiga mos bo'lishi shart).
+        viewModelScope.launch {
+            val regions = regionRepository.regions()
+            if (regions.isNotEmpty()) _state.update { it.copy(regions = regions) }
+        }
         viewModelScope.launch {
             settings.observeValue(SettingsRepository.KEY_GENDER).collect { code ->
                 val g = when (code) {

@@ -301,7 +301,7 @@ class ChatRepositoryImpl(
     private val dispatchers: AppDispatchers,
     private val remote: ChatRemoteDataSource,
     private val syncEnabled: Boolean,
-    // --- B7: real-time manba (Firestore). enabled=false bo'lsa local DB'dan ishlaydi. ---
+    // --- B7: real-time manba. enabled=false bo'lsa local DB'dan ishlaydi. ---
     private val realtime: ChatRealtimeSource,
 ) : ChatRepository {
     private val q get() = db.chatQueries

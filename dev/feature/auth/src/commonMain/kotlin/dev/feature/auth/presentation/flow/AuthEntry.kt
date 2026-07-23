@@ -36,7 +36,7 @@ enum class RoleGate { LOADING, CHOOSE, STUDENT, BUSINESS }
 
 /**
  * Tanlangan rolni LOCAL saqlaydi (AppSetting) va shundan o'qiydi. Bir marta tanlangач,
- * **logout qilgunча** doim shu rol ishlatiladi — Firebase sessiyasi/profil holatiga bog'liq emas.
+ * **logout qilgunча** doim shu rol ishlatiladi — sessiya/profil holatiga bog'liq emas.
  */
 class RoleLauncherViewModel(
     private val settings: SettingsRepository,

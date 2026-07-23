@@ -1,0 +1,19 @@
+-- Migratsiya v12 -> v13
+-- Sessiya endi backend tokenlariga tayanadi: foydalanuvchi id'si — matn (JWT `sub`),
+-- shuning uchun Firebase davridan qolgan raqamli `userId` ustuni olib tashlanadi.
+-- SQLite'ning eski versiyalarida (minSdk 24) `DROP COLUMN` yo'q — jadval qayta quriladi.
+ALTER TABLE UserEntity RENAME TO UserEntityOld;
+
+CREATE TABLE UserEntity (
+    uid TEXT NOT NULL PRIMARY KEY,
+    fullName TEXT NOT NULL,
+    email TEXT NOT NULL,
+    role TEXT NOT NULL,
+    phoneNumber TEXT,
+    photoUrl TEXT
+);
+
+INSERT INTO UserEntity(uid, fullName, email, role, phoneNumber, photoUrl)
+SELECT uid, fullName, email, role, phoneNumber, photoUrl FROM UserEntityOld;
+
+DROP TABLE UserEntityOld;

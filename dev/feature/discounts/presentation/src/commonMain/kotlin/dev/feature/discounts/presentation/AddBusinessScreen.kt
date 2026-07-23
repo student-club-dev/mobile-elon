@@ -221,6 +221,7 @@ fun AddBusinessScreen(
 
         RegionSheet(
             visible = state.regionPickerOpen,
+            regions = state.regions,
             regionId = state.regionId,
             onSelect = vm::onRegion,
             onDismiss = vm::closeRegionPicker,

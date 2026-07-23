@@ -16,7 +16,8 @@ import kotlinx.serialization.serializer
  *
  * - muvaffaqiyat → `result` (yoki `data`) so'ralgan DTO sifatida deserializatsiya qilinadi;
  * - konvertда xato (`success=false` / `error != null`) → typed [AppException] tashlanadi
- *   ([toAppException]) — data-source'lardagi `catch` bloklari uni tushunadi.
+ *   ([toAppException]) — data-source'lardagi `catch` bloklari uni tushunadi. `error.fields`
+ *   bo'lsa u [AppException.Validation.fields] ga o'tadi va formagacha yetib boradi.
  *
  * Konvert bo'lmagan (xom) javob kelsa — butun tana DTO deb o'qiladi (o'tish davri uchun moslashuvchan).
  *
@@ -25,10 +26,11 @@ import kotlinx.serialization.serializer
  * aylantirib yuboradi (kalitlar mos kelmaydi).
  *
  * Non-2xx javoblar bu yergача yetmaydi — `expectSuccess=true` ularni body-transform'дан oldin
- * `ResponseException` bilan tashlaydi (masalan profil yo'q → HTTP 404).
+ * `ResponseException` bilan tashlaydi (masalan profil yo'q → HTTP 404). Ularning tanasi
+ * `safeApiCall`/`safeCall` da — [toAppExceptionWithFields] orqali — o'qiladi.
  */
 val EnvelopeUnwrapPlugin = createClientPlugin("EnvelopeUnwrap") {
-    transformResponseBody { _, content, requestedType ->
+    transformResponseBody { response, content, requestedType ->
         val kType = requestedType.kotlinType
         // Unit (masalan void DELETE) — tanani deserializatsiya qilishning hojati yo'q.
         if (kType == null || requestedType.type == Unit::class) return@transformResponseBody Unit
@@ -45,7 +47,7 @@ val EnvelopeUnwrapPlugin = createClientPlugin("EnvelopeUnwrap") {
                 BaseResponse.serializer(JsonElement.serializer()),
                 root,
             )
-            if (!envelope.isSuccessful) throw envelope.toAppException()
+            if (!envelope.isSuccessful) throw envelope.toAppException(response.status.value)
             envelope.payload ?: JsonNull
         } else {
             root

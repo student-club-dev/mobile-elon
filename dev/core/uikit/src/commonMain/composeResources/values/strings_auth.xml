@@ -255,4 +255,9 @@
     <string name="auth_ad_submit">E'lonni joylash</string>
 
     <string name="auth_settings_section_language">Til</string>
+    <string name="auth_forgot_phone_subtitle">Telefon raqamingizni kiriting — SMS orqali tiklash kodini yuboramiz.</string>
+    <string name="auth_reset_title">Yangi parol</string>
+    <string name="auth_reset_subtitle">SMS'dagi kodni kiriting va yangi parol o'ylab toping.</string>
+    <string name="auth_reset_submit">Parolni yangilash</string>
+    <string name="auth_otp_skip">Keyinroq tasdiqlayman</string>
 </resources>

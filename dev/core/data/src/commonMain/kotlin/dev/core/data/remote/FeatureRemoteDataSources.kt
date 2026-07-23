@@ -12,7 +12,7 @@ import io.ktor.client.request.get
 
 /**
  * Qolgan domenlar uchun masofaviy manbalar (B4 shabloni — Discounts'dan tarqatilgan).
- * Har biri bitta endpoint'dan ro'yxat oladi; Ktor klientiga Firebase token avtomatik qo'shiladi (B3).
+ * Har biri bitta endpoint'dan ro'yxat oladi; Ktor klientiga sessiya tokeni avtomatik qo'shiladi (B3).
  */
 
 // --- Ishlar ---

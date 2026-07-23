@@ -28,7 +28,7 @@ import dev.core.uikit.theme.AppSize
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.rowShadow
-import dev.feature.discounts.domain.model.GeoCatalog
+import dev.feature.discounts.domain.model.Region
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -87,13 +87,17 @@ fun SelectorField(
  * Viloyat tanlash sheet'i.
  *
  * Viloyat xaritadan joy tanlanganda teskari geokodlashdan avtomatik to'ladi, lekin bu har
- * doim ham ishlamaydi: Nominatim viloyat nomini [GeoCatalog] id'siga bog'lay olmasa `null`
- * qaytadi va biznes viloyat bo'yicha filtrga tushmay qolardi. Shuning uchun bu maydon
- * ko'rinadigan va tuzatsa bo'ladigan qilindi.
+ * doim ham ishlamaydi: geokoder viloyat nomini id'ga bog'lay olmasa `null` qaytadi va biznes
+ * viloyat bo'yicha filtrga tushmay qolardi. Shuning uchun bu maydon ko'rinadigan va tuzatsa
+ * bo'ladigan qilindi.
+ *
+ * [regions] — ViewModel bergan ro'yxat (`GET /v1/regions`, xato bo'lsa klient katalogi):
+ * filial id'lari server ro'yxatiga mos bo'lishi shart.
  */
 @Composable
 fun RegionSheet(
     visible: Boolean,
+    regions: List<Region>,
     regionId: String?,
     onSelect: (String) -> Unit,
     onDismiss: () -> Unit,
@@ -105,7 +109,7 @@ fun RegionSheet(
         title = stringResource(Res.string.discounts_region_select),
         palette = palette,
     ) {
-        GeoCatalog.regions().forEach { region ->
+        regions.forEach { region ->
             BottomSheetOption(
                 label = region.name,
                 selected = region.id == regionId,

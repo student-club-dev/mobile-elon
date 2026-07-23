@@ -51,6 +51,9 @@
     <string name="profile_field_last_name">Фамилия</string>
     <string name="profile_field_phone">Телефон</string>
     <string name="profile_field_phone_placeholder">90 123 45 67</string>
+    <string name="profile_field_gender">Пол</string>
+    <string name="profile_gender_male">Мужской</string>
+    <string name="profile_gender_female">Женский</string>
     <string name="profile_field_university">Университет</string>
     <string name="profile_university_select">Выберите университет</string>
     <string name="profile_field_course">Курс</string>

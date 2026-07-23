@@ -23,7 +23,6 @@ import dev.core.domain.model.AppLanguage
 import dev.core.domain.model.ThemeMode
 import dev.core.domain.repository.SettingsRepository
 import dev.feature.auth.presentation.flow.AuthNavHost
-import dev.feature.auth.presentation.flow.AuthUserFlow
 import dev.core.uikit.theme.appPalette
 import io.ktor.client.HttpClient
 import org.koin.compose.koinInject
@@ -34,7 +33,7 @@ import org.koin.compose.koinInject
  */
 @Composable
 fun BusinessApp(onExit: () -> Unit) {
-    AppScaffold { AuthNavHost(flow = AuthUserFlow.BUSINESS, onExit = onExit) }
+    AppScaffold { AuthNavHost(onExit = onExit) }
 }
 
 /**
@@ -43,14 +42,14 @@ fun BusinessApp(onExit: () -> Unit) {
  */
 @Composable
 fun App() {
-    AppScaffold { AuthNavHost(flow = AuthUserFlow.BUSINESS) }
+    AppScaffold { AuthNavHost() }
 }
 
 /** Umumiy ildiz sozlamasi (rasm yuklovchi, seed, mavzu, inset) — hamma kirish nuqtalari ishlatadi. */
 @Composable
 private fun AppScaffold(content: @Composable () -> Unit) {
     // Tarmoqdan rasm yuklash (avatar) — Coil ilovaning o'z Ktor klientidan foydalanadi,
-    // shunda so'rovlarga Firebase ID token ham qo'shiladi (himoyalangan rasm URL'lari uchun).
+    // shunda so'rovlarga sessiya tokeni ham qo'shiladi (himoyalangan rasm URL'lari uchun).
     val httpClient = koinInject<HttpClient>()
     setSingletonImageLoaderFactory { context ->
         ImageLoader.Builder(context)

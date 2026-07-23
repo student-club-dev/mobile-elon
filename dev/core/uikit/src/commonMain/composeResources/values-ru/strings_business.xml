@@ -58,4 +58,5 @@
 
     <string name="business_profile_title">Профиль</string>
     <string name="business_profile_no_contact">Контактные данные не указаны</string>
+    <string name="business_welcome_password_label">Пароль</string>
 </resources>

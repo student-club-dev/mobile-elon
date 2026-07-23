@@ -39,8 +39,8 @@ class ApiListingRemoteDataSource(
             ?: return Resource.Error("Avval biznes profilini yarating")
 
         return try {
-            val created = listingsApi.createListing(businessId, listing.toCreateRequest()).body()
-            val submitted = listingsApi.submitListing(created.id).body()
+            val created = listingsApi.listingsCreate(businessId, listing.toCreateRequest()).body()
+            val submitted = listingsApi.submit(created.id).body()
             Resource.Success(
                 listing.copy(
                     id = submitted.id,
@@ -56,7 +56,7 @@ class ApiListingRemoteDataSource(
 
     override suspend fun uploadImage(bytes: ByteArray, fileName: String): Resource<String> = try {
         val part = InputProvider(bytes.size.toLong()) { Buffer().apply { write(bytes) } }
-        Resource.Success(mediaApi.uploadMedia(part, purpose = "LISTING").body().url)
+        Resource.Success(mediaApi.upload(file = part, purpose = "LISTING").body().url)
     } catch (e: Exception) {
         Resource.Error(e.message ?: "Rasmni yuklab bo'lmadi", e)
     }

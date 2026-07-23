@@ -1,5 +1,6 @@
-// Data qatlami — umumiy infratuzilma `sc.module-data` dan. Bu yerda o'z domeni va
-// Firebase Auth (kesh kaliti — sessiyadagi uid; profilning o'zi backenddan keladi).
+// Data qatlami — umumiy infratuzilma `sc.module-data` dan (network + database + Ktor).
+// Bu yerda faqat o'z domeni: profil `GET/PUT /v1/profile/me` orqali keladi, kesh kaliti esa
+// `SessionProvider` bergan uid (JWT `sub`).
 plugins {
     id("sc.module-data")
 }
@@ -9,18 +10,8 @@ kotlin {
         commonMain.dependencies {
             api(projects.dev.feature.profile.domain)
 
-            // SessionProvider (joriy uid) — Firebase'ga bevosita bog'lanmaydi.
+            // SessionProvider (joriy uid) — implementatsiya auth feature'da.
             implementation(projects.dev.core.domain)
-
-            // Firebase Auth — endi bevosita ishlatilmaydi (SessionProvider orqali), lekin
-            // boshqa modullar uchun BOM'ni buzmaslik uchun qoldiriladi.
-            implementation(libs.gitlive.firebase.auth)
-        }
-
-        androidMain.dependencies {
-            // GitLive'ning Android artefaktlari Firebase SDK versiyalarini BOM'dan oladi.
-            implementation(project.dependencies.platform(libs.firebase.bom))
-            implementation(libs.firebase.auth)
         }
     }
 }

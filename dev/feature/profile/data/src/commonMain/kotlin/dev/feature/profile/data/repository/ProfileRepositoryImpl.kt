@@ -8,6 +8,7 @@ import dev.core.database.sql.ElonUzDatabase
 import dev.feature.profile.data.mapper.toDomain
 import dev.feature.profile.data.remote.ProfileRemoteDataSource
 import dev.core.domain.repository.SessionProvider
+import dev.core.domain.repository.SettingsRepository
 import dev.feature.profile.domain.model.UserProfile
 import dev.feature.profile.domain.repository.ProfileExistence
 import dev.feature.profile.domain.repository.ProfileRepository
@@ -20,7 +21,7 @@ import kotlinx.coroutines.withContext
  *
  * UI **faqat** local DB'ni (`ProfileEntity`) kuzatadi — shu sabab tarmoq bo'lmasa ham
  * profil ko'rinadi. [refresh]/[saveProfile] masofaviy manba bilan gaplashib keshni yangilaydi.
- * Masofaviy manba REST'mi yoki Firestore'mi — bu klass bilmaydi ([ProfileRemoteDataSource]).
+ * Masofaviy manba qaysi ekanini bu klass bilmaydi ([ProfileRemoteDataSource]).
  */
 class ProfileRepositoryImpl(
     private val db: ElonUzDatabase,
@@ -31,7 +32,7 @@ class ProfileRepositoryImpl(
 
     private val q get() = db.profileQueries
 
-    /** Kesh kaliti — joriy sessiya uid (prod: Firebase; local: dev-user). */
+    /** Kesh kaliti — joriy sessiya uid (access-token JWT `sub`). */
     private val currentUid: String? get() = session.currentUid()
 
     override fun observeProfile(): Flow<UserProfile?> =
@@ -98,8 +99,16 @@ class ProfileRepositoryImpl(
         q.selectCurrent().executeAsOneOrNull()?.toDomain()
     }
 
-    /** Bitta joriy-profil qatorini yozadi (avval eskisini o'chirib). */
+    /**
+     * Bitta joriy-profil qatorini yozadi (avval eskisini o'chirib).
+     *
+     * [p] masofaviy manbadan kelgan profil, unda `businessName`/`businessType`/`email` **doim
+     * `null`**: backend sxemasida bunday maydonlar yo'q (ProfileMappers.kt izohiga qarang).
+     * Shuning uchun ular keshdagi eski qatordan olib qolinadi — aks holda har `refresh()` yoki
+     * `saveProfile()` chaqirig'i faqat local yashaydigan bu ma'lumotni o'chirib yuborardi.
+     */
     private suspend fun cache(uid: String, p: UserProfile) = withContext(dispatchers.io) {
+        val cached = q.selectCurrent().executeAsOneOrNull()
         q.transaction {
             q.clear()
             q.upsert(
@@ -107,16 +116,21 @@ class ProfileRepositoryImpl(
                 firstName = p.firstName,
                 lastName = p.lastName,
                 phoneNumber = p.phoneNumber,
+                gender = p.gender,
                 role = p.role,
                 universityId = p.universityId,
                 universityEmail = p.universityEmail,
                 birthYear = p.birthYear?.toLong(),
                 courseYear = p.courseYear,
                 avatarUrl = p.avatarUrl,
-                businessName = p.businessName,
-                businessType = p.businessType,
-                email = p.email,
+                businessName = p.businessName ?: cached?.businessName,
+                businessType = p.businessType ?: cached?.businessType,
+                email = p.email ?: cached?.email,
             )
+            // Jins — biznes turlari/kategoriyalarni moslaydi (`GET /business/types?gender=`).
+            // Uni kirish paytida auth ham ko'chiradi, ammo profil tahrirlanganda qiymat shu
+            // yerda yangilanmasa ro'yxat eski jinsga qarab filtrlanib qolardi.
+            p.gender?.let { db.appSettingQueries.upsert(SettingsRepository.KEY_GENDER, it) }
         }
     }
 }

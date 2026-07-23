@@ -65,4 +65,5 @@
 
     <string name="business_profile_title">Profil</string>
     <string name="business_profile_no_contact">Aloqa ma'lumoti kiritilmagan</string>
+    <string name="business_welcome_password_label">Parol</string>
 </resources>

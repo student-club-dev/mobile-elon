@@ -21,7 +21,7 @@ import kotlinx.serialization.Serializable
  * `User-Agent` ni talab qiladi va soniyasiga 1 so'rovdan ko'p yubormaslikni so'raydi;
  * bizda so'rov faqat foydalanuvchi xaritada nuqta tanlaganda ketadi, shuning uchun yetarli.
  *
- * MUHIM: bu klient ilovaning umumiy Ktor klienti EMAS — u har so'rovga Firebase Bearer
+ * MUHIM: bu klient ilovaning umumiy Ktor klienti EMAS — u har so'rovga sessiya Bearer
  * tokenini qo'shadi va bazaviy manzili `api.elon.uz`. Nominatim'ga o'z klienti kerak.
  */
 class NominatimGeoRepository(

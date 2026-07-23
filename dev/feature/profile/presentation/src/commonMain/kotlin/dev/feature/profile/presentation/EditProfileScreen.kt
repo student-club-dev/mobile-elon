@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.core.common.error.FormError
 import dev.core.domain.model.University
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.BackButton
@@ -51,10 +52,13 @@ import dev.core.uikit.resources.profile_course_4
 import dev.core.uikit.resources.profile_course_master
 import dev.core.uikit.resources.profile_field_course
 import dev.core.uikit.resources.profile_field_first_name
+import dev.core.uikit.resources.profile_field_gender
 import dev.core.uikit.resources.profile_field_last_name
 import dev.core.uikit.resources.profile_field_phone
 import dev.core.uikit.resources.profile_field_phone_placeholder
 import dev.core.uikit.resources.profile_field_university
+import dev.core.uikit.resources.profile_gender_female
+import dev.core.uikit.resources.profile_gender_male
 import dev.core.uikit.resources.profile_saving
 import dev.core.uikit.resources.profile_university_select
 import dev.core.uikit.theme.AppPalette
@@ -74,16 +78,40 @@ import dev.core.uikit.util.UZ_DIALING_CODE
 import dev.core.uikit.util.nationalPhoneDigits
 import dev.core.uikit.util.fullUzPhoneOrNull
 
-/** Kurs tanlash varianti — yorlig'i resursdan olinadi. */
-private data class CourseOption(val value: String, val label: StringResource)
+/** Chip tanlovi (kurs, jins) — qiymat serverga ketadi, yorlig'i resursdan olinadi. */
+private data class ChipOption(val value: String, val label: StringResource)
 
 private val courseOptions = listOf(
-    CourseOption("1", Res.string.profile_course_1),
-    CourseOption("2", Res.string.profile_course_2),
-    CourseOption("3", Res.string.profile_course_3),
-    CourseOption("4", Res.string.profile_course_4),
-    CourseOption("MASTER", Res.string.profile_course_master),
+    ChipOption("1", Res.string.profile_course_1),
+    ChipOption("2", Res.string.profile_course_2),
+    ChipOption("3", Res.string.profile_course_3),
+    ChipOption("4", Res.string.profile_course_4),
+    ChipOption("MASTER", Res.string.profile_course_master),
 )
+
+/** Qiymatlar spec'dagi `GenderDto` bilan bir xil ("MALE" | "FEMALE"). */
+private val genderOptions = listOf(
+    ChipOption("MALE", Res.string.profile_gender_male),
+    ChipOption("FEMALE", Res.string.profile_gender_female),
+)
+
+/**
+ * Backend 422 da qaytaradigan maydon nomlari — `UpdateProfileDto` bilan bir xil
+ * (qarang: `ProfileMappers.toUpdateRequest`). Xatolarni to'g'ri maydon ostiga qo'yish uchun
+ * kalitlar aynan shu yerda, bitta joyda saqlanadi.
+ */
+private object ProfileField {
+    const val FIRST_NAME = "firstName"
+    const val LAST_NAME = "lastName"
+    const val PHONE = "phoneNumber"
+    const val GENDER = "gender"
+    const val UNIVERSITY = "universityId"
+    const val UNIVERSITY_EMAIL = "universityEmail"
+    const val COURSE = "courseYear"
+
+    /** Forma ko'rsata oladigan kalitlar — qolganlari umumiy xabar bilan birga chiqadi. */
+    val known = setOf(FIRST_NAME, LAST_NAME, PHONE, GENDER, UNIVERSITY, UNIVERSITY_EMAIL, COURSE)
+}
 
 /**
  * Profilni tahrirlash ekrani (A2/C2). Local keshdagi profilni prefill qiladi,
@@ -106,12 +134,24 @@ fun EditProfileScreen(
     var firstName by remember(profile) { mutableStateOf(profile?.firstName.orEmpty()) }
     var lastName by remember(profile) { mutableStateOf(profile?.lastName.orEmpty()) }
     var phone by remember(profile) { mutableStateOf(nationalPhoneDigits(profile?.phoneNumber)) }
+    var gender by remember(profile) { mutableStateOf(profile?.gender) }
     var universityId by remember(profile) { mutableStateOf(profile?.universityId) }
     var courseYear by remember(profile) { mutableStateOf(profile?.courseYear) }
 
     var uniExpanded by remember { mutableStateOf(false) }
     var saving by remember { mutableStateOf(false) }
-    var error by remember { mutableStateOf<String?>(null) }
+    // Backend 422 qaytarsa xato maydonlar bo'yicha taqsimlanadi (`FormError.fields`),
+    // maydonga bog'lanmagani esa forma tagida ko'rinadi.
+    var error by remember { mutableStateOf<FormError?>(null) }
+
+    // Foydalanuvchi maydonni tuzatishga kirishishi bilan o'sha maydonning xatosi yo'qoladi;
+    // qolganlari joyida turadi — bitta saqlashда bir nechta maydon xato bo'lishi mumkin.
+    val clearFieldError: (String) -> Unit = { key ->
+        val current = error
+        if (current != null && key in current.fields) {
+            error = current.copy(fields = current.fields - key)
+        }
+    }
 
     // Avatar: tanlangan rasm darrov ko'rinadi, ayni paytda fon rejimida serverga yuklanadi.
     var avatarPreview by remember { mutableStateOf<ImageBitmap?>(null) }
@@ -200,22 +240,49 @@ fun EditProfileScreen(
             Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
+            // Maydon xatolari kaliti — `PUT /profile/me` tanasidagi maydon nomi bilan bir xil.
+            val fieldErrors = error?.fields.orEmpty()
+
             val firstNameLabel = stringResource(Res.string.profile_field_first_name)
             FieldLabel(firstNameLabel, palette = palette)
-            GlassTextField(firstName, { firstName = it }, firstNameLabel, leading = AppIcons.Pencil, type = AppFieldType.LatinText)
+            GlassTextField(
+                firstName,
+                { firstName = it; clearFieldError(ProfileField.FIRST_NAME) },
+                firstNameLabel,
+                leading = AppIcons.Pencil,
+                type = AppFieldType.LatinText,
+            )
+            FieldError(fieldErrors[ProfileField.FIRST_NAME], palette)
 
             val lastNameLabel = stringResource(Res.string.profile_field_last_name)
             FieldLabel(lastNameLabel, palette = palette)
-            GlassTextField(lastName, { lastName = it }, lastNameLabel, leading = AppIcons.Pencil, type = AppFieldType.LatinText)
+            GlassTextField(
+                lastName,
+                { lastName = it; clearFieldError(ProfileField.LAST_NAME) },
+                lastNameLabel,
+                leading = AppIcons.Pencil,
+                type = AppFieldType.LatinText,
+            )
+            FieldError(fieldErrors[ProfileField.LAST_NAME], palette)
 
             FieldLabel(stringResource(Res.string.profile_field_phone), palette = palette)
             GlassTextField(
                 phone,
-                { phone = it },
+                { phone = it; clearFieldError(ProfileField.PHONE) },
                 stringResource(Res.string.profile_field_phone_placeholder),
                 leadingContent = { Text(UZ_DIALING_CODE, style = AppType.bodyStrong.copy(color = palette.ink)) },
                 type = AppFieldType.UzPhone,
             )
+            FieldError(fieldErrors[ProfileField.PHONE], palette)
+
+            // Jins — talaba ham, biznes egasi ham to'ldiradi: u biznes turlari va
+            // kategoriyalar ro'yxatini filtrlaydi (`GET /business/types?gender=`).
+            FieldLabel(stringResource(Res.string.profile_field_gender), palette = palette)
+            ChipRow(genderOptions, selected = gender, palette = palette) {
+                gender = it
+                clearFieldError(ProfileField.GENDER)
+            }
+            FieldError(fieldErrors[ProfileField.GENDER], palette)
 
             if (showStudentFields) {
                 // Universitet tanlash
@@ -249,36 +316,38 @@ fun EditProfileScreen(
                             UniversityRow(uni, selected = uni.id == universityId, palette = palette) {
                                 universityId = uni.id
                                 uniExpanded = false
+                                clearFieldError(ProfileField.UNIVERSITY)
                             }
                         }
                     }
                 }
+                FieldError(fieldErrors[ProfileField.UNIVERSITY], palette)
+                FieldError(fieldErrors[ProfileField.UNIVERSITY_EMAIL], palette)
 
                 // Kurs tanlash
                 FieldLabel(stringResource(Res.string.profile_field_course), palette = palette)
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
-                    courseOptions.forEach { opt ->
-                        val active = opt.value == courseYear
-                        Box(
-                            // Tanlangani ochiq ko'k aksent fonda; chegara o'rniga soya.
-                            Modifier.weight(1f).height(42.dp).rowShadow(AppRadius.md).clip(AppRadius.md)
-                                .background(if (active) palette.accentBg else palette.card)
-                                .clickable { courseYear = opt.value },
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(
-                                stringResource(opt.label),
-                                style = AppType.hint.copy(
-                                    fontWeight = AppType.fieldLabel.fontWeight,
-                                    color = if (active) palette.primary else palette.inkMuted,
-                                ),
-                            )
-                        }
-                    }
+                ChipRow(courseOptions, selected = courseYear, palette = palette) {
+                    courseYear = it
+                    clearFieldError(ProfileField.COURSE)
                 }
+                FieldError(fieldErrors[ProfileField.COURSE], palette)
             }
 
-            error?.let { InlineErrorText(it, palette = palette) }
+            // Forma ko'rsata oladigan kalitlar — biznes oqimida talaba maydonlari yo'q.
+            val shownKeys = if (showStudentFields) {
+                ProfileField.known
+            } else {
+                ProfileField.known - ProfileField.UNIVERSITY -
+                    ProfileField.UNIVERSITY_EMAIL - ProfileField.COURSE
+            }
+            // Umumiy xabar — maydon ostida ko'rinadigan xato bo'lmaganda (takrorlamaslik uchun).
+            if (fieldErrors.keys.none { it in shownKeys }) {
+                error?.let { InlineErrorText(it.message, palette = palette) }
+            }
+            // Formaga tegishsiz (noma'lum yoki yashirilgan) maydon xatolari jim yo'qolmasin.
+            fieldErrors.filterKeys { it !in shownKeys }.forEach { (key, text) ->
+                InlineErrorText("$key: $text", palette = palette)
+            }
 
             Spacer(Modifier.height(AppSpacing.xs))
             PrimaryButton(
@@ -291,6 +360,7 @@ fun EditProfileScreen(
                         firstName = firstName.trim().ifBlank { null },
                         lastName = lastName.trim().ifBlank { null },
                         phoneNumber = fullUzPhoneOrNull(phone),
+                        gender = gender,
                         universityId = universityId,
                         courseYear = courseYear,
                     )
@@ -301,6 +371,42 @@ fun EditProfileScreen(
                 },
             )
             Spacer(Modifier.height(28.dp))
+        }
+    }
+}
+
+/** Maydon ostidagi xato — backend shu maydon uchun xato qaytarmagan bo'lsa hech narsa chizmaydi. */
+@Composable
+private fun FieldError(message: String?, palette: AppPalette) {
+    if (message != null) InlineErrorText(message, palette = palette)
+}
+
+/** Bir qatorli tanlov (kurs, jins) — variantlar teng kenglikda taqsimlanadi. */
+@Composable
+private fun ChipRow(
+    options: List<ChipOption>,
+    selected: String?,
+    palette: AppPalette,
+    onSelect: (String) -> Unit,
+) {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
+        options.forEach { opt ->
+            val active = opt.value == selected
+            Box(
+                // Tanlangani ochiq ko'k aksent fonda; chegara o'rniga soya.
+                Modifier.weight(1f).height(42.dp).rowShadow(AppRadius.md).clip(AppRadius.md)
+                    .background(if (active) palette.accentBg else palette.card)
+                    .clickable { onSelect(opt.value) },
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    stringResource(opt.label),
+                    style = AppType.hint.copy(
+                        fontWeight = AppType.fieldLabel.fontWeight,
+                        color = if (active) palette.primary else palette.inkMuted,
+                    ),
+                )
+            }
         }
     }
 }

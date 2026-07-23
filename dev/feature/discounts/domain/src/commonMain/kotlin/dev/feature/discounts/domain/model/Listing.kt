@@ -219,6 +219,22 @@ data class ListingBranch(
     /** Teskari geokodlashdan topilgan bo'lsa — [GeoCatalog] dagi id'lar. */
     val regionId: String? = null,
     val districtId: String? = null,
+    /**
+     * Filial savdo markazi ichida bo'lsa — markaz id'si (`GET /v1/trade-centers`).
+     * `null` — alohida bino/ko'chada.
+     */
+    val tradeCenterId: String? = null,
+    val tradeCenterName: String? = null,
+    /**
+     * Savdo markazining dinamik maydonlari (qator, do'kon raqami...) — **ko'rsatish** uchun,
+     * `label → qiymat` (backend `BranchDto.tradeCenterFields` shu shaklda qaytaradi).
+     */
+    val tradeCenterFields: Map<String, String> = emptyMap(),
+    /**
+     * O'sha maydonlarning **yozish** uchun shakli: `fieldId → qiymat`
+     * (backend `BranchRequestDto.tradeCenterFields` id kutadi).
+     */
+    val tradeCenterFieldIds: Map<String, String> = emptyMap(),
 ) {
     /** Koordinata O'zbekiston chegarasida bo'lishi kerak (spec §6.6). */
     val hasValidCoordinates: Boolean

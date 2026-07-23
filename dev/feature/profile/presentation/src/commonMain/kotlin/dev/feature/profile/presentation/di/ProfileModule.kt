@@ -20,18 +20,20 @@ import org.koin.dsl.module
 /**
  * Profil feature'ining barcha qatlamlarini bog'laydi (domain / data / presentation).
  *
- * Profil **backenddan** keladi (`/profile/me`, OpenAPI'dan generatsiya qilingan [ProfileApi]).
+ * Profil **backenddan** keladi (`/v1/profile/me`, OpenAPI'dan generatsiya qilingan [ProfileApi]).
  * Backend javob bermasa profil local keshда ishlaydi va tahrirlash `Success` qaytaradi
  * ([FallbackProfileRemoteDataSource]) — shuning uchun rejim bayrog'i kerak emas.
  */
 fun profileModule() = module {
 
     // Generatsiya qilingan klientga ilovaning umumiy Ktor klienti uzatiladi —
-    // shunda Firebase ID token (Bearer) har so'rovga avtomatik qo'shiladi.
+    // shunda sessiya tokeni (Bearer) har so'rovga avtomatik qo'shiladi.
     single { ProfileApi(baseUrl = get<NetworkConfig>().baseUrl, httpClient = get<HttpClient>()) }
 
+    // Rasm yuklash umumiy endpoint orqali (`POST /v1/media/upload`) — MediaApi
+    // `discountsModule()` da ham ro'yxatdan o'tadi, Koin bitta nusxani ulashadi.
     single<ProfileRemoteDataSource> {
-        FallbackProfileRemoteDataSource(ApiProfileRemoteDataSource(get()))
+        FallbackProfileRemoteDataSource(ApiProfileRemoteDataSource(get(), get()))
     }
 
     single<ProfileRepository> { ProfileRepositoryImpl(get(), get(), get(), get()) }

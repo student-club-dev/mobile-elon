@@ -1,0 +1,4 @@
+-- Migratsiya v13 -> v14
+-- Profil jinsi (`GET /v1/profile/me` → `gender`) local keshda ham saqlanadi: biznes turlari
+-- ro'yxati shunga qarab filtrlanadi (`GET /v1/business/types?gender=`).
+ALTER TABLE ProfileEntity ADD COLUMN gender TEXT;

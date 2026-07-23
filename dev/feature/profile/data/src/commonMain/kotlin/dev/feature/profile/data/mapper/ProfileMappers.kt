@@ -2,8 +2,9 @@ package dev.feature.profile.data.mapper
 
 import dev.core.database.sql.ProfileEntity
 import dev.core.network.generated.model.CourseYearDto
+import dev.core.network.generated.model.GenderDto
 import dev.core.network.generated.model.ProfileRoleDto
-import dev.core.network.generated.model.UpdateProfileRequestDto
+import dev.core.network.generated.model.UpdateProfileDto
 import dev.core.network.generated.model.UserProfileDto
 import dev.feature.profile.domain.model.UserProfile
 
@@ -15,6 +16,7 @@ fun ProfileEntity.toDomain(): UserProfile = UserProfile(
     firstName = firstName,
     lastName = lastName,
     phoneNumber = phoneNumber,
+    gender = gender,
     role = role,
     universityId = universityId,
     universityEmail = universityEmail,
@@ -34,6 +36,7 @@ fun UserProfileDto.toDomain(): UserProfile = UserProfile(
     firstName = firstName,
     lastName = lastName,
     phoneNumber = phoneNumber,
+    gender = gender?.value,
     role = role?.value,
     universityId = universityId,
     universityEmail = universityEmail,
@@ -42,10 +45,17 @@ fun UserProfileDto.toDomain(): UserProfile = UserProfile(
     avatarUrl = avatarUrl,
 )
 
-fun UserProfile.toUpdateRequest(): UpdateProfileRequestDto = UpdateProfileRequestDto(
+/**
+ * Domen profil → `PUT /profile/me` tanasi.
+ *
+ * `businessName`/`businessType`/`email` bu yerda YO'Q: backend profil sxemasida bunday maydonlar
+ * yo'q (biznes ma'lumoti alohida `/business` resursida). Ular faqat local keshda saqlanadi.
+ */
+fun UserProfile.toUpdateRequest(): UpdateProfileDto = UpdateProfileDto(
     firstName = firstName,
     lastName = lastName,
     phoneNumber = phoneNumber,
+    gender = gender?.toGenderDto(),
     role = role?.toRoleDto(),
     universityId = universityId,
     universityEmail = universityEmail,
@@ -60,3 +70,6 @@ private fun String.toRoleDto(): ProfileRoleDto? =
 
 private fun String.toCourseYearDto(): CourseYearDto? =
     CourseYearDto.entries.firstOrNull { it.value == this }
+
+private fun String.toGenderDto(): GenderDto? =
+    GenderDto.entries.firstOrNull { it.value == this }

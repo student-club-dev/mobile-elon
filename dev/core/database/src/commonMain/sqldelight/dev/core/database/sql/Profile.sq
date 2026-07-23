@@ -6,6 +6,8 @@ CREATE TABLE ProfileEntity (
     firstName TEXT,
     lastName TEXT,
     phoneNumber TEXT,
+    -- "MALE" | "FEMALE" — biznes turlari/kategoriyalar ro'yxatini moslaydi
+    gender TEXT,
     role TEXT,
     universityId TEXT,
     universityEmail TEXT,
@@ -24,8 +26,8 @@ SELECT * FROM ProfileEntity LIMIT 1;
 
 upsert:
 INSERT OR REPLACE INTO ProfileEntity(
-    uid, firstName, lastName, phoneNumber, role, universityId, universityEmail, birthYear, courseYear, avatarUrl, businessName, businessType, email
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    uid, firstName, lastName, phoneNumber, gender, role, universityId, universityEmail, birthYear, courseYear, avatarUrl, businessName, businessType, email
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 clear:
 DELETE FROM ProfileEntity;

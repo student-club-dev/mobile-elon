@@ -238,4 +238,9 @@
     <string name="auth_ad_submit">Разместить объявление</string>
 
     <string name="auth_settings_section_language">Язык</string>
+    <string name="auth_forgot_phone_subtitle">Введите номер телефона — пришлём код восстановления по SMS.</string>
+    <string name="auth_reset_title">Новый пароль</string>
+    <string name="auth_reset_subtitle">Введите код из SMS и придумайте новый пароль.</string>
+    <string name="auth_reset_submit">Обновить пароль</string>
+    <string name="auth_otp_skip">Подтвердить позже</string>
 </resources>

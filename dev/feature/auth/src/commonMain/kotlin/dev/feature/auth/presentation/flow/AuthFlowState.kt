@@ -1,71 +1,32 @@
 package dev.feature.auth.presentation.flow
 
-/** Ro'yxatdan o'tuvchi roli. */
+/** Ro'yxatdan o'tuvchi roli. ElonUz — biznes ilovasi, lekin ildiz router shu turni ishlatadi. */
 enum class Role { STUDENT, BUSINESS, EMPLOYER, UNIVERSITY }
 
-/** Kurs bosqichi. */
-enum class CourseYear(val label: String) {
-    ONE("1"), TWO("2"), THREE("3"), FOUR("4"), MASTER("Mag")
-}
-
-/** Universitet ma'lumoti (placeholder — keyin API/JSON bilan almashtiriladi). */
-data class University(
-    val id: String,
-    val name: String,
-    val city: String,
-    val monogram: String,
-    val accent: Long,
-)
-
-/** Statik namunaviy universitetlar ro'yxati. */
-val sampleUniversities: List<University> = listOf(
-    University("tatu", "TATU — al-Xorazmiy nomidagi", "Toshkent shahri", "TA", 0xFF6C47FF),
-    University("nuu", "O‘zbekiston Milliy Universiteti", "Toshkent shahri", "NU", 0xFF2563EB),
-    University("tdiu", "Toshkent Davlat Iqtisodiyot U.", "Toshkent shahri", "TD", 0xFF059669),
-    University("tpi", "Toshkent Politexnika Instituti", "Toshkent shahri", "TP", 0xFFD97706),
-    University("tta", "Toshkent Tibbiyot Akademiyasi", "Toshkent shahri", "TT", 0xFFBE185D),
-    University("samdu", "Samarqand Davlat Universiteti", "Samarqand", "SD", 0xFF6C47FF),
-    University("buxdu", "Buxoro Davlat Universiteti", "Buxoro", "BD", 0xFF2563EB),
-    University("qarshi", "Qarshi Davlat Universiteti", "Qarshi", "QD", 0xFF059669),
-    University("namdu", "Namangan Davlat Universiteti", "Namangan", "ND", 0xFFD97706),
-    University("ferpi", "Farg‘ona Politexnika Instituti", "Farg‘ona", "FP", 0xFFBE185D),
-    University("inha", "Inha University in Tashkent", "Toshkent shahri", "IU", 0xFF6C47FF),
-    University("wiut", "Westminster University", "Toshkent shahri", "WU", 0xFF2563EB),
-    University("turin", "Turin Politexnika Universiteti", "Toshkent shahri", "TU", 0xFF059669),
-    University("tatuff", "TATU Farg‘ona filiali", "Farg‘ona", "TF", 0xFFD97706),
-    University("adu", "Andijon Davlat Universiteti", "Andijon", "AD", 0xFFBE185D),
-)
+/**
+ * SMS kod nima uchun so'ralgani — bitta kod ekrani ikkala oqimga xizmat qiladi.
+ *
+ * Backend'da SMS kod **kirish usuli emas**: u faqat raqamni tasdiqlash
+ * (`/auth/business/otp/…`) va parolni tiklash (`/auth/business/password/…`) uchun.
+ */
+enum class OtpPurpose { VERIFY_PHONE, RESET_PASSWORD }
 
 /** Butun auth oqimining forma holati. */
 data class AuthFlowState(
-    // Aloqa
+    /** Telefon — faqat 9 xonali local qism ("901234567"), `+998` prefiksi UI'da. */
     val phone: String = "",
     val email: String = "",
     val password: String = "",
     val confirmPassword: String = "",
     val passwordVisible: Boolean = false,
-    val rememberMe: Boolean = true,
-    // OTP (telefon) va email kod
-    val otp: String = "",
-    val emailCode: String = "",
-    val resendSeconds: Int = 60,
-    // Ro'yxat
-    val firstName: String = "",
-    val lastName: String = "",
-    /** Jins — "MALE" | "FEMALE" | null (tanlanmagan). Biznes turlarini moslaydi. */
-    val gender: String? = null,
-    // ElonUz — faqat biznes ilovasi: rol har doim BUSINESS (tanlash ekrani yo'q).
-    val role: Role = Role.BUSINESS,
-    val universityEmail: String = "",
+    /** Ro'yxatdan o'tishda tanlangan usul — telefon yoki email. */
+    val registerWithEmail: Boolean = false,
     val termsAccepted: Boolean = false,
-    // Profil (talaba)
-    val universityId: String? = null,
-    val birthYear: Int = 2004,
-    val courseYear: CourseYear = CourseYear.TWO,
-    val universityQuery: String = "",
-    // Profil (biznes egasi) — rol BUSINESS bo'lganda
-    val businessName: String = "",
-    val businessType: String = "",
+    // SMS kod
+    val otp: String = "",
+    val otpPurpose: OtpPurpose = OtpPurpose.VERIFY_PHONE,
+    /** Qayta yuborishgacha qolgan soniya (backend `resendCooldownSeconds` dan). */
+    val resendSeconds: Int = 0,
     // Umumiy
     val isLoading: Boolean = false,
     val error: String? = null,
@@ -73,14 +34,28 @@ data class AuthFlowState(
 ) {
     val phoneDigits: String get() = phone.filter { it.isDigit() }.take(9)
     val phoneValid: Boolean get() = phoneDigits.length == 9
-    val otpValid: Boolean get() = otp.length == 6
-    val emailCodeValid: Boolean get() = emailCode.length == 6
-    val selectedUniversity: University? get() = sampleUniversities.firstOrNull { it.id == universityId }
+    val otpValid: Boolean get() = otp.length == OTP_CODE_LENGTH
 
-    val filteredUniversities: List<University>
-        get() = if (universityQuery.isBlank()) sampleUniversities
-        else sampleUniversities.filter {
-            it.name.contains(universityQuery, ignoreCase = true) ||
-                it.city.contains(universityQuery, ignoreCase = true)
-        }
+    /** Kirish tugmasi faolmi — telefon to'liq va parol bo'sh emas. */
+    val phoneLoginReady: Boolean get() = phoneValid && password.isNotBlank() && !isLoading
+
+    /** Email bilan kirish tayyormi. */
+    val emailLoginReady: Boolean get() = email.contains('@') && password.isNotBlank() && !isLoading
+
+    /** Ro'yxatdan o'tish tayyormi — usulga mos maydon to'ldirilgan va parollar mos. */
+    val registerReady: Boolean
+        get() = !isLoading && termsAccepted &&
+            password.length >= MIN_PASSWORD_LENGTH && password == confirmPassword &&
+            if (registerWithEmail) email.contains('@') else phoneValid
+
+    /** Parolni tiklash tayyormi — kod to'liq va yangi parollar mos. */
+    val resetReady: Boolean
+        get() = !isLoading && otpValid &&
+            password.length >= MIN_PASSWORD_LENGTH && password == confirmPassword
 }
+
+/** Backend 6 xonali kod yuboradi. */
+const val OTP_CODE_LENGTH = 6
+
+/** Backend `RegisterDto.password.minLength` bilan bir xil. */
+const val MIN_PASSWORD_LENGTH = 8

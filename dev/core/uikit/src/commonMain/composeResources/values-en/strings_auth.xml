@@ -238,4 +238,9 @@
     <string name="auth_ad_submit">Publish listing</string>
 
     <string name="auth_settings_section_language">Language</string>
+    <string name="auth_forgot_phone_subtitle">Enter your phone number — we'll text you a reset code.</string>
+    <string name="auth_reset_title">New password</string>
+    <string name="auth_reset_subtitle">Enter the code from the SMS and choose a new password.</string>
+    <string name="auth_reset_submit">Update password</string>
+    <string name="auth_otp_skip">Verify later</string>
 </resources>

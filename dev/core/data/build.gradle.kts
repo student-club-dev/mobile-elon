@@ -24,6 +24,13 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
         }
+        androidMain.dependencies {
+            // Sessiya tokenlari EncryptedSharedPreferences'da saqlanadi (Android Keystore).
+            implementation(libs.androidx.security.crypto)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
     }
 }
 

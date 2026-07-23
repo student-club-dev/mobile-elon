@@ -6,7 +6,9 @@ import dev.core.common.error.AppException
 import dev.core.common.error.toAppException
 import dev.core.common.network.NetworkConnectivity
 import io.ktor.client.plugins.ClientRequestException
+import io.ktor.client.plugins.ResponseException
 import io.ktor.client.plugins.ServerResponseException
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.CancellationException
 
@@ -49,7 +51,7 @@ private suspend fun <T> runSafely(
     } catch (e: AppException) {
         errorOf(e) // checker allaqachon typed tashlagan
     } catch (e: ClientRequestException) {
-        errorOf(e.response.status.toAppException(e)) // 4xx
+        errorOf(e.toAppExceptionWithFields()) // 4xx — 422 maydon xatolari bilan
     } catch (e: ServerResponseException) {
         errorOf(AppException.Server(e.response.status.value, e)) // 5xx
     } catch (e: Throwable) {
@@ -58,13 +60,40 @@ private suspend fun <T> runSafely(
     }
 }
 
-/** HTTP status kodini typed [AppException] ga aylantiradi. */
+/**
+ * 4xx javobning **tanasini o'qib** typed xato quradi.
+ *
+ * `expectSuccess = true` bo'lgani uchun non-2xx javoblar [EnvelopeUnwrapPlugin] gacha yetmaydi —
+ * Ktor ularni shu istisno bilan tashlaydi. Ammo aynan 422 tanasida backend eng qimmatli
+ * ma'lumotni beradi: `{"error": {"message": ..., "fields": {"phoneNumber": "..."}}}`. Tanani
+ * bu yerda o'qib, [AppException.Validation.fields] ga o'tkazamiz — aks holda foydalanuvchi
+ * faqat "So'rov noto'g'ri" degan umumiy xabarni ko'rardi.
+ *
+ * Istisnodagi javob — `save()` qilingan nusxa (Ktor tanani xotirada saqlaydi), shuning uchun
+ * uni qayta o'qish xavfsiz. O'qib bo'lmasa yoki tana konvert bo'lmasa — status bo'yicha zaxira.
+ */
+suspend fun ResponseException.toAppExceptionWithFields(): AppException {
+    val status = response.status
+    val body = runCatching { response.bodyAsText() }.getOrNull().orEmpty()
+    val parsed = parseErrorEnvelope(body, status.value) ?: return status.toAppException(this)
+    // Konvertda `cause` yo'q — asl istisnoni log/telemetriya uchun saqlab qo'yamiz.
+    return if (parsed is AppException.Validation) {
+        AppException.Validation(parsed.reason, parsed.fields, this)
+    } else {
+        parsed
+    }
+}
+
+/** HTTP status kodini typed [AppException] ga aylantiradi (javob tanasisiz — zaxira yo'l). */
 fun HttpStatusCode.toAppException(cause: Throwable? = null): AppException = when (value) {
     401 -> AppException.Unauthorized(cause)
     403 -> AppException.PermissionDenied(cause)
     404 -> AppException.NotFound(cause)
     408 -> AppException.Timeout(cause)
-    in 400..499 -> AppException.Validation(description.ifBlank { "So'rov noto'g'ri." }, cause)
+    in 400..499 -> AppException.Validation(
+        reason = description.ifBlank { "So'rov noto'g'ri." },
+        cause = cause,
+    )
     in 500..599 -> AppException.Server(value, cause)
     else -> AppException.Unknown(cause = cause)
 }

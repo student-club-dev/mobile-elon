@@ -13,7 +13,7 @@ import io.ktor.client.request.get
  * Chegirmalar uchun masofaviy (backend) manba — B4 offline-first shablonining tarmoq qismi.
  *
  * Repository shu interfeys orqali serverdan oladi va local DB'ga yozadi. Ktor klientiga
- * Firebase ID token allaqachon avtomatik qo'shiladi (B3). Boshqa domenlar (Jobs, Students...)
+ * Sessiya tokeni allaqachon avtomatik qo'shiladi (B3). Boshqa domenlar (Jobs, Students...)
  * aynan shu shakldan nusxa oladi.
  */
 interface DiscountRemoteDataSource {

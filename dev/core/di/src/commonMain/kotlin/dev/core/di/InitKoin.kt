@@ -11,7 +11,7 @@ import org.koin.dsl.KoinAppDeclaration
  * Ilovaning barcha Koin modullari. Har yangi feature o'z modulini shu yerga qo'shadi.
  *
  * `profileModule` va `discountsModule` har doim backend bilan ishlaydi; javob kelmasa
- * har biri o'z zaxirasiga tushadi (Firestore faqat ilovaga kirish uchun qoladi).
+ * har biri o'z zaxirasiga tushadi (klient katalogi / local baza).
  */
 fun appModules() = coreModules() +
     authFeatureModule +

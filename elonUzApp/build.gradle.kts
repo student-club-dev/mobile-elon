@@ -5,22 +5,11 @@ plugins {
     alias(libs.plugins.compose.compiler)
 }
 
-// google-services plagini root'da `apply false` bilan classpath'da turadi. Uni faqat
-// google-services.json shu papkada bo'lgandagina ulaymiz — shunda Firebase sozlanmagunча
-// ham loyiha build bo'laveradi. `uz.elonuz.app` package Firebase'da ro'yxatdan o'tib,
-// yangi google-services.json shu yerga tashlangach — Google/Telefon login ishlaydi.
-if (file("google-services.json").exists()) {
-    apply(plugin = "com.google.gms.google-services")
-}
-
 android {
     namespace = "uz.elonuz"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        // ElonUz'ning o'z mustaqil package'i. Alohida Firebase loyihasida shu package
-        // (uz.elonuz.app) + debug SHA-1 ro'yxatdan o'tib, google-services.json shu papkaga
-        // tashlangach — Google/Telefon/Email login ishlaydi.
         applicationId = "uz.elonuz.app"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
@@ -60,10 +49,6 @@ dependencies {
     // release'да no-op: hech narsa qilmaydi, kod o'zgarmaydi.
     debugImplementation(libs.chucker)
     releaseImplementation(libs.chucker.noop)
-
-    // Firebase (Google + Phone auth) — google-services.json orqali sozlanadi
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)

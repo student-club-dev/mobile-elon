@@ -3,6 +3,8 @@ package dev.feature.profile.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.core.common.Resource
+import dev.core.common.error.FormError
+import dev.core.common.error.toFormError
 import dev.core.domain.model.Ad
 import dev.core.domain.model.DiscountOffer
 import dev.core.domain.model.JobApplication
@@ -113,13 +115,14 @@ class ProfileViewModel(
 
     /**
      * Profilni saqlaydi (masofaviy manba + local kesh). [onResult] `null` — muvaffaqiyat,
-     * aks holda xato matni. Kesh yangilangach `state` avtomatik yangilanadi.
+     * aks holda [FormError]: umumiy xabar **va** backend qaytargan maydon xatolari
+     * (`{"phoneNumber": "Noto'g'ri format"}`). Kesh yangilangach `state` avtomatik yangilanadi.
      */
-    fun saveProfile(updated: UserProfile, onResult: (String?) -> Unit) {
+    fun saveProfile(updated: UserProfile, onResult: (FormError?) -> Unit) {
         viewModelScope.launch {
             when (val res = saveProfileUseCase(updated)) {
                 is Resource.Success -> onResult(null)
-                is Resource.Error -> onResult(res.message)
+                is Resource.Error -> onResult(res.toFormError())
                 else -> onResult(null)
             }
         }

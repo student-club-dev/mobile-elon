@@ -107,7 +107,7 @@ class ChatViewModel(
         val id = selectedId.value ?: return
         val text = draft.value.trim()
         if (text.isEmpty()) return
-        // Haqiqiy vaqt — qurilmalararo to'g'ri tartib (Firestore real-time) va to'g'ri HH:mm yorlig'i.
+        // Haqiqiy vaqt — qurilmalararo to'g'ri tartib va to'g'ri HH:mm yorlig'i.
         val now = Clock.System.now()
         val createdAt = now.toEpochMilliseconds()
         val local = now.toLocalDateTime(TimeZone.currentSystemDefault())

@@ -1,6 +1,7 @@
 package dev.feature.profile.data.remote
 
 import dev.core.common.Resource
+import dev.core.common.error.AppException
 import dev.feature.profile.domain.model.UserProfile
 import dev.feature.profile.domain.repository.ProfileExistence
 import kotlin.io.encoding.Base64
@@ -25,10 +26,19 @@ class FallbackProfileRemoteDataSource(
     override suspend fun fetch(): Resource<UserProfile?> =
         runCatching { api.fetch() }.getOrNull() as? Resource.Success ?: Resource.Success(null)
 
-    /** Xatoда kiritilgan profil qaytadi — repository uni keshga yozadi va forma saqlanadi. */
-    override suspend fun save(profile: UserProfile): Resource<UserProfile> =
-        runCatching { api.save(profile) }.getOrNull() as? Resource.Success
-            ?: Resource.Success(profile)
+    /**
+     * Xatoда kiritilgan profil qaytadi — repository uni keshga yozadi va forma saqlanadi.
+     *
+     * **Istisno — validatsiya xatolari.** Backend "bu telefon raqami noto'g'ri" desa, buni
+     * yutib yuborib `Success` qaytarish yolg'on bo'lardi: forma yopilar, ma'lumot esa serverga
+     * yozilmagan bo'lardi. Zaxira faqat backend **yetib bo'lmaydigan** holat uchun.
+     */
+    override suspend fun save(profile: UserProfile): Resource<UserProfile> {
+        val result = runCatching { api.save(profile) }.getOrNull()
+        if (result is Resource.Success) return result
+        if (result is Resource.Error && result.error is AppException.Validation) return result
+        return Resource.Success(profile)
+    }
 
     /**
      * Bu yerда xatoni yutmaymiz: EXISTS/MISSING/ERROR shundaygina uzatiladi. Login yo'nalishida

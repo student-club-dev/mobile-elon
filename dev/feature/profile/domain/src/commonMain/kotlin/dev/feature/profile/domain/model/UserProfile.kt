@@ -1,7 +1,7 @@
 package dev.feature.profile.domain.model
 
 /**
- * Foydalanuvchining profil ma'lumotlari — Firebase Auth bermaydigan maydonlar.
+ * Foydalanuvchining profil ma'lumotlari (`GET/PUT /v1/profile/me`).
  *
  * Manba (offline-first):
  * - local kesh: SQLDelight `ProfileEntity` (yagona haqiqat UI uchun),

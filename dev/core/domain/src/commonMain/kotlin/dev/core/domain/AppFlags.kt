@@ -1,8 +1,10 @@
 package dev.core.domain
 
 /**
- * **Local test rejimi** — backend/Firebase'siz to'liq ishlaydi (barcha funksiyani sinash uchun).
- * Yoqilganда: dev-login (Firebase'siz kirish), katalog/biznes/chegirma local DB'dan (seed).
- * Haqiqiy backend tayyor bo'lганда **`false`** qiling — Api* repository'lar va Firebase auth qaytadi.
+ * **Local test rejimi** — backendsiz to'liq ishlaydi (barcha funksiyani sinash uchun).
+ * Yoqilganda: katalog/biznes/chegirma local DB'dan (seed ma'lumot) o'qiladi.
+ *
+ * Backend ulangач `false` — Api* repository'lar ishlaydi (`https://api.studentclub.uz/v1/`).
+ * Diqqat: kirish/ro'yxatdan o'tish bu bayroqqa BOG'LIQ EMAS — auth har doim backendда.
  */
-const val USE_LOCAL_DATA = true
+const val USE_LOCAL_DATA = false

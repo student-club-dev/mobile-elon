@@ -59,6 +59,9 @@
     <string name="profile_field_last_name">Familiya</string>
     <string name="profile_field_phone">Telefon</string>
     <string name="profile_field_phone_placeholder">90 123 45 67</string>
+    <string name="profile_field_gender">Jins</string>
+    <string name="profile_gender_male">Erkak</string>
+    <string name="profile_gender_female">Ayol</string>
     <string name="profile_field_university">Universitet</string>
     <string name="profile_university_select">Universitetni tanlang</string>
     <string name="profile_field_course">Kurs</string>

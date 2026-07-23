@@ -77,10 +77,12 @@ class DatabaseSchemaTest {
     }
 
     @Test
-    fun schemaVersionIsEleven() {
+    fun schemaVersionMatchesMigrationChain() {
         // 7.sqm — ListingEntity (chegirma e'lonlari), 8.sqm — ko'p filial (branchesJson),
-        // 9.sqm — biznes egasi profili (businessName/businessType), 10.sqm — profil emaili.
-        assertEquals(12L, ElonUzDatabase.Schema.version)
+        // 9.sqm — biznes egasi profili (businessName/businessType), 10.sqm — profil emaili,
+        // 11.sqm — ClubEntity tashlanadi, 12.sqm — UserEntity.userId olib tashlanadi,
+        // 13.sqm — ProfileEntity.gender qo'shiladi.
+        assertEquals(14L, ElonUzDatabase.Schema.version)
     }
 
     @Test
@@ -106,6 +108,7 @@ class DatabaseSchemaTest {
             firstName = "Quvonchbek",
             lastName = "G'afurov",
             phoneNumber = "+998901234567",
+            gender = "MALE",
             role = "STUDENT",
             universityId = "tuit",
             universityEmail = null,
@@ -118,6 +121,7 @@ class DatabaseSchemaTest {
         )
         val profile = db.profileQueries.selectCurrent().executeAsOne()
         assertEquals("Quvonchbek", profile.firstName)
+        assertEquals("MALE", profile.gender)
         assertEquals("tuit", profile.universityId)
         assertEquals(2004L, profile.birthYear)
         assertEquals("https://cdn.elon.uz/avatars/uid-1.jpg", profile.avatarUrl)
@@ -182,10 +186,12 @@ class DatabaseSchemaTest {
         assertNull(profile.avatarUrl) // v7 da qo'shilgan ustun — eski yozuvlarda bo'sh
 
         // ...sessiya esa UserEntity'da saqlanib qolgan (profil ustunlarisiz).
+        // v13 (12.sqm): raqamli `userId` olib tashlangan, qolgan ustunlar ko'chgan.
         val user = db.userQueries.selectCurrent().executeAsOne()
         assertEquals("uid-1", user.uid)
         assertEquals("Eski Foydalanuvchi", user.fullName)
-        assertEquals(7L, user.userId)
+        assertEquals("a@b.uz", user.email)
+        assertEquals("+998901234567", user.phoneNumber)
 
         // v8/v9 (7.sqm + 8.sqm): chegirma e'lonlari jadvali migratsiyadan keyin mavjud
         // va ko'p filialli (branchesJson) ustunga ega bo'lishi kerak.
@@ -266,6 +272,23 @@ class DatabaseSchemaTest {
                 birthYear INTEGER,
                 courseYear TEXT,
                 avatarUrl TEXT
+            )
+            """.trimIndent(),
+            0,
+        )
+
+        // v8 dagi UserEntity — 12.sqm uni `userId` ustunisiz qayta quradi.
+        driver.execute(
+            null,
+            """
+            CREATE TABLE UserEntity (
+                uid TEXT NOT NULL PRIMARY KEY,
+                userId INTEGER NOT NULL,
+                fullName TEXT NOT NULL,
+                email TEXT NOT NULL,
+                role TEXT NOT NULL,
+                phoneNumber TEXT,
+                photoUrl TEXT
             )
             """.trimIndent(),
             0,
