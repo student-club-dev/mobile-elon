@@ -1,0 +1,9 @@
+-- Migratsiya v14 -> v15
+-- "Onlayn havola" (`ONLINE_LINK`) usulida talaba chegirmani tashqi saytda ishlatadi va
+-- backend `redemption.url` ni kutadi (DISCOUNTS_BUSINESS_API.md §3.6). Qoralama saqlanib
+-- qayta ochilganda havola yo'qolmasligi uchun u local keshda ham ustunga tushadi.
+ALTER TABLE ListingEntity ADD COLUMN redemptionUrl TEXT;
+
+-- `redemption.perUserPeriod` — bir talabaga qo'yilgan limit qaysi davrga tegishli
+-- (DAY | WEEK | MONTH | TOTAL). Ilgari formada yo'q edi va doim server default'iga qolardi.
+ALTER TABLE ListingEntity ADD COLUMN perUserPeriod TEXT NOT NULL DEFAULT 'DAY';

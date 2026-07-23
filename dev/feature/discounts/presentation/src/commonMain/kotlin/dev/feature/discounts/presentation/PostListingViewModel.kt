@@ -19,18 +19,17 @@ import dev.feature.discounts.domain.model.ListingBranch
 import dev.feature.discounts.domain.model.ListingRedemption
 import dev.feature.discounts.domain.model.ListingStatus
 import dev.feature.discounts.domain.model.ListingValidator
+import dev.feature.discounts.domain.model.OptionGroup
+import dev.feature.discounts.domain.model.OptionItem
 import dev.feature.discounts.domain.model.PriceUnit
 import dev.feature.discounts.domain.model.RedemptionMethod
-import dev.feature.discounts.domain.repository.PlaceSuggestion
-import dev.feature.discounts.domain.usecase.CreateBranchFromPointUseCase
+import dev.feature.discounts.domain.model.RedemptionPeriod
+import dev.feature.discounts.domain.model.SelectionType
 import dev.feature.discounts.domain.usecase.GetCategoriesUseCase
 import dev.feature.discounts.domain.usecase.GetListingUseCase
 import dev.feature.discounts.domain.usecase.PublishListingUseCase
 import dev.feature.discounts.domain.usecase.SaveDraftUseCase
-import dev.feature.discounts.domain.usecase.SearchPlacesUseCase
 import dev.feature.discounts.domain.usecase.UploadListingImageUseCase
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -39,6 +38,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.toLocalDateTime
 
 /** E'lon qo'yish oqimi: avval biznes turi, keyin forma. */
 enum class PostListingStep { TYPE, FORM }
@@ -85,32 +89,42 @@ data class PostListingUiState(
     val images: List<String> = emptyList(),
     val uploadingImage: Boolean = false,
 
+    /** Narx birligi (`priceUnit`) — biznes turiga ruxsat etilganlar ichidan tanlanadi. */
     val priceUnit: PriceUnit = PriceUnit.PER_ITEM,
     val originalPrice: String = "",
 
-    // Chegirma endi faqat "hozirgi narx" ko'rinishida — foiz/boshqa turlar yo'q.
     val discountType: DiscountType = DiscountType.SPECIAL_PRICE,
     val discountValue: String = "",
+    /** `discount.conditions` — aksiya sharti ("ikkinchi kofe bepul", "faqat ish kunlari"). */
     val conditions: String = "",
+    /** `discount.appliesToOptions` — chegirma qo'shimchalar narxiga ham tarqaladimi. */
+    val appliesToOptions: Boolean = false,
 
     val redemptionMethod: RedemptionMethod = RedemptionMethod.STUDENT_ID,
     val promoCode: String = "",
+    /** "Onlayn havola" usulida chegirma ishlatiladigan sayt (`redemption.url`). */
+    val redemptionUrl: String = "",
+    /** `redemption.perUserLimit` — bo'sh matn = cheksiz. */
+    val perUserLimit: String = "1",
+    val perUserPeriod: RedemptionPeriod = RedemptionPeriod.DAY,
+    /** `redemption.totalLimit` — bo'sh matn = cheksiz. */
+    val totalLimit: String = "",
     /** Aloqa telefoni — soddalashtirilgan formada so'raladi. */
     val contactPhone: String = "",
 
-    /** Filiallar — har biri xaritadan tanlangan (koordinatasi bor). */
-    val branches: List<ListingBranch> = emptyList(),
-    /** Xarita ochiqmi (yangi filial belgilash uchun). */
-    val pickingOnMap: Boolean = false,
-    /** Xaritadan nuqta tanlandi, manzil aniqlanmoqda. */
-    val resolvingAddress: Boolean = false,
+    /** `optionGroups` — "Hajmni tanlang" kabi qo'shimchalar (ixtiyoriy). */
+    val optionGroups: List<OptionGroup> = emptyList(),
 
-    /** Xaritadagi qidiruv. */
-    val searchQuery: String = "",
-    val searchResults: List<PlaceSuggestion> = emptyList(),
-    val searching: Boolean = false,
-    /** Kamida bir marta qidirildi — bo'sh natijani "topilmadi" deb ko'rsatish uchun. */
-    val searched: Boolean = false,
+    /** Biznesning filiallari — e'lon qaysilarida amal qilishini shu ro'yxatdan tanlanadi. */
+    val branches: List<ListingBranch> = emptyList(),
+    /** `branchIds` — belgilangan filiallar. Bo'sh bo'lsa e'lon hech qayerda amal qilmaydi. */
+    val selectedBranchIds: Set<String> = emptySet(),
+
+    /**
+     * `validFrom` — boshlanish sanasi "kk.oo.yyyy" ko'rinishida. Bo'sh matn = bugundan
+     * (eng ko'p uchraydigan holat), kelajakdagi sana esa e'lonni `SCHEDULED` qiladi (spec §6.5).
+     */
+    val startDate: String = "",
 
     val durationDays: Int = 30,
 
@@ -126,6 +140,9 @@ data class PostListingUiState(
         get() = ListingDiscount(discountType, discountValue.toLongOrNull() ?: 0)
             .finalPrice(originalPrice.toLongOrNull() ?: 0)
 
+    /** Boshlanish sanasi to'liq yozilgan va haqiqiy sanami (bo'sh — bugun, xato emas). */
+    val startDateValid: Boolean get() = startDate.isBlank() || parseDate(startDate) != null
+
     fun errorFor(field: ListingField): String? = errors.firstOrNull { it.field == field }?.message
 }
 
@@ -135,8 +152,6 @@ class PostListingViewModel(
     private val saveDraft: SaveDraftUseCase,
     private val uploadImage: UploadListingImageUseCase,
     private val getListing: GetListingUseCase,
-    private val createBranch: CreateBranchFromPointUseCase,
-    private val searchPlaces: SearchPlacesUseCase,
     private val settings: SettingsRepository,
     private val getBusiness: dev.feature.discounts.domain.usecase.GetBusinessUseCase,
     private val getCategories: GetCategoriesUseCase,
@@ -221,6 +236,9 @@ class PostListingViewModel(
                     priceUnit = biz.businessType?.defaultPriceUnit ?: it.priceUnit,
                     businessName = biz.name,
                     branches = biz.branches,
+                    // Odatiy holat — e'lon biznesning hamma filialida amal qiladi; kerak
+                    // bo'lsa foydalanuvchi ortiqchasini olib tashlaydi.
+                    selectedBranchIds = biz.branches.map { branch -> branch.id }.toSet(),
                     categoryKey = "",
                 )
             }
@@ -268,103 +286,97 @@ class PostListingViewModel(
 
     fun onDiscountValue(v: String) = _state.update { it.copy(discountValue = v.digits()) }
     fun onConditions(v: String) = _state.update { it.copy(conditions = v) }
+    fun onAppliesToOptions(v: Boolean) = _state.update { it.copy(appliesToOptions = v) }
 
     fun onRedemptionMethod(v: RedemptionMethod) = _state.update { it.copy(redemptionMethod = v) }
     fun onPromoCode(v: String) = _state.update { it.copy(promoCode = v.uppercase()) }
+    fun onRedemptionUrl(v: String) = _state.update { it.copy(redemptionUrl = v.trim()) }
+
+    /** Bo'sh matn — cheksiz (`null` yuboriladi). */
+    fun onPerUserLimit(v: String) = _state.update { it.copy(perUserLimit = v.digits().take(4)) }
+    fun onPerUserPeriod(v: RedemptionPeriod) = _state.update { it.copy(perUserPeriod = v) }
+    fun onTotalLimit(v: String) = _state.update { it.copy(totalLimit = v.digits().take(6)) }
+
+    fun onStartDate(v: String) = _state.update { it.copy(startDate = formatDateInput(v)) }
     fun onDuration(days: Int) = _state.update { it.copy(durationDays = days) }
 
     // -----------------------------------------------------------------------
-    // Filiallar — xaritadan
+    // Filiallar — `branchIds`
     // -----------------------------------------------------------------------
 
-    /** "+" bosilganda xarita ochiladi. */
-    fun openMap() = _state.update { it.copy(pickingOnMap = true) }
-
-    fun closeMap() = _state.update {
-        it.copy(pickingOnMap = false, searchQuery = "", searchResults = emptyList(), searched = false)
-    }
-
-    // -----------------------------------------------------------------------
-    // Xaritadagi qidiruv
-    // -----------------------------------------------------------------------
-
-    private var searchJob: Job? = null
-
     /**
-     * Har bosilgan harfda so'rov yubormaymiz: oldingi qidiruv bekor qilinadi va foydalanuvchi
-     * yozishni to'xtatgandan keyingina Nominatim'ga boramiz (uning qoidasi ham shuni talab qiladi).
+     * E'lon qaysi filiallarda amal qilishini belgilaydi. Yangi filial bu yerда qo'shilmaydi:
+     * u backendда alohida resurs (`POST /business/{id}/branches`) va tuman/ish vaqtini talab
+     * qiladi — shuning uchun biznes profilida yaratiladi, e'lon esa faqat tanlaydi.
      */
-    /**
-     * [nearLat]/[nearLng] — xaritaning ko'rinib turgan markazi; natijalar shu atrofdagilarga
-     * yaqinlashtiriladi. Qidiruvdan keyin `searched` yoqiladi, shunda UI bo'sh natijani
-     * "hali qidirilmagan" holatidan ajrata oladi.
-     */
-    fun onSearchQuery(query: String, nearLat: Double? = null, nearLng: Double? = null) {
-        _state.update { it.copy(searchQuery = query) }
-        searchJob?.cancel()
-
-        if (query.trim().length < SearchPlacesUseCase.MIN_QUERY_LENGTH) {
-            _state.update { it.copy(searchResults = emptyList(), searching = false, searched = false) }
-            return
-        }
-
-        searchJob = viewModelScope.launch {
-            delay(SEARCH_DEBOUNCE_MS)
-            _state.update { it.copy(searching = true) }
-            val results = searchPlaces(query, nearLat, nearLng)
-            _state.update { it.copy(searchResults = results, searching = false, searched = true) }
-        }
-    }
-
-    /** Natija tanlandi — qidiruv yopiladi, ekran xaritani o'sha joyga olib boradi. */
-    fun clearSearch() = _state.update {
-        it.copy(searchQuery = "", searchResults = emptyList(), searching = false, searched = false)
-    }
-
-    /**
-     * Xaritada nuqta tanlandi. Manzil teskari geokodlash bilan avtomatik to'ladi —
-     * foydalanuvchi uni qo'lda yozmaydi. Internet bo'lmasa manzil o'rniga koordinata
-     * yoziladi va filial baribir qo'shiladi (nuqta yo'qolmasligi kerak).
-     */
-    fun addBranchFromMap(lat: Double, lng: Double) {
-        viewModelScope.launch {
-            _state.update { it.copy(resolvingAddress = true) }
-            val branch = createBranch(
-                id = "br-${Clock.System.now().toEpochMilliseconds()}",
-                lat = lat,
-                lng = lng,
-            )
-            _state.update {
-                it.copy(
-                    branches = it.branches + branch,
-                    resolvingAddress = false,
-                    pickingOnMap = false,
-                )
-            }
-        }
-    }
-
-    fun removeBranch(index: Int) = _state.update {
-        it.copy(branches = it.branches.filterIndexed { i, _ -> i != index })
-    }
-
-    /** Avtomatik topilgan manzilni aniqlashtirish (masalan "2-qavat" qo'shish). */
-    fun onBranchAddress(index: Int, address: String) = _state.update { state ->
+    fun toggleBranch(id: String) = _state.update { state ->
         state.copy(
-            branches = state.branches.mapIndexed { i, branch ->
-                if (i == index) branch.copy(address = address) else branch
+            selectedBranchIds = if (id in state.selectedBranchIds) {
+                state.selectedBranchIds - id
+            } else {
+                state.selectedBranchIds + id
             },
         )
     }
 
-    /** Filial nomi ("Chilonzor filiali") — ixtiyoriy. */
-    fun onBranchName(index: Int, name: String) = _state.update { state ->
-        state.copy(
-            branches = state.branches.mapIndexed { i, branch ->
-                if (i == index) branch.copy(name = name.ifBlank { null }) else branch
-            },
-        )
+    // -----------------------------------------------------------------------
+    // Qo'shimchalar (`optionGroups`)
+    // -----------------------------------------------------------------------
+
+    fun addOptionGroup() = _state.update {
+        it.copy(optionGroups = it.optionGroups + OptionGroup(name = "", options = listOf(OptionItem(""))))
     }
+
+    fun removeOptionGroup(index: Int) = _state.update {
+        it.copy(optionGroups = it.optionGroups.filterIndexed { i, _ -> i != index })
+    }
+
+    fun onGroupName(index: Int, v: String) = updateGroup(index) { it.copy(name = v) }
+
+    fun onGroupSelectionType(index: Int, v: SelectionType) = updateGroup(index) {
+        // Bitta tanlovli guruhда min/maks ma'nosiz — ular yashirin qolib ketmasin.
+        if (v == SelectionType.SINGLE) it.copy(selectionType = v, minSelect = null, maxSelect = null)
+        else it.copy(selectionType = v)
+    }
+
+    fun onGroupRequired(index: Int, v: Boolean) = updateGroup(index) { it.copy(isRequired = v) }
+
+    fun onGroupMinSelect(index: Int, v: String) = updateGroup(index) {
+        it.copy(minSelect = v.digits().take(2).toIntOrNull())
+    }
+
+    fun onGroupMaxSelect(index: Int, v: String) = updateGroup(index) {
+        it.copy(maxSelect = v.digits().take(2).toIntOrNull())
+    }
+
+    fun addOption(groupIndex: Int) = updateGroup(groupIndex) { it.copy(options = it.options + OptionItem("")) }
+
+    fun removeOption(groupIndex: Int, optionIndex: Int) = updateGroup(groupIndex) { group ->
+        group.copy(options = group.options.filterIndexed { i, _ -> i != optionIndex })
+    }
+
+    fun onOptionName(groupIndex: Int, optionIndex: Int, v: String) =
+        updateOption(groupIndex, optionIndex) { it.copy(name = v) }
+
+    /** Qo'shimcha narxi manfiy ham bo'lishi mumkin ("kichik hajm — 5000 arzon"). */
+    fun onOptionPriceDelta(groupIndex: Int, optionIndex: Int, v: String) =
+        updateOption(groupIndex, optionIndex) {
+            val negative = v.startsWith("-")
+            val amount = v.digits().take(9).toLongOrNull() ?: 0
+            it.copy(priceDelta = if (negative) -amount else amount)
+        }
+
+    fun onOptionAvailable(groupIndex: Int, optionIndex: Int, v: Boolean) =
+        updateOption(groupIndex, optionIndex) { it.copy(isAvailable = v) }
+
+    private fun updateGroup(index: Int, transform: (OptionGroup) -> OptionGroup) = _state.update { state ->
+        state.copy(optionGroups = state.optionGroups.mapIndexed { i, g -> if (i == index) transform(g) else g })
+    }
+
+    private fun updateOption(groupIndex: Int, optionIndex: Int, transform: (OptionItem) -> OptionItem) =
+        updateGroup(groupIndex) { group ->
+            group.copy(options = group.options.mapIndexed { i, o -> if (i == optionIndex) transform(o) else o })
+        }
 
     fun consumeMessage() = _state.update { it.copy(message = null) }
 
@@ -408,6 +420,15 @@ class PostListingViewModel(
             editingCreatedAt = listing.createdAt
             editingBusinessId = listing.businessId
             _state.value = listing.toUiState()
+
+            // E'lon faqat o'ziga biriktirilgan filiallarni biladi. Tahrirlashда biznesning
+            // qolgan filiallari ham ro'yxatda turishi kerak — aks holda olib tashlangan
+            // filialni qaytarib qo'shib bo'lmasdi.
+            val businessId = listing.businessId ?: return@launch
+            currentBusinessId = businessId
+            val biz = getBusiness(businessId) ?: return@launch
+            _state.update { state -> state.copy(branches = biz.branches.ifEmpty { state.branches }) }
+            loadCategories()
         }
     }
 
@@ -427,6 +448,18 @@ class PostListingViewModel(
     }
 
     fun publish() {
+        // Chala yozilgan sana jimgina "bugun" ga aylanib qolmasin — foydalanuvchi uni ko'radi
+        // va tuzatadi. Qoralamada bunday tekshiruv yo'q: qoralama to'liq bo'lmasligi mumkin.
+        if (!_state.value.startDateValid) {
+            _state.update {
+                it.copy(
+                    errors = listOf(
+                        ListingError(ListingField.VALIDITY, "Boshlanish sanasini to'liq yozing (kk.oo.yyyy)"),
+                    ),
+                )
+            }
+            return
+        }
         val listing = buildListing() ?: return
         viewModelScope.launch {
             _state.update { it.copy(submitting = true, errors = emptyList()) }
@@ -450,6 +483,9 @@ class PostListingViewModel(
         val type = s.businessType ?: return null
         val ownerId = (user.value?.id ?: 0L).toString()
         val now = Clock.System.now().toEpochMilliseconds()
+        // Sana ko'rsatilmagan yoki chala yozilgan bo'lsa — bugundan. Xato sanani validator
+        // ushlaydi, lekin qurish paytida hech qachon `null` bo'lib qolmasligi kerak.
+        val validFrom = s.startDate.takeIf { it.isNotBlank() }?.let(::parseDate)?.toEpochMillis() ?: now
 
         return Listing(
             id = editingId ?: "lst-$ownerId-$now",
@@ -474,14 +510,22 @@ class PostListingViewModel(
                 type = s.discountType,
                 value = s.discountValue.toLongOrNull() ?: 0,
                 conditions = s.conditions.trim().ifBlank { null },
+                appliesToOptions = s.appliesToOptions,
             ),
             redemption = ListingRedemption(
                 method = s.redemptionMethod,
                 promoCode = s.promoCode.trim().ifBlank { null },
+                url = s.redemptionUrl.trim().ifBlank { null },
+                // Bo'sh maydon — cheksiz (`null`), backend ham shunday tushunadi.
+                perUserLimit = s.perUserLimit.toIntOrNull(),
+                perUserPeriod = s.perUserPeriod,
+                totalLimit = s.totalLimit.toIntOrNull(),
             ),
-            branches = s.branches,
-            validFrom = now,
-            validTo = now + s.durationDays.toLong() * MILLIS_PER_DAY,
+            optionGroups = s.optionGroups,
+            // Faqat belgilangan filiallar — ular `branchIds` bo'lib ketadi.
+            branches = s.branches.filter { it.id in s.selectedBranchIds },
+            validFrom = validFrom,
+            validTo = validFrom + s.durationDays.toLong() * MILLIS_PER_DAY,
             status = ListingStatus.DRAFT,
             createdAt = editingCreatedAt ?: now,
             updatedAt = now,
@@ -512,9 +556,19 @@ class PostListingViewModel(
         discountType = discount.type,
         discountValue = discount.value.toString(),
         conditions = discount.conditions.orEmpty(),
+        appliesToOptions = discount.appliesToOptions,
         redemptionMethod = redemption.method,
         promoCode = redemption.promoCode.orEmpty(),
+        redemptionUrl = redemption.url.orEmpty(),
+        perUserLimit = redemption.perUserLimit?.toString().orEmpty(),
+        perUserPeriod = redemption.perUserPeriod,
+        totalLimit = redemption.totalLimit?.toString().orEmpty(),
+        optionGroups = optionGroups,
         branches = branches,
+        // Saqlangan e'lon faqat o'ziga biriktirilgan filiallarni biladi — hammasi belgilangan
+        // bo'lib ochiladi, biznesning qolgan filiallari `prefillFromBusiness` da qo'shiladi.
+        selectedBranchIds = branches.map { it.id }.toSet(),
+        startDate = formatDate(validFrom),
         durationDays = ((validTo - validFrom) / MILLIS_PER_DAY).toInt().coerceAtLeast(1),
         editing = true,
     )
@@ -527,12 +581,49 @@ class PostListingViewModel(
 /**
  * Foydalanuvchi yozishni to'xtatgach kutiladigan vaqt — har harfga so'rov ketmasin.
  * Nominatim foydalanish qoidasi soniyasiga 1 ta so'rovni so'raydi; 400 ms kutish bilan
- * tez yozganda ham bitta so'rov chiqadi. Xaritali ikkala ekran ham shu qiymatni ishlatadi.
+ * tez yozganda ham bitta so'rov chiqadi. Xaritali ekran (biznes joyi) shu qiymatni ishlatadi.
  */
 internal const val SEARCH_DEBOUNCE_MS = 400L
 
 /** Raqamli maydonlarga faqat raqam kiritiladi (klaviatura turi kafolat bermaydi). */
 private fun String.digits(): String = filter { it.isDigit() }
+
+// ---------------------------------------------------------------------------
+// Sana — `validFrom` maydoni uchun (kk.oo.yyyy)
+// ---------------------------------------------------------------------------
+
+/** Kiritilayotgan matnni "kk.oo.yyyy" ga keltiradi: nuqtalarni o'zi qo'yadi. */
+internal fun formatDateInput(input: String): String {
+    val digits = input.filter { it.isDigit() }.take(8)
+    return buildString {
+        digits.forEachIndexed { index, char ->
+            if (index == 2 || index == 4) append('.')
+            append(char)
+        }
+    }
+}
+
+/** "kk.oo.yyyy" → sana. To'liq yozilmagan yoki mavjud bo'lmagan sana bo'lsa `null`. */
+internal fun parseDate(text: String): LocalDate? {
+    val parts = text.split(".")
+    if (parts.size != 3 || parts[0].length != 2 || parts[1].length != 2 || parts[2].length != 4) return null
+    val day = parts[0].toIntOrNull() ?: return null
+    val month = parts[1].toIntOrNull() ?: return null
+    val year = parts[2].toIntOrNull() ?: return null
+    // 31-fevral kabi mavjud bo'lmagan sanalarda `LocalDate` xato beradi — uni qaytarmaymiz.
+    return runCatching { LocalDate(year, month, day) }.getOrNull()
+}
+
+internal fun formatDate(millis: Long): String {
+    val date = Instant.fromEpochMilliseconds(millis).toLocalDateTime(TimeZone.currentSystemDefault()).date
+    return "${date.dayOfMonth.pad2()}.${date.monthNumber.pad2()}.${date.year}"
+}
+
+/** Sana kun boshidan boshlanadi — e'lon o'sha kuni ertalab faollashadi. */
+internal fun LocalDate.toEpochMillis(): Long =
+    atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+
+private fun Int.pad2(): String = toString().padStart(2, '0')
 
 /** Tanlangan biznes turining kategoriyalari (kiyimда per-e'lon jins, boshqasida profil jinsi). */
 /** Kategoriyalar — backenddan yuklangan ro'yxat (zaxira: klient katalogi, UseCase beradi). */

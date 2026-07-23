@@ -64,6 +64,8 @@
     <string name="profile_gender_female">Ayol</string>
     <string name="profile_field_university">Universitet</string>
     <string name="profile_university_select">Universitetni tanlang</string>
+    <string name="profile_field_university_email">Universitet emaili</string>
+    <string name="profile_field_university_email_placeholder">ism@universitet.uz</string>
     <string name="profile_field_course">Kurs</string>
     <string name="profile_course_1">1-kurs</string>
     <string name="profile_course_2">2-kurs</string>

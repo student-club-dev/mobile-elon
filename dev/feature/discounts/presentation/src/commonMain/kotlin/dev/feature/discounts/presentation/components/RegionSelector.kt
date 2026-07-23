@@ -21,6 +21,7 @@ import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.BottomSheetOption
 import dev.core.uikit.component.rememberKeyboardDismiss
 import dev.core.uikit.resources.Res
+import dev.core.uikit.resources.discounts_district_select
 import dev.core.uikit.resources.discounts_region_select
 import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
@@ -28,6 +29,7 @@ import dev.core.uikit.theme.AppSize
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.rowShadow
+import dev.feature.discounts.domain.model.District
 import dev.feature.discounts.domain.model.Region
 import org.jetbrains.compose.resources.stringResource
 
@@ -114,6 +116,42 @@ fun RegionSheet(
                 label = region.name,
                 selected = region.id == regionId,
                 onClick = { onSelect(region.id) },
+                palette = palette,
+            )
+        }
+    }
+}
+
+/**
+ * Tuman tanlash sheet'i.
+ *
+ * Nega alohida maydon: `LocationDto.districtId` **majburiy** va tanlangan viloyatga tegishli
+ * bo'lishi shart (`422 DISTRICT_REGION_MISMATCH`). Teskari geokodlash tumanni har doim ham
+ * topa olmaydi, shuning uchun uni qo'lda ko'rsatish yo'li bo'lishi kerak.
+ *
+ * [districts] — tanlangan viloyatning tumanlari (`GET /v1/districts?regionId=`, xato bo'lsa
+ * klient katalogi).
+ */
+@Composable
+fun DistrictSheet(
+    visible: Boolean,
+    districts: List<District>,
+    districtId: String?,
+    onSelect: (String) -> Unit,
+    onDismiss: () -> Unit,
+    palette: AppPalette,
+) {
+    AppBottomSheet(
+        visible = visible,
+        onDismiss = onDismiss,
+        title = stringResource(Res.string.discounts_district_select),
+        palette = palette,
+    ) {
+        districts.forEach { district ->
+            BottomSheetOption(
+                label = district.name,
+                selected = district.id == districtId,
+                onClick = { onSelect(district.id) },
                 palette = palette,
             )
         }

@@ -13,6 +13,7 @@ import dev.core.network.generated.model.OptionGroupDto
 import dev.core.network.generated.model.PriceUnitDto
 import dev.core.network.generated.model.RedemptionInfoDto
 import dev.core.network.generated.model.RedemptionMethodDto
+import dev.core.network.generated.model.RedemptionPeriodDto
 import dev.core.network.generated.model.SelectionTypeDto
 import dev.feature.discounts.domain.model.Listing
 import dev.feature.discounts.domain.model.ListingStatus
@@ -62,8 +63,9 @@ class ApiListingRemoteDataSource(
 
 private fun Listing.toCreateRequest() = CreateListingRequestDto(
     // Backendda filial alohida obyekt (`POST /business/{id}/branches`) va e'lon unga
-    // `branchIds` orqali bog'lanadi. Bu yerda id'lar yuboriladi; filiallarning o'zi
-    // (lat/lng bilan) biznes profili yaratilganda sinxronlanadi.
+    // `branchIds` orqali bog'lanadi. Formada biznesning mavjud filiallaridan tanlanadi —
+    // shu sabab bu yerda id'lar allaqachon serverdagi id'lar. Bo'sh ro'yxat spec bo'yicha
+    // "biznesning barcha faol filiallari" degani (§3.5).
     branchIds = branches.map { it.id },
     categoryKey = categoryKey,
     title = title,
@@ -80,8 +82,11 @@ private fun Listing.toCreateRequest() = CreateListingRequestDto(
     redemption = RedemptionInfoDto(
         method = RedemptionMethodDto.entries.first { it.value == redemption.method.name },
         promoCode = redemption.promoCode,
+        url = redemption.url,
         perUserLimit = redemption.perUserLimit,
+        perUserPeriod = RedemptionPeriodDto.entries.first { it.value == redemption.perUserPeriod.name },
         totalLimit = redemption.totalLimit,
+        // `usedCount` YO'Q — uni server hisoblaydi.
     ),
     validFrom = Instant.fromEpochMilliseconds(validFrom),
     validTo = Instant.fromEpochMilliseconds(validTo),
@@ -89,12 +94,24 @@ private fun Listing.toCreateRequest() = CreateListingRequestDto(
     description = description,
     currency = currency,
     attributes = attributes,
-    optionGroups = optionGroups.map { group ->
+    // Guruh va variantlar tartibi formadagi tartib bilan bir xil bo'lishi uchun `sortOrder`
+    // ro'yxatdagi o'rindan olinadi — backend ularni shu tartibda ko'rsatadi.
+    optionGroups = optionGroups.mapIndexed { groupIndex, group ->
         OptionGroupDto(
             name = group.name,
             selectionType = SelectionTypeDto.entries.first { it.value == group.selectionType.name },
-            options = group.options.map { OptionDto(name = it.name, priceDelta = it.priceDelta, isAvailable = it.isAvailable) },
+            options = group.options.mapIndexed { index, option ->
+                OptionDto(
+                    name = option.name,
+                    priceDelta = option.priceDelta,
+                    isAvailable = option.isAvailable,
+                    sortOrder = index,
+                )
+            },
             isRequired = group.isRequired,
+            minSelect = group.minSelect,
+            maxSelect = group.maxSelect,
+            sortOrder = groupIndex,
         )
     },
 )

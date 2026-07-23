@@ -233,6 +233,16 @@
 
     <string name="discounts_region_label">Viloyat</string>
     <string name="discounts_region_select">Viloyatni tanlang</string>
+    <string name="discounts_district_label">Tuman</string>
+    <string name="discounts_district_select">Tumanni tanlang</string>
+    <string name="discounts_district_needs_region">Avval viloyatni tanlang</string>
+    <string name="discounts_branch_name_label">Filial nomi</string>
+    <string name="discounts_branch_name_placeholder">Chilonzor filiali</string>
+    <string name="discounts_branch_name_note">Bo\'sh qoldirilsa biznes nomi yoziladi</string>
+    <string name="discounts_working_hours_label">Ish vaqti</string>
+    <string name="discounts_working_hours_closed">Yopiq</string>
+    <string name="discounts_working_hours_day_off">Dam olish kuni</string>
+    <string name="discounts_redemption_url_hint">https://example.uz/aksiya</string>
     <string name="discounts_name_latin_only">Biznes nomi faqat lotin alifbosida yoziladi</string>
 
     <!-- Biznes turlari -->
@@ -243,4 +253,41 @@
     <string name="discounts_type_entertainment">Kino va ko'ngilochar</string>
     <string name="discounts_type_barbershop">Sartaroshxona</string>
     <string name="discounts_type_beauty_salon">Go'zallik saloni</string>
+
+    <!-- ============ E'lon: narx birligi, chegirma turi, limitlar ============ -->
+    <string name="discounts_price_unit_label">Narx nima uchun</string>
+    <string name="discounts_percent_suffix">%</string>
+    <string name="discounts_discount_type_label">Chegirma turi</string>
+    <string name="discounts_conditions_label">Shart (ixtiyoriy)</string>
+    <string name="discounts_conditions_hint">Masalan: faqat ish kunlari, 12:00 gacha</string>
+    <string name="discounts_applies_to_options">Qo\'shimchalarga ham amal qiladi</string>
+    <string name="discounts_per_user_limit_label">Bitta talaba necha marta ishlatadi</string>
+    <string name="discounts_total_limit_label">Jami necha marta ishlatiladi</string>
+    <string name="discounts_limit_unlimited_hint">Cheksiz</string>
+    <string name="discounts_start_date_label">Qachondan boshlanadi</string>
+    <string name="discounts_start_date_hint">Bugundan (kk.oo.yyyy)</string>
+    <string name="discounts_start_date_invalid">Sanani kk.oo.yyyy ko\'rinishida to\'liq yozing</string>
+    <string name="discounts_duration_label">Qancha davom etadi</string>
+
+    <!-- ============ E'lon: qo'shimchalar (optionGroups) ============ -->
+    <string name="discounts_options_section">Qo\'shimchalar</string>
+    <string name="discounts_options_subtitle">Talaba tanlaydigan variantlar — ixtiyoriy</string>
+    <string name="discounts_option_group_add">Guruh qo\'shish</string>
+    <string name="discounts_option_group_name_hint">Guruh nomi: Hajmni tanlang</string>
+    <string name="discounts_option_group_remove">Guruhni o\'chirish</string>
+    <string name="discounts_option_required">Majburiy</string>
+    <string name="discounts_option_min_hint">Eng kami</string>
+    <string name="discounts_option_max_hint">Eng ko\'pi</string>
+    <string name="discounts_option_add">Variant qo\'shish</string>
+    <string name="discounts_option_name_hint">Variant: 0.5 l</string>
+    <string name="discounts_option_price_delta_hint">+/- so\'m</string>
+    <string name="discounts_option_remove">Variantni o\'chirish</string>
+    <string name="discounts_option_available">Mavjud</string>
+
+    <!-- ============ E'lon: filiallar ============ -->
+    <string name="discounts_branches_pick_subtitle">E\'lon qaysi filiallarda amal qiladi</string>
+    <string name="discounts_branches_empty">Bu biznesda hali filial yo\'q</string>
+    <string name="discounts_branches_add_note">Yangi filial biznes profilida qo\'shiladi</string>
+
+    <string name="discounts_image_cover">Muqova</string>
 </resources>

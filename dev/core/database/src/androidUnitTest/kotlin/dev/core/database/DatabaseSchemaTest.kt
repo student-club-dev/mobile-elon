@@ -81,8 +81,9 @@ class DatabaseSchemaTest {
         // 7.sqm — ListingEntity (chegirma e'lonlari), 8.sqm — ko'p filial (branchesJson),
         // 9.sqm — biznes egasi profili (businessName/businessType), 10.sqm — profil emaili,
         // 11.sqm — ClubEntity tashlanadi, 12.sqm — UserEntity.userId olib tashlanadi,
-        // 13.sqm — ProfileEntity.gender qo'shiladi.
-        assertEquals(14L, ElonUzDatabase.Schema.version)
+        // 13.sqm — ProfileEntity.gender qo'shiladi,
+        // 14.sqm — ListingEntity.redemptionUrl (ONLINE_LINK havolasi) va perUserPeriod.
+        assertEquals(15L, ElonUzDatabase.Schema.version)
     }
 
     @Test
@@ -373,7 +374,9 @@ class DatabaseSchemaTest {
             discountConditions = null,
             redemptionMethod = "QR",
             promoCode = null,
+            redemptionUrl = null,
             perUserLimit = 1,
+            perUserPeriod = "DAY",
             totalLimit = null,
             usedCount = 0,
             branchesJson = """[{"id":"br1","lat":41.2856,"lng":69.2034,"address":"Chilonzor 9-kvartal, 42-uy"}]""",

@@ -195,12 +195,79 @@ data class ListingRedemption(
     val method: RedemptionMethod = RedemptionMethod.STUDENT_ID,
     /** Faqat [RedemptionMethod.PROMO_CODE] uchun. */
     val promoCode: String? = null,
+    /**
+     * Faqat [RedemptionMethod.ONLINE_LINK] uchun — talaba chegirmani shu havolada ishlatadi
+     * (`redemption.url`, spec §3.6). Usul tanlangan bo'lsa majburiy.
+     */
+    val url: String? = null,
     /** Bitta talaba necha marta ishlata oladi (`null` — cheksiz). */
     val perUserLimit: Int? = 1,
+    /** [perUserLimit] qaysi davrga nisbatan sanaladi. */
+    val perUserPeriod: RedemptionPeriod = RedemptionPeriod.DAY,
     /** Jami necha marta ishlatilishi mumkin (`null` — cheksiz). */
     val totalLimit: Int? = null,
     val usedCount: Int = 0,
 )
+
+/** [ListingRedemption.perUserLimit] hisoblanadigan davr (`RedemptionPeriodDto`). */
+enum class RedemptionPeriod(val label: String) {
+    DAY("Kuniga"),
+    WEEK("Haftasiga"),
+    MONTH("Oyiga"),
+    TOTAL("Umuman"),
+}
+
+/** Hafta kuni — qiymatlar backenddagi `DayOfWeekDto` bilan bir xil. */
+enum class WeekDay(val label: String) {
+    MON("Dushanba"),
+    TUE("Seshanba"),
+    WED("Chorshanba"),
+    THU("Payshanba"),
+    FRI("Juma"),
+    SAT("Shanba"),
+    SUN("Yakshanba"),
+}
+
+/**
+ * Bir kunlik ish vaqti (`WorkingHoursDto`). [open]/[close] — "HH:MM"; [isClosed] bo'lsa
+ * ikkalasi ham `null` yuboriladi. [close] < [open] bo'lsa backend "tungacha ishlaydi" deb
+ * qabul qiladi (spec §3.2), shuning uchun klient bunda xato bermaydi.
+ */
+data class BranchWorkingHours(
+    val day: WeekDay,
+    val open: String? = DEFAULT_OPEN,
+    val close: String? = DEFAULT_CLOSE,
+    val isClosed: Boolean = false,
+) {
+    /** Vaqt "HH:MM" shaklida va haqiqiy soat/daqiqami. */
+    val isValid: Boolean
+        get() = isClosed || (open.isValidTime() && close.isValidTime())
+
+    companion object {
+        const val DEFAULT_OPEN = "09:00"
+        const val DEFAULT_CLOSE = "21:00"
+
+        /** Yetti kunlik odatiy jadval — forma shu holatда ochiladi. */
+        fun defaultWeek(): List<BranchWorkingHours> = WeekDay.entries.map { BranchWorkingHours(it) }
+
+        /**
+         * Ro'yxatni yetti kunga to'ldiradi: backenddan kelgan yoki forma bergan yozuvlar
+         * qoladi, yetishmagan kunlar odatiy qiymat bilan qo'shiladi.
+         */
+        fun fullWeek(hours: List<BranchWorkingHours>): List<BranchWorkingHours> {
+            val byDay = hours.associateBy { it.day }
+            return WeekDay.entries.map { byDay[it] ?: BranchWorkingHours(it) }
+        }
+
+        private fun String?.isValidTime(): Boolean {
+            val parts = this?.split(":") ?: return false
+            if (parts.size != 2 || parts[0].length != 2 || parts[1].length != 2) return false
+            val hour = parts[0].toIntOrNull() ?: return false
+            val minute = parts[1].toIntOrNull() ?: return false
+            return hour in 0..23 && minute in 0..59
+        }
+    }
+}
 
 /**
  * Filial — **xaritada tanlangan nuqta**. Koordinata majburiy: talabaga eng yaqin filialni
@@ -235,6 +302,12 @@ data class ListingBranch(
      * (backend `BranchRequestDto.tradeCenterFields` id kutadi).
      */
     val tradeCenterFieldIds: Map<String, String> = emptyMap(),
+    /**
+     * Ish vaqti — backend `BranchRequestDto.workingHours` da **yetti kunni ham** kutadi
+     * (spec §3.2). Bo'sh ro'yxat yuborilsa filial "ish vaqti belgilanmagan" bo'lib qoladi,
+     * shuning uchun forma [BranchWorkingHours.defaultWeek] bilan to'ldirilgan holda ochiladi.
+     */
+    val workingHours: List<BranchWorkingHours> = emptyList(),
 ) {
     /** Koordinata O'zbekiston chegarasida bo'lishi kerak (spec §6.6). */
     val hasValidCoordinates: Boolean
@@ -293,6 +366,9 @@ data class OptionGroup(
     val name: String,
     val selectionType: SelectionType = SelectionType.SINGLE,
     val isRequired: Boolean = false,
+    /** Faqat [SelectionType.MULTIPLE] uchun — nechtadan kam/ko'p tanlab bo'lmaydi. */
+    val minSelect: Int? = null,
+    val maxSelect: Int? = null,
     val options: List<OptionItem> = emptyList(),
 )
 

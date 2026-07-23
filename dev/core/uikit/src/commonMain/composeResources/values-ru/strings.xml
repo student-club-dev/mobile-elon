@@ -56,6 +56,8 @@
     <string name="profile_gender_female">Женский</string>
     <string name="profile_field_university">Университет</string>
     <string name="profile_university_select">Выберите университет</string>
+    <string name="profile_field_university_email">Университетская почта</string>
+    <string name="profile_field_university_email_placeholder">imya@universitet.uz</string>
     <string name="profile_field_course">Курс</string>
     <string name="profile_course_1">1 курс</string>
     <string name="profile_course_2">2 курс</string>

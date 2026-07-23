@@ -27,6 +27,9 @@ import dev.core.uikit.component.PrimaryButton
 import dev.core.uikit.component.ScreenTopBar
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.common_back
+import dev.core.uikit.resources.discounts_branch_name_label
+import dev.core.uikit.resources.discounts_branch_name_note
+import dev.core.uikit.resources.discounts_branch_name_placeholder
 import dev.core.uikit.resources.discounts_business_add
 import dev.core.uikit.resources.discounts_business_edit
 import dev.core.uikit.resources.discounts_business_name_hint
@@ -34,6 +37,9 @@ import dev.core.uikit.resources.discounts_business_name_label
 import dev.core.uikit.resources.discounts_business_save
 import dev.core.uikit.resources.discounts_business_type_label
 import dev.core.uikit.resources.discounts_business_type_select
+import dev.core.uikit.resources.discounts_district_label
+import dev.core.uikit.resources.discounts_district_needs_region
+import dev.core.uikit.resources.discounts_district_select
 import dev.core.uikit.resources.discounts_location_hint
 import dev.core.uikit.resources.discounts_location_label
 import dev.core.uikit.resources.discounts_map_business_title
@@ -48,16 +54,19 @@ import dev.core.uikit.resources.discounts_region_label
 import dev.core.uikit.resources.discounts_region_select
 import dev.core.uikit.resources.discounts_resolving_address
 import dev.core.uikit.resources.discounts_saving
+import dev.core.uikit.resources.discounts_working_hours_label
 import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
 import dev.core.uikit.theme.rowShadow
+import dev.feature.discounts.presentation.components.DistrictSheet
 import dev.feature.discounts.presentation.components.MapSearchResults
 import dev.feature.discounts.presentation.components.RegionSheet
 import dev.feature.discounts.presentation.components.SelectorField
 import dev.feature.discounts.presentation.components.MyLocationButton
+import dev.feature.discounts.presentation.components.WorkingHoursSection
 import dev.core.uikit.map.MapCenterRequest
 import dev.core.uikit.map.MapPicker
 import dev.core.uikit.map.MapPoint
@@ -92,7 +101,11 @@ fun AddBusinessScreen(
     AppBackHandler(enabled = state.typePickerOpen) { vm.closeTypePicker() }
     AppBackHandler(enabled = !state.typePickerOpen && state.regionPickerOpen) { vm.closeRegionPicker() }
     AppBackHandler(
-        enabled = !state.typePickerOpen && !state.regionPickerOpen && state.pickingOnMap,
+        enabled = !state.typePickerOpen && !state.regionPickerOpen && state.districtPickerOpen,
+    ) { vm.closeDistrictPicker() }
+    AppBackHandler(
+        enabled = !state.typePickerOpen && !state.regionPickerOpen && !state.districtPickerOpen &&
+            state.pickingOnMap,
     ) { vm.closeMap() }
 
     if (state.pickingOnMap) {
@@ -174,6 +187,25 @@ fun AddBusinessScreen(
                 palette = palette,
             )
 
+            // --- Tuman: `LocationDto.districtId` majburiy va viloyatga bog'liq ---
+            Spacer(Modifier.height(FieldGap))
+            FieldLabel(stringResource(Res.string.discounts_district_label), palette)
+            Spacer(Modifier.height(FieldLabelGap))
+            SelectorField(
+                icon = AppIcons.Pin,
+                value = state.districtName,
+                placeholder = stringResource(
+                    // Viloyat tanlanmaguncha tuman ro'yxati bo'sh — buni maydonning o'zi aytadi.
+                    if (state.regionId == null) {
+                        Res.string.discounts_district_needs_region
+                    } else {
+                        Res.string.discounts_district_select
+                    },
+                ),
+                onClick = { if (state.regionId != null) vm.openDistrictPicker() },
+                palette = palette,
+            )
+
             Spacer(Modifier.height(FieldGap))
             FieldLabel(stringResource(Res.string.discounts_location_label), palette)
             Spacer(Modifier.height(FieldLabelGap))
@@ -182,6 +214,32 @@ fun AddBusinessScreen(
                 value = state.branch?.address?.takeIf { it.isNotBlank() },
                 placeholder = stringResource(Res.string.discounts_location_hint),
                 onClick = vm::openMap,
+                palette = palette,
+            )
+
+            // --- Filial nomi: `BranchRequestDto.name` majburiy ---
+            Spacer(Modifier.height(FieldGap))
+            FieldLabel(stringResource(Res.string.discounts_branch_name_label), palette)
+            Spacer(Modifier.height(FieldLabelGap))
+            GlassTextField(
+                state.branchName,
+                vm::onBranchName,
+                stringResource(Res.string.discounts_branch_name_placeholder),
+                modifier = Modifier.rowShadow(AppRadius.lg),
+                palette = palette,
+            )
+            Spacer(Modifier.height(AppSpacing.sm))
+            HintText(stringResource(Res.string.discounts_branch_name_note), palette = palette)
+
+            // --- Ish vaqti: backend yetti kunni ham kutadi ---
+            Spacer(Modifier.height(FieldGap))
+            FieldLabel(stringResource(Res.string.discounts_working_hours_label), palette)
+            Spacer(Modifier.height(FieldLabelGap))
+            WorkingHoursSection(
+                hours = state.workingHours,
+                onClosedChange = vm::onDayClosed,
+                onOpenChange = vm::onDayOpen,
+                onCloseChange = vm::onDayClose,
                 palette = palette,
             )
 
@@ -225,6 +283,15 @@ fun AddBusinessScreen(
             regionId = state.regionId,
             onSelect = vm::onRegion,
             onDismiss = vm::closeRegionPicker,
+            palette = palette,
+        )
+
+        DistrictSheet(
+            visible = state.districtPickerOpen,
+            districts = state.districts,
+            districtId = state.districtId,
+            onSelect = vm::onDistrict,
+            onDismiss = vm::closeDistrictPicker,
             palette = palette,
         )
     }

@@ -17,6 +17,8 @@ enum class ListingField {
     PRICE,
     DISCOUNT,
     PROMO_CODE,
+    REDEMPTION_URL,
+    LIMITS,
     LOCATION,
     VALIDITY,
     ATTRIBUTES,
@@ -33,6 +35,9 @@ object ListingValidator {
     const val MAX_OPTIONS_PER_GROUP = 30
     const val MAX_BRANCHES = 20
     const val MIN_BRANCH_DISTANCE_METERS = 100.0
+
+    /** Spec §3.5 — `validTo` `validFrom` dan ko'pi bilan bir yil keyin. */
+    private const val MAX_DURATION_MILLIS = 366L * 24 * 60 * 60 * 1000
 
     /** Bo'sh ro'yxat — e'lon publish qilishga tayyor. */
     fun validate(listing: Listing): List<ListingError> = buildList {
@@ -75,14 +80,32 @@ object ListingValidator {
             add(ListingError(ListingField.PROMO_CODE, "Promokodni kiriting"))
         }
 
+        // "Onlayn havola" usulida talaba chegirmani `redemption.url` orqali ishlatadi (spec §3.6) —
+        // havolasiz e'lon talabaga hech narsa bermaydi.
+        if (listing.redemption.method == RedemptionMethod.ONLINE_LINK) {
+            val url = listing.redemption.url?.trim()
+            when {
+                url.isNullOrBlank() ->
+                    add(ListingError(ListingField.REDEMPTION_URL, "Havolani kiriting"))
+                !url.startsWith("http://") && !url.startsWith("https://") ->
+                    add(ListingError(ListingField.REDEMPTION_URL, "Havola http:// yoki https:// bilan boshlansin"))
+            }
+        }
+
         addAll(validateBranches(listing))
 
         if (listing.validTo <= listing.validFrom) {
             add(ListingError(ListingField.VALIDITY, "Tugash sanasi boshlanishdan keyin bo'lsin"))
         }
+        // Spec §3.5: `validTo` `validFrom` dan ko'pi bilan bir yil keyin bo'lishi mumkin.
+        if (listing.validTo - listing.validFrom > MAX_DURATION_MILLIS) {
+            add(ListingError(ListingField.VALIDITY, "Amal qilish muddati bir yildan oshmasin"))
+        }
 
         // Turga xos maydonlar endi formada so'ralmaydi — tafsilotlar erkin tavsifda yoziladi.
         // Shu sabab bu yerda majburiy atribut tekshiruvi yo'q.
+
+        addAll(validateLimits(listing))
 
         addAll(validateOptions(listing))
     }
@@ -123,7 +146,7 @@ object ListingValidator {
      */
     private fun validateBranches(listing: Listing): List<ListingError> = buildList {
         if (listing.branches.isEmpty()) {
-            add(ListingError(ListingField.LOCATION, "Kamida 1 ta filialni xaritadan belgilang"))
+            add(ListingError(ListingField.LOCATION, "Kamida bitta filialni belgilang"))
             return@buildList
         }
         if (listing.branches.size > MAX_BRANCHES) {
@@ -163,6 +186,35 @@ object ListingValidator {
             if (group.options.size > MAX_OPTIONS_PER_GROUP) {
                 add(ListingError(ListingField.OPTIONS, "\"${group.name}\" da $MAX_OPTIONS_PER_GROUP tadan ko'p variant"))
             }
+            if (group.options.any { it.name.isBlank() }) {
+                add(ListingError(ListingField.OPTIONS, "\"${group.name}\" da nomsiz variant bor"))
+            }
+            // Min/maks faqat ko'p tanlovli guruhda ma'noga ega va bir-biriga zid bo'lmasligi kerak.
+            if (group.selectionType == SelectionType.MULTIPLE) {
+                val min = group.minSelect
+                val max = group.maxSelect
+                if (min != null && max != null && min > max) {
+                    add(ListingError(ListingField.OPTIONS, "\"${group.name}\": eng kami eng ko'pidan katta"))
+                }
+                if (max != null && max > group.options.size) {
+                    add(ListingError(ListingField.OPTIONS, "\"${group.name}\": eng ko'pi variantlar sonidan ortiq"))
+                }
+            }
+        }
+    }
+
+    /** Chegirmani ishlatish limitlari — backend musbat son kutadi (`null` = cheksiz). */
+    private fun validateLimits(listing: Listing): List<ListingError> = buildList {
+        val perUser = listing.redemption.perUserLimit
+        if (perUser != null && perUser <= 0) {
+            add(ListingError(ListingField.LIMITS, "Bir talaba uchun limit 1 dan kam bo'lmasin"))
+        }
+        val total = listing.redemption.totalLimit
+        if (total != null && total <= 0) {
+            add(ListingError(ListingField.LIMITS, "Umumiy limit 1 dan kam bo'lmasin"))
+        }
+        if (perUser != null && total != null && perUser > total) {
+            add(ListingError(ListingField.LIMITS, "Bir talaba uchun limit umumiy limitdan oshmasin"))
         }
     }
 }

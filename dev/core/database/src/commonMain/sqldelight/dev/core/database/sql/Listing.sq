@@ -33,7 +33,11 @@ CREATE TABLE ListingEntity (
 
     redemptionMethod TEXT NOT NULL,
     promoCode TEXT,
+    -- Faqat ONLINE_LINK usulida: talaba chegirmani ishlatadigan tashqi havola.
+    redemptionUrl TEXT,
     perUserLimit INTEGER,
+    -- perUserLimit qaysi davrga nisbatan sanaladi: DAY | WEEK | MONTH | TOTAL.
+    perUserPeriod TEXT NOT NULL DEFAULT 'DAY',
     totalLimit INTEGER,
     usedCount INTEGER NOT NULL DEFAULT 0,
 
@@ -81,7 +85,7 @@ INSERT OR REPLACE INTO ListingEntity(
     title, description, imagesJson,
     priceUnit, originalPrice, currency,
     discountType, discountValue, finalPrice, discountConditions,
-    redemptionMethod, promoCode, perUserLimit, totalLimit, usedCount,
+    redemptionMethod, promoCode, redemptionUrl, perUserLimit, perUserPeriod, totalLimit, usedCount,
     branchesJson,
     validFrom, validTo, attributesJson, optionGroupsJson,
     status, rejectionReason, viewsCount, createdAt, updatedAt
@@ -90,7 +94,7 @@ INSERT OR REPLACE INTO ListingEntity(
     ?, ?, ?,
     ?, ?, ?,
     ?, ?, ?, ?,
-    ?, ?, ?, ?, ?,
+    ?, ?, ?, ?, ?, ?, ?,
     ?,
     ?, ?, ?, ?,
     ?, ?, ?, ?, ?

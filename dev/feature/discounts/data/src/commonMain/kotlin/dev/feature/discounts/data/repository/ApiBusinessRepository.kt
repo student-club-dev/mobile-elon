@@ -12,11 +12,15 @@ import dev.core.network.generated.model.BranchRequestDto
 import dev.core.network.generated.model.BranchTradeCenterFieldInputDto
 import dev.core.network.generated.model.BusinessDto
 import dev.core.network.generated.model.CreateBusinessDto
+import dev.core.network.generated.model.DayOfWeekDto
 import dev.core.network.generated.model.LocationDto
 import dev.core.network.generated.model.UpdateBusinessDto
+import dev.core.network.generated.model.WorkingHoursDto
+import dev.feature.discounts.domain.model.BranchWorkingHours
 import dev.feature.discounts.domain.model.Business
 import dev.feature.discounts.domain.model.BusinessType
 import dev.feature.discounts.domain.model.ListingBranch
+import dev.feature.discounts.domain.model.WeekDay
 import dev.feature.discounts.domain.repository.BusinessRepository
 import io.ktor.client.call.body
 import kotlinx.coroutines.flow.Flow
@@ -153,11 +157,15 @@ private fun BranchDto.toDomain() = ListingBranch(
     tradeCenterId = tradeCenter?.id,
     tradeCenterName = tradeCenter?.name,
     tradeCenterFields = tradeCenterFields.associate { it.label to it.value },
+    workingHours = workingHours.mapNotNull { it.toDomain() },
 )
 
 /**
- * Domen filiali → so'rov. Ish vaqti hozircha formaда yo'q — backend bo'sh ro'yxatni
- * "belgilanmagan" deb qabul qiladi.
+ * Domen filiali → so'rov.
+ *
+ * Ish vaqti **yetti kunni ham** o'z ichiga oladi (spec §3.2): forma odatiy jadval bilan
+ * ochiladi, shuning uchun bu yerда ro'yxat hech qachon bo'sh qolmaydi — eski, ish vaqtisiz
+ * saqlangan filial uchun [BranchWorkingHours.fullWeek] yetishmagan kunlarni to'ldiradi.
  *
  * Savdo markazi maydonlari domenда `label → qiymat` ko'rinishida yotadi, backend esa
  * `fieldId` kutadi: shuning uchun forma to'ldirganда id saqlangan bo'lsa o'sha ishlatiladi.
@@ -172,9 +180,23 @@ private fun ListingBranch.toRequest() = BranchRequestDto(
         lng = lng,
         landmark = landmark,
     ),
-    workingHours = emptyList(),
+    workingHours = BranchWorkingHours.fullWeek(workingHours).map { it.toDto() },
     tradeCenterId = tradeCenterId,
     tradeCenterFields = tradeCenterFieldIds.map { (fieldId, value) ->
         BranchTradeCenterFieldInputDto(fieldId = fieldId, value = value)
     },
 )
+
+/** Yopiq kunда `open`/`close` yuborilmaydi — backend `null` kutadi (spec §3.2). */
+private fun BranchWorkingHours.toDto() = WorkingHoursDto(
+    day = DayOfWeekDto.entries.first { it.value == day.name },
+    isClosed = isClosed,
+    open = open.takeUnless { isClosed },
+    close = close.takeUnless { isClosed },
+)
+
+/** Noma'lum kun nomi kelsa yozuv tashlab yuboriladi — qolgan kunlar yo'qolmaydi. */
+private fun WorkingHoursDto.toDomain(): BranchWorkingHours? {
+    val weekDay = WeekDay.entries.firstOrNull { it.name == day.value } ?: return null
+    return BranchWorkingHours(day = weekDay, open = open, close = close, isClosed = isClosed)
+}

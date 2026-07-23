@@ -63,6 +63,8 @@ import dev.core.uikit.resources.profile_field_last_name
 import dev.core.uikit.resources.profile_field_phone
 import dev.core.uikit.resources.profile_field_phone_placeholder
 import dev.core.uikit.resources.profile_field_university
+import dev.core.uikit.resources.profile_field_university_email
+import dev.core.uikit.resources.profile_field_university_email_placeholder
 import dev.core.uikit.resources.profile_gender_female
 import dev.core.uikit.resources.profile_gender_male
 import dev.core.uikit.resources.profile_phone_verify_code_placeholder
@@ -147,6 +149,9 @@ fun EditProfileScreen(
     var phone by remember(profile) { mutableStateOf(nationalPhoneDigits(profile?.phoneNumber)) }
     var gender by remember(profile) { mutableStateOf(profile?.gender) }
     var universityId by remember(profile) { mutableStateOf(profile?.universityId) }
+    // Universitet emaili `PUT /profile/me` tanasida bor va 422 shu kalit bilan qaytadi —
+    // maydonsiz foydalanuvchi xatoni tuzata olmasdi.
+    var universityEmail by remember(profile) { mutableStateOf(profile?.universityEmail.orEmpty()) }
     var courseYear by remember(profile) { mutableStateOf(profile?.courseYear) }
 
     var uniExpanded by remember { mutableStateOf(false) }
@@ -340,6 +345,15 @@ fun EditProfileScreen(
                         }
                     }
                     FieldError(fieldErrors[ProfileField.UNIVERSITY], palette)
+
+                    FieldLabel(stringResource(Res.string.profile_field_university_email), palette = palette)
+                    GlassTextField(
+                        universityEmail,
+                        { universityEmail = it; clearFieldError(ProfileField.UNIVERSITY_EMAIL) },
+                        stringResource(Res.string.profile_field_university_email_placeholder),
+                        leading = AppIcons.GraduationCap,
+                        type = AppFieldType.Email,
+                    )
                     FieldError(fieldErrors[ProfileField.UNIVERSITY_EMAIL], palette)
 
                     // Kurs tanlash
@@ -382,6 +396,7 @@ fun EditProfileScreen(
                             phoneNumber = newPhone,
                             gender = gender,
                             universityId = universityId,
+                            universityEmail = universityEmail.trim().ifBlank { null },
                             courseYear = courseYear,
                         )
                         vm.saveProfile(updated) { err ->

@@ -26,6 +26,7 @@ import dev.core.uikit.media.toImageBitmapOrNull
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.common_delete
 import dev.core.uikit.resources.discounts_image
+import dev.core.uikit.resources.discounts_image_cover
 import dev.core.uikit.resources.discounts_image_uploading
 import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
@@ -98,10 +99,27 @@ fun AddImageTile(onClick: () -> Unit, loading: Boolean, palette: AppPalette = ap
 
 /** Qo'shilgan rasm — burchagida o'chirish tugmasi. */
 @Composable
-fun ImageThumb(source: String, onRemove: () -> Unit, palette: AppPalette = appPalette) {
+fun ImageThumb(
+    source: String,
+    onRemove: () -> Unit,
+    palette: AppPalette = appPalette,
+    /** Birinchi rasm — e'lonning muqovasi (backend `images[0]` ni shunday oladi). */
+    cover: Boolean = false,
+) {
     val shape = AppRadius.sm
     Box(Modifier.size(84.dp)) {
         ListingImage(source, Modifier.fillMaxSize().clip(shape))
+        if (cover) {
+            Text(
+                stringResource(Res.string.discounts_image_cover),
+                style = AppType.caption.copy(color = palette.onPrimary),
+                modifier = Modifier.align(Alignment.BottomStart)
+                    .padding(AppSpacing.xs)
+                    .clip(AppRadius.pill)
+                    .background(palette.scrim)
+                    .padding(horizontal = 7.dp, vertical = 2.dp),
+            )
+        }
         Box(
             Modifier.align(Alignment.TopEnd)
                 .padding(AppSpacing.xs)

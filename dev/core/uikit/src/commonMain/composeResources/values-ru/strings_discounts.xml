@@ -226,6 +226,16 @@
 
     <string name="discounts_region_label">Область</string>
     <string name="discounts_region_select">Выберите область</string>
+    <string name="discounts_district_label">Район</string>
+    <string name="discounts_district_select">Выберите район</string>
+    <string name="discounts_district_needs_region">Сначала выберите область</string>
+    <string name="discounts_branch_name_label">Название филиала</string>
+    <string name="discounts_branch_name_placeholder">Филиал на Чиланзаре</string>
+    <string name="discounts_branch_name_note">Если оставить пустым, будет название бизнеса</string>
+    <string name="discounts_working_hours_label">Часы работы</string>
+    <string name="discounts_working_hours_closed">Закрыто</string>
+    <string name="discounts_working_hours_day_off">Выходной</string>
+    <string name="discounts_redemption_url_hint">https://example.uz/akciya</string>
     <string name="discounts_name_latin_only">Название бизнеса пишется только латиницей</string>
 
     <!-- Biznes turlari -->
@@ -236,4 +246,41 @@
     <string name="discounts_type_entertainment">Кино и развлечения</string>
     <string name="discounts_type_barbershop">Барбершоп</string>
     <string name="discounts_type_beauty_salon">Салон красоты</string>
+
+    <!-- ============ Объявление: единица цены, тип скидки, лимиты ============ -->
+    <string name="discounts_price_unit_label">Цена за что</string>
+    <string name="discounts_percent_suffix">%</string>
+    <string name="discounts_discount_type_label">Тип скидки</string>
+    <string name="discounts_conditions_label">Условие (необязательно)</string>
+    <string name="discounts_conditions_hint">Например: только в будни, до 12:00</string>
+    <string name="discounts_applies_to_options">Действует и на дополнения</string>
+    <string name="discounts_per_user_limit_label">Сколько раз использует один студент</string>
+    <string name="discounts_total_limit_label">Сколько раз всего</string>
+    <string name="discounts_limit_unlimited_hint">Без ограничения</string>
+    <string name="discounts_start_date_label">С какого числа</string>
+    <string name="discounts_start_date_hint">С сегодня (дд.мм.гггг)</string>
+    <string name="discounts_start_date_invalid">Укажите дату полностью в формате дд.мм.гггг</string>
+    <string name="discounts_duration_label">Сколько длится</string>
+
+    <!-- ============ Объявление: дополнения (optionGroups) ============ -->
+    <string name="discounts_options_section">Дополнения</string>
+    <string name="discounts_options_subtitle">Варианты на выбор студента — необязательно</string>
+    <string name="discounts_option_group_add">Добавить группу</string>
+    <string name="discounts_option_group_name_hint">Название группы: Выберите объём</string>
+    <string name="discounts_option_group_remove">Удалить группу</string>
+    <string name="discounts_option_required">Обязательно</string>
+    <string name="discounts_option_min_hint">Минимум</string>
+    <string name="discounts_option_max_hint">Максимум</string>
+    <string name="discounts_option_add">Добавить вариант</string>
+    <string name="discounts_option_name_hint">Вариант: 0.5 л</string>
+    <string name="discounts_option_price_delta_hint">+/- сум</string>
+    <string name="discounts_option_remove">Удалить вариант</string>
+    <string name="discounts_option_available">В наличии</string>
+
+    <!-- ============ Объявление: филиалы ============ -->
+    <string name="discounts_branches_pick_subtitle">В каких филиалах действует объявление</string>
+    <string name="discounts_branches_empty">У этого бизнеса пока нет филиалов</string>
+    <string name="discounts_branches_add_note">Новый филиал добавляется в профиле бизнеса</string>
+
+    <string name="discounts_image_cover">Обложка</string>
 </resources>

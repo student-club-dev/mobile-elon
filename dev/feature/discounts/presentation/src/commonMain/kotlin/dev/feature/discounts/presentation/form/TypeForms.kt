@@ -125,11 +125,17 @@ private fun ListingFormScaffold(
                 // E'lon turi (Chegirma / Oddiy) — bevosita narx tepasida, chunki u narx
                 // ko'rinishini belgilaydi: chegirmada 2 narx, oddiyda 1 narx.
                 if (!state.modeLocked) ListingModeSection(state, vm)
-                // Narx (chegirmada Oldingi + Hozirgi).
+                // Narx (birlik, chegirma turi va qiymati, shartlar).
                 PriceAndDiscountSection(state, copy, vm)
+                // Qo'shimchalar — "Hajmni tanlang" kabi guruhlar (ixtiyoriy).
+                OptionGroupsSection(state, vm)
+                // Talaba chegirmani qanday oladi + limitlar.
+                RedemptionSection(state, vm)
+                // Amal qilish muddati (boshlanish sanasi + davomiyligi).
+                ValiditySection(state, vm)
                 // Telefon raqami.
                 ContactSection(state, vm)
-                // Joylashuv (filiallar / xarita).
+                // E'lon qaysi filiallarda amal qiladi.
                 BranchesSection(state, palette, vm)
             }
 

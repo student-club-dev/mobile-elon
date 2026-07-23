@@ -226,6 +226,16 @@
 
     <string name="discounts_region_label">Region</string>
     <string name="discounts_region_select">Select a region</string>
+    <string name="discounts_district_label">District</string>
+    <string name="discounts_district_select">Select a district</string>
+    <string name="discounts_district_needs_region">Select a region first</string>
+    <string name="discounts_branch_name_label">Branch name</string>
+    <string name="discounts_branch_name_placeholder">Chilonzor branch</string>
+    <string name="discounts_branch_name_note">Left empty, the business name is used</string>
+    <string name="discounts_working_hours_label">Working hours</string>
+    <string name="discounts_working_hours_closed">Closed</string>
+    <string name="discounts_working_hours_day_off">Day off</string>
+    <string name="discounts_redemption_url_hint">https://example.uz/offer</string>
     <string name="discounts_name_latin_only">Business name must use the Latin alphabet</string>
 
     <!-- Biznes turlari -->
@@ -236,4 +246,41 @@
     <string name="discounts_type_entertainment">Cinema &amp; entertainment</string>
     <string name="discounts_type_barbershop">Barbershop</string>
     <string name="discounts_type_beauty_salon">Beauty salon</string>
+
+    <!-- ============ Listing: price unit, discount type, limits ============ -->
+    <string name="discounts_price_unit_label">Price is per</string>
+    <string name="discounts_percent_suffix">%</string>
+    <string name="discounts_discount_type_label">Discount type</string>
+    <string name="discounts_conditions_label">Condition (optional)</string>
+    <string name="discounts_conditions_hint">For example: weekdays only, before 12:00</string>
+    <string name="discounts_applies_to_options">Also applies to add-ons</string>
+    <string name="discounts_per_user_limit_label">Uses per student</string>
+    <string name="discounts_total_limit_label">Total uses</string>
+    <string name="discounts_limit_unlimited_hint">Unlimited</string>
+    <string name="discounts_start_date_label">Starts on</string>
+    <string name="discounts_start_date_hint">Today (dd.mm.yyyy)</string>
+    <string name="discounts_start_date_invalid">Enter the full date as dd.mm.yyyy</string>
+    <string name="discounts_duration_label">How long it runs</string>
+
+    <!-- ============ Listing: add-ons (optionGroups) ============ -->
+    <string name="discounts_options_section">Add-ons</string>
+    <string name="discounts_options_subtitle">Options the student picks — optional</string>
+    <string name="discounts_option_group_add">Add a group</string>
+    <string name="discounts_option_group_name_hint">Group name: Choose a size</string>
+    <string name="discounts_option_group_remove">Remove group</string>
+    <string name="discounts_option_required">Required</string>
+    <string name="discounts_option_min_hint">Minimum</string>
+    <string name="discounts_option_max_hint">Maximum</string>
+    <string name="discounts_option_add">Add an option</string>
+    <string name="discounts_option_name_hint">Option: 0.5 l</string>
+    <string name="discounts_option_price_delta_hint">+/- UZS</string>
+    <string name="discounts_option_remove">Remove option</string>
+    <string name="discounts_option_available">Available</string>
+
+    <!-- ============ Listing: branches ============ -->
+    <string name="discounts_branches_pick_subtitle">Which branches the listing applies to</string>
+    <string name="discounts_branches_empty">This business has no branches yet</string>
+    <string name="discounts_branches_add_note">New branches are added in the business profile</string>
+
+    <string name="discounts_image_cover">Cover</string>
 </resources>

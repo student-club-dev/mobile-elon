@@ -12,6 +12,7 @@ import dev.feature.discounts.domain.model.OptionGroup
 import dev.feature.discounts.domain.model.OptionItem
 import dev.feature.discounts.domain.model.PriceUnit
 import dev.feature.discounts.domain.model.RedemptionMethod
+import dev.feature.discounts.domain.model.RedemptionPeriod
 import dev.feature.discounts.domain.model.SelectionType
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -33,6 +34,8 @@ private data class OptionGroupJson(
     val name: String,
     val selectionType: String = "SINGLE",
     val isRequired: Boolean = false,
+    val minSelect: Int? = null,
+    val maxSelect: Int? = null,
     val options: List<OptionJson> = emptyList(),
 )
 
@@ -79,7 +82,9 @@ fun ListingEntity.toDomain(): Listing = Listing(
     redemption = ListingRedemption(
         method = redemptionMethod.toEnum(RedemptionMethod.entries, RedemptionMethod.STUDENT_ID),
         promoCode = promoCode,
+        url = redemptionUrl,
         perUserLimit = perUserLimit?.toInt(),
+        perUserPeriod = perUserPeriod.toEnum(RedemptionPeriod.entries, RedemptionPeriod.DAY),
         totalLimit = totalLimit?.toInt(),
         usedCount = usedCount.toInt(),
     ),
@@ -116,7 +121,9 @@ fun Listing.toEntity(): ListingEntity = ListingEntity(
     discountConditions = discount.conditions,
     redemptionMethod = redemption.method.name,
     promoCode = redemption.promoCode,
+    redemptionUrl = redemption.url,
     perUserLimit = redemption.perUserLimit?.toLong(),
+    perUserPeriod = redemption.perUserPeriod.name,
     totalLimit = redemption.totalLimit?.toLong(),
     usedCount = redemption.usedCount.toLong(),
     branchesJson = json.encodeToString(
@@ -142,6 +149,8 @@ fun Listing.toEntity(): ListingEntity = ListingEntity(
                 name = group.name,
                 selectionType = group.selectionType.name,
                 isRequired = group.isRequired,
+                minSelect = group.minSelect,
+                maxSelect = group.maxSelect,
                 options = group.options.map { OptionJson(it.name, it.priceDelta, it.isAvailable) },
             )
         },
@@ -186,6 +195,8 @@ private fun String.decodeGroups(): List<OptionGroup> =
                 name = group.name,
                 selectionType = group.selectionType.toEnum(SelectionType.entries, SelectionType.SINGLE),
                 isRequired = group.isRequired,
+                minSelect = group.minSelect,
+                maxSelect = group.maxSelect,
                 options = group.options.map { OptionItem(it.name, it.priceDelta, it.isAvailable) },
             )
         }

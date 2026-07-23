@@ -56,6 +56,8 @@
     <string name="profile_gender_female">Female</string>
     <string name="profile_field_university">University</string>
     <string name="profile_university_select">Select a university</string>
+    <string name="profile_field_university_email">University email</string>
+    <string name="profile_field_university_email_placeholder">name@university.uz</string>
     <string name="profile_field_course">Year</string>
     <string name="profile_course_1">Year 1</string>
     <string name="profile_course_2">Year 2</string>

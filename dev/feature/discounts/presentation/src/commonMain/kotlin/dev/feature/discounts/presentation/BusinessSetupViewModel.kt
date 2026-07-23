@@ -5,11 +5,14 @@ import androidx.lifecycle.viewModelScope
 import dev.core.common.Resource
 import dev.core.domain.repository.SettingsRepository
 import dev.core.common.text.TextScript
+import dev.feature.discounts.domain.model.BranchWorkingHours
 import dev.feature.discounts.domain.model.Business
 import dev.feature.discounts.domain.model.BusinessTypeInfo
 import dev.feature.discounts.domain.model.BusinessType
+import dev.feature.discounts.domain.model.District
 import dev.feature.discounts.domain.model.Gender
 import dev.feature.discounts.domain.model.GeoCatalog
+import dev.feature.discounts.domain.model.WeekDay
 import dev.feature.discounts.domain.model.ListingBranch
 import dev.feature.discounts.domain.model.ListingCatalog
 import dev.feature.discounts.domain.model.Region
@@ -65,6 +68,12 @@ data class AddBusinessUiState(
     val editCreatedAt: Long? = null,
     val name: String = "",
     val phone: String = "",
+    /**
+     * Filial nomi ("Chilonzor filiali") — `BranchRequestDto.name` majburiy. Bo'sh qoldirilsa
+     * saqlashда biznes nomi yoziladi, chunki bitta filialli bizneslar uchun alohida nom
+     * so'rash ortiqcha.
+     */
+    val branchName: String = "",
     val businessType: BusinessType? = null,
     /** Foydalanuvchi jinsi — tur ro'yxatini filtrlaydi (Sartaroshxona/BeautySalon). */
     val gender: Gender? = null,
@@ -76,8 +85,21 @@ data class AddBusinessUiState(
      * viloyat bo'yicha filtrga tushmay qolardi.
      */
     val regionId: String? = null,
+    /**
+     * Tuman — `LocationDto.districtId` **majburiy** va tanlangan viloyatga tegishli bo'lishi
+     * shart (aks holda `422 DISTRICT_REGION_MISMATCH`). Teskari geokodlash topsa avtomatik
+     * to'ladi, topa olmasa foydalanuvchi o'zi tanlaydi.
+     */
+    val districtId: String? = null,
     /** Viloyat tanlash sheet'i ochiqmi (`AppBottomSheet`). */
     val regionPickerOpen: Boolean = false,
+    /** Tuman tanlash sheet'i ochiqmi. */
+    val districtPickerOpen: Boolean = false,
+    /**
+     * Filial ish vaqti — backend yetti kunni ham kutadi (`BranchRequestDto.workingHours`),
+     * shuning uchun forma odatiy jadval bilan ochiladi.
+     */
+    val workingHours: List<BranchWorkingHours> = BranchWorkingHours.defaultWeek(),
     /** Biznes turi tanlash sheet'i ochiqmi (`AppBottomSheet`). */
     val typePickerOpen: Boolean = false,
     val pickingOnMap: Boolean = false,
@@ -106,9 +128,15 @@ data class AddBusinessUiState(
     /** Tanlangan viloyat nomi — ko'rsatish uchun. */
     val regionName: String? get() = regions.firstOrNull { it.id == regionId }?.name
 
+    /** Tanlangan viloyatning tumanlari — tuman sheet'i shu ro'yxatdan to'ladi. */
+    val districts: List<District> get() = regions.firstOrNull { it.id == regionId }?.districts.orEmpty()
+
+    val districtName: String? get() = districts.firstOrNull { it.id == districtId }?.name
+
     val canSave: Boolean
         get() = name.isNotBlank() && phoneDigits.length == 9 && businessType != null &&
-            branch != null && regionId != null && !saving
+            branch != null && regionId != null && districtId != null &&
+            workingHours.all { it.isValid } && !saving
 }
 
 /**
@@ -137,15 +165,20 @@ class AddBusinessViewModel(
         if (_state.value.editId == businessId) return
         viewModelScope.launch {
             val biz = getBusiness(businessId) ?: return@launch
+            val branch = biz.branches.firstOrNull()
             _state.update {
                 it.copy(
                     editId = biz.id,
                     editCreatedAt = biz.createdAt,
                     name = biz.name,
                     phone = biz.phone.removePrefix("+998"),
+                    branchName = branch?.name.orEmpty(),
                     businessType = biz.businessType,
-                    branch = biz.branches.firstOrNull(),
-                    regionId = biz.branches.firstOrNull()?.regionId,
+                    branch = branch,
+                    regionId = branch?.regionId,
+                    districtId = branch?.districtId,
+                    // Eski, ish vaqtisiz saqlangan filial ham to'liq haftalik jadval bilan ochiladi.
+                    workingHours = BranchWorkingHours.fullWeek(branch?.workingHours.orEmpty()),
                 )
             }
         }
@@ -197,6 +230,9 @@ class AddBusinessViewModel(
         it.copy(name = TextScript.stripCyrillic(v), error = null)
     }
     fun onPhone(v: String) = _state.update { it.copy(phone = v.filter { c -> c.isDigit() }.take(9), error = null) }
+
+    /** Filial nomi ("Chilonzor filiali") — biznes nomidan farqli, alifbo cheklovi yo'q. */
+    fun onBranchName(v: String) = _state.update { it.copy(branchName = v, error = null) }
     // Tur tanlanishi bilan sheet yopiladi — tasdiqlash tugmasi yo'q, tanlovning o'zi javob.
     fun onType(t: BusinessType) = _state.update {
         it.copy(businessType = t, typePickerOpen = false, error = null)
@@ -239,12 +275,21 @@ class AddBusinessViewModel(
         viewModelScope.launch {
             _state.update { it.copy(resolvingAddress = true) }
             val branch = createBranch(id = "biz-${Clock.System.now().toEpochMilliseconds()}", lat = lat, lng = lng)
-            _state.update {
-                it.copy(
+            _state.update { state ->
+                // Geokoder viloyatni topsa — avtomatik to'ldiramiz. Topa olmasa foydalanuvchi
+                // qo'lda tanlagan qiymat saqlanadi (uni bekorga o'chirmaymiz).
+                val regionId = branch.regionId ?: state.regionId
+                // Tuman viloyatga tegishli bo'lishi shart (`422 DISTRICT_REGION_MISMATCH`):
+                // geokoder bergan tuman boshqa viloyatniki bo'lsa yoki viloyat almashgan bo'lsa —
+                // tanlov tozalanadi va foydalanuvchi tumanni o'zi ko'rsatadi.
+                val districtId = branch.districtId ?: state.districtId
+                state.copy(
                     branch = branch,
-                    // Geokoder viloyatni topsa — avtomatik to'ldiramiz. Topa olmasa foydalanuvchi
-                    // qo'lda tanlagan qiymat saqlanadi (uni bekorga o'chirmaymiz).
-                    regionId = branch.regionId ?: it.regionId,
+                    regionId = regionId,
+                    districtId = districtId.takeIf { id ->
+                        state.regions.firstOrNull { it.id == regionId }?.districts.orEmpty()
+                            .any { it.id == id }
+                    },
                     resolvingAddress = false,
                     pickingOnMap = false,
                 )
@@ -256,9 +301,41 @@ class AddBusinessViewModel(
 
     fun closeRegionPicker() = _state.update { it.copy(regionPickerOpen = false) }
 
+    // Viloyat almashsa tuman ham almashadi — eski tanlov yangi viloyatga tegishli emas.
     fun onRegion(regionId: String) = _state.update {
-        it.copy(regionId = regionId, regionPickerOpen = false, error = null)
+        it.copy(
+            regionId = regionId,
+            districtId = it.districtId?.takeIf { _ -> regionId == it.regionId },
+            regionPickerOpen = false,
+            error = null,
+        )
     }
+
+    fun openDistrictPicker() = _state.update { it.copy(districtPickerOpen = true) }
+
+    fun closeDistrictPicker() = _state.update { it.copy(districtPickerOpen = false) }
+
+    fun onDistrict(districtId: String) = _state.update {
+        it.copy(districtId = districtId, districtPickerOpen = false, error = null)
+    }
+
+    // -----------------------------------------------------------------------
+    // Ish vaqti — yetti kunning har biri alohida tahrirlanadi
+    // -----------------------------------------------------------------------
+
+    fun onDayClosed(day: WeekDay, closed: Boolean) = updateDay(day) { it.copy(isClosed = closed) }
+
+    fun onDayOpen(day: WeekDay, value: String) = updateDay(day) { it.copy(open = formatTime(value)) }
+
+    fun onDayClose(day: WeekDay, value: String) = updateDay(day) { it.copy(close = formatTime(value)) }
+
+    private fun updateDay(day: WeekDay, transform: (BranchWorkingHours) -> BranchWorkingHours) =
+        _state.update { state ->
+            state.copy(
+                workingHours = state.workingHours.map { if (it.day == day) transform(it) else it },
+                error = null,
+            )
+        }
 
     fun save() {
         val s = _state.value
@@ -274,9 +351,17 @@ class AddBusinessViewModel(
                 name = s.name.trim(),
                 phone = "+998${s.phoneDigits}",
                 businessType = type,
-                // Foydalanuvchi tanlagan viloyat filialga yoziladi — geokoder topgan qiymat
-                // noto'g'ri bo'lsa ham, e'lon to'g'ri viloyat filtriga tushadi.
-                branches = listOf(branch.copy(regionId = s.regionId ?: branch.regionId)),
+                // Foydalanuvchi tanlagan viloyat/tuman filialga yoziladi — geokoder topgan qiymat
+                // noto'g'ri bo'lsa ham, e'lon to'g'ri filtrga tushadi.
+                branches = listOf(
+                    branch.copy(
+                        // Filial nomi backendда majburiy: bo'sh qoldirilsa biznes nomi yoziladi.
+                        name = s.branchName.trim().ifBlank { s.name.trim() },
+                        regionId = s.regionId ?: branch.regionId,
+                        districtId = s.districtId ?: branch.districtId,
+                        workingHours = s.workingHours,
+                    ),
+                ),
                 createdAt = s.editCreatedAt ?: now, // tahrirlashда asl vaqt saqlanadi
                 updatedAt = now,
             )
@@ -288,3 +373,21 @@ class AddBusinessViewModel(
         }
     }
 }
+
+/**
+ * Klaviaturadan kelgan matnni "HH:MM" ga keltiradi: foydalanuvchi faqat raqam teradi
+ * ("0930"), ikki nuqta o'zi qo'yiladi. Soat 23, daqiqa 59 bilan cheklanadi — noto'g'ri
+ * vaqtni yozib bo'lmaydi, shu sabab formaда alohida xato ko'rsatish shart emas.
+ */
+internal fun formatTime(input: String): String {
+    val digits = input.filter { it.isDigit() }.take(4)
+    if (digits.isEmpty()) return ""
+    val hour = digits.take(2)
+    val minute = digits.drop(2)
+    val cappedHour = if (hour.length == 2) hour.toInt().coerceAtMost(23).pad() else hour
+    if (minute.isEmpty()) return cappedHour
+    val cappedMinute = if (minute.length == 2) minute.toInt().coerceAtMost(59).pad() else minute
+    return "$cappedHour:$cappedMinute"
+}
+
+private fun Int.pad(): String = toString().padStart(2, '0')
