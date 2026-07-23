@@ -30,7 +30,9 @@ actual fun rememberImagePicker(onResult: (PickedImage?) -> Unit): ImagePicker {
                     val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
                         ?: return@runCatching null
                     val ext = if (context.contentResolver.getType(uri) == "image/png") "png" else "jpg"
-                    PickedImage(bytes = bytes, fileName = "image.$ext")
+                    // Yuklashdan oldin kichiklashtirib siqamiz: kamera rasmi odatda 3-8 MB,
+                    // backend chegarasi esa 5 MB (`POST /v1/media/upload`).
+                    prepareImageForUpload(bytes, "image.$ext")
                 }.getOrNull()
             }
             onResult(picked)
