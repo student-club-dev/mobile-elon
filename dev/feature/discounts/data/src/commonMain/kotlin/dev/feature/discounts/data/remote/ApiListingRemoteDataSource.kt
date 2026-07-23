@@ -1,9 +1,13 @@
 package dev.feature.discounts.data.remote
 
 import dev.core.common.Resource
+import dev.core.common.error.AppException
+import dev.core.common.errorOf
+import dev.core.common.network.NetworkConnectivity
 import dev.core.network.generated.api.ListingsApi
 import dev.core.network.media.MediaPurpose
 import dev.core.network.media.MediaUploader
+import dev.core.network.response.safeCall
 import dev.core.network.generated.model.CreateListingRequestDto
 import dev.core.network.generated.model.DiscountRequestDto
 import dev.core.network.generated.model.DiscountTypeDto
@@ -26,42 +30,40 @@ import kotlinx.datetime.Instant
  * Ikki qadam: `POST /business/{id}/listings` (DRAFT yaratadi) → `POST /listings/{id}/submit`
  * (moderatsiyaga yuboradi). Yakuniy narxni **server** hisoblaydi, shuning uchun bu yerda
  * `finalPrice` yuborilmaydi.
+ *
+ * Xatolar `safeCall` orqali **typed** [AppException] ga aylanadi (422 dagi maydon xatolari ham).
+ * Bu shart: [FallbackListingRemoteDataSource] aynan shu turga qarab "backendga yetib bo'lmadi"
+ * ni "server rad etdi" dan ajratadi.
  */
 class ApiListingRemoteDataSource(
     private val listingsApi: ListingsApi,
     private val mediaApi: MediaUploader,
+    private val connectivity: NetworkConnectivity,
 ) : ListingRemoteDataSource {
 
     override suspend fun publish(listing: Listing): Resource<Listing> {
         // Backend e'lonni biznesga bog'laydi. Biznes profili hali yaratilmagan bo'lsa,
         // e'lonni jo'natishning ma'nosi yo'q — foydalanuvchini avval biznes ochishga yo'naltiramiz.
         val businessId = listing.businessId
-            ?: return Resource.Error("Avval biznes profilini yarating")
+            ?: return errorOf(AppException.Validation("Avval biznes profilini yarating"))
 
-        return try {
+        return safeCall(connectivity) {
             val created = listingsApi.listingsCreate(businessId, listing.toCreateRequest()).body()
             val submitted = listingsApi.submit(created.id).body()
-            Resource.Success(
-                listing.copy(
-                    id = submitted.id,
-                    businessId = submitted.businessId,
-                    status = submitted.status.toDomain(),
-                    rejectionReason = submitted.rejectionReason,
-                ),
+            listing.copy(
+                id = submitted.id,
+                businessId = submitted.businessId,
+                status = submitted.status.toDomain(),
+                rejectionReason = submitted.rejectionReason,
             )
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "E'lonni yuborib bo'lmadi", e)
         }
     }
 
-    override suspend fun uploadImage(bytes: ByteArray, fileName: String): Resource<String> = try {
-        Resource.Success(mediaApi.upload(bytes, fileName, MediaPurpose.LISTING).url)
-    } catch (e: Exception) {
-        Resource.Error(e.message ?: "Rasmni yuklab bo'lmadi", e)
-    }
+    override suspend fun uploadImage(bytes: ByteArray, fileName: String): Resource<String> =
+        safeCall(connectivity) { mediaApi.upload(bytes, fileName, MediaPurpose.LISTING).url }
 }
 
-private fun Listing.toCreateRequest() = CreateListingRequestDto(
+internal fun Listing.toCreateRequest() = CreateListingRequestDto(
     // Backendda filial alohida obyekt (`POST /business/{id}/branches`) va e'lon unga
     // `branchIds` orqali bog'lanadi. Formada biznesning mavjud filiallaridan tanlanadi —
     // shu sabab bu yerda id'lar allaqachon serverdagi id'lar. Bo'sh ro'yxat spec bo'yicha

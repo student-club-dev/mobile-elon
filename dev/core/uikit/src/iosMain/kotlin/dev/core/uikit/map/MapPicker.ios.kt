@@ -29,8 +29,10 @@ actual fun MapPicker(
     onCenterChanged: (MapPoint) -> Unit,
     modifier: Modifier,
     centerRequest: MapCenterRequest?,
+    onStatus: (MapStatus) -> Unit,
 ) {
     val currentOnCenter by rememberUpdatedState(onCenterChanged)
+    val currentOnStatus by rememberUpdatedState(onStatus)
 
     val hint = stringResource(Res.string.map_drag_hint)
 
@@ -46,7 +48,10 @@ actual fun MapPicker(
     val handler = remember { MapMessageHandler() }
     // Yon ta'sirni kompozitsiya tanasida emas, SideEffect'da o'rnatamiz (bekor qilingan
     // kompozitsiyada eski lambda o'rnatilib qolmasin).
-    SideEffect { handler.onCenter = { point -> currentOnCenter(point) } }
+    SideEffect {
+        handler.onCenter = { point -> currentOnCenter(point) }
+        handler.onStatus = { status -> currentOnStatus(status) }
+    }
 
     val htmlHolder = remember { Holder("") }
     val lastCenterId = remember { Holder<Int?>(null) }
@@ -81,6 +86,9 @@ actual fun MapPicker(
         // KUCHLI ushlaydi, handler esa Composition'ni; natijada WKWebView va uning alohida
         // WebContent jarayoni ekran yopilgandan keyin ham yashab, xotira o'sib boradi.
         onRelease = { webView ->
+            // AVVAL `map.remove()` — WebGL kontekstini va animatsiya siklini bo'shatadi
+            // (qarang `jsDestroyMap` izohi), keyin handler yechiladi.
+            webView.evaluateJavaScript(jsDestroyMap(), completionHandler = null)
             webView.configuration.userContentController
                 .removeScriptMessageHandlerForName(MAP_BRIDGE)
             webView.stopLoading()
@@ -92,13 +100,19 @@ actual fun MapPicker(
 private class MapMessageHandler : NSObject(), WKScriptMessageHandlerProtocol {
 
     var onCenter: (MapPoint) -> Unit = {}
+    var onStatus: (MapStatus) -> Unit = {}
 
     override fun userContentController(
         userContentController: WKUserContentController,
         didReceiveScriptMessage: WKScriptMessage,
     ) {
         val body = didReceiveScriptMessage.body as? Map<*, *> ?: return
-        if (body["kind"] != "center") return
+        when (body["kind"]) {
+            "ready" -> return onStatus(MapStatus.READY)
+            "error" -> return onStatus(MapStatus.FAILED)
+            "center" -> Unit
+            else -> return
+        }
         val lat = (body["lat"] as? Number)?.toDouble() ?: return
         val lng = (body["lng"] as? Number)?.toDouble() ?: return
         onCenter(MapPoint(lat, lng))

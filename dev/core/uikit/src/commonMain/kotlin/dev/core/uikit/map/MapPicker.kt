@@ -6,6 +6,21 @@ import androidx.compose.ui.Modifier
 /** Xaritada tanlangan nuqta. */
 data class MapPoint(val lat: Double, val lng: Double)
 
+/**
+ * Xaritaning holati — ekran shunga qarab loader yoki xato ko'rsatadi.
+ *
+ * Nega kerak: tanlash belgisi (`#pin`) — oddiy HTML element va u xarita yuklanmasa ham
+ * ko'rinib turadi. Shu sabab uslub/plitkalar kelmaganda ekran "tayyor"dek ko'rinardi:
+ * foydalanuvchi xaritani surardi, lekin hech qanday joy tanlanmasdi.
+ */
+enum class MapStatus {
+    /** Uslub yuklandi, surish hodisalari keladi. */
+    READY,
+
+    /** Uslub yoki plitkalar yuklanmadi — surish hech narsa bermaydi. */
+    FAILED,
+}
+
 /** Toshkent markazi — foydalanuvchi joylashuvi noma'lum bo'lsa xarita shu yerdan ochiladi. */
 val DefaultMapCenter = MapPoint(lat = 41.311081, lng = 69.240562)
 
@@ -26,6 +41,8 @@ data class MapCenterRequest(val point: MapPoint, val id: Int)
  * @param dark qorong'i mavzu uslubi — odatda `appPalette.dark` uzatiladi
  * @param onCenterChanged belgi ostidagi joy o'zgardi (surish, zoom, qidiruv natijasi)
  * @param centerRequest xaritani ko'chirish so'rovi (joylashuv keyinroq aniqlansa yoki qidiruv)
+ * @param onStatus xarita tayyor bo'ldi yoki yuklanmadi. Chaqirilmaguncha ekran "yuklanmoqda"
+ *   holatida turadi — belgi ko'rinib tursa ham.
  */
 @Composable
 expect fun MapPicker(
@@ -34,6 +51,7 @@ expect fun MapPicker(
     onCenterChanged: (MapPoint) -> Unit,
     modifier: Modifier = Modifier,
     centerRequest: MapCenterRequest? = null,
+    onStatus: (MapStatus) -> Unit = {},
 )
 
 /** Xarita surilganda JS shu ko'prik orqali koordinatani Kotlin'ga uzatadi. */
@@ -41,6 +59,18 @@ internal const val MAP_BRIDGE = "ElonUzMap"
 
 /** Kotlin tomondan chaqiriladi: xaritani (va u bilan belgini) boshqa joyga olib boradi. */
 internal fun jsSetCenter(point: MapPoint): String = "setCenter(${point.lat}, ${point.lng})"
+
+/**
+ * Ekran yopilishidan OLDIN chaqiriladi — MapLibre'ning WebGL kontekstini va animatsiya
+ * siklini bo'shatadi.
+ *
+ * Nega kerak: brauzer bir jarayonda cheklangan sondagi WebGL kontekstini ko'taradi (Android
+ * WebView'da odatda ~16 ta). `WebView.destroy()` ni o'zi kontekstni darrov qaytarmaydi,
+ * shuning uchun xaritani bir necha marta ochib-yopgach yangisiga kontekst yetmay qoladi:
+ * xarita qotib qoladi, surish hech qanday hodisa bermaydi. `map.remove()` esa uni
+ * **aniq** bo'shatadi.
+ */
+internal fun jsDestroyMap(): String = "destroyMap()"
 
 /**
  * Joy tanlash sahifasi — MapLibre GL JS ustida.
@@ -103,7 +133,10 @@ internal fun pickerMapHtml(center: MapPoint, dark: Boolean, hint: String): Strin
     map.addControl(new maplibregl.AttributionControl({ compact: true }));
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
 
-    /** Kotlin'ga hodisa yuborish. kind: 'center' — belgi ostidagi joy o'zgardi. */
+    /**
+     * Kotlin'ga hodisa yuborish.
+     * kind: 'center' — joy o'zgardi, 'ready' — xarita tayyor, 'error' — yuklanmadi.
+     */
     function post(kind, lat, lng) {
       if (window.$MAP_BRIDGE && window.$MAP_BRIDGE.onEvent) {
         window.$MAP_BRIDGE.onEvent(kind, lat, lng);
@@ -131,7 +164,27 @@ internal fun pickerMapHtml(center: MapPoint, dark: Boolean, hint: String): Strin
     // Surish/zoom tugaganda bir marta xabar beramiz — har kadrga geokodlash so'rovi ketmasin.
     map.on('moveend', sendCenter);
 
+    /**
+     * Uslub yoki plitka yuklanmasa MapLibre `load` ni UMUMAN chiqarmaydi va surish ham
+     * hodisa bermaydi. Bunda ekranda faqat fon rangi va belgi qoladi — foydalanuvchi
+     * xaritani surayotganday bo'ladi, joy esa hech qachon tanlanmaydi. Shuning uchun
+     * xatoni Kotlin'ga aytamiz.
+     */
+    map.on('error', function () { post('error', 0, 0); });
+
+    /**
+     * WebGL konteksti yo'qolsa xarita jimgina qotadi: rasm turadi, surish ishlamaydi.
+     * Foydalanuvchi buni "xarita ishlamayapti" deb ko'radi — shuning uchun xato deb aytamiz.
+     */
+    map.getCanvas().addEventListener('webglcontextlost', function () { post('error', 0, 0); });
+
+    /** Kotlin ekran yopilishidan oldin chaqiradi — kontekst va rAF sikli bo'shatiladi. */
+    function destroyMap() {
+      try { map.remove(); } catch (e) {}
+    }
+
     map.on('load', function () {
+      post('ready', 0, 0);
       sendCenter(); // boshlang'ich joy — manzil darrov aniqlanadi
       // Ko'rsatma bir necha soniyadan keyin xaritani to'smasin.
       setTimeout(function () {

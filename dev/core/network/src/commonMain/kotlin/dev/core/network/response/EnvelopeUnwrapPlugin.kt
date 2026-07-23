@@ -2,7 +2,10 @@ package dev.core.network.response
 
 import dev.core.network.appJson
 import io.ktor.client.plugins.api.createClientPlugin
+import io.ktor.http.HttpStatusCode
+import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.readRemaining
+import kotlinx.io.Source
 import kotlinx.io.readByteArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
@@ -28,12 +31,16 @@ import kotlinx.serialization.serializer
  * Non-2xx javoblar bu yergача yetmaydi — `expectSuccess=true` ularni body-transform'дан oldin
  * `ResponseException` bilan tashlaydi (masalan profil yo'q → HTTP 404). Ularning tanasi
  * `safeApiCall`/`safeCall` da — [toAppExceptionWithFields] orqali — o'qiladi.
+ *
+ * ⚠️ **Binar javoblar** (rasm, fayl) chetlab o'tiladi — qarang [RAW_BODY_TYPES].
  */
 val EnvelopeUnwrapPlugin = createClientPlugin("EnvelopeUnwrap") {
     transformResponseBody { response, content, requestedType ->
         val kType = requestedType.kotlinType
         // Unit (masalan void DELETE) — tanani deserializatsiya qilishning hojati yo'q.
         if (kType == null || requestedType.type == Unit::class) return@transformResponseBody Unit
+        // Xom tana so'ralgan (rasm baytlari) — `null` qaytarsak Ktor tanaga tegmasdan o'tkazadi.
+        if (requestedType.type in RAW_BODY_TYPES) return@transformResponseBody null
 
         val text = content.readRemaining().readByteArray().decodeToString()
         if (text.isBlank()) return@transformResponseBody Unit
@@ -56,3 +63,18 @@ val EnvelopeUnwrapPlugin = createClientPlugin("EnvelopeUnwrap") {
         appJson.decodeFromJsonElement(serializer, payload)
     }
 }
+
+/**
+ * JSON konverti **kutilmaydigan** tana turlari — bularni Ktor'ning o'z transformer'i beradi.
+ *
+ * Rasm yuklovchi (Coil) ilovaning umumiy klientidan foydalanadi va tanani [ByteReadChannel]
+ * sifatida so'raydi. Plagin ularni ham JSON deb o'qib ko'rgan edi: JPEG baytlari matnga
+ * o'girilib `JsonDecodingException` bilan tugardi, ya'ni **hech bir rasm ko'rinmasdi**
+ * (`GET /uploads/LISTING/….jpg` xatoga tushardi). Qarang `BinaryResponseTest`.
+ */
+private val RAW_BODY_TYPES = setOf(
+    ByteReadChannel::class,
+    ByteArray::class,
+    Source::class,
+    HttpStatusCode::class,
+)

@@ -56,7 +56,7 @@ class LocalBusinessRepository(
             ownerId = "dev-user-1",
             name = "Namuna Kafe",
             phone = "+998901112233",
-            businessType = BusinessType.CAFE_RESTAURANT,
+            businessType = BusinessType("NATIONAL_FOOD"),
         ),
     )
 }

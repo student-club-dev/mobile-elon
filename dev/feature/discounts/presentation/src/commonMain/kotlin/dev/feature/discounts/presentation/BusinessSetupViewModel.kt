@@ -25,7 +25,10 @@ import dev.feature.discounts.domain.usecase.SaveBusinessUseCase
 import dev.feature.discounts.domain.usecase.SearchPlacesUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,18 +45,50 @@ import kotlinx.datetime.Clock
 data class MyBusinessesUiState(
     val loading: Boolean = true,
     val businesses: List<Business> = emptyList(),
+    /** Bir martalik xato xabari (masalan o'chirib bo'lmadi). */
+    val message: String? = null,
 )
 
 class MyBusinessesViewModel(
-    observeMyBusinesses: ObserveMyBusinessesUseCase,
+    private val observeMyBusinesses: ObserveMyBusinessesUseCase,
     private val deleteBusiness: dev.feature.discounts.domain.usecase.DeleteBusinessUseCase,
 ) : ViewModel() {
-    val state: StateFlow<MyBusinessesUiState> = observeMyBusinesses()
-        .map { MyBusinessesUiState(loading = false, businesses = it) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), MyBusinessesUiState())
+
+    /**
+     * Ro'yxatni qayta o'qish triggeri.
+     *
+     * `observeMyBusinesses()` — REST ustidagi **bir martalik** oqim (`GET /v1/business/my` bir
+     * marta o'qiladi va emit qilinadi), ya'ni o'zi qayta yangilanmaydi. Shu sabab o'chirgandan
+     * keyin ro'yxat eski holida qolib ketardi — trigger uni qaytadan yig'adi.
+     */
+    private val reload = MutableStateFlow(0)
+
+    /** O'chirish xatosi — ro'yxat bilan bir oqimda yashamaydi, shuning uchun alohida. */
+    private val deleteError = MutableStateFlow<String?>(null)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val state: StateFlow<MyBusinessesUiState> =
+        combine(reload.flatMapLatest { observeMyBusinesses() }, deleteError) { businesses, error ->
+            MyBusinessesUiState(loading = false, businesses = businesses, message = error)
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), MyBusinessesUiState())
 
     fun delete(id: String) {
-        viewModelScope.launch { deleteBusiness(id) }
+        viewModelScope.launch {
+            when (val res = deleteBusiness(id)) {
+                // Ro'yxatni serverdan qayta o'qiymiz — lokal o'chirish "o'chdi" deb ko'rsatib,
+                // aslida serverda qolib ketishi mumkin edi.
+                is Resource.Success -> {
+                    deleteError.value = null
+                    reload.value += 1
+                }
+                is Resource.Error -> deleteError.value = res.message
+                Resource.Loading -> Unit
+            }
+        }
+    }
+
+    fun consumeMessage() {
+        deleteError.value = null
     }
 }
 
@@ -109,6 +144,8 @@ data class AddBusinessUiState(
     val searching: Boolean = false,
     /** Kamida bir marta qidirildi — bo'sh natijani "topilmadi" deb ko'rsatish uchun. */
     val searched: Boolean = false,
+    /** Qidiruv **xatosi** — "topilmadi" dan farqli: geokoderga yetib borilmadi. */
+    val searchError: String? = null,
     val saving: Boolean = false,
     val saved: Boolean = false,
     val error: String? = null,
@@ -244,7 +281,13 @@ class AddBusinessViewModel(
 
     fun openMap() = _state.update { it.copy(pickingOnMap = true) }
     fun closeMap() = _state.update {
-        it.copy(pickingOnMap = false, searchQuery = "", searchResults = emptyList(), searched = false)
+        it.copy(
+            pickingOnMap = false,
+            searchQuery = "",
+            searchResults = emptyList(),
+            searched = false,
+            searchError = null,
+        )
     }
 
     /**
@@ -261,9 +304,17 @@ class AddBusinessViewModel(
         }
         searchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_MS)
-            _state.update { it.copy(searching = true) }
-            val results = searchPlaces(query, nearLat, nearLng)
-            _state.update { it.copy(searchResults = results, searching = false, searched = true) }
+            _state.update { it.copy(searching = true, searchError = null) }
+            when (val res = searchPlaces(query, nearLat, nearLng)) {
+                is Resource.Success -> _state.update {
+                    it.copy(searchResults = res.data, searching = false, searched = true, searchError = null)
+                }
+                // "Topilmadi" EMAS — geokoderga yetib borilmadi. Ikkisi bir xil ko'rinmasin.
+                is Resource.Error -> _state.update {
+                    it.copy(searchResults = emptyList(), searching = false, searched = true, searchError = res.message)
+                }
+                Resource.Loading -> Unit
+            }
         }
     }
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Adaptive ikonka (Android 8.0+). Foreground — to'liq QS Business logotipi (oq belgilar +
+  havorang fon), background — o'sha havorang (#3FC8F7). Ikkala qatlam bir xil fonda
+  bo'lgani uchun launcher qanday niqob (doira/kvadrat/squircle) qo'llasa ham va parallax
+  siljishida ham fon uzluksiz ko'rinadi; logo esa markazdagi xavfsiz zonada qoladi.
+-->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ic_launcher_background" />
+    <foreground android:drawable="@mipmap/ic_launcher_foreground" />
+</adaptive-icon>

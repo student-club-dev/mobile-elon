@@ -27,6 +27,7 @@
     <string name="discounts_map_branch_title">Место филиала</string>
     <string name="discounts_map_business_title">Место бизнеса</string>
     <string name="discounts_map_hint">Двигайте карту — метка укажет место</string>
+    <string name="discounts_map_failed">Не удалось загрузить карту. Проверьте соединение и войдите снова.</string>
     <string name="discounts_map_search_hint">Поиск: Mega Planet, улица Амира Темура...</string>
     <string name="discounts_searching">Идёт поиск...</string>
     <string name="discounts_search_empty">Ничего не найдено. Попробуйте другой запрос.</string>
@@ -125,6 +126,20 @@
     <!-- ============ Скидки рядом ============ -->
     <string name="discounts_nearby_title">Скидки рядом</string>
     <string name="discounts_location_off">геолокация выключена</string>
+
+    <!-- ============ Тексты формы — ОБЩИЕ (для типов без отдельных текстов) ============ -->
+    <string name="discounts_copy_generic_title">Студенческая скидка</string>
+    <string name="discounts_copy_generic_subtitle">Скидка на услугу или товар</string>
+    <string name="discounts_copy_generic_title_regular">Новое объявление</string>
+    <string name="discounts_copy_generic_subtitle_regular">Объявление об услуге или товаре</string>
+    <string name="discounts_copy_generic_business">Бизнес и раздел</string>
+    <string name="discounts_copy_generic_business_hint">Название бизнеса</string>
+    <string name="discounts_copy_generic_category_hint">Выберите раздел</string>
+    <string name="discounts_copy_generic_images">Фотографии</string>
+    <string name="discounts_copy_generic_images_hint">Первое станет обложкой</string>
+    <string name="discounts_copy_generic_about">Подробнее</string>
+    <string name="discounts_copy_generic_title_hint">Название объявления</string>
+    <string name="discounts_copy_generic_description_hint">Дополнительная информация, условия...</string>
 
     <!-- ============ Тексты формы — Кафе / Ресторан ============ -->
     <string name="discounts_copy_cafe_title">Скидка в кафе</string>
@@ -239,11 +254,8 @@
     <string name="discounts_name_latin_only">Название бизнеса пишется только латиницей</string>
 
     <!-- Biznes turlari -->
-    <string name="discounts_type_game_club">Игровой клуб</string>
     <string name="discounts_type_clothing">Одежда</string>
-    <string name="discounts_type_cafe_restaurant">Кафе и рестораны</string>
     <string name="discounts_type_education_center">Учебный центр</string>
-    <string name="discounts_type_entertainment">Кино и развлечения</string>
     <string name="discounts_type_barbershop">Барбершоп</string>
     <string name="discounts_type_beauty_salon">Салон красоты</string>
 

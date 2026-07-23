@@ -1,86 +1,26 @@
 package dev.feature.discounts.domain.model
 
 /**
- * Biznes turi. E'lon yaratilganda tanlanadi va **keyin o'zgarmaydi** — chunki
- * kategoriyalar ([ListingCatalog.categories]) va turga xos maydonlar
- * ([ListingCatalog.attributes]) aynan shunga bog'liq.
- */
-enum class BusinessType(
-    /**
-     * O'zbekcha zaxira nom — backend nom bermaganda ishlatiladi.
-     *
-     * Ekranda TO'G'RIDAN-TO'G'RI ko'rsatilmaydi: domain tarjimani bilmaydi, shuning uchun
-     * ruscha/inglizcha rejimda bu qiymat o'zbekcha bo'lib qolardi. UI'da
-     * `BusinessType.localizedLabel()` (presentation qatlamida) ishlatiladi.
-     */
-    val label: String,
-    /**
-     * Ma'lumot (backend/eksport) uchun emoji belgisi.
-     *
-     * **Ekranlarda ISHLATILMAYDI**: iOS'da Compose emoji chiza olmaydi va har biri `?`
-     * kvadratchaga aylanadi. UI'da `BusinessType.icon` (presentation qatlamidagi
-     * `BusinessTypeLabels.kt`) ikonkasi chiziladi.
-     */
-    val emoji: String,
-    val accent: Long,
-    val defaultPriceUnit: PriceUnit,
-) {
-    GAME_CLUB("Game Club", "🎮", 0xFF7C5CFF, PriceUnit.PER_HOUR),
-    CLOTHING("Kiyim-kechak", "👕", 0xFFEC4899, PriceUnit.PER_ITEM),
-    CAFE_RESTAURANT("Kafe va Restoran", "🍕", 0xFFF97316, PriceUnit.PER_ITEM),
-    EDUCATION_CENTER("O'quv markaz", "📚", 0xFF3B82F6, PriceUnit.PER_MONTH),
-    ENTERTAINMENT("Kino va ko'ngilochar", "🎬", 0xFFEF4444, PriceUnit.PER_TICKET),
-    BARBERSHOP("Sartaroshxona", "💈", 0xFF14B8A6, PriceUnit.PER_ITEM),
-    BEAUTY_SALON("Go'zallik saloni", "💅", 0xFFF472B6, PriceUnit.PER_ITEM),
-}
-
-/** Foydalanuvchi jinsi — profildan olinadi, biznes turlari/kategoriyalarni moslaydi. */
-enum class Gender { MALE, FEMALE }
-
-/** Biznes turi ichidagi bo'lim: "Pitsa", "PS5", "IELTS kurslari". */
-data class ListingCategory(val key: String, val label: String)
-
-/** Turga xos maydonning kiritish usuli. */
-enum class AttributeKind {
-    TEXT,
-    NUMBER,
-    BOOLEAN,
-    /** Bir nechta variant tanlanadi (masalan futbolkaда mavjud razmerlar: S, M, L). */
-    MULTI_SELECT,
-    /** [AttributeSpec.options] dan bittasi tanlanadi. */
-    SELECT,
-    /** Vergul bilan ajratilgan ro'yxat: "Mozzarella, Pepperoni". */
-    TAGS,
-}
-
-/**
- * Turga xos maydon tavsifi. Forma **shu ro'yxatdan dinamik quriladi** — ilovada
- * har bir biznes turi uchun alohida forma yozilmaydi.
+ * Katalogning **klient zaxirasi** — biznes turlari, kategoriyalari va forma maydonlari.
  *
- * Bu backenddagi `GET /business/types/{type}/attributes-schema` ning offline ekvivalenti:
- * backend yoqilganda shu ro'yxat serverdan keladi va ilova o'zgarmaydi.
- */
-data class AttributeSpec(
-    val key: String,
-    val label: String,
-    val kind: AttributeKind,
-    val hint: String = "",
-    val options: List<String> = emptyList(),
-    val required: Boolean = false,
-    /** Raqamli maydon uchun o'lchov birligi ("gramm", "oy", "daqiqa"). */
-    val suffix: String? = null,
-)
-
-/**
- * Biznes turlarining kategoriyalari va maydonlari — `DISCOUNTS_BUSINESS_API.md` §4 dan.
- * Backend tayyor bo'lganda bu katalog `/business/types/...` javoblari bilan almashtiriladi.
+ * Asosiy manba — **backend** (`GET /v1/business/types`, `.../categories`). Bu yerdagi nusxa
+ * faqat serverga yetib bo'lmaganda ishlaydi, shuning uchun u backend bilan **bir xil kalitlar**
+ * ustida qurilgan: aks holda foydalanuvchi bu yerdan tur tanlab, keyin serverda rad etilgan
+ * e'lon yozib qolardi.
+ *
+ * ⚠️ **Qo'lda tahrirlanmaydi** — backend `catalog-seed.json` faylidan ko'chirilgan
+ * (27 tur, 172 kategoriya, maydonlar **tur darajasida**). Backend katalogi o'zgarsa shu
+ * fayl qayta ko'chiriladi; oraliqda serverdan kelgan javob baribir ustun turadi.
+ *
+ * Zaxirada yo'q tur ham normal holat: [BusinessType] — ochiq kalit, server yangi tur
+ * qo'shsa ilova uni o'zgarishsiz ko'rsatadi (nomi/rangi javobning o'zidan keladi).
  */
 object ListingCatalog {
 
     /** "Boshqa" kategoriyasi — tanlansa `customCategoryName` majburiy bo'ladi. */
     const val OTHER_KEY = "OTHER"
 
-    /** "Hammasiga" — chegirma butun assortimentga amal qiladi (eng ko'p ishlatiladigan holat). */
+    /** "Hammasiga" — chegirma butun assortimentga amal qiladi (eng ko'p uchraydigan holat). */
     const val ALL_KEY = "ALL"
 
     /** `attributes` ichidagi belgi: e'lon ODDIY (chegirmasiz). Validatsiya chegirmani o'tkazadi. */
@@ -92,565 +32,793 @@ object ListingCatalog {
     /** `attributes` ichidagi e'lon jinsi (Kiyim-kechak uchun: "MALE"/"FEMALE"). */
     const val GENDER_KEY = "_gender"
 
-    /**
-     * Foydalanuvchi jinsiga qarab mavjud biznes turlari.
-     *
-     * Ayol → BeautySalon (Sartaroshxona yo'q), erkak → Sartaroshxona (BeautySalon yo'q).
-     * Qolgan turlar ikkoviga ham. Jins noma'lum bo'lsa (`null`) — ikkalasi ham ko'rinadi.
-     */
-    fun typesForGender(gender: Gender?): List<BusinessType> = BusinessType.entries.filter { type ->
-        when (type) {
-            BusinessType.BARBERSHOP -> gender != Gender.FEMALE
-            BusinessType.BEAUTY_SALON -> gender != Gender.MALE
-            else -> true
-        }
-    }
+    /** Zaxiradagi barcha turlar — backenddagi tartibda. */
+    val types: List<BusinessType> get() = entries.keys.map(::BusinessType)
 
-    /** Turga qarab "hammasiga" chipining yozuvi. */
-    fun allLabel(type: BusinessType): String = when (type) {
-        BusinessType.CAFE_RESTAURANT -> "Butun menyuga"
-        BusinessType.CLOTHING -> "Butun assortimentga"
-        BusinessType.GAME_CLUB -> "Barcha zallarga"
-        BusinessType.EDUCATION_CENTER -> "Barcha kurslarga"
-        BusinessType.ENTERTAINMENT -> "Barcha seanslarga"
-        BusinessType.BARBERSHOP -> "Barcha xizmatlarga"
-        BusinessType.BEAUTY_SALON -> "Barcha xizmatlarga"
-    }
-
-    fun categories(type: BusinessType): List<ListingCategory> = categoryMap.getValue(type)
+    /** Turning zaxira ma'lumoti. Noma'lum tur uchun `null` — chaqiruvchi standartga tushadi. */
+    fun info(type: BusinessType): BusinessTypeFallback? = entries[type.key]
 
     /**
-     * Jinsga moslangan kategoriyalar. Kiyim-kechakда erkak → erkaklar kiyim turlari,
-     * ayol → ayollar kiyim turlari. Qolgan turlarда jins ta'sir qilmaydi.
+     * Jinsga mos turlar: sartaroshxona ayollarga, go'zallik saloni erkaklarga ko'rsatilmaydi.
+     * Jins noma'lum bo'lsa — hammasi.
      */
-    fun categoriesFor(type: BusinessType, gender: Gender?): List<ListingCategory> = when {
-        type == BusinessType.CLOTHING && gender == Gender.MALE -> menClothingCategories
-        type == BusinessType.CLOTHING && gender == Gender.FEMALE -> womenClothingCategories
-        else -> categories(type)
-    }
+    fun typesForGender(gender: Gender?): List<BusinessType> = entries
+        .filter { (_, info) -> gender == null || gender in info.genders }
+        .keys.map(::BusinessType)
+
+    /** Turning kategoriyalari. Noma'lum tur — faqat "hammasiga" va "boshqa". */
+    fun categories(type: BusinessType): List<ListingCategory> =
+        info(type)?.categories ?: defaultCategories
+
+    /**
+     * Jinsga moslangan kategoriyalar. Faqat `CLOTHING` ga ta'sir qiladi (erkak/ayol kiyimi),
+     * qolgan turlarda jins e'tiborsiz — backend ham shunday ishlaydi.
+     */
+    fun categoriesFor(type: BusinessType, gender: Gender?): List<ListingCategory> =
+        genderCategories[type.key]?.get(gender) ?: categories(type)
 
     fun category(type: BusinessType, key: String): ListingCategory? {
-        // Kiyim-kechakда kalitlar jinsли ro'yxatlardan keladi (SHIRTS, DRESSES...) — hammasида qidiramiz.
-        val all = if (type == BusinessType.CLOTHING) {
-            categories(type) + menClothingCategories + womenClothingCategories
-        } else {
-            categories(type)
-        }
+        // Kiyimda kalitlar jinsli ro'yxatlardan keladi (SHIRTS, DRESSES...) — hammasida qidiramiz.
+        val all = categories(type) + genderCategories[type.key]?.values?.flatten().orEmpty()
         return all.firstOrNull { it.key == key }
     }
 
-    /** Erkaklar kiyim kategoriyalari (jins = erkak bo'lganda). */
-    private val menClothingCategories: List<ListingCategory> = cats(
-        BusinessType.CLOTHING,
-        "SHIRTS" to "Ko'ylak / futbolka",
-        "PANTS" to "Shim / jinsi",
-        "SUITS" to "Kostyum",
-        "OUTERWEAR" to "Ustki kiyim",
-        "SHOES" to "Poyabzal",
-        "SPORTSWEAR" to "Sport kiyim",
-        "ACCESSORIES" to "Aksessuar",
-    )
-
-    /** Ayollar kiyim kategoriyalari (jins = ayol bo'lganda). */
-    private val womenClothingCategories: List<ListingCategory> = cats(
-        BusinessType.CLOTHING,
-        "DRESSES" to "Ko'ylak / libos",
-        "SKIRTS" to "Yubka",
-        "BLOUSES" to "Bluzka",
-        "OUTERWEAR" to "Ustki kiyim",
-        "SHOES" to "Poyabzal",
-        "BAGS" to "Sumka",
-        "ACCESSORIES" to "Aksessuar",
-    )
-
-    fun attributes(type: BusinessType): List<AttributeSpec> = attributeMap.getValue(type)
+    /**
+     * Turga xos forma maydonlari.
+     *
+     * Backendda maydonlar **tur darajasida** (bir turdagi barcha kategoriyalar bir xil
+     * `fields` oladi), shuning uchun kategoriya bo'yicha alohida ro'yxat yo'q.
+     */
+    fun attributes(type: BusinessType): List<AttributeSpec> = info(type)?.fields.orEmpty()
 
     /**
-     * Formaда ko'rsatiladigan maydonlar: **turga xos umumiy** + **kategoriyaga xos**.
-     * Kategoriya tanlanmaguncha bo'sh (bo'lim ko'rinmaydi). Kalit ikkalasида ham bo'lsa —
-     * kategoriya versiyasi ustun turadi.
+     * Formada ko'rsatiladigan maydonlar. Kategoriya tanlanmaguncha bo'sh — bo'lim ko'rinmaydi.
      */
-    fun categoryAttributes(type: BusinessType, categoryKey: String): List<AttributeSpec> {
-        if (categoryKey.isBlank()) return emptyList()
-        val extra = categoryAttributeMap[type]?.get(categoryKey).orEmpty()
-        val overridden = extra.mapTo(mutableSetOf()) { it.key }
-        // Kategoriyaga xos maydonlar OLDIN — foydalanuvchi endigina tanlagan narsaga tegishli
-        // (Futbolka → razmerlar), umumiy maydonlar (brend, material) keyin.
-        return extra + attributes(type).filterNot { it.key in overridden }
-    }
+    fun categoryAttributes(type: BusinessType, categoryKey: String): List<AttributeSpec> =
+        if (categoryKey.isBlank()) emptyList() else attributes(type)
 
-    /**
-     * KATEGORIYAGA xos maydonlar — turga xos umumiy maydonlar **ustiga** qo'shiladi.
-     * Masalan ko'ylakда brend (umumiy) ham, o'lcham (kategoriya) ham so'raladi.
-     * Kalit to'qnashsa — kategoriya versiyasi ustun (masalan CLOTHING'да `size`).
-     */
-    private val categoryAttributeMap: Map<BusinessType, Map<String, List<AttributeSpec>>> = mapOf(
-        BusinessType.GAME_CLUB to mapOf(
-            "PLAYSTATION" to listOf(
-                AttributeSpec("model", "Model", AttributeKind.SELECT, options = listOf("PS5", "PS4 Pro", "PS4", "PS3"), required = true),
-                AttributeSpec("joysticks", "Joystiklar", AttributeKind.SELECT, options = listOf("2 ta", "4 ta")),
-                AttributeSpec("games", "Mashhur o'yinlar", AttributeKind.TAGS, hint = "FIFA 25, Mortal Kombat, UFC"),
-            ),
-            "TABLE_TENNIS" to listOf(
-                AttributeSpec("tables", "Stollar soni", AttributeKind.NUMBER, hint = "2", suffix = "ta"),
-                AttributeSpec("racketsIncluded", "Raketka va koptok beriladi", AttributeKind.BOOLEAN),
-            ),
-            "TENNIS" to listOf(
-                AttributeSpec("courtType", "Kort turi", AttributeKind.SELECT, options = listOf("Ochiq", "Yopiq"), required = true),
-                AttributeSpec("surface", "Qoplama", AttributeKind.SELECT, options = listOf("Gruntli", "Sun'iy o't", "Qattiq (hard)")),
-                AttributeSpec("gearIncluded", "Raketka beriladi", AttributeKind.BOOLEAN),
-            ),
-            "PC_GAMING" to listOf(
-                AttributeSpec("pcTier", "Kompyuter quvvati", AttributeKind.SELECT, options = listOf("Standart", "Gaming", "Pro / e-sport"), required = true),
-                AttributeSpec("games", "O'yinlar", AttributeKind.TAGS, hint = "CS2, Dota 2, Valorant"),
-                AttributeSpec("gpu", "Videokarta", AttributeKind.TEXT, hint = "RTX 4060"),
-                AttributeSpec("monitorHz", "Monitor", AttributeKind.SELECT, options = listOf("60Hz", "144Hz", "240Hz")),
-            ),
-            "BILLIARDS" to listOf(
-                AttributeSpec("tableType", "Stol turi", AttributeKind.SELECT, options = listOf("Pul (Amerika)", "Rus", "Snuker"), required = true),
-                AttributeSpec("tables", "Stollar soni", AttributeKind.NUMBER, hint = "3", suffix = "ta"),
-            ),
-            "POLYA" to listOf(
-                AttributeSpec("fieldType", "Maydon turi", AttributeKind.SELECT, options = listOf("Mini-futbol", "Basketbol", "Voleybol", "Boshqa")),
-                AttributeSpec("fields", "Maydonlar soni", AttributeKind.NUMBER, hint = "2", suffix = "ta"),
-                AttributeSpec("surface", "Qoplama", AttributeKind.SELECT, options = listOf("Sun'iy o't", "Tabiiy o't", "Parket", "Rezina")),
-                AttributeSpec("hasLighting", "Yoritish bor (kechqurun)", AttributeKind.BOOLEAN),
-            ),
-        ),
-        BusinessType.CLOTHING to mapOf(
-            "SHIRTS" to listOf(
-                AttributeSpec("sizes", "Mavjud razmerlar", AttributeKind.MULTI_SELECT, options = listOf("XS", "S", "M", "L", "XL", "XXL"), required = true),
-                AttributeSpec("fit", "Mavjud bichimlar", AttributeKind.MULTI_SELECT, options = listOf("Slim", "Regular", "Oversize")),
-                AttributeSpec("sleeve", "Yeng", AttributeKind.MULTI_SELECT, options = listOf("Kalta", "Uzun")),
-            ),
-            "DRESSES" to listOf(
-                AttributeSpec("sizes", "Mavjud razmerlar", AttributeKind.MULTI_SELECT, options = listOf("XS", "S", "M", "L", "XL", "XXL"), required = true),
-                AttributeSpec("length", "Uzunligi", AttributeKind.SELECT, options = listOf("Mini", "Midi", "Maksi")),
-                AttributeSpec("occasion", "Uslub", AttributeKind.SELECT, options = listOf("Kundalik", "Ofis", "Kechki", "Milliy")),
-            ),
-            "BLOUSES" to listOf(
-                AttributeSpec("sizes", "Mavjud razmerlar", AttributeKind.MULTI_SELECT, options = listOf("XS", "S", "M", "L", "XL", "XXL"), required = true),
-                AttributeSpec("sleeve", "Yeng", AttributeKind.MULTI_SELECT, options = listOf("Kalta", "Uzun", "Yengsiz")),
-            ),
-            "PANTS" to listOf(
-                AttributeSpec("waistSizes", "Mavjud bel o'lchamlari", AttributeKind.MULTI_SELECT, options = listOf("28", "30", "32", "34", "36", "38", "40"), required = true),
-                AttributeSpec("cut", "Bichimi", AttributeKind.SELECT, options = listOf("Slim", "Straight", "Wide", "Skinny")),
-                AttributeSpec("length", "Uzunligi", AttributeKind.NUMBER, hint = "32", suffix = "inch"),
-            ),
-            "SKIRTS" to listOf(
-                AttributeSpec("sizes", "Mavjud razmerlar", AttributeKind.MULTI_SELECT, options = listOf("XS", "S", "M", "L", "XL", "XXL"), required = true),
-                AttributeSpec("length", "Uzunligi", AttributeKind.SELECT, options = listOf("Mini", "Midi", "Maksi")),
-            ),
-            "SUITS" to listOf(
-                AttributeSpec("sizes", "Mavjud razmerlar", AttributeKind.MULTI_SELECT, options = listOf("XS", "S", "M", "L", "XL", "XXL"), required = true),
-                AttributeSpec("pieces", "Nechta qism", AttributeKind.SELECT, options = listOf("2 (pidjak+shim)", "3 (+jilet)")),
-                AttributeSpec("occasion", "Uslub", AttributeKind.SELECT, options = listOf("Klassik", "Biznes", "Kechki")),
-            ),
-            "OUTERWEAR" to listOf(
-                AttributeSpec("sizes", "Mavjud razmerlar", AttributeKind.MULTI_SELECT, options = listOf("XS", "S", "M", "L", "XL", "XXL"), required = true),
-                AttributeSpec("insulation", "Issiqlik", AttributeKind.SELECT, options = listOf("Yengil", "O'rtacha", "Qishki")),
-                AttributeSpec("isWaterproof", "Suv o'tkazmaydi", AttributeKind.BOOLEAN),
-            ),
-            "SHOES" to listOf(
-                AttributeSpec("shoeSizes", "Mavjud razmerlar", AttributeKind.MULTI_SELECT, options = listOf("36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46"), required = true),
-                AttributeSpec("soleType", "Taglik", AttributeKind.SELECT, options = listOf("Rezina", "Poliuretan", "Charm")),
-                AttributeSpec("heelCm", "Poshna", AttributeKind.NUMBER, hint = "5", suffix = "sm"),
-            ),
-            "SPORTSWEAR" to listOf(
-                AttributeSpec("sizes", "Mavjud razmerlar", AttributeKind.MULTI_SELECT, options = listOf("XS", "S", "M", "L", "XL", "XXL"), required = true),
-                AttributeSpec("sport", "Sport turi", AttributeKind.SELECT, options = listOf("Fitnes", "Yugurish", "Futbol", "Yoga", "Basketbol")),
-            ),
-            "BAGS" to listOf(
-                AttributeSpec("bagType", "Turi", AttributeKind.SELECT, options = listOf("Yelka", "Qo'l", "Ryukzak", "Klatch"), required = true),
-                AttributeSpec("capacityL", "Hajmi", AttributeKind.NUMBER, hint = "20", suffix = "litr"),
-            ),
-            "MEN" to listOf(
-                AttributeSpec("sizes", "Mavjud razmerlar", AttributeKind.MULTI_SELECT, options = listOf("XS", "S", "M", "L", "XL", "XXL"), required = true),
-            ),
-            "WOMEN" to listOf(
-                AttributeSpec("sizes", "Mavjud razmerlar", AttributeKind.MULTI_SELECT, options = listOf("XS", "S", "M", "L", "XL", "XXL"), required = true),
-            ),
-            "ACCESSORIES" to listOf(
-                AttributeSpec("accessoryType", "Turi", AttributeKind.SELECT, options = listOf("Kamar", "Sharf", "Qo'lqop", "Bosh kiyim", "Soat", "Zargarlik"), required = true),
-            ),
-        ),
-        BusinessType.CAFE_RESTAURANT to mapOf(
-            "PIZZA" to listOf(
-                AttributeSpec("size", "O'lcham", AttributeKind.SELECT, options = listOf("25 sm", "30 sm", "35 sm", "40 sm"), required = true),
-                AttributeSpec("dough", "Xamir", AttributeKind.SELECT, options = listOf("Yupqa", "Qalin", "To'ldirilgan chekka")),
-                AttributeSpec("slices", "Bo'laklar", AttributeKind.NUMBER, hint = "8", suffix = "ta"),
-            ),
-            "BURGER" to listOf(
-                AttributeSpec("pattyType", "Kotlet", AttributeKind.SELECT, options = listOf("Mol", "Tovuq", "Baliq", "Vegetarian"), required = true),
-                AttributeSpec("pattyCount", "Kotlet soni", AttributeKind.SELECT, options = listOf("1", "2", "3")),
-                AttributeSpec("hasFries", "Kartoshka bilan", AttributeKind.BOOLEAN),
-            ),
-            "LAVASH_SHAWARMA" to listOf(
-                AttributeSpec("meatType", "Go'sht", AttributeKind.SELECT, options = listOf("Tovuq", "Mol", "Aralash"), required = true),
-                AttributeSpec("size", "O'lcham", AttributeKind.SELECT, options = listOf("Standart", "Katta", "Mini")),
-            ),
-            "SUSHI" to listOf(
-                AttributeSpec("piecesCount", "Bo'laklar", AttributeKind.NUMBER, hint = "8", suffix = "ta"),
-                AttributeSpec("fishType", "Baliq", AttributeKind.SELECT, options = listOf("Losos", "Tunes", "Ilon baliq", "Krevetka", "Vegetarian"), required = true),
-                AttributeSpec("isRaw", "Xom (raw)", AttributeKind.BOOLEAN),
-            ),
-            "NATIONAL" to listOf(
-                AttributeSpec("dishType", "Taom", AttributeKind.SELECT, options = listOf("Osh", "Manti", "Somsa", "Lag'mon", "Shashlik", "Norin", "Sho'rva"), required = true),
-            ),
-            "SOUPS" to listOf(
-                AttributeSpec("volumeMl", "Hajm", AttributeKind.NUMBER, hint = "400", suffix = "ml"),
-                AttributeSpec("hasBread", "Non bilan", AttributeKind.BOOLEAN),
-            ),
-            "SALADS" to listOf(
-                AttributeSpec("saladType", "Turi", AttributeKind.SELECT, options = listOf("Sabzavotli", "Go'shtli", "Sezar", "Olivye", "Yunon")),
-            ),
-            "GRILL_BBQ" to listOf(
-                AttributeSpec("meatType", "Go'sht", AttributeKind.SELECT, options = listOf("Mol", "Qo'y", "Tovuq", "Jigar", "Baliq"), required = true),
-                AttributeSpec("skewers", "Nechta sixda", AttributeKind.NUMBER, hint = "2", suffix = "ta"),
-            ),
-            "BREAKFAST" to listOf(
-                AttributeSpec("servedUntil", "Nechagacha", AttributeKind.TEXT, hint = "11:00"),
-                AttributeSpec("includes", "Tarkibida", AttributeKind.TAGS, hint = "Tuxum, Non, Choy"),
-            ),
-            "DESSERTS" to listOf(
-                AttributeSpec("dessertType", "Turi", AttributeKind.SELECT, options = listOf("Tort", "Pirojnoe", "Muzqaymoq", "Chizkeyk", "Vafli")),
-                AttributeSpec("sugarFree", "Shakarsiz", AttributeKind.BOOLEAN),
-            ),
-            "HOT_DRINKS" to listOf(
-                AttributeSpec("volumeMl", "Hajm", AttributeKind.SELECT, options = listOf("200 ml", "300 ml", "400 ml"), required = true),
-                AttributeSpec("milkType", "Sut", AttributeKind.SELECT, options = listOf("Oddiy", "Bodom", "Soya", "Sutsiz")),
-            ),
-            "COLD_DRINKS" to listOf(
-                AttributeSpec("volumeMl", "Hajm", AttributeKind.SELECT, options = listOf("300 ml", "400 ml", "500 ml", "1 L"), required = true),
-                AttributeSpec("hasIce", "Muz bilan", AttributeKind.BOOLEAN),
-            ),
-            "FAST_FOOD" to listOf(
-                AttributeSpec("comboIncludes", "Tarkibida", AttributeKind.TAGS, hint = "Burger, Kartoshka, Ichimlik"),
-            ),
-            "COMBO_SETS" to listOf(
-                AttributeSpec("comboIncludes", "Setда nima bor", AttributeKind.TAGS, hint = "2 pitsa, 2 ichimlik", required = true),
-                AttributeSpec("personCount", "Nechta kishiga", AttributeKind.NUMBER, hint = "2", required = true, suffix = "kishi"),
-            ),
-        ),
-        BusinessType.EDUCATION_CENTER to mapOf(
-            "FOREIGN_LANGUAGES" to listOf(
-                AttributeSpec("language", "Til", AttributeKind.SELECT, options = listOf("Ingliz", "Rus", "Koreys", "Nemis", "Fransuz", "Arab", "Xitoy", "Turk"), required = true),
-                AttributeSpec("hasNativeSpeaker", "Native speaker bor", AttributeKind.BOOLEAN),
-            ),
-            "IELTS_CEFR" to listOf(
-                AttributeSpec("examType", "Imtihon", AttributeKind.SELECT, options = listOf("IELTS", "CEFR", "TOEFL", "SAT"), required = true),
-                AttributeSpec("targetScore", "Maqsad ball", AttributeKind.TEXT, hint = "6.5+"),
-                AttributeSpec("hasMockExam", "Mock imtihon bor", AttributeKind.BOOLEAN),
-            ),
-            "IT_PROGRAMMING" to listOf(
-                AttributeSpec("stack", "Texnologiyalar", AttributeKind.TAGS, hint = "Python, Django, PostgreSQL", required = true),
-                AttributeSpec("hasProject", "Real loyiha bor", AttributeKind.BOOLEAN),
-                AttributeSpec("hasJobHelp", "Ishga joylashishда yordam", AttributeKind.BOOLEAN),
-            ),
-            "DESIGN" to listOf(
-                AttributeSpec("tools", "Dasturlar", AttributeKind.TAGS, hint = "Figma, Photoshop", required = true),
-                AttributeSpec("hasPortfolio", "Portfolio yig'iladi", AttributeKind.BOOLEAN),
-            ),
-            "MATH_SCIENCE" to listOf(
-                AttributeSpec("subjectName", "Fan", AttributeKind.SELECT, options = listOf("Matematika", "Fizika", "Kimyo", "Biologiya"), required = true),
-                AttributeSpec("gradeLevel", "Sinf", AttributeKind.TEXT, hint = "9-11"),
-            ),
-            "UNIVERSITY_PREP" to listOf(
-                AttributeSpec("targetUniversity", "Qaysi OTMga", AttributeKind.TEXT, hint = "TATU"),
-                AttributeSpec("subjects", "Fanlar", AttributeKind.TAGS, hint = "Matematika, Fizika", required = true),
-            ),
-            "BUSINESS_MARKETING" to listOf(
-                AttributeSpec("topic", "Mavzu", AttributeKind.SELECT, options = listOf("SMM", "Targeting", "Sotuv", "Moliya", "Startap"), required = true),
-            ),
-            "MASTER_CLASS" to listOf(
-                AttributeSpec("speaker", "Spiker", AttributeKind.TEXT, hint = "Aziz Karimov"),
-                AttributeSpec("eventDate", "Sana", AttributeKind.TEXT, hint = "2026-08-01"),
-                AttributeSpec("hours", "Davomiyligi", AttributeKind.NUMBER, hint = "4", suffix = "soat"),
-            ),
-        ),
-        BusinessType.ENTERTAINMENT to mapOf(
-            "CINEMA" to listOf(
-                AttributeSpec("hallType", "Zal", AttributeKind.SELECT, options = listOf("Standart", "VIP", "Lounge", "IMAX")),
-                AttributeSpec("seatType", "Joy", AttributeKind.SELECT, options = listOf("Oddiy", "Divan", "Recliner")),
-            ),
-            "THEATER_CONCERT" to listOf(
-                AttributeSpec("artist", "Ijrochi / truppa", AttributeKind.TEXT, hint = "Ozodbek Nazarbekov", required = true),
-                AttributeSpec("hasIntermission", "Tanaffus bor", AttributeKind.BOOLEAN),
-            ),
-            "ESCAPE_ROOM" to listOf(
-                AttributeSpec("players", "Nechta o'yinchi", AttributeKind.NUMBER, hint = "4", required = true, suffix = "kishi"),
-                AttributeSpec("difficulty", "Qiyinlik", AttributeKind.SELECT, options = listOf("Oson", "O'rtacha", "Qiyin"), required = true),
-                AttributeSpec("theme", "Mavzu", AttributeKind.TEXT, hint = "Qo'rqinchli"),
-                AttributeSpec("hasActor", "Aktyor bor", AttributeKind.BOOLEAN),
-            ),
-            "TRAMPOLINE_PARK" to listOf(
-                AttributeSpec("minutes", "Vaqt", AttributeKind.NUMBER, hint = "60", required = true, suffix = "daqiqa"),
-                AttributeSpec("ageGroup", "Yosh guruhi", AttributeKind.SELECT, options = listOf("Bolalar", "Kattalar", "Barchasi")),
-                AttributeSpec("socksIncluded", "Paypoq beriladi", AttributeKind.BOOLEAN),
-            ),
-            "BOWLING" to listOf(
-                AttributeSpec("lanes", "Yo'laklar", AttributeKind.NUMBER, hint = "1", suffix = "ta"),
-                AttributeSpec("players", "Nechta o'yinchi", AttributeKind.NUMBER, hint = "6", suffix = "kishi"),
-                AttributeSpec("shoesIncluded", "Poyabzal beriladi", AttributeKind.BOOLEAN),
-            ),
-            "AQUAPARK" to listOf(
-                AttributeSpec("zones", "Zonalar", AttributeKind.TAGS, hint = "Katta gorka, Bolalar zonasi, Jakuzi"),
-                AttributeSpec("hasLocker", "Shkaf beriladi", AttributeKind.BOOLEAN),
-                AttributeSpec("allDay", "Kun bo'yi", AttributeKind.BOOLEAN),
-            ),
-            "AMUSEMENT_PARK" to listOf(
-                AttributeSpec("rideCount", "Attraksionlar", AttributeKind.NUMBER, hint = "10", suffix = "ta"),
-                AttributeSpec("isUnlimited", "Cheksiz", AttributeKind.BOOLEAN),
-            ),
-            "MUSEUM_EXPO" to listOf(
-                AttributeSpec("expoTitle", "Ko'rgazma", AttributeKind.TEXT, hint = "Zamonaviy san'at"),
-                AttributeSpec("hasGuide", "Gid bor", AttributeKind.BOOLEAN),
-            ),
-            "KARAOKE" to listOf(
-                AttributeSpec("roomSize", "Xona", AttributeKind.SELECT, options = listOf("Kichik (4)", "O'rta (8)", "Katta (15+)"), required = true),
-                AttributeSpec("songLanguages", "Qo'shiq tillari", AttributeKind.TAGS, hint = "O'zbek, Rus, Ingliz"),
-            ),
-        ),
-        BusinessType.BARBERSHOP to mapOf(
-            "HAIRCUT_MEN" to listOf(
-                AttributeSpec("style", "Uslub", AttributeKind.SELECT, options = listOf("Klassik", "Fade", "Undercut", "Mashinka", "Bolalar")),
-                AttributeSpec("beardIncluded", "Soqol bilan", AttributeKind.BOOLEAN),
-            ),
-            "HAIRCUT_WOMEN" to listOf(
-                AttributeSpec("hairLength", "Soch uzunligi", AttributeKind.SELECT, options = listOf("Kalta", "O'rta", "Uzun"), required = true),
-                AttributeSpec("style", "Uslub", AttributeKind.SELECT, options = listOf("To'g'ri", "Kaskad", "Kare", "Chelka")),
-            ),
-            "KIDS" to listOf(
-                AttributeSpec("ageGroup", "Yosh", AttributeKind.SELECT, options = listOf("0-3", "4-7", "8-12"), required = true),
-                AttributeSpec("hasCartoon", "Multfilm bor", AttributeKind.BOOLEAN),
-            ),
-            "BEARD" to listOf(
-                AttributeSpec("beardService", "Xizmat", AttributeKind.SELECT, options = listOf("Qirqish", "Ustara", "Shakl berish", "Bo'yash"), required = true),
-            ),
-            "HAIR_COLOR" to listOf(
-                AttributeSpec("hairLength", "Soch uzunligi", AttributeKind.SELECT, options = listOf("Kalta", "O'rta", "Uzun"), required = true),
-                AttributeSpec("colorBrand", "Bo'yoq brendi", AttributeKind.TEXT, hint = "L'Oréal"),
-                AttributeSpec("technique", "Texnika", AttributeKind.SELECT, options = listOf("To'liq", "Ombre", "Balayaj", "Melirovka", "Ildiz")),
-            ),
-            "STYLING" to listOf(
-                AttributeSpec("occasion", "Tadbir", AttributeKind.SELECT, options = listOf("Kundalik", "To'y", "Bayram", "Fotosessiya")),
-                AttributeSpec("hairLength", "Soch uzunligi", AttributeKind.SELECT, options = listOf("Kalta", "O'rta", "Uzun")),
-            ),
-            "HAIR_CARE" to listOf(
-                AttributeSpec("procedure", "Muolaja", AttributeKind.SELECT, options = listOf("Keratin", "Botoks", "Maska", "Peeling"), required = true),
-                AttributeSpec("courseSessions", "Kurs", AttributeKind.NUMBER, hint = "1", suffix = "seans"),
-            ),
-            "MANICURE" to listOf(
-                AttributeSpec("coating", "Qoplama", AttributeKind.SELECT, options = listOf("Oddiy", "Gel-lak", "Kengaytma"), required = true),
-                AttributeSpec("withPedicure", "Pedikyur bilan", AttributeKind.BOOLEAN),
-            ),
-        ),
-        BusinessType.BEAUTY_SALON to mapOf(
-            "HAIR" to listOf(
-                AttributeSpec("hairLength", "Soch uzunligi", AttributeKind.SELECT, options = listOf("Kalta", "O'rta", "Uzun"), required = true),
-                AttributeSpec("service", "Xizmat", AttributeKind.SELECT, options = listOf("Turmak", "Bo'yash", "Kesish", "Keratin", "Ombre"), required = true),
-                AttributeSpec("colorBrand", "Bo'yoq brendi", AttributeKind.TEXT, hint = "Estel"),
-            ),
-            "MAKEUP" to listOf(
-                AttributeSpec("occasion", "Tadbir", AttributeKind.SELECT, options = listOf("Kundalik", "Kechki", "To'y", "Fotosessiya"), required = true),
-                AttributeSpec("cosmeticsBrand", "Kosmetika", AttributeKind.TEXT, hint = "MAC"),
-                AttributeSpec("lashesIncluded", "Kiprik bilan", AttributeKind.BOOLEAN),
-            ),
-            "MANICURE" to listOf(
-                AttributeSpec("coating", "Qoplama", AttributeKind.SELECT, options = listOf("Oddiy lak", "Gel-lak", "Kengaytma (gel)", "Akril"), required = true),
-                AttributeSpec("hasDesign", "Dizayn bor", AttributeKind.BOOLEAN),
-                AttributeSpec("removalIncluded", "Eskisini olish kiradi", AttributeKind.BOOLEAN),
-            ),
-            "PEDICURE" to listOf(
-                AttributeSpec("coating", "Qoplama", AttributeKind.SELECT, options = listOf("Oddiy lak", "Gel-lak"), required = true),
-                AttributeSpec("pedicureType", "Turi", AttributeKind.SELECT, options = listOf("Klassik", "Apparat", "SPA"), required = true),
-            ),
-            "EYEBROWS_LASHES" to listOf(
-                AttributeSpec("procedure", "Muolaja", AttributeKind.SELECT, options = listOf("Qosh shakl", "Qosh bo'yash", "Laminatsiya", "Kiprik yopishtirish", "Kiprik laminatsiya"), required = true),
-                AttributeSpec("effect", "Effekt", AttributeKind.SELECT, options = listOf("Klassik", "2D", "3D", "Volume")),
-            ),
-            "COSMETOLOGY" to listOf(
-                AttributeSpec("procedure", "Muolaja", AttributeKind.SELECT, options = listOf("Tozalash", "Peeling", "Mezoterapiya", "Biorevitalizatsiya", "Maska"), required = true),
-                AttributeSpec("isDeviceBased", "Apparatli", AttributeKind.BOOLEAN),
-                AttributeSpec("courseSessions", "Kurs", AttributeKind.NUMBER, hint = "5", suffix = "seans"),
-            ),
-            "SPA_MASSAGE" to listOf(
-                AttributeSpec("massageType", "Massaj turi", AttributeKind.SELECT, options = listOf("Klassik", "Relaks", "Anticellulit", "Tosh bilan", "Tay"), required = true),
-                AttributeSpec("zones", "Zonalar", AttributeKind.TAGS, hint = "Yelka, Bel, Oyoq"),
-                AttributeSpec("forCouples", "Juftlik uchun", AttributeKind.BOOLEAN),
-            ),
-            "EPILATION" to listOf(
-                AttributeSpec("method", "Usul", AttributeKind.SELECT, options = listOf("Shakar (shugaring)", "Vosk", "Lazer", "Elektro"), required = true),
-                AttributeSpec("zones", "Zonalar", AttributeKind.TAGS, hint = "Oyoq, Qo'l, Qo'ltiq", required = true),
-                AttributeSpec("courseSessions", "Kurs", AttributeKind.NUMBER, hint = "6", suffix = "seans"),
-            ),
-        ),
-    )
+    /** Turga mos narx birliklari (birinchisi — odatiy). Noma'lum tur — hammasi. */
+    fun priceUnits(type: BusinessType): List<PriceUnit> =
+        info(type)?.priceUnits ?: PriceUnit.entries
 
-    /** Turga mos narx birliklari (birinchisi — odatiy). */
-    fun priceUnits(type: BusinessType): List<PriceUnit> = when (type) {
-        BusinessType.GAME_CLUB -> listOf(PriceUnit.PER_HOUR, PriceUnit.PER_SESSION, PriceUnit.PER_PERSON)
-        BusinessType.CLOTHING -> listOf(PriceUnit.PER_ITEM)
-        BusinessType.CAFE_RESTAURANT -> listOf(PriceUnit.PER_ITEM, PriceUnit.PER_KG)
-        BusinessType.EDUCATION_CENTER -> listOf(PriceUnit.PER_MONTH, PriceUnit.PER_COURSE, PriceUnit.PER_LESSON)
-        BusinessType.ENTERTAINMENT -> listOf(PriceUnit.PER_TICKET, PriceUnit.PER_PERSON, PriceUnit.PER_SESSION)
-        BusinessType.BARBERSHOP -> listOf(PriceUnit.PER_ITEM, PriceUnit.PER_SESSION, PriceUnit.PER_PERSON)
-        BusinessType.BEAUTY_SALON -> listOf(PriceUnit.PER_ITEM, PriceUnit.PER_SESSION, PriceUnit.PER_PERSON)
-    }
+    /** Turning odatiy narx birligi. */
+    fun defaultPriceUnit(type: BusinessType): PriceUnit =
+        info(type)?.defaultPriceUnit ?: PriceUnit.PER_ITEM
+
+    /** Turga qarab "hammasiga" chipining yozuvi. */
+    fun allLabel(type: BusinessType): String =
+        info(type)?.allCategoryLabel ?: DEFAULT_ALL_LABEL
 
     /** Turga mos qo'shimchalar guruhi uchun taklif ("Hajmni tanlang" kabi). */
-    fun optionGroupHint(type: BusinessType): String = when (type) {
-        BusinessType.GAME_CLUB -> "Zal turi, qo'shimcha joystik"
-        BusinessType.CLOTHING -> "O'lcham, rang"
-        BusinessType.CAFE_RESTAURANT -> "Hajm, qo'shimchalar"
-        BusinessType.EDUCATION_CENTER -> "Guruh vaqti, format"
-        BusinessType.ENTERTAINMENT -> "Seans vaqti, joy turi"
-        BusinessType.BARBERSHOP -> "Usta darajasi, qo'shimcha xizmat"
-        BusinessType.BEAUTY_SALON -> "Usta, qo'shimcha xizmat"
-    }
+    fun optionGroupHint(type: BusinessType): String =
+        info(type)?.optionGroupHint ?: DEFAULT_OPTION_HINT
 
-    private fun cats(type: BusinessType, vararg pairs: Pair<String, String>): List<ListingCategory> =
-        listOf(ListingCategory(ALL_KEY, allLabel(type))) +
-            pairs.map { (key, label) -> ListingCategory(key, label) } +
-            ListingCategory(OTHER_KEY, "Boshqa")
+    private const val DEFAULT_ALL_LABEL = "Hammasiga"
+    private const val DEFAULT_OPTION_HINT = "Variant, qo'shimcha"
 
-    private val categoryMap: Map<BusinessType, List<ListingCategory>> = mapOf(
-        BusinessType.GAME_CLUB to cats(
-            BusinessType.GAME_CLUB,
-            "PLAYSTATION" to "PlayStation",
-            "TABLE_TENNIS" to "Stol tennis",
-            "TENNIS" to "Katta tennis",
-            "PC_GAMING" to "Kompyuter o'yinlari",
-            "BILLIARDS" to "Billiard",
-            "POLYA" to "Polya",
+    private val defaultCategories = listOf(
+        ListingCategory(ALL_KEY, DEFAULT_ALL_LABEL),
+        ListingCategory(OTHER_KEY, "Boshqa"),
+    )
+
+    /** Tur → zaxira ma'lumoti. Tartib backenddagi bilan bir xil. */
+    private val entries: Map<String, BusinessTypeFallback> = mapOf(
+        "TENNIS" to BusinessTypeFallback(
+            nameUz = "Katta tennis",
+            emoji = "🎾",
+            accentColor = 0xFF16A34A,
+            defaultPriceUnit = PriceUnit.PER_HOUR,
+            priceUnits = listOf(PriceUnit.PER_HOUR, PriceUnit.PER_SESSION, PriceUnit.PER_PERSON),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Barcha kortlar",
+            optionGroupHint = "Kort turi, qoplama",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha kortlar"),
+                ListingCategory("OUTDOOR", "Ochiq kort"),
+                ListingCategory("INDOOR", "Yopiq kort"),
+                ListingCategory("TRAINING", "Trening / darslar"),
+                ListingCategory("KIDS", "Bolalar guruhi"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("courtSurface", "Qoplama", AttributeKind.SELECT, options = listOf("Gruntli", "Sun'iy o't", "Qattiq (hard)")),
+                AttributeSpec("sessionMinutes", "Sessiya davomiyligi", AttributeKind.NUMBER, hint = "60", suffix = "daqiqa"),
+                AttributeSpec("gearIncluded", "Raketka beriladi", AttributeKind.BOOLEAN),
+                AttributeSpec("coachAvailable", "Murabbiy bor", AttributeKind.BOOLEAN),
+            ),
         ),
-        BusinessType.CLOTHING to cats(
-            BusinessType.CLOTHING,
-            "MEN" to "Erkaklar",
-            "WOMEN" to "Ayollar",
-            "OUTERWEAR" to "Ustki kiyim",
-            "SHOES" to "Poyabzal",
-            "SPORTSWEAR" to "Sport kiyim",
-            "BAGS" to "Sumkalar",
-            "ACCESSORIES" to "Aksessuarlar",
+        "TABLE_TENNIS" to BusinessTypeFallback(
+            nameUz = "Stol tennis",
+            emoji = "🏓",
+            accentColor = 0xFF0EA5E9,
+            defaultPriceUnit = PriceUnit.PER_HOUR,
+            priceUnits = listOf(PriceUnit.PER_HOUR, PriceUnit.PER_SESSION),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Barcha stollar",
+            optionGroupHint = "Stollar soni",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha stollar"),
+                ListingCategory("RENT", "Stol ijarasi"),
+                ListingCategory("TRAINING", "Trening"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("tables", "Stollar soni", AttributeKind.NUMBER, hint = "2", suffix = "ta"),
+                AttributeSpec("sessionMinutes", "Sessiya davomiyligi", AttributeKind.NUMBER, hint = "60", suffix = "daqiqa"),
+                AttributeSpec("racketsIncluded", "Raketka va koptok beriladi", AttributeKind.BOOLEAN),
+            ),
         ),
-        BusinessType.CAFE_RESTAURANT to cats(
-            BusinessType.CAFE_RESTAURANT,
-            "NATIONAL" to "Milliy taomlar",
-            "PIZZA" to "Pitsa",
-            "BURGER" to "Burger",
-            "LAVASH_SHAWARMA" to "Lavash / Shaurma",
-            "SUSHI" to "Sushi",
-            "FAST_FOOD" to "Fast food",
-            "SOUPS" to "Sho'rvalar",
-            "SALADS" to "Salatlar",
-            "GRILL_BBQ" to "Kabob va grill",
-            "BREAKFAST" to "Nonushta",
-            "DESSERTS" to "Shirinliklar",
-            "HOT_DRINKS" to "Choy va kofe",
-            "COLD_DRINKS" to "Sovuq ichimliklar",
-            "COMBO_SETS" to "Setlar (combo)",
+        "FITNESS" to BusinessTypeFallback(
+            nameUz = "Fitnes / Trenajyor zali",
+            emoji = "🏋️",
+            accentColor = 0xFF22C55E,
+            defaultPriceUnit = PriceUnit.PER_MONTH,
+            priceUnits = listOf(PriceUnit.PER_MONTH, PriceUnit.PER_SESSION, PriceUnit.PER_PERSON),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Barcha xizmatlar",
+            optionGroupHint = "Abonement, mashg'ulot turi",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha xizmatlar"),
+                ListingCategory("GYM", "Trenajyor zali"),
+                ListingCategory("GROUP", "Guruh mashg'ulotlari"),
+                ListingCategory("PERSONAL", "Shaxsiy murabbiy"),
+                ListingCategory("CROSSFIT", "Crossfit"),
+                ListingCategory("YOGA", "Yoga / Pilates"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("durationMonths", "Abonement muddati", AttributeKind.NUMBER, hint = "1", suffix = "oy"),
+                AttributeSpec("sessionsPerWeek", "Haftada", AttributeKind.NUMBER, hint = "3", suffix = "marta"),
+                AttributeSpec("hasTrainer", "Murabbiy bor", AttributeKind.BOOLEAN),
+                AttributeSpec("hasLocker", "Shkaf / dush bor", AttributeKind.BOOLEAN),
+                AttributeSpec("hasFreeTrial", "Sinov mashg'uloti bepul", AttributeKind.BOOLEAN),
+            ),
         ),
-        BusinessType.EDUCATION_CENTER to cats(
-            BusinessType.EDUCATION_CENTER,
-            "FOREIGN_LANGUAGES" to "Chet tillari",
-            "IELTS_CEFR" to "IELTS / CEFR",
-            "IT_PROGRAMMING" to "IT va dasturlash",
-            "DESIGN" to "Dizayn",
-            "MATH_SCIENCE" to "Matematika va fanlar",
-            "UNIVERSITY_PREP" to "Abituriyent tayyorlash",
-            "BUSINESS_MARKETING" to "Biznes va marketing",
-            "MASTER_CLASS" to "Master-klass",
+        "BOXING" to BusinessTypeFallback(
+            nameUz = "Boks / Yakkakurash zali",
+            emoji = "🥊",
+            accentColor = 0xFFDC2626,
+            defaultPriceUnit = PriceUnit.PER_MONTH,
+            priceUnits = listOf(PriceUnit.PER_MONTH, PriceUnit.PER_SESSION),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Barcha yo'nalishlar",
+            optionGroupHint = "Daraja, guruh",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha yo'nalishlar"),
+                ListingCategory("BOXING", "Boks"),
+                ListingCategory("KICKBOXING", "Kikboksing"),
+                ListingCategory("KIDS", "Bolalar guruhi"),
+                ListingCategory("PERSONAL", "Shaxsiy trening"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("level", "Daraja", AttributeKind.SELECT, options = listOf("Boshlang'ich", "O'rta", "Professional")),
+                AttributeSpec("durationMonths", "Abonement muddati", AttributeKind.NUMBER, hint = "1", suffix = "oy"),
+                AttributeSpec("sessionsPerWeek", "Haftada", AttributeKind.NUMBER, hint = "3", suffix = "marta"),
+                AttributeSpec("gearIncluded", "Jihoz beriladi", AttributeKind.BOOLEAN),
+                AttributeSpec("hasFreeTrial", "Sinov mashg'uloti bepul", AttributeKind.BOOLEAN),
+            ),
         ),
-        BusinessType.ENTERTAINMENT to cats(
-            BusinessType.ENTERTAINMENT,
-            "CINEMA" to "Kino seans",
-            "THEATER_CONCERT" to "Teatr va konsert",
-            "ESCAPE_ROOM" to "Kvest (escape room)",
-            "TRAMPOLINE_PARK" to "Batut park",
-            "BOWLING" to "Bouling",
-            "AQUAPARK" to "Akvapark",
-            "AMUSEMENT_PARK" to "Attraksionlar",
-            "MUSEUM_EXPO" to "Muzey va ko'rgazma",
-            "KARAOKE" to "Karaoke",
+        "FOOTBALL_FIELD" to BusinessTypeFallback(
+            nameUz = "Futbol maydoni",
+            emoji = "⚽",
+            accentColor = 0xFF15803D,
+            defaultPriceUnit = PriceUnit.PER_HOUR,
+            priceUnits = listOf(PriceUnit.PER_HOUR, PriceUnit.PER_SESSION),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Barcha maydonlar",
+            optionGroupHint = "Qoplama, o'lcham",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha maydonlar"),
+                ListingCategory("INDOOR", "Yopiq (manej)"),
+                ListingCategory("OUTDOOR", "Ochiq maydon"),
+                ListingCategory("MINI", "Mini-futbol"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("surface", "Qoplama", AttributeKind.SELECT, options = listOf("Sun'iy o't", "Tabiiy o't", "Zal parketi")),
+                AttributeSpec("fieldSize", "Maydon o'lchami", AttributeKind.SELECT, options = listOf("5x5", "6x6", "8x8", "11x11")),
+                AttributeSpec("sessionMinutes", "Sessiya davomiyligi", AttributeKind.NUMBER, hint = "60", suffix = "daqiqa"),
+                AttributeSpec("hasLighting", "Yoritish bor", AttributeKind.BOOLEAN),
+                AttributeSpec("hasShower", "Dush / kiyinish xonasi", AttributeKind.BOOLEAN),
+            ),
         ),
-        BusinessType.BARBERSHOP to cats(
-            BusinessType.BARBERSHOP,
-            "HAIRCUT_MEN" to "Erkaklar soch olish",
-            "HAIRCUT_WOMEN" to "Ayollar soch olish",
-            "KIDS" to "Bolalar soch olish",
-            "BEARD" to "Soqol / ustara",
-            "HAIR_COLOR" to "Soch bo'yash",
-            "STYLING" to "Ukladka / styling",
-            "HAIR_CARE" to "Parvarish (spa)",
-            "MANICURE" to "Manikyur-pedikyur",
+        "FOOTBALL_TRAINING" to BusinessTypeFallback(
+            nameUz = "Futbol maktabi",
+            emoji = "🥅",
+            accentColor = 0xFF65A30D,
+            defaultPriceUnit = PriceUnit.PER_MONTH,
+            priceUnits = listOf(PriceUnit.PER_MONTH, PriceUnit.PER_SESSION),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Barcha guruhlar",
+            optionGroupHint = "Yosh guruhi",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha guruhlar"),
+                ListingCategory("KIDS", "Bolalar guruhi"),
+                ListingCategory("TEEN", "O'smirlar"),
+                ListingCategory("ADULT", "Kattalar"),
+                ListingCategory("GOALKEEPER", "Darvozabon maktabi"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("ageGroup", "Yosh guruhi", AttributeKind.SELECT, options = listOf("5-8 yosh", "9-12 yosh", "13-16 yosh", "Kattalar")),
+                AttributeSpec("durationMonths", "Abonement muddati", AttributeKind.NUMBER, hint = "1", suffix = "oy"),
+                AttributeSpec("sessionsPerWeek", "Haftada", AttributeKind.NUMBER, hint = "3", suffix = "marta"),
+                AttributeSpec("hasUniform", "Forma beriladi", AttributeKind.BOOLEAN),
+                AttributeSpec("hasFreeTrial", "Sinov mashg'uloti bepul", AttributeKind.BOOLEAN),
+            ),
         ),
-        BusinessType.BEAUTY_SALON to cats(
-            BusinessType.BEAUTY_SALON,
-            "HAIR" to "Soch turmagi / bo'yash",
-            "MAKEUP" to "Makiyaj",
-            "MANICURE" to "Manikyur",
-            "PEDICURE" to "Pedikyur",
-            "EYEBROWS_LASHES" to "Qosh / kiprik",
-            "COSMETOLOGY" to "Kosmetologiya",
-            "SPA_MASSAGE" to "SPA / massaj",
-            "EPILATION" to "Epilyatsiya",
+        "BASKETBALL" to BusinessTypeFallback(
+            nameUz = "Basketbol maydoni",
+            emoji = "🏀",
+            accentColor = 0xFFEA580C,
+            defaultPriceUnit = PriceUnit.PER_HOUR,
+            priceUnits = listOf(PriceUnit.PER_HOUR, PriceUnit.PER_SESSION),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Barcha maydonlar",
+            optionGroupHint = "Maydon turi",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha maydonlar"),
+                ListingCategory("INDOOR", "Yopiq zal"),
+                ListingCategory("OUTDOOR", "Ochiq maydon"),
+                ListingCategory("TRAINING", "Trening"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("courtType", "Maydon turi", AttributeKind.SELECT, options = listOf("To'liq maydon", "Yarim maydon (3x3)")),
+                AttributeSpec("sessionMinutes", "Sessiya davomiyligi", AttributeKind.NUMBER, hint = "60", suffix = "daqiqa"),
+                AttributeSpec("hasLighting", "Yoritish bor", AttributeKind.BOOLEAN),
+                AttributeSpec("gearIncluded", "To'p beriladi", AttributeKind.BOOLEAN),
+            ),
+        ),
+        "VOLLEYBALL" to BusinessTypeFallback(
+            nameUz = "Voleybol maydoni",
+            emoji = "🏐",
+            accentColor = 0xFFEAB308,
+            defaultPriceUnit = PriceUnit.PER_HOUR,
+            priceUnits = listOf(PriceUnit.PER_HOUR, PriceUnit.PER_SESSION),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Barcha maydonlar",
+            optionGroupHint = "Maydon turi",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha maydonlar"),
+                ListingCategory("INDOOR", "Yopiq zal"),
+                ListingCategory("BEACH", "Plyaj voleybol"),
+                ListingCategory("TRAINING", "Trening"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("sessionMinutes", "Sessiya davomiyligi", AttributeKind.NUMBER, hint = "60", suffix = "daqiqa"),
+                AttributeSpec("hasLighting", "Yoritish bor", AttributeKind.BOOLEAN),
+                AttributeSpec("gearIncluded", "To'p / to'r beriladi", AttributeKind.BOOLEAN),
+            ),
+        ),
+        "SWIMMING_POOL" to BusinessTypeFallback(
+            nameUz = "Suzish havzasi",
+            emoji = "🏊",
+            accentColor = 0xFF06B6D4,
+            defaultPriceUnit = PriceUnit.PER_SESSION,
+            priceUnits = listOf(PriceUnit.PER_SESSION, PriceUnit.PER_TICKET, PriceUnit.PER_MONTH),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Barcha xizmatlar",
+            optionGroupHint = "Havza turi, sessiya",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha xizmatlar"),
+                ListingCategory("FREE_SWIM", "Erkin suzish"),
+                ListingCategory("TRAINING", "Suzish darslari"),
+                ListingCategory("KIDS", "Bolalar guruhi"),
+                ListingCategory("AQUA_AEROBICS", "Aqua-aerobika"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("poolType", "Havza turi", AttributeKind.SELECT, options = listOf("Yopiq", "Ochiq")),
+                AttributeSpec("sessionMinutes", "Sessiya davomiyligi", AttributeKind.NUMBER, hint = "45", suffix = "daqiqa"),
+                AttributeSpec("hasCoach", "Murabbiy bor", AttributeKind.BOOLEAN),
+                AttributeSpec("gearIncluded", "Jihoz beriladi", AttributeKind.BOOLEAN),
+            ),
+        ),
+        "WRESTLING_MMA" to BusinessTypeFallback(
+            nameUz = "Kurash / MMA",
+            emoji = "🤼",
+            accentColor = 0xFFB91C1C,
+            defaultPriceUnit = PriceUnit.PER_MONTH,
+            priceUnits = listOf(PriceUnit.PER_MONTH, PriceUnit.PER_SESSION),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Barcha yo'nalishlar",
+            optionGroupHint = "Yo'nalish, daraja",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha yo'nalishlar"),
+                ListingCategory("WRESTLING", "Kurash"),
+                ListingCategory("MMA", "MMA"),
+                ListingCategory("JUDO", "Dzyudo"),
+                ListingCategory("KIDS", "Bolalar guruhi"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("discipline", "Yo'nalish", AttributeKind.SELECT, options = listOf("Kurash", "MMA", "Dzyudo", "Sambo")),
+                AttributeSpec("level", "Daraja", AttributeKind.SELECT, options = listOf("Boshlang'ich", "O'rta", "Professional")),
+                AttributeSpec("durationMonths", "Abonement muddati", AttributeKind.NUMBER, hint = "1", suffix = "oy"),
+                AttributeSpec("sessionsPerWeek", "Haftada", AttributeKind.NUMBER, hint = "3", suffix = "marta"),
+                AttributeSpec("hasFreeTrial", "Sinov mashg'uloti bepul", AttributeKind.BOOLEAN),
+            ),
+        ),
+        "BOWLING" to BusinessTypeFallback(
+            nameUz = "Bouling",
+            emoji = "🎳",
+            accentColor = 0xFFA855F7,
+            defaultPriceUnit = PriceUnit.PER_HOUR,
+            priceUnits = listOf(PriceUnit.PER_HOUR, PriceUnit.PER_SESSION, PriceUnit.PER_PERSON),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Barcha yo'laklar",
+            optionGroupHint = "Yo'lak turi",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha yo'laklar"),
+                ListingCategory("STANDARD", "Oddiy yo'lak"),
+                ListingCategory("VIP", "VIP yo'lak"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("lanes", "Yo'laklar soni", AttributeKind.NUMBER, hint = "1", suffix = "yo'lak"),
+                AttributeSpec("sessionMinutes", "Sessiya davomiyligi", AttributeKind.NUMBER, hint = "60", suffix = "daqiqa"),
+                AttributeSpec("shoesIncluded", "Poyabzal beriladi", AttributeKind.BOOLEAN),
+                AttributeSpec("maxPlayers", "Maksimal o'yinchi", AttributeKind.NUMBER, hint = "6", suffix = "kishi"),
+            ),
+        ),
+        "BILLIARDS" to BusinessTypeFallback(
+            nameUz = "Billiard",
+            emoji = "🎱",
+            accentColor = 0xFF7C3AED,
+            defaultPriceUnit = PriceUnit.PER_HOUR,
+            priceUnits = listOf(PriceUnit.PER_HOUR, PriceUnit.PER_SESSION),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Barcha stollar",
+            optionGroupHint = "Stol turi, zal",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha stollar"),
+                ListingCategory("POOL", "Pul (Amerika)"),
+                ListingCategory("RUSSIAN", "Rus billiard"),
+                ListingCategory("SNOOKER", "Snuker"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("tableType", "Stol turi", AttributeKind.SELECT, options = listOf("Pul (Amerika)", "Rus", "Snuker")),
+                AttributeSpec("tables", "Stollar soni", AttributeKind.NUMBER, hint = "3", suffix = "ta"),
+                AttributeSpec("sessionMinutes", "Sessiya davomiyligi", AttributeKind.NUMBER, hint = "60", suffix = "daqiqa"),
+                AttributeSpec("hallType", "Zal turi", AttributeKind.SELECT, options = listOf("Standart", "VIP", "Alohida xona")),
+            ),
+        ),
+        "PLAYSTATION" to BusinessTypeFallback(
+            nameUz = "PlayStation",
+            emoji = "🎮",
+            accentColor = 0xFF7C5CFF,
+            defaultPriceUnit = PriceUnit.PER_HOUR,
+            priceUnits = listOf(PriceUnit.PER_HOUR, PriceUnit.PER_SESSION, PriceUnit.PER_PERSON),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Barcha zallar",
+            optionGroupHint = "Model, zal turi",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha zallar"),
+                ListingCategory("PS5", "PlayStation 5"),
+                ListingCategory("PS4", "PlayStation 4"),
+                ListingCategory("VIP", "VIP xona"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("model", "Model", AttributeKind.SELECT, options = listOf("PS5", "PS4 Pro", "PS4", "PS3"), required = true),
+                AttributeSpec("joysticks", "Joystiklar", AttributeKind.SELECT, options = listOf("2 ta", "4 ta")),
+                AttributeSpec("sessionMinutes", "Sessiya davomiyligi", AttributeKind.NUMBER, hint = "60", suffix = "daqiqa"),
+                AttributeSpec("hallType", "Zal turi", AttributeKind.SELECT, options = listOf("Standart", "VIP", "Alohida xona")),
+                AttributeSpec("games", "Mashhur o'yinlar", AttributeKind.TAGS, hint = "FIFA 25, Mortal Kombat, UFC"),
+            ),
+        ),
+        "CYBER_CLUB" to BusinessTypeFallback(
+            nameUz = "Kompyuter klubi",
+            emoji = "🖥️",
+            accentColor = 0xFF6366F1,
+            defaultPriceUnit = PriceUnit.PER_HOUR,
+            priceUnits = listOf(PriceUnit.PER_HOUR, PriceUnit.PER_SESSION),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Barcha joylar",
+            optionGroupHint = "PC quvvati",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha joylar"),
+                ListingCategory("STANDARD", "Standart PC"),
+                ListingCategory("VIP", "VIP / Gaming PC"),
+                ListingCategory("PRO", "Pro / e-sport"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("pcTier", "Kompyuter quvvati", AttributeKind.SELECT, options = listOf("Standart", "Gaming", "Pro / e-sport"), required = true),
+                AttributeSpec("sessionMinutes", "Sessiya davomiyligi", AttributeKind.NUMBER, hint = "60", suffix = "daqiqa"),
+                AttributeSpec("hasHeadset", "Garnitura bor", AttributeKind.BOOLEAN),
+                AttributeSpec("games", "O'yinlar", AttributeKind.TAGS, hint = "CS2, Dota 2, Valorant"),
+            ),
+        ),
+        "CINEMA" to BusinessTypeFallback(
+            nameUz = "Kinoteatr",
+            emoji = "🎬",
+            accentColor = 0xFFEF4444,
+            defaultPriceUnit = PriceUnit.PER_TICKET,
+            priceUnits = listOf(PriceUnit.PER_TICKET, PriceUnit.PER_PERSON, PriceUnit.PER_SESSION),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Barcha seanslar",
+            optionGroupHint = "Format, zal turi",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha seanslar"),
+                ListingCategory("STANDARD", "Oddiy zal"),
+                ListingCategory("VIP", "VIP zal"),
+                ListingCategory("KIDS", "Bolalar seansi"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("eventTitle", "Film nomi", AttributeKind.TEXT, hint = "Dune: Part Three"),
+                AttributeSpec("format", "Format", AttributeKind.SELECT, options = listOf("2D", "3D", "IMAX", "4DX", "VR")),
+                AttributeSpec("language", "Til", AttributeKind.SELECT, options = listOf("O'zbek", "Rus", "Ingliz", "Original (subtitr)")),
+                AttributeSpec("ageLimit", "Yosh chegarasi", AttributeKind.SELECT, options = listOf("0+", "6+", "12+", "16+", "18+")),
+                AttributeSpec("sessionTimes", "Seans vaqtlari", AttributeKind.TAGS, hint = "12:30, 16:00, 19:40"),
+            ),
+        ),
+        "KARAOKE" to BusinessTypeFallback(
+            nameUz = "Karaoke",
+            emoji = "🎤",
+            accentColor = 0xFFEC4899,
+            defaultPriceUnit = PriceUnit.PER_HOUR,
+            priceUnits = listOf(PriceUnit.PER_HOUR, PriceUnit.PER_PERSON, PriceUnit.PER_SESSION),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Barcha xonalar",
+            optionGroupHint = "Xona turi",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha xonalar"),
+                ListingCategory("STANDARD", "Oddiy xona"),
+                ListingCategory("VIP", "VIP xona"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("roomCapacity", "Xona sig'imi", AttributeKind.NUMBER, hint = "8", suffix = "kishi"),
+                AttributeSpec("sessionMinutes", "Sessiya davomiyligi", AttributeKind.NUMBER, hint = "60", suffix = "daqiqa"),
+                AttributeSpec("hasFood", "Taom / ichimlik bor", AttributeKind.BOOLEAN),
+                AttributeSpec("languages", "Qo'shiq tillari", AttributeKind.TAGS, hint = "O'zbek, Rus, Ingliz"),
+            ),
+        ),
+        "EDUCATION_CENTER" to BusinessTypeFallback(
+            nameUz = "O'quv markaz",
+            emoji = "📚",
+            accentColor = 0xFF3B82F6,
+            defaultPriceUnit = PriceUnit.PER_MONTH,
+            priceUnits = listOf(PriceUnit.PER_MONTH, PriceUnit.PER_COURSE, PriceUnit.PER_LESSON),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Barcha kurslar",
+            optionGroupHint = "Yo'nalish, format",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha kurslar"),
+                ListingCategory("FOREIGN_LANGUAGES", "Chet tillari"),
+                ListingCategory("IELTS_CEFR", "IELTS / CEFR"),
+                ListingCategory("IT_PROGRAMMING", "IT va dasturlash"),
+                ListingCategory("DESIGN", "Dizayn"),
+                ListingCategory("MATH_SCIENCE", "Matematika va fanlar"),
+                ListingCategory("UNIVERSITY_PREP", "Abituriyent tayyorlash"),
+                ListingCategory("BUSINESS_MARKETING", "Biznes va marketing"),
+                ListingCategory("MASTER_CLASS", "Master-klass"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("subject", "Yo'nalish", AttributeKind.TEXT, hint = "Ingliz tili — IELTS 6.5+"),
+                AttributeSpec("level", "Daraja", AttributeKind.SELECT, options = listOf("Boshlang'ich", "O'rta", "Yuqori")),
+                AttributeSpec("format", "Format", AttributeKind.SELECT, options = listOf("Offline", "Online", "Aralash")),
+                AttributeSpec("durationMonths", "Davomiyligi", AttributeKind.NUMBER, hint = "3", suffix = "oy"),
+                AttributeSpec("lessonsPerWeek", "Haftada", AttributeKind.NUMBER, hint = "3", suffix = "marta"),
+                AttributeSpec("hasFreeTrialLesson", "Birinchi dars bepul", AttributeKind.BOOLEAN),
+            ),
+        ),
+        "LIBRARY" to BusinessTypeFallback(
+            nameUz = "Kutubxona / Co-working",
+            emoji = "📖",
+            accentColor = 0xFF2563EB,
+            defaultPriceUnit = PriceUnit.PER_MONTH,
+            priceUnits = listOf(PriceUnit.PER_MONTH, PriceUnit.PER_HOUR, PriceUnit.PER_TICKET),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Barcha xizmatlar",
+            optionGroupHint = "Zona turi",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha xizmatlar"),
+                ListingCategory("READING_HALL", "O'qish zali"),
+                ListingCategory("COWORKING", "Co-working"),
+                ListingCategory("BOOK_RENT", "Kitob ijarasi"),
+                ListingCategory("KIDS", "Bolalar zonasi"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("seats", "Joylar soni", AttributeKind.NUMBER, hint = "40", suffix = "joy"),
+                AttributeSpec("openHours", "Ish vaqti", AttributeKind.TEXT, hint = "09:00–22:00"),
+                AttributeSpec("hasWifi", "Wi-Fi bor", AttributeKind.BOOLEAN),
+                AttributeSpec("hasQuietZone", "Sokin zona bor", AttributeKind.BOOLEAN),
+                AttributeSpec("hasPrinting", "Chop etish xizmati bor", AttributeKind.BOOLEAN),
+            ),
+        ),
+        "TUTOR" to BusinessTypeFallback(
+            nameUz = "Repetitor",
+            emoji = "🧑‍🏫",
+            accentColor = 0xFF0284C7,
+            defaultPriceUnit = PriceUnit.PER_LESSON,
+            priceUnits = listOf(PriceUnit.PER_LESSON, PriceUnit.PER_MONTH, PriceUnit.PER_COURSE),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Barcha fanlar",
+            optionGroupHint = "Fan, format",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha fanlar"),
+                ListingCategory("MATH", "Matematika"),
+                ListingCategory("ENGLISH", "Ingliz tili"),
+                ListingCategory("PHYSICS", "Fizika"),
+                ListingCategory("NATIVE_LANG", "Ona tili / adabiyot"),
+                ListingCategory("IT", "Informatika / IT"),
+                ListingCategory("EXAM_PREP", "Imtihonga tayyorlash"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("subject", "Fan", AttributeKind.TEXT, hint = "Matematika"),
+                AttributeSpec("level", "Daraja", AttributeKind.SELECT, options = listOf("Boshlang'ich", "O'rta", "Yuqori", "Abituriyent")),
+                AttributeSpec("format", "Format", AttributeKind.SELECT, options = listOf("Offline", "Online", "O'quvchi uyida")),
+                AttributeSpec("lessonMinutes", "Dars davomiyligi", AttributeKind.NUMBER, hint = "60", suffix = "daqiqa"),
+                AttributeSpec("hasFreeTrialLesson", "Birinchi dars bepul", AttributeKind.BOOLEAN),
+            ),
+        ),
+        "PRINTING" to BusinessTypeFallback(
+            nameUz = "Bosmaxona / Tipografiya",
+            emoji = "🖨️",
+            accentColor = 0xFF64748B,
+            defaultPriceUnit = PriceUnit.PER_ITEM,
+            priceUnits = listOf(PriceUnit.PER_ITEM, PriceUnit.PER_KG),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Barcha xizmatlar",
+            optionGroupHint = "Xizmat turi",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha xizmatlar"),
+                ListingCategory("DOCUMENT_PRINT", "Hujjat chop etish"),
+                ListingCategory("COPY", "Nusxa (kseroks)"),
+                ListingCategory("BANNER", "Banner / Nakleyka"),
+                ListingCategory("BOOK_BINDING", "Muqova / tikish"),
+                ListingCategory("PHOTO", "Foto chop etish"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("colorMode", "Rang", AttributeKind.SELECT, options = listOf("Oq-qora", "Rangli")),
+                AttributeSpec("paperSize", "Qog'oz o'lchami", AttributeKind.SELECT, options = listOf("A4", "A3", "A5", "Boshqa")),
+                AttributeSpec("minOrder", "Minimal buyurtma", AttributeKind.NUMBER, hint = "1", suffix = "dona"),
+                AttributeSpec("express", "Tezkor (express)", AttributeKind.BOOLEAN),
+            ),
+        ),
+        "NATIONAL_FOOD" to BusinessTypeFallback(
+            nameUz = "Milliy taomlar",
+            emoji = "🍲",
+            accentColor = 0xFFEA580C,
+            defaultPriceUnit = PriceUnit.PER_ITEM,
+            priceUnits = listOf(PriceUnit.PER_ITEM, PriceUnit.PER_KG, PriceUnit.PER_PERSON),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Butun menyu",
+            optionGroupHint = "Porsiya, tarkib",
+            categories = listOf(
+                ListingCategory("ALL", "Butun menyu"),
+                ListingCategory("PALOV", "Osh / Palov"),
+                ListingCategory("KABOB", "Kabob"),
+                ListingCategory("SHORVA", "Sho'rva"),
+                ListingCategory("MANTI_CHUCHVARA", "Manti / Chuchvara"),
+                ListingCategory("LAGMON", "Lag'mon"),
+                ListingCategory("SALAD", "Salatlar"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("portionGrams", "Porsiya", AttributeKind.NUMBER, hint = "450", suffix = "gramm"),
+                AttributeSpec("spicyLevel", "O'tkirlik", AttributeKind.SELECT, options = listOf("Yo'q", "Yengil", "O'rtacha", "O'tkir")),
+                AttributeSpec("isHalal", "Halol", AttributeKind.BOOLEAN),
+                AttributeSpec("hasDelivery", "Yetkazib berish bor", AttributeKind.BOOLEAN),
+            ),
+        ),
+        "FAST_FOOD" to BusinessTypeFallback(
+            nameUz = "Fast food",
+            emoji = "🍔",
+            accentColor = 0xFFF97316,
+            defaultPriceUnit = PriceUnit.PER_ITEM,
+            priceUnits = listOf(PriceUnit.PER_ITEM, PriceUnit.PER_PERSON),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Butun menyu",
+            optionGroupHint = "Porsiya, tarkib",
+            categories = listOf(
+                ListingCategory("ALL", "Butun menyu"),
+                ListingCategory("BURGER", "Burger"),
+                ListingCategory("PIZZA", "Pitsa"),
+                ListingCategory("HOTDOG", "Hot-dog"),
+                ListingCategory("LAVASH_SHAWARMA", "Lavash / Shaurma"),
+                ListingCategory("FRIES", "Kartoshka fri"),
+                ListingCategory("COMBO", "Combo setlar"),
+                ListingCategory("DRINKS", "Ichimliklar"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("portionGrams", "Porsiya", AttributeKind.NUMBER, hint = "300", suffix = "gramm"),
+                AttributeSpec("ingredients", "Tarkibi", AttributeKind.TAGS, hint = "Mozzarella, Tovuq, Sous"),
+                AttributeSpec("isHalal", "Halol", AttributeKind.BOOLEAN),
+                AttributeSpec("hasDelivery", "Yetkazib berish bor", AttributeKind.BOOLEAN),
+            ),
+        ),
+        "SOMSA" to BusinessTypeFallback(
+            nameUz = "Somsa / Nonvoyxona",
+            emoji = "🥟",
+            accentColor = 0xFFD97706,
+            defaultPriceUnit = PriceUnit.PER_ITEM,
+            priceUnits = listOf(PriceUnit.PER_ITEM, PriceUnit.PER_KG),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Barcha mahsulot",
+            optionGroupHint = "To'ldirma, tandir",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha mahsulot"),
+                ListingCategory("MEAT_SOMSA", "Go'shtli somsa"),
+                ListingCategory("POTATO_SOMSA", "Kartoshkali somsa"),
+                ListingCategory("GREENS_SOMSA", "Ko'k somsa"),
+                ListingCategory("TANDIR_NON", "Tandir non"),
+                ListingCategory("PATIR", "Patir / Non"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("filling", "To'ldirma", AttributeKind.SELECT, options = listOf("Mol go'shti", "Qo'y go'shti", "Tovuq", "Kartoshka", "Ko'k")),
+                AttributeSpec("ovenType", "Pishirish", AttributeKind.SELECT, options = listOf("Tandir", "Pech")),
+                AttributeSpec("isHalal", "Halol", AttributeKind.BOOLEAN),
+                AttributeSpec("hasDelivery", "Yetkazib berish bor", AttributeKind.BOOLEAN),
+            ),
+        ),
+        "BARBERSHOP" to BusinessTypeFallback(
+            nameUz = "Sartaroshxona",
+            emoji = "💈",
+            accentColor = 0xFF14B8A6,
+            defaultPriceUnit = PriceUnit.PER_ITEM,
+            priceUnits = listOf(PriceUnit.PER_ITEM, PriceUnit.PER_SESSION, PriceUnit.PER_PERSON),
+            genders = setOf(Gender.MALE),
+            allCategoryLabel = "Barcha xizmatlar",
+            optionGroupHint = "Usta darajasi",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha xizmatlar"),
+                ListingCategory("HAIRCUT_MEN", "Erkaklar soch olish"),
+                ListingCategory("KIDS", "Bolalar soch olish"),
+                ListingCategory("BEARD", "Soqol / ustara"),
+                ListingCategory("HAIR_COLOR", "Soch bo'yash"),
+                ListingCategory("STYLING", "Ukladka / styling"),
+                ListingCategory("HAIR_CARE", "Parvarish (spa)"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("master", "Usta", AttributeKind.TEXT, hint = "Aziz aka"),
+                AttributeSpec("masterLevel", "Usta darajasi", AttributeKind.SELECT, options = listOf("Junior", "Usta", "Top-usta")),
+                AttributeSpec("durationMinutes", "Davomiyligi", AttributeKind.NUMBER, hint = "40", suffix = "daqiqa"),
+                AttributeSpec("byAppointment", "Oldindan yozilish", AttributeKind.BOOLEAN),
+            ),
+        ),
+        "BEAUTY_SALON" to BusinessTypeFallback(
+            nameUz = "Go'zallik saloni",
+            emoji = "💅",
+            accentColor = 0xFFF472B6,
+            defaultPriceUnit = PriceUnit.PER_ITEM,
+            priceUnits = listOf(PriceUnit.PER_ITEM, PriceUnit.PER_SESSION, PriceUnit.PER_PERSON),
+            genders = setOf(Gender.FEMALE),
+            allCategoryLabel = "Barcha xizmatlar",
+            optionGroupHint = "Usta darajasi",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha xizmatlar"),
+                ListingCategory("HAIR", "Soch turmagi / bo'yash"),
+                ListingCategory("MAKEUP", "Makiyaj"),
+                ListingCategory("MANICURE", "Manikyur"),
+                ListingCategory("PEDICURE", "Pedikyur"),
+                ListingCategory("EYEBROWS_LASHES", "Qosh / kiprik"),
+                ListingCategory("COSMETOLOGY", "Kosmetologiya"),
+                ListingCategory("SPA_MASSAGE", "SPA / massaj"),
+                ListingCategory("EPILATION", "Epilyatsiya"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("master", "Usta", AttributeKind.TEXT, hint = "Malika opa"),
+                AttributeSpec("masterLevel", "Usta darajasi", AttributeKind.SELECT, options = listOf("Junior", "Usta", "Top-usta")),
+                AttributeSpec("durationMinutes", "Davomiyligi", AttributeKind.NUMBER, hint = "60", suffix = "daqiqa"),
+                AttributeSpec("byAppointment", "Oldindan yozilish", AttributeKind.BOOLEAN),
+            ),
+        ),
+        "RENTAL_HOUSE" to BusinessTypeFallback(
+            nameUz = "Ijara uy-joy",
+            emoji = "🏠",
+            accentColor = 0xFF0891B2,
+            defaultPriceUnit = PriceUnit.PER_MONTH,
+            priceUnits = listOf(PriceUnit.PER_MONTH, PriceUnit.PER_PERSON),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Barcha variantlar",
+            optionGroupHint = "Uy turi, xonalar",
+            categories = listOf(
+                ListingCategory("ALL", "Barcha variantlar"),
+                ListingCategory("ROOM", "Xona (bo'lib turish)"),
+                ListingCategory("APARTMENT", "Kvartira"),
+                ListingCategory("HOSTEL", "Hostel / Yotoqxona"),
+                ListingCategory("STUDIO", "Studiya"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("rooms", "Xonalar soni", AttributeKind.NUMBER, hint = "2", suffix = "xona"),
+                AttributeSpec("capacity", "Necha kishiga", AttributeKind.NUMBER, hint = "3", suffix = "kishi"),
+                AttributeSpec("forGender", "Kimlar uchun", AttributeKind.SELECT, options = listOf("Erkaklar", "Ayollar", "Aralash")),
+                AttributeSpec("furnished", "Jihozlangan", AttributeKind.BOOLEAN),
+                AttributeSpec("hasWifi", "Wi-Fi bor", AttributeKind.BOOLEAN),
+                AttributeSpec("utilitiesIncluded", "Kommunal narxga kiritilgan", AttributeKind.BOOLEAN),
+                AttributeSpec("forStudents", "Talabalar uchun", AttributeKind.BOOLEAN),
+            ),
+        ),
+        "CLOTHING" to BusinessTypeFallback(
+            nameUz = "Kiyim-kechak",
+            emoji = "👕",
+            accentColor = 0xFFDB2777,
+            defaultPriceUnit = PriceUnit.PER_ITEM,
+            priceUnits = listOf(PriceUnit.PER_ITEM),
+            genders = setOf(Gender.MALE, Gender.FEMALE),
+            allCategoryLabel = "Butun assortimentga",
+            optionGroupHint = "O'lcham, rang",
+            categories = listOf(
+                ListingCategory("ALL", "Butun assortimentga"),
+                ListingCategory("MEN", "Erkaklar"),
+                ListingCategory("WOMEN", "Ayollar"),
+                ListingCategory("OUTERWEAR", "Ustki kiyim"),
+                ListingCategory("SHOES", "Poyabzal"),
+                ListingCategory("SPORTSWEAR", "Sport kiyim"),
+                ListingCategory("BAGS", "Sumkalar"),
+                ListingCategory("ACCESSORIES", "Aksessuarlar"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            fields = listOf(
+                AttributeSpec("brand", "Brend", AttributeKind.TEXT, hint = "Zara"),
+                AttributeSpec("gender", "Kimlar uchun", AttributeKind.SELECT, options = listOf("Erkaklar", "Ayollar", "Uniseks", "Bolalar")),
+                AttributeSpec("material", "Material", AttributeKind.TEXT, hint = "100% paxta"),
+                AttributeSpec("season", "Mavsum", AttributeKind.SELECT, options = listOf("Qish", "Bahor", "Yoz", "Kuz", "Barcha mavsum")),
+            ),
         ),
     )
 
-    /**
-     * Turga xos maydonlar — **faqat eng zaruriylari**. Ilgari 8-9 tadan edi va forma
-     * cho'zilib ketardi; talabaga foydasi bo'lmagan maydonlar olib tashlandi.
-     * Kalitlar backend spec'i bilan bir xil (`DISCOUNTS_BUSINESS_API.md` §4).
-     */
-    private val attributeMap: Map<BusinessType, List<AttributeSpec>> = mapOf(
-        BusinessType.GAME_CLUB to listOf(
-            AttributeSpec("hallType", "Zal turi", AttributeKind.SELECT, options = listOf("Standart", "VIP", "Alohida xona")),
-            AttributeSpec("deviceModel", "Qurilma", AttributeKind.TEXT, hint = "PlayStation 5 Slim"),
-            AttributeSpec("seatsCount", "Nechta o'yinchi", AttributeKind.NUMBER, hint = "4", suffix = "kishi"),
-            AttributeSpec("sessionMinutes", "Sessiya davomiyligi", AttributeKind.NUMBER, hint = "60", suffix = "daqiqa"),
-            AttributeSpec("gamesList", "O'yinlar", AttributeKind.TAGS, hint = "FIFA 25, Mortal Kombat"),
-        ),
-        BusinessType.CLOTHING to listOf(
-            AttributeSpec("brand", "Brand nomi", AttributeKind.TEXT, hint = "Zara"),
-            AttributeSpec("gender", "Kimlar uchun", AttributeKind.SELECT, options = listOf("Erkaklar", "Ayollar", "Uniseks", "Bolalar")),
-            AttributeSpec("material", "Material", AttributeKind.TEXT, hint = "100% paxta"),
-            AttributeSpec("season", "Mavsumlar", AttributeKind.MULTI_SELECT, options = listOf("Qish", "Bahor", "Yoz", "Kuz")),
-        ),
-        BusinessType.CAFE_RESTAURANT to listOf(
-            AttributeSpec("portionGrams", "Porsiya", AttributeKind.NUMBER, hint = "550", suffix = "gramm"),
-            AttributeSpec("ingredients", "Tarkibi", AttributeKind.TAGS, hint = "Mozzarella, Pepperoni, Tomat sousi"),
-            AttributeSpec("spicyLevel", "O'tkirlik", AttributeKind.SELECT, options = listOf("Yo'q", "Yengil", "O'rtacha", "O'tkir")),
-            AttributeSpec("isHalal", "Halol", AttributeKind.BOOLEAN),
-            AttributeSpec("hasDelivery", "Yetkazib berish bor", AttributeKind.BOOLEAN),
-        ),
-        BusinessType.EDUCATION_CENTER to listOf(
-            AttributeSpec("subject", "Yo'nalish", AttributeKind.TEXT, hint = "Ingliz tili — IELTS 6.5+"),
-            AttributeSpec("level", "Daraja", AttributeKind.SELECT, options = listOf("Boshlang'ich", "O'rta", "Yuqori")),
-            AttributeSpec("format", "Format", AttributeKind.SELECT, options = listOf("Offline", "Online", "Aralash")),
-            AttributeSpec("durationMonths", "Davomiyligi", AttributeKind.NUMBER, hint = "3", suffix = "oy"),
-            AttributeSpec("lessonsPerWeek", "Haftada", AttributeKind.NUMBER, hint = "3", suffix = "marta"),
-            AttributeSpec("hasFreeTrialLesson", "Birinchi dars bepul", AttributeKind.BOOLEAN),
-        ),
-        BusinessType.ENTERTAINMENT to listOf(
-            AttributeSpec("eventTitle", "Film / tadbir nomi", AttributeKind.TEXT, hint = "Dune: Part Three"),
-            AttributeSpec("format", "Format", AttributeKind.SELECT, options = listOf("2D", "3D", "IMAX", "4DX", "VR")),
-            AttributeSpec("language", "Til", AttributeKind.SELECT, options = listOf("O'zbek", "Rus", "Ingliz", "Original (subtitr)")),
-            AttributeSpec("ageLimit", "Yosh chegarasi", AttributeKind.SELECT, options = listOf("0+", "6+", "12+", "16+", "18+")),
-            AttributeSpec("sessionTimes", "Seans vaqtlari", AttributeKind.TAGS, hint = "12:30, 16:00, 19:40"),
-        ),
-        BusinessType.BARBERSHOP to listOf(
-            AttributeSpec("master", "Usta", AttributeKind.TEXT, hint = "Aziz aka"),
-            AttributeSpec("masterLevel", "Usta darajasi", AttributeKind.SELECT, options = listOf("Junior", "Usta", "Top-usta")),
-            AttributeSpec("gender", "Kimlar uchun", AttributeKind.SELECT, options = listOf("Erkaklar", "Ayollar", "Bolalar", "Barcha")),
-            AttributeSpec("durationMinutes", "Davomiyligi", AttributeKind.NUMBER, hint = "40", suffix = "daqiqa"),
-            AttributeSpec("byAppointment", "Oldindan yozilish", AttributeKind.BOOLEAN),
-        ),
-        BusinessType.BEAUTY_SALON to listOf(
-            AttributeSpec("master", "Usta", AttributeKind.TEXT, hint = "Malika opa"),
-            AttributeSpec("masterLevel", "Usta darajasi", AttributeKind.SELECT, options = listOf("Junior", "Usta", "Top-usta")),
-            AttributeSpec("durationMinutes", "Davomiyligi", AttributeKind.NUMBER, hint = "60", suffix = "daqiqa"),
-            AttributeSpec("byAppointment", "Oldindan yozilish", AttributeKind.BOOLEAN),
+    /** Jinsga xos kategoriyalar — backendda faqat `CLOTHING` uchun. */
+    private val genderCategories: Map<String, Map<Gender?, List<ListingCategory>>> = mapOf(
+        "CLOTHING" to mapOf(
+            Gender.MALE to listOf(
+                ListingCategory("ALL", "Butun assortimentga"),
+                ListingCategory("SHIRTS", "Ko'ylak / futbolka"),
+                ListingCategory("PANTS", "Shim / jinsi"),
+                ListingCategory("SUITS", "Kostyum"),
+                ListingCategory("OUTERWEAR", "Ustki kiyim"),
+                ListingCategory("SHOES", "Poyabzal"),
+                ListingCategory("SPORTSWEAR", "Sport kiyim"),
+                ListingCategory("ACCESSORIES", "Aksessuar"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
+            Gender.FEMALE to listOf(
+                ListingCategory("ALL", "Butun assortimentga"),
+                ListingCategory("DRESSES", "Ko'ylak / libos"),
+                ListingCategory("SKIRTS", "Yubka"),
+                ListingCategory("BLOUSES", "Bluzka"),
+                ListingCategory("OUTERWEAR", "Ustki kiyim"),
+                ListingCategory("SHOES", "Poyabzal"),
+                ListingCategory("BAGS", "Sumka"),
+                ListingCategory("ACCESSORIES", "Aksessuar"),
+                ListingCategory("OTHER", "Boshqa"),
+            ),
         ),
     )
 }
+
+/**
+ * Bitta biznes turining zaxira ma'lumoti — serverdan kelgan `BusinessTypeInfo` ning
+ * offline ekvivalenti. Server javob bersa **o'sha** ishlatiladi, bu esa faqat o'rin bosadi.
+ */
+data class BusinessTypeFallback(
+    val nameUz: String,
+    val emoji: String,
+    val accentColor: Long,
+    val defaultPriceUnit: PriceUnit,
+    val priceUnits: List<PriceUnit>,
+    /** Qaysi jinsdagi foydalanuvchiga ko'rsatiladi. */
+    val genders: Set<Gender>,
+    val allCategoryLabel: String,
+    val optionGroupHint: String,
+    val categories: List<ListingCategory>,
+    /** Forma maydonlari — backendda ular **tur darajasida**. */
+    val fields: List<AttributeSpec>,
+)

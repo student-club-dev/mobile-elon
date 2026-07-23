@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -76,6 +77,12 @@ import org.koin.compose.viewmodel.koinViewModel
 import dev.core.uikit.component.AppFieldType
 import dev.core.uikit.component.HintText
 import dev.core.uikit.component.AppBackHandler
+import androidx.compose.foundation.background
+import androidx.compose.material3.CircularProgressIndicator
+import dev.core.uikit.component.BannerTone
+import dev.core.uikit.component.StatusBanner
+import dev.core.uikit.map.MapStatus
+import dev.core.uikit.resources.discounts_map_failed
 
 // ===========================================================================
 // Biznes qo'shish — nom, telefon, TUR (majburiy), lokatsiya
@@ -319,6 +326,9 @@ private fun BusinessMapScreen(state: AddBusinessUiState, palette: AppPalette, vm
     var centerRequest by remember { mutableStateOf<MapCenterRequest?>(null) }
     var requestId by remember { mutableStateOf(0) }
     var pickedPoint by remember { mutableStateOf<MapPoint?>(null) }
+    // `null` — hali yuklanmoqda. Belgi HTML element bo'lgani uchun xarita kelmasa ham
+    // ko'rinaveradi, shuning uchun holatni ALOHIDA kuzatamiz.
+    var mapStatus by remember { mutableStateOf<MapStatus?>(null) }
 
     LaunchedEffect(userLocation) {
         if (userLocation != null && centerRequest == null) {
@@ -358,7 +368,29 @@ private fun BusinessMapScreen(state: AddBusinessUiState, palette: AppPalette, vm
                 onCenterChanged = { pickedPoint = it },
                 modifier = Modifier.fillMaxSize(),
                 centerRequest = centerRequest,
+                onStatus = { mapStatus = it },
             )
+
+            // Xarita tayyor bo'lguncha — loader. Aks holda ekranda bo'sh fon va belgi
+            // turadi, foydalanuvchi esa xaritani surayotganday bo'lib joy tanlay olmaydi.
+            if (mapStatus == null) {
+                Box(
+                    Modifier.matchParentSize().background(palette.card.copy(alpha = 0.75f)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator(color = palette.primary, strokeWidth = 3.dp)
+                }
+            }
+
+            if (mapStatus == MapStatus.FAILED) {
+                StatusBanner(
+                    text = stringResource(Res.string.discounts_map_failed),
+                    tone = BannerTone.DANGER,
+                    modifier = Modifier.align(Alignment.TopCenter)
+                        .padding(horizontal = AppSpacing.lg, vertical = AppSpacing.sm),
+                    palette = palette,
+                )
+            }
             MapSearchResults(
                 results = state.searchResults,
                 searching = state.searching,
@@ -369,6 +401,7 @@ private fun BusinessMapScreen(state: AddBusinessUiState, palette: AppPalette, vm
                     vm.clearSearch()
                 },
                 palette = palette,
+                error = state.searchError,
             )
             if (userLocation != null) {
                 MyLocationButton(

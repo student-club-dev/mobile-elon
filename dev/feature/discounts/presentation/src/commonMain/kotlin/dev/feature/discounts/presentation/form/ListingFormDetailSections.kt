@@ -62,6 +62,7 @@ import dev.core.uikit.theme.appPalette
 import dev.feature.discounts.domain.model.BusinessType
 import dev.feature.discounts.domain.model.DiscountType
 import dev.feature.discounts.domain.model.ListingCatalog
+import dev.feature.discounts.domain.model.PriceUnit
 import dev.feature.discounts.domain.model.ListingField
 import dev.feature.discounts.domain.model.ListingValidator
 import dev.feature.discounts.domain.model.RedemptionMethod
@@ -155,7 +156,8 @@ fun PriceAndDiscountSection(
     ) {
         // Narx birligi (`priceUnit`) — biznes turiga ruxsat etilganlari. Bitta variant
         // bo'lsa tanlash shart emas (masalan kiyim doim "dona uchun").
-        val units = ListingCatalog.priceUnits(state.businessType ?: BusinessType.CAFE_RESTAURANT)
+        // Tur tanlanmagan bo'lsa cheklamaymiz — `priceUnits` barcha birliklarni beradi.
+        val units = state.businessType?.let(ListingCatalog::priceUnits) ?: PriceUnit.entries
         if (units.size > 1) {
             MiniLabel(stringResource(Res.string.discounts_price_unit_label), palette)
             ChipFlow {

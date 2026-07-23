@@ -6,57 +6,111 @@ import dev.core.uikit.component.AppIcons
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.discounts_type_barbershop
 import dev.core.uikit.resources.discounts_type_beauty_salon
-import dev.core.uikit.resources.discounts_type_cafe_restaurant
 import dev.core.uikit.resources.discounts_type_clothing
 import dev.core.uikit.resources.discounts_type_education_center
-import dev.core.uikit.resources.discounts_type_entertainment
-import dev.core.uikit.resources.discounts_type_game_club
 import dev.feature.discounts.domain.model.BusinessType
+import dev.feature.discounts.domain.model.BusinessTypeInfo
+import dev.feature.discounts.domain.model.ListingCatalog
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * Biznes turining tarjima qilingan nomi.
+ * Biznes turining tarjimasi va ikonkasi.
  *
- * Nima uchun bu yerda, `BusinessType` enumida emas: `BusinessType` — **domain** modeli va u
- * Compose'ga bog'liq emas (bog'lansa domain UI kutubxonasidan qaram bo'lib qolardi). Shuning
- * uchun enum faqat barqaror `id` va o'zbekcha zaxira nomni saqlaydi, tarjima esa shu yerda.
+ * Nima uchun bu yerda, `BusinessType` ichida emas: `BusinessType` — **domain** modeli va u
+ * Compose'ga bog'liq emas (bog'lansa domain UI kutubxonasidan qaram bo'lib qolardi). Domain
+ * faqat barqaror kalitni saqlaydi, ko'rinish esa shu faylda.
  *
- * Eslatma: `BusinessTypeInfo.nameUz` backenddan keladi va nomidan ko'rinib turibdiki faqat
- * o'zbekcha. Ruscha/inglizcha rejimda undan foydalanib bo'lmaydi, shuning uchun ekranlarda
- * aynan shu funksiya ishlatiladi.
+ * ⚠️ Turlar ro'yxati **serverda** (hozircha 27 ta va o'sib boradi), shuning uchun bu yerdagi
+ * moslamalar to'liq bo'lishi shart emas: topilmagan tur uchun standart ikonka va serverdan
+ * kelgan nom ishlatiladi. Ya'ni adminka yangi tur qo'shsa ilova uni baribir to'g'ri ko'rsatadi.
  */
-val BusinessType.labelRes: StringResource
-    get() = when (this) {
-        BusinessType.GAME_CLUB -> Res.string.discounts_type_game_club
-        BusinessType.CLOTHING -> Res.string.discounts_type_clothing
-        BusinessType.CAFE_RESTAURANT -> Res.string.discounts_type_cafe_restaurant
-        BusinessType.EDUCATION_CENTER -> Res.string.discounts_type_education_center
-        BusinessType.ENTERTAINMENT -> Res.string.discounts_type_entertainment
-        BusinessType.BARBERSHOP -> Res.string.discounts_type_barbershop
-        BusinessType.BEAUTY_SALON -> Res.string.discounts_type_beauty_salon
+
+/**
+ * Tur nomining tarjimasi — faqat ilova **maxsus tarjima qilgan** turlar uchun.
+ *
+ * Backend nomni faqat o'zbekcha beradi (`nameUz`; `nameRu` hozircha `null`), shuning uchun
+ * ruscha/inglizcha rejimda qo'lda tarjima qilinganlari shu yerdan olinadi. Qolganlari uchun
+ * `null` — chaqiruvchi serverdagi nomga tushadi.
+ */
+val BusinessType.labelRes: StringResource?
+    get() = when (key) {
+        "CLOTHING" -> Res.string.discounts_type_clothing
+        "EDUCATION_CENTER" -> Res.string.discounts_type_education_center
+        "BARBERSHOP" -> Res.string.discounts_type_barbershop
+        "BEAUTY_SALON" -> Res.string.discounts_type_beauty_salon
+        else -> null
     }
 
-/** Joriy tildagi nomi — ekranlarda shu ishlatiladi. */
+/**
+ * Joriy tildagi nomi — ekranlarda shu ishlatiladi.
+ *
+ * Tartib: tarjima → zaxira katalogdagi o'zbekcha nom → kalitning o'zi. Oxirgisi deyarli
+ * uchramaydi (server yangi tur qo'shgan, foydalanuvchi esa oflayn qolgan holat), lekin
+ * bo'sh joydan ko'ra kalit ko'ringani yaxshiroq.
+ */
 @Composable
-fun BusinessType.localizedLabel(): String = stringResource(labelRes)
+fun BusinessType.localizedLabel(): String =
+    labelRes?.let { stringResource(it) } ?: ListingCatalog.info(this)?.nameUz ?: key
+
+/**
+ * Serverdan kelgan tur uchun nom: tarjima bo'lsa u, aks holda javobdagi `nameUz`.
+ *
+ * Ro'yxatlarda aynan shu ishlatiladi — u yerda javob qo'lda bo'lgani uchun zaxira katalogga
+ * murojaat qilish shart emas.
+ */
+@Composable
+fun BusinessTypeInfo.localizedLabel(): String =
+    type.labelRes?.let { stringResource(it) } ?: nameUz
 
 /**
  * Biznes turining ikonkasi (dizayn handoff `ic_*.svg` to'plamidan).
  *
- * Nima uchun bu yerda, `BusinessType.emoji` o'rniga: emoji iOS'da Compose bilan
- * chizilmaydi va `?` kvadratcha bo'lib ko'rinadi. `BusinessType` esa **domain** modeli —
- * unga `ImageVector` qo'shib bo'lmaydi (domain Compose'dan qaram bo'lib qolardi), shuning
- * uchun ikonka moslamasi [labelRes] kabi shu presentation faylida turadi. Enumdagi `emoji`
- * maydoni backend/ma'lumot uchun qoladi, lekin ekranlarda ISHLATILMAYDI.
+ * Nima uchun emoji emas: emoji iOS'da Compose bilan chizilmaydi va `?` kvadratcha bo'lib
+ * ko'rinadi. Backend `emoji` maydonini beradi, lekin u faqat ma'lumot uchun.
+ *
+ * Yaqin turlar bitta ikonkani baham ko'radi (barcha sport maydonlari — koptok), noma'lum
+ * tur esa neytral "do'kon" ikonkasini oladi.
  */
 val BusinessType.icon: ImageVector
-    get() = when (this) {
-        BusinessType.GAME_CLUB -> AppIcons.Gamepad
-        BusinessType.CLOTHING -> AppIcons.Cart
-        BusinessType.CAFE_RESTAURANT -> AppIcons.Cafe
-        BusinessType.EDUCATION_CENTER -> AppIcons.Book
-        BusinessType.ENTERTAINMENT -> AppIcons.Camera
-        BusinessType.BARBERSHOP -> AppIcons.Tools
-        BusinessType.BEAUTY_SALON -> AppIcons.Star
+    get() = when (key) {
+        // Sport maydonlari va zallari
+        "TENNIS", "TABLE_TENNIS", "FOOTBALL_FIELD", "FOOTBALL_TRAINING", "BASKETBALL",
+        "VOLLEYBALL", "BOWLING", "BILLIARDS", "SWIMMING_POOL", "FITNESS", "BOXING",
+        "WRESTLING_MMA",
+        -> AppIcons.Ball
+
+        // O'yin zallari
+        "PLAYSTATION" -> AppIcons.Gamepad
+        "CYBER_CLUB" -> AppIcons.Laptop
+
+        // Ko'ngilochar
+        "CINEMA" -> AppIcons.Camera
+        "KARAOKE" -> AppIcons.Mic
+
+        // Ta'lim
+        "EDUCATION_CENTER", "LIBRARY" -> AppIcons.Book
+        "TUTOR" -> AppIcons.GraduationCap
+
+        // Ovqatlanish
+        "NATIONAL_FOOD", "FAST_FOOD", "SOMSA" -> AppIcons.Cafe
+
+        // Xizmatlar va savdo
+        "BARBERSHOP" -> AppIcons.Tools
+        "BEAUTY_SALON" -> AppIcons.Star
+        "PRINTING" -> AppIcons.FileText
+        "RENTAL_HOUSE" -> AppIcons.Home
+        "CLOTHING" -> AppIcons.Cart
+
+        else -> AppIcons.Store
     }
+
+/**
+ * Turning urg'u rangi (ARGB) — zaxira katalogdan.
+ *
+ * Serverdan kelgan `BusinessTypeInfo.accentColor` qo'lda bo'lganda o'shani ishlating; bu
+ * xossa esa faqat tur kaliti ma'lum bo'lgan joylar uchun (masalan saqlangan e'lon kartasi).
+ * Noma'lum tur — neytral binafsha.
+ */
+val BusinessType.catalogAccent: Long
+    get() = ListingCatalog.info(this)?.accentColor ?: 0xFF7C5CFF

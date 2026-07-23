@@ -37,7 +37,7 @@ class ListingValidatorTest {
     ) = Listing(
         id = "lst_1",
         ownerId = "u1",
-        businessType = BusinessType.CAFE_RESTAURANT,
+        businessType = BusinessType("NATIONAL_FOOD"),
         businessName = "Chaykhana Navruz",
         categoryKey = "PIZZA",
         title = "Pepperoni pitsa",
@@ -98,6 +98,20 @@ class ListingValidatorTest {
         assertTrue(errors.any { it.field == ListingField.LOCATION })
     }
 
+    /**
+     * Onlayn biznes (`isOnlineOnly`) yoki filialsiz biznes — spec bo'yicha bo'sh `branchIds`
+     * to'g'ri (= barcha faol filiallar). Bunday e'lon to'silmasligi kerak edi: filial bu
+     * formada yaratilmaydi, ya'ni foydalanuvchida chiqish yo'li yo'q.
+     */
+    @Test
+    fun `filial taklif qilinmasa tanlov majburiy emas`() {
+        val errors = ListingValidator.validate(
+            validListing(branches = emptyList()),
+            requireBranch = false,
+        )
+        assertTrue(errors.none { it.field == ListingField.LOCATION }, "filialsiz e'lon to'sildi: $errors")
+    }
+
     @Test
     fun `koordinata O'zbekiston hududida bo'lishi kerak`() {
         // Parij — O'zbekistondan tashqarida.
@@ -109,9 +123,13 @@ class ListingValidatorTest {
         assertTrue(errors.any { it.field == ListingField.LOCATION })
     }
 
+    /**
+     * Yaqin joylashgan ikki filial (masalan bitta savdo markazidagi ikkita nuqta) e'lonni
+     * TO'SMAYDI. Dublikat tekshiruvi filial YARATISHGA tegishli; e'lon formasi esa serverdagi
+     * tayyor filiallardan tanlaydi va ularning koordinatasini o'zgartira olmaydi.
+     */
     @Test
-    fun `bir joyda ikkita filial belgilanmaydi`() {
-        // 100 m dan yaqin ikki nuqta — dublikat filial (spec 6.6).
+    fun `yaqin joylashgan ikki filial e'lonni to'smaydi`() {
         val errors = ListingValidator.validate(
             validListing(
                 branches = listOf(
@@ -120,7 +138,7 @@ class ListingValidatorTest {
                 ),
             ),
         )
-        assertTrue(errors.any { it.field == ListingField.LOCATION })
+        assertTrue(errors.none { it.field == ListingField.LOCATION }, "yaqin filiallar to'sildi: $errors")
     }
 
     @Test
@@ -178,11 +196,25 @@ class ListingValidatorTest {
     }
 
     @Test
-    fun `har bir biznes turida kategoriya va maydonlar bor`() {
-        BusinessType.entries.forEach { type ->
-            assertTrue(ListingCatalog.categories(type).size > 1, "${type.name}: kategoriya yo'q")
-            assertTrue(ListingCatalog.attributes(type).isNotEmpty(), "${type.name}: maydon yo'q")
-            assertTrue(ListingCatalog.priceUnits(type).isNotEmpty(), "${type.name}: narx birligi yo'q")
+    fun `zaxira katalog backenddagi 27 turni to'liq qamraydi`() {
+        // Ro'yxat backend `catalog-seed.json` dan ko'chirilgan — soni kamayib ketsa,
+        // demak ko'chirish chala bo'lgan va oflayn foydalanuvchi turni topolmaydi.
+        assertEquals(27, ListingCatalog.types.size)
+        ListingCatalog.types.forEach { type ->
+            assertTrue(ListingCatalog.categories(type).size > 1, "${'$'}{type.key}: kategoriya yo'q")
+            assertTrue(ListingCatalog.attributes(type).isNotEmpty(), "${'$'}{type.key}: maydon yo'q")
+            assertTrue(ListingCatalog.priceUnits(type).isNotEmpty(), "${'$'}{type.key}: narx birligi yo'q")
+        }
+    }
+
+    @Test
+    fun `har bir turda ALL birinchi va OTHER oxirgi kategoriya`() {
+        // Backend shartnomasi (CATALOG_HANDOFF.md §2): ro'yxat doim shu ikkisi bilan
+        // o'ralgan — forma "hammasiga" chipini birinchi, "Boshqa"ni oxirgi ko'rsatadi.
+        ListingCatalog.types.forEach { type ->
+            val keys = ListingCatalog.categories(type).map { it.key }
+            assertEquals(ListingCatalog.ALL_KEY, keys.first(), "${'$'}{type.key}: birinchisi ALL emas")
+            assertEquals(ListingCatalog.OTHER_KEY, keys.last(), "${'$'}{type.key}: oxirgisi OTHER emas")
         }
     }
 

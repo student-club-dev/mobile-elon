@@ -34,13 +34,24 @@ object ListingValidator {
     const val MAX_OPTION_GROUPS = 10
     const val MAX_OPTIONS_PER_GROUP = 30
     const val MAX_BRANCHES = 20
-    const val MIN_BRANCH_DISTANCE_METERS = 100.0
 
     /** Spec §3.5 — `validTo` `validFrom` dan ko'pi bilan bir yil keyin. */
     private const val MAX_DURATION_MILLIS = 366L * 24 * 60 * 60 * 1000
 
-    /** Bo'sh ro'yxat — e'lon publish qilishga tayyor. */
-    fun validate(listing: Listing): List<ListingError> = buildList {
+    /**
+     * Bo'sh ro'yxat — e'lon publish qilishga tayyor.
+     *
+     * [fields] — formada **haqiqatan ko'ringan** maydonlar (`GET .../categories` javobidagi
+     * `fields[]`). Ular tashqaridan beriladi, chunki maydonlar ro'yxati serverda turadi va
+     * o'zgarishi mumkin: klient katalogiga qarab tekshirilsa, foydalanuvchi ekranda yo'q
+     * maydon uchun "tanlanmagan" xatosini olishi (yoki aksincha) mumkin edi. Berilmasa —
+     * zaxira katalogdan (oflayn holat).
+     */
+    fun validate(
+        listing: Listing,
+        fields: List<AttributeSpec> = ListingCatalog.categoryAttributes(listing.businessType, listing.categoryKey),
+        requireBranch: Boolean = true,
+    ): List<ListingError> = buildList {
         // Biznes nomi endi formadan so'ralmaydi (biznes profilidан keladi) — majburiy emas.
 
         if (listing.categoryKey == ListingCatalog.OTHER_KEY && listing.customCategoryName.isNullOrBlank()) {
@@ -63,10 +74,9 @@ object ListingValidator {
             add(ListingError(ListingField.PRICE, "Narxni kiriting"))
         }
 
-        // Kategoriyaga xos MAJBURIY maydonlar — masalan Futbolkaда razmer, PlayStation'да model.
+        // Turga xos MAJBURIY maydonlar — masalan Futbolkaда razmer, PlayStation'да model.
         // Katalog `required = true` desa, to'ldirilmasdan e'lon joylanmaydi.
-        ListingCatalog.categoryAttributes(listing.businessType, listing.categoryKey)
-            .filter { it.required && listing.attributes[it.key].isNullOrBlank() }
+        fields.filter { it.required && listing.attributes[it.key].isNullOrBlank() }
             .forEach { add(ListingError(ListingField.ATTRIBUTES, "${it.label} — tanlanmagan")) }
 
         // Oddiy e'londa chegirma yo'q — faqat chegirma e'lonida tekshiriladi.
@@ -92,7 +102,7 @@ object ListingValidator {
             }
         }
 
-        addAll(validateBranches(listing))
+        addAll(validateBranches(listing, requireBranch))
 
         if (listing.validTo <= listing.validFrom) {
             add(ListingError(ListingField.VALIDITY, "Tugash sanasi boshlanishdan keyin bo'lsin"))
@@ -141,12 +151,18 @@ object ListingValidator {
     }
 
     /**
-     * Filiallar. Har biri xaritadan tanlangani uchun koordinatasi bor — tekshiriladigan narsa
-     * uning O'zbekiston chegarasida ekani va filiallar bir-birini takrorlamasligi.
+     * Filiallar — e'lon biznesning **mavjud** filiallaridan tanlanadi (bu yerda yaratilmaydi).
+     *
+     * [requireBranch] `false` bo'lsa tanlov majburiy emas. Ikki holatda shunday bo'ladi:
+     * onlayn biznesda (`isOnlineOnly` — spec bo'yicha filial talab qilinmaydi) va biznesda
+     * hali filial yo'q bo'lganda. Ikkalasida ham bo'sh `branchIds` backend uchun to'g'ri:
+     * spec `ListingDto.branchIds` ni "bo'sh — biznesning barcha faol filiallari" deb izohlaydi.
      */
-    private fun validateBranches(listing: Listing): List<ListingError> = buildList {
+    private fun validateBranches(listing: Listing, requireBranch: Boolean): List<ListingError> = buildList {
         if (listing.branches.isEmpty()) {
-            add(ListingError(ListingField.LOCATION, "Kamida bitta filialni belgilang"))
+            if (requireBranch) {
+                add(ListingError(ListingField.LOCATION, "Kamida bitta filialni belgilang"))
+            }
             return@buildList
         }
         if (listing.branches.size > MAX_BRANCHES) {
@@ -162,14 +178,10 @@ object ListingValidator {
             }
         }
 
-        // Bitta joyni ikki marta belgilash — spec §6.6: 100 m radiusda dublikat filial bo'lmaydi.
-        listing.branches.forEachIndexed { i, a ->
-            listing.branches.drop(i + 1).forEach { b ->
-                if (Geo.distanceMeters(a.lat, a.lng, b.lat, b.lng) < MIN_BRANCH_DISTANCE_METERS) {
-                    add(ListingError(ListingField.LOCATION, "Ikkita filial bir joyda belgilangan"))
-                }
-            }
-        }
+        // Dublikat filial tekshiruvi (spec §6.6, 100 m) BU YERDA YO'Q: u filial YARATISHGA
+        // tegishli. E'lon formasi esa serverdagi tayyor filiallardan tanlaydi, ularning
+        // koordinatasini o'zgartira olmaydi — bitta savdo markazidagi ikki nuqta shu sabab
+        // e'lonni butunlay to'sib qo'yardi. Yaqinlikni backend o'zi tekshiradi.
     }
 
     private fun validateOptions(listing: Listing): List<ListingError> = buildList {

@@ -33,6 +33,7 @@
     <string name="discounts_map_branch_title">Filial joyi</string>
     <string name="discounts_map_business_title">Biznes joyi</string>
     <string name="discounts_map_hint">Xaritani suring — belgi joyni ko'rsatadi</string>
+    <string name="discounts_map_failed">Xaritani yuklab bo'lmadi. Internetni tekshirib, qayta kiring.</string>
     <string name="discounts_map_search_hint">Qidirish: Mega Planet, Amir Temur ko'chasi...</string>
     <string name="discounts_searching">Qidirilmoqda...</string>
     <string name="discounts_search_empty">Hech narsa topilmadi. Boshqacha yozib ko'ring.</string>
@@ -132,6 +133,20 @@
     <!-- ============ Yaqin atrofdagi chegirmalar ============ -->
     <string name="discounts_nearby_title">Yaqin atrofdagi chegirmalar</string>
     <string name="discounts_location_off">joylashuv o'chiq</string>
+
+    <!-- ============ Forma yozuvlari — UMUMIY (maxsus matni yo'q turlar uchun) ============ -->
+    <string name="discounts_copy_generic_title">Talaba chegirmasi</string>
+    <string name="discounts_copy_generic_subtitle">Xizmat yoki mahsulotga chegirma</string>
+    <string name="discounts_copy_generic_title_regular">Yangi e'lon</string>
+    <string name="discounts_copy_generic_subtitle_regular">Xizmat yoki mahsulot e'loni</string>
+    <string name="discounts_copy_generic_business">Biznes va bo'lim</string>
+    <string name="discounts_copy_generic_business_hint">Biznes nomi</string>
+    <string name="discounts_copy_generic_category_hint">Bo'limni tanlang</string>
+    <string name="discounts_copy_generic_images">Rasmlar</string>
+    <string name="discounts_copy_generic_images_hint">Birinchisi muqova bo'ladi</string>
+    <string name="discounts_copy_generic_about">Batafsil</string>
+    <string name="discounts_copy_generic_title_hint">E'lon nomi</string>
+    <string name="discounts_copy_generic_description_hint">Qo'shimcha ma'lumot, shartlar...</string>
 
     <!-- ============ Forma yozuvlari — Kafe / Restoran ============ -->
     <string name="discounts_copy_cafe_title">Kafe chegirmasi</string>
@@ -246,11 +261,8 @@
     <string name="discounts_name_latin_only">Biznes nomi faqat lotin alifbosida yoziladi</string>
 
     <!-- Biznes turlari -->
-    <string name="discounts_type_game_club">Game Club</string>
     <string name="discounts_type_clothing">Kiyim-kechak</string>
-    <string name="discounts_type_cafe_restaurant">Kafe va Restoran</string>
     <string name="discounts_type_education_center">O'quv markaz</string>
-    <string name="discounts_type_entertainment">Kino va ko'ngilochar</string>
     <string name="discounts_type_barbershop">Sartaroshxona</string>
     <string name="discounts_type_beauty_salon">Go'zallik saloni</string>
 

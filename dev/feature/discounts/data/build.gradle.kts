@@ -12,5 +12,14 @@ kotlin {
             // SessionProvider (joriy uid) — local biznes egaligini belgilaydi.
             implementation(projects.dev.core.domain)
         }
+        commonTest.dependencies {
+            implementation(libs.kotlinx.coroutines.test)
+        }
+        // Repository testlari real SQLite'da ishlaydi (host JVM) — offline-first oqim
+        // "saqladim → ro'yxatda ko'rindi" faqat haqiqiy bazada isbotlanadi.
+        androidUnitTest.dependencies {
+            implementation(libs.sqldelight.sqlite.driver)
+            implementation(libs.kotlinx.coroutines.test)
+        }
     }
 }

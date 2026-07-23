@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -69,7 +70,15 @@ private fun AppScaffold(content: @Composable () -> Unit) {
     // Foydalanuvchi tanlagan til. Tanlov platformaning joriy tiliga yoziladi, chunki
     // `stringResource` aynan shundan o'qiydi (qarang `applyAppLanguage` izohi).
     val language by settings.observeLanguage().collectAsState(initial = AppLanguage.Default)
-    LaunchedEffect(language) { applyAppLanguage(language.tag) }
+
+    // MUHIM — tartib: tilni `content()` YARATILISHIDAN OLDIN qo'llash shart.
+    // `LaunchedEffect` kompozitsiyadan KEYIN ishga tushadi, `key(language)` esa subtree'ni
+    // kompozitsiya vaqtida darhol qayta yaratadi. Shu sabab `LaunchedEffect` bilan platforma
+    // tili doim bir qadam orqada qolib, `stringResource` oldingi tilni o'qirdi — ru/en
+    // tanlovlari almashib ko'rinardi. `remember(language)` esa kompozitsiya oqimida, aynan
+    // shu nuqtada (quyidagi `content()` dan oldin) sinxron bajariladi va idempotent — til
+    // subtree yaratilishidan oldin yoziladi. Qaytgan qiymat faqat remember kalitini ushlaydi.
+    remember(language) { applyAppLanguage(language.tag); language }
 
     AppTheme(darkTheme = isDark) {
         // Butun ilova pastki tizim navigatsiya paneli (3 tugma) / iOS home indikatori

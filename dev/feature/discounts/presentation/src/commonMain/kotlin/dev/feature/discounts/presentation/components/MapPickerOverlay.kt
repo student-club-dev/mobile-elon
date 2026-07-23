@@ -43,6 +43,8 @@ import org.jetbrains.compose.resources.stringResource
  *
  * @param searching so'rov ketyapti
  * @param searched kamida bir marta qidirildi — bo'sh ro'yxatni "topilmadi" deb ko'rsatish uchun
+ * @param error geokoderga yetib borilmadi. Bu "topilmadi" DAN farq qiladi: birinchisida
+ *   foydalanuvchi so'rovni o'zgartiradi, ikkinchisida esa aloqani tekshiradi.
  */
 @Composable
 fun BoxScope.MapSearchResults(
@@ -51,9 +53,11 @@ fun BoxScope.MapSearchResults(
     searched: Boolean,
     onSelect: (PlaceSuggestion) -> Unit,
     palette: AppPalette,
+    error: String? = null,
 ) {
-    val showEmpty = searched && !searching && results.isEmpty()
-    if (!searching && !showEmpty && results.isEmpty()) return
+    val showError = error != null && !searching
+    val showEmpty = searched && !searching && !showError && results.isEmpty()
+    if (!searching && !showEmpty && !showError && results.isEmpty()) return
 
     Column(
         Modifier.align(Alignment.TopCenter)
@@ -68,6 +72,12 @@ fun BoxScope.MapSearchResults(
             searching -> Text(
                 stringResource(Res.string.discounts_searching),
                 style = AppType.fieldLabel.copy(color = palette.inkMuted),
+                modifier = Modifier.padding(AppSpacing.md),
+            )
+
+            showError -> Text(
+                error.orEmpty(),
+                style = AppType.fieldLabel.copy(color = palette.danger),
                 modifier = Modifier.padding(AppSpacing.md),
             )
 

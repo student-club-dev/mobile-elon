@@ -46,14 +46,22 @@ class ApiBusinessRepository(
      * REST'да obuna yo'q — ro'yxat bir marta o'qiladi va emit qilinadi. Ekran yangilanishi
      * kerak bo'lsa flow qayta yig'iladi (real-time manba'dan farqi shu).
      *
+     * **Filiallar bu yerda so'ralmaydi.** Ilgari har bir biznes uchun alohida
+     * `GET /business/{id}/branches` ketardi (N ta biznes → 1 + N so'rov), holbuki ro'yxatda
+     * filial kerak emas. Ular biznes ochilganda — [byId] da — bir marta olinadi.
+     *
      * Xato **yutilmaydi**: flow uni tashqariga chiqaradi, UseCase esa zaxiraga o'tadi.
      * Bo'sh ro'yxat — haqiqiy javob (foydalanuvchida hali biznes yo'q), xato emas.
      */
     override fun observeMine(): Flow<List<Business>> = flow {
         val businesses: List<BusinessDto> = businessApi.getMy().body()
-        emit(businesses.map { it.toDomain(branchesOf(it.id)) }.sortedByDescending { it.createdAt })
+        emit(businesses.map { it.toDomain() }.sortedByDescending { it.createdAt })
     }
 
+    /**
+     * Bitta biznes — **shu yerda** filiallari bilan birga olinadi: e'lon formasi ularni
+     * `branchIds` uchun talab qiladi, biznes tahrirlash esa xaritada ko'rsatadi.
+     */
     override suspend fun byId(id: String): Business? = try {
         val dto: BusinessDto = businessApi.getById(id).body()
         dto.toDomain(branchesOf(id))
@@ -71,7 +79,7 @@ class ApiBusinessRepository(
             val saved: BusinessDto = if (business.id.isBlank()) {
                 businessApi.businessCreate(
                     CreateBusinessDto(
-                        type = type.name,
+                        type = type.key,
                         name = business.name,
                         phone = business.phone,
                     ),
@@ -101,11 +109,19 @@ class ApiBusinessRepository(
         }
     }
 
-    private suspend fun branchesOf(businessId: String): List<BranchDto> = try {
+    /**
+     * Filiallar ro'yxati. **Xato yutilmaydi** — chaqiruvchi uni ko'radi.
+     *
+     * Ilgari bu yerda `catch { emptyList() }` turardi va oqibati og'ir edi: so'rov bir marta
+     * uzilsa, e'lon formasi biznesni "filialsiz" deb ochar, validator esa "Kamida bitta
+     * filialni belgilang" deb e'lonni to'sib qo'yardi — foydalanuvchi uchun chiqish yo'li
+     * yo'q edi (filial bu ekranda yaratilmaydi). Endi [byId] `null` qaytaradi va forma
+     * "yuklab bo'lmadi" + "Qayta urinish" ko'rsatadi.
+     *
+     * Bo'sh ro'yxat esa **haqiqiy javob**: onlayn biznesda (`isOnlineOnly`) filial bo'lmaydi.
+     */
+    private suspend fun branchesOf(businessId: String): List<BranchDto> =
         branchesApi.branchesList(businessId).body()
-    } catch (e: Exception) {
-        emptyList()
-    }
 
     /**
      * Filiallarni backend holatiga keltiradi: yangisi yaratiladi, mavjudi yangilanadi,
@@ -124,7 +140,7 @@ class ApiBusinessRepository(
         }
 
         (existing.keys - saved.map { it.id }.toSet()).forEach { removed ->
-            runCatching { branchesApi.branchesDelete(businessId, removed) }
+            runCatching { branchesApi.delete(businessId, removed) }
         }
         return saved
     }
@@ -134,13 +150,23 @@ class ApiBusinessRepository(
 // Mapper'lar — DTO ↔ domen
 // ---------------------------------------------------------------------------
 
-private fun BusinessDto.toDomain(branches: List<BranchDto>) = Business(
+/**
+ * [branches] — faqat biznes **ochilganda** beriladi. Ro'yxatda u bo'sh qoladi va bu normal:
+ * `Business.branches` "hali so'ralmagan" degani, "filial yo'q" degani emas.
+ */
+private fun BusinessDto.toDomain(branches: List<BranchDto> = emptyList()) = Business(
     id = id,
     ownerId = ownerUserId,
     name = name,
     phone = phone,
-    businessType = BusinessType.entries.firstOrNull { it.name == type },
+    // Kalit ochiq — serverdagi istalgan tur o'zgarishsiz o'tadi (ilova ro'yxati bilan
+    // cheklanmaydi). Bo'sh qiymat esa "tur ko'rsatilmagan" degani.
+    businessType = type.takeIf { it.isNotBlank() }?.let(::BusinessType),
     branches = branches.map { it.toDomain() },
+    isOnlineOnly = isOnlineOnly,
+    // Serverdagi e'lonlar soni — `/business/my` javobining o'zida keladi, qo'shimcha
+    // so'rovsiz. Kartada shu ko'rsatiladi (filial manzili o'rniga, u endi so'ralmaydi).
+    listingsCount = listingsCount,
     createdAt = createdAt.toEpochMilliseconds(),
     updatedAt = createdAt.toEpochMilliseconds(),
 )

@@ -233,7 +233,7 @@ class PostListingViewModel(
                     loadError = null,
                     businessType = biz.businessType,
                     step = PostListingStep.FORM,
-                    priceUnit = biz.businessType?.defaultPriceUnit ?: it.priceUnit,
+                    priceUnit = biz.businessType?.let(ListingCatalog::defaultPriceUnit) ?: it.priceUnit,
                     businessName = biz.name,
                     branches = biz.branches,
                     // Odatiy holat — e'lon biznesning hamma filialida amal qiladi; kerak
@@ -463,7 +463,15 @@ class PostListingViewModel(
         val listing = buildListing() ?: return
         viewModelScope.launch {
             _state.update { it.copy(submitting = true, errors = emptyList()) }
-            when (val res = publishListing(listing)) {
+            // Filial tanlash faqat biznes filial taklif qilganda majburiy — onlayn
+            // biznesda (`isOnlineOnly`) ular umuman bo'lmaydi.
+            when (
+                val res = publishListing(
+                    listing,
+                    _state.value.categoryAttributes(),
+                    requireBranch = _state.value.branches.isNotEmpty(),
+                )
+            ) {
                 is PublishListingUseCase.Result.Success ->
                     _state.update { it.copy(submitting = false, published = true) }
 

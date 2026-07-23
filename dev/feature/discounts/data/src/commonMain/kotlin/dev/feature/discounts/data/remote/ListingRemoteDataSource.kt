@@ -6,13 +6,14 @@ import dev.feature.discounts.domain.model.Listing
 /**
  * E'lonning masofaviy manbasi. Ikkita implementatsiya bor:
  *
- * - [LocalListingRemoteDataSource] — backendsiz rejim (hozirgi holat): rasm `data:` URI'ga
- *   aylanadi, e'lon darrov faol bo'ladi (moderator yo'q).
  * - [ApiListingRemoteDataSource] — real backend: `POST /v1/business/{id}/listings` +
  *   `/submit`, rasm `POST /v1/media/upload` orqali.
+ * - [LocalListingRemoteDataSource] — backendsiz (offline) zaxira: rasm `data:` URI'ga
+ *   aylanadi, e'lon darrov faol bo'ladi (moderator yo'q).
  *
- * Tanlov `CoreModules.REMOTE_SYNC_ENABLED` ga qarab DI'da qilinadi — repository qaysi
- * manba ishlayotganini bilmaydi.
+ * DI'da har doim [FallbackListingRemoteDataSource] o'rnatiladi: u avval backendga boradi va
+ * faqat unga **yetib bo'lmaganda** local zaxiraga tushadi. Repository qaysi manba ishlaganini
+ * bilmaydi.
  */
 interface ListingRemoteDataSource {
 

@@ -28,6 +28,7 @@ import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.common_delete
 import dev.core.uikit.resources.common_edit
 import dev.core.uikit.resources.discounts_branch_location
+import dev.core.uikit.resources.discounts_listings_count
 import dev.core.uikit.resources.discounts_business
 import dev.core.uikit.resources.discounts_location_hint
 import dev.core.uikit.theme.AppPalette
@@ -53,18 +54,20 @@ private val CardActionIconSize = 18.dp
 /**
  * Kategoriya aksenti — palitradagi kategoriya tokenlaridan.
  *
- * `BusinessType.accent` (domain) eski binafsha-pushti to'plamdan qolgan `Long` qiymat va
- * u yangi dizayn tiliga to'g'ri kelmaydi. Ekranlarda faqat palitra ishlatiladi, shuning
- * uchun tur → token moslamasi shu yerda turadi.
+ * Serverdan `accentColor` (HEX) ham keladi, lekin u eski to'plamdan qolgan va yangi dizayn
+ * tiliga to'g'ri kelmaydi. Ekranlarda faqat palitra ishlatiladi, shuning uchun tur → token
+ * moslamasi shu yerda turadi. Turlar ro'yxati serverda o'sib boradi — moslamada yo'q tur
+ * neytral `accentGame` tokenini oladi (ro'yxat to'liq bo'lishi shart emas).
  */
-private fun BusinessType.accentColor(palette: AppPalette): Color = when (this) {
-    BusinessType.GAME_CLUB -> palette.accentGame
-    BusinessType.CLOTHING -> palette.accentClothing
-    BusinessType.CAFE_RESTAURANT -> palette.accentFood
-    BusinessType.EDUCATION_CENTER -> palette.accentStudy
-    BusinessType.ENTERTAINMENT -> palette.accentCinema
-    BusinessType.BARBERSHOP -> palette.accentBarber
-    BusinessType.BEAUTY_SALON -> palette.accentBeauty
+private fun BusinessType.accentColor(palette: AppPalette): Color = when (key) {
+    "PLAYSTATION", "CYBER_CLUB", "BILLIARDS", "BOWLING" -> palette.accentGame
+    "CLOTHING" -> palette.accentClothing
+    "NATIONAL_FOOD", "FAST_FOOD", "SOMSA" -> palette.accentFood
+    "EDUCATION_CENTER", "TUTOR", "LIBRARY" -> palette.accentStudy
+    "CINEMA", "KARAOKE" -> palette.accentCinema
+    "BARBERSHOP" -> palette.accentBarber
+    "BEAUTY_SALON" -> palette.accentBeauty
+    else -> palette.accentGame
 }
 
 /** "Bizneslarim" ro'yxatidagi karta — nom, tur, manzil va ikkita harakat tugmasi. */
@@ -103,14 +106,17 @@ fun BusinessCard(
                 biz.businessType?.localizedLabel() ?: stringResource(Res.string.discounts_business),
                 style = AppType.secondary.copy(fontWeight = AppType.label.fontWeight, color = accent),
             )
-            biz.primaryBranch?.address?.takeIf { it.isNotBlank() }?.let {
-                Text(
-                    stringResource(Res.string.discounts_branch_location, it),
-                    style = AppType.caption.copy(color = palette.inkFaint),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
+            // Manzil faqat filiallar yuklangan bo'lsa (biznes ochilganda). Ro'yxatда ular
+            // ataylab so'ralmaydi — har bir biznes uchun alohida so'rov ketmasin; o'rniga
+            // javobning o'zidan kelgan e'lonlar soni ko'rsatiladi.
+            Text(
+                biz.primaryBranch?.address?.takeIf { it.isNotBlank() }
+                    ?.let { stringResource(Res.string.discounts_branch_location, it) }
+                    ?: stringResource(Res.string.discounts_listings_count, "${biz.listingsCount}"),
+                style = AppType.caption.copy(color = palette.inkFaint),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
         Row(horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
             IconTile(
@@ -165,7 +171,7 @@ fun BusinessTypeChip(
         )
         Text(
             // `nameUz` backenddan keladi va faqat o'zbekcha — tarjima uchun enum'dan olamiz.
-            type.type.localizedLabel(),
+            type.localizedLabel(),
             style = AppType.link.copy(
                 fontWeight = AppType.label.fontWeight,
                 // Brend fon USTIDA — kontent rangi `onPrimary` dan olinadi.

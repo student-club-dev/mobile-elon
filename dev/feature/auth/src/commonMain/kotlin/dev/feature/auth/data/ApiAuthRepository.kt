@@ -70,7 +70,7 @@ class ApiAuthRepository(
 
     override suspend fun login(identifier: AuthIdentifier, password: String): Resource<User> =
         authenticate(identifier) {
-            api.businessAuthLogin(
+            api.login(
                 LoginDto(
                     password = password,
                     email = (identifier as? AuthIdentifier.Email)?.value,
@@ -83,7 +83,7 @@ class ApiAuthRepository(
 
     override suspend fun register(identifier: AuthIdentifier, password: String): Resource<User> =
         authenticate(identifier) {
-            api.businessAuthRegister(
+            api.register(
                 RegisterDto(
                     password = password,
                     email = (identifier as? AuthIdentifier.Email)?.value,
@@ -160,7 +160,7 @@ class ApiAuthRepository(
         // Refresh tokenni serverда bekor qilamiz. Tarmoq bo'lmasa ham local sessiya tozalanadi:
         // foydalanuvchi "chiqdim" degan bo'lsa, ilova uni ushlab turmasligi kerak.
         tokenStore.tokens()?.refreshToken?.let { refresh ->
-            runCatching { api.businessAuthLogout(LogoutDto(refreshToken = refresh)) }
+            runCatching { api.logout(LogoutDto(refreshToken = refresh)) }
         }
         clearLocalSession()
     }
@@ -188,7 +188,7 @@ class ApiAuthRepository(
 
     override suspend fun requestPhoneOtp(phone: String): Resource<OtpChallenge> =
         safeCall(connectivity) {
-            val result = api.businessOtpRequest(OtpRequestDto(phoneNumber = phone)).body()
+            val result = api.request(OtpRequestDto(phoneNumber = phone)).body()
             OtpChallenge(
                 expiresInSeconds = result.expiresInSeconds,
                 resendCooldownSeconds = result.resendCooldownSeconds,
@@ -198,7 +198,7 @@ class ApiAuthRepository(
     override suspend fun verifyPhoneOtp(phone: String, code: String): Resource<Unit> =
         when (
             val result = safeCall(connectivity) {
-                api.businessOtpVerify(OtpVerifyDto(phoneNumber = phone, code = code)).body()
+                api.verify(OtpVerifyDto(phoneNumber = phone, code = code)).body()
             }
         ) {
             is Resource.Error -> result
@@ -213,7 +213,7 @@ class ApiAuthRepository(
     // ------------------------------------------------------------------
 
     override suspend fun forgotPassword(phone: String): Resource<Unit> = safeCall(connectivity) {
-        api.businessPasswordForgot(ForgotPasswordDto(phoneNumber = phone))
+        api.forgot(ForgotPasswordDto(phoneNumber = phone))
         Unit
     }
 
@@ -223,7 +223,7 @@ class ApiAuthRepository(
         newPassword: String,
     ): Resource<Unit> = when (
         val result = safeCall(connectivity) {
-            api.businessPasswordReset(
+            api.reset(
                 ResetPasswordDto(phoneNumber = phone, code = code, newPassword = newPassword),
             ).body()
         }
@@ -237,7 +237,7 @@ class ApiAuthRepository(
 
     override suspend fun setPassword(currentPassword: String?, newPassword: String): Resource<Unit> =
         safeCall(connectivity) {
-            api.businessPasswordSet(
+            api.set(
                 SetPasswordDto(newPassword = newPassword, currentPassword = currentPassword),
             )
             Unit
@@ -252,13 +252,13 @@ class ApiAuthRepository(
     }
 
     override suspend fun revokeSession(id: String): Resource<Unit> = safeCall(connectivity) {
-        api.businessSessionsRevoke(id)
+        api.revoke(id)
         Unit
     }
 
     override suspend fun logoutAllDevices(): Resource<Unit> {
         val result = safeCall(connectivity) {
-            api.businessSessionsLogoutAll()
+            api.logoutAll()
             Unit
         }
         // Joriy qurilma ham chiqarildi — local sessiyani ushlab turishning ma'nosi yo'q.

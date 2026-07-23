@@ -1,5 +1,6 @@
 package dev.feature.discounts.presentation
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,7 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.CompactPrimaryButton
+import dev.core.uikit.component.BannerTone
 import dev.core.uikit.component.EmptyState
+import dev.core.uikit.component.StatusBanner
 import dev.core.uikit.component.GradientIconButton
 import dev.core.uikit.component.IconActionButton
 import dev.core.uikit.resources.Res
@@ -144,6 +147,19 @@ fun MyBusinessesScreen(
                         palette = palette,
                     )
                 }
+            }
+
+            // O'chirib bo'lmadi (masalan biznesda faol e'lon bor yoki tarmoq uzildi) —
+            // ro'yxat serverdagi holatga qaytadi, sabab esa shu yerda ko'rinadi.
+            state.message?.let { message ->
+                StatusBanner(
+                    text = message,
+                    tone = BannerTone.DANGER,
+                    modifier = Modifier
+                        .padding(horizontal = AppSpacing.screenHorizontal, vertical = 6.dp)
+                        .clickable(onClick = vm::consumeMessage),
+                    palette = palette,
+                )
             }
 
             when {

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- QS Business brend rangi — logo foni. `dev.core.uikit.theme` dagi 0xFF3FC8F7 bilan bir xil. -->
+    <color name="ic_launcher_background">#3FC8F7</color>
+</resources>

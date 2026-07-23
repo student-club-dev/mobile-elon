@@ -122,7 +122,7 @@ private fun NearbyDiscountCard(
     palette: AppPalette,
 ) {
     // Aksent biznes TURIDAN keladi — ma'lumot, palitra tokeni emas.
-    val accent = Color(card.businessType.accent)
+    val accent = Color(card.businessType.catalogAccent)
     val cardShape = AppRadius.md
     val coverShape = AppRadius.sm
 

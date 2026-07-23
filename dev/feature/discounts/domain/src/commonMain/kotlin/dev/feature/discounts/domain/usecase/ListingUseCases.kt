@@ -1,6 +1,7 @@
 package dev.feature.discounts.domain.usecase
 
 import dev.core.common.Resource
+import dev.feature.discounts.domain.model.AttributeSpec
 import dev.feature.discounts.domain.model.Listing
 import dev.feature.discounts.domain.model.ListingBranch
 import dev.feature.discounts.domain.model.ListingError
@@ -34,8 +35,22 @@ class PublishListingUseCase(private val repository: ListingRepository) {
         data class Failed(val message: String) : Result
     }
 
-    suspend operator fun invoke(listing: Listing): Result {
-        val errors = ListingValidator.validate(listing)
+    /**
+     * [fields] — formadagi maydonlar (serverdan kelgan kategoriya javobidan). Berilmasa
+     * validator zaxira katalogga tushadi.
+     *
+     * [requireBranch] — biznes filial taklif qiladimi. Onlayn biznesda (`isOnlineOnly`) yoki
+     * filialsiz biznesda `false`: bo'sh `branchIds` backend uchun to'g'ri (= barcha faol
+     * filiallar), shuning uchun e'lonni to'sib qo'yish noo'rin bo'lardi.
+     */
+    suspend operator fun invoke(
+        listing: Listing,
+        fields: List<AttributeSpec>? = null,
+        requireBranch: Boolean = true,
+    ): Result {
+        val errors = fields
+            ?.let { ListingValidator.validate(listing, it, requireBranch) }
+            ?: ListingValidator.validate(listing, requireBranch = requireBranch)
         if (errors.isNotEmpty()) return Result.Invalid(errors)
 
         return when (val res = repository.submit(listing)) {
@@ -94,14 +109,19 @@ class SearchPlacesUseCase(private val geoRepository: GeoRepository) {
      * [nearLat]/[nearLng] — xaritaning joriy markazi. Berilsa natijalar shu atrofga
      * yaqinlashtiriladi (qarang: [GeoRepository.search]).
      */
+    /**
+     * Xato **yutilmaydi**. Ilgari u bo'sh ro'yxatga aylanardi va ekran "Hech narsa topilmadi"
+     * deb ko'rsatardi — geokoderga umuman yetib borilmagan holatda ham. Foydalanuvchi esa
+     * qidiruv so'zini o'zgartirib ovora bo'lardi.
+     */
     suspend operator fun invoke(
         query: String,
         nearLat: Double? = null,
         nearLng: Double? = null,
-    ): List<PlaceSuggestion> {
+    ): Resource<List<PlaceSuggestion>> {
         val trimmed = query.trim()
-        if (trimmed.length < MIN_QUERY_LENGTH) return emptyList()
-        return (geoRepository.search(trimmed, nearLat, nearLng) as? Resource.Success)?.data.orEmpty()
+        if (trimmed.length < MIN_QUERY_LENGTH) return Resource.Success(emptyList())
+        return geoRepository.search(trimmed, nearLat, nearLng)
     }
 
     companion object {

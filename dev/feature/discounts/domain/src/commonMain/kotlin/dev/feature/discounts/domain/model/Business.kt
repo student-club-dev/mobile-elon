@@ -13,8 +13,22 @@ data class Business(
     val name: String,
     val phone: String,
     val businessType: BusinessType? = null,
-    /** Joylashuv(lar) — xaritadan tanlangan. E'lonlar shu filiallarni oladi. */
+    /**
+     * Joylashuv(lar) — xaritadan tanlangan. E'lonlar shu filiallarni oladi.
+     *
+     * Bo'sh ro'yxat **ikki ma'noli**: biznes ro'yxatida u "hali so'ralmagan" degani
+     * (filiallar alohida so'rov bilan, biznes ochilganda olinadi), biznes ochilganda esa —
+     * haqiqatan filial yo'q degani.
+     */
     val branches: List<ListingBranch> = emptyList(),
+    /**
+     * Onlayn biznes (`BusinessDto.isOnlineOnly`) — spec bo'yicha unda **filial ham,
+     * lokatsiya ham talab qilinmaydi** (masalan onlayn kurs). E'lon formasi shunda filial
+     * tanlashni majburiy qilmaydi.
+     */
+    val isOnlineOnly: Boolean = false,
+    /** Serverdagi e'lonlar soni (`BusinessDto.listingsCount`) — ro'yxatda ko'rsatiladi. */
+    val listingsCount: Int = 0,
     val createdAt: Long = 0,
     val updatedAt: Long = 0,
 ) {

@@ -93,10 +93,11 @@ fun discountsModule() = module {
     factory { GetTradeCenterDetailUseCase(get()) }
 
     // E'lonlar backendда (`POST /v1/business/{id}/listings` + `/submit`, rasm `/v1/media/upload`).
-    // Backend javob bermasa — local zaxira: e'lon darrov faol, rasm `data:` URI.
+    // Backendga YETIB BO'LMASA — local zaxira: e'lon darrov faol, rasm `data:` URI. Server rad
+    // etsa xato yutilmaydi (qarang FallbackListingRemoteDataSource).
     single<ListingRemoteDataSource> {
         FallbackListingRemoteDataSource(
-            api = ApiListingRemoteDataSource(get(), get()),
+            api = ApiListingRemoteDataSource(get(), get(), get()),
             local = LocalListingRemoteDataSource(),
         )
     }

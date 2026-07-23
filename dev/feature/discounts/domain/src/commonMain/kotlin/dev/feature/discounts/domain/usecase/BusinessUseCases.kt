@@ -1,6 +1,8 @@
 package dev.feature.discounts.domain.usecase
 
 import dev.core.common.Resource
+import dev.core.common.error.toAppException
+import dev.core.common.errorOf
 import dev.feature.discounts.domain.model.Business
 import dev.feature.discounts.domain.model.FakeBusinesses
 import dev.feature.discounts.domain.repository.BusinessRepository
@@ -24,10 +26,19 @@ class ObserveMyBusinessesUseCase(private val repository: BusinessRepository) {
         repository.observeMine().catch { emit(FakeBusinesses.sample()) }
 }
 
-/** Bitta biznesni id bo'yicha oladi (e'lon yuklashda meros olish uchun). */
+/**
+ * Bitta biznesni id bo'yicha oladi (e'lon yuklashda meros olish uchun).
+ *
+ * ⚠️ Bu yerda zaxira **yo'q**, boshqa UseCase'lardan farqli. Sababi — id: namuna biznesning
+ * id'si boshqa (`fake-cafe`), shuning uchun xatoда uni qaytarish e'lon formasini **mavjud
+ * bo'lmagan biznesga** bog'lab qo'yardi va `POST /business/fake-cafe/listings` 404 bilan
+ * tugardi. Foydalanuvchi esa buni "e'lon saqlanmadi" deb ko'rardi.
+ *
+ * `null` — chaqiruvchi xato ko'rsatadi va qayta urinish taklif qiladi.
+ */
 class GetBusinessUseCase(private val repository: BusinessRepository) {
     suspend operator fun invoke(id: String): Business? =
-        runCatching { repository.byId(id) }.getOrNull() ?: FakeBusinesses.byId(id)
+        runCatching { repository.byId(id) }.getOrNull()
 }
 
 /** Biznesни yaratadi/yangilaydi (nom, telefon, tur, lokatsiya). */
@@ -39,10 +50,14 @@ class SaveBusinessUseCase(private val repository: BusinessRepository) {
     }
 }
 
-/** Biznesни o'chiradi. */
+/**
+ * Biznesни o'chiradi (backend uni arxivlaydi).
+ *
+ * Xato **yutilmaydi**: ilgari har qanday holatda `Success` qaytardi va ro'yxat yangilanganda
+ * o'chirilmagan biznes qaytib chiqar, foydalanuvchi esa sababini bilmасdi.
+ */
 class DeleteBusinessUseCase(private val repository: BusinessRepository) {
-    suspend operator fun invoke(id: String): Resource<Unit> {
-        val deleted = runCatching { repository.delete(id) }.getOrNull()
-        return deleted as? Resource.Success ?: Resource.Success(Unit)
-    }
+    suspend operator fun invoke(id: String): Resource<Unit> =
+        runCatching { repository.delete(id) }
+            .getOrElse { errorOf(it.toAppException()) }
 }

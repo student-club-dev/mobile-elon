@@ -18,7 +18,10 @@ object FakeBusinesses {
             ownerId = ownerId,
             name = "Bon Appetit",
             phone = "+998901234567",
-            businessType = BusinessType.CAFE_RESTAURANT,
+            // Turlar backend katalogidan (`catalog-seed.json`) — namuna ham serverda
+            // haqiqatan mavjud kalitlarni ishlatishi kerak, aks holda undan yaratilgan
+            // e'lon serverda rad etilardi.
+            businessType = BusinessType("NATIONAL_FOOD"),
             branches = listOf(
                 ListingBranch(
                     id = "fake-cafe-branch",
@@ -35,7 +38,7 @@ object FakeBusinesses {
             ownerId = ownerId,
             name = "Cyber Arena",
             phone = "+998901112233",
-            businessType = BusinessType.GAME_CLUB,
+            businessType = BusinessType("CYBER_CLUB"),
             branches = listOf(
                 ListingBranch(
                     id = "fake-game-club-branch",

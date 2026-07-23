@@ -14,23 +14,14 @@ import dev.feature.discounts.domain.repository.CatalogRepository
  */
 class LocalCatalogRepository : CatalogRepository {
 
+    // Jins bo'yicha filtr (sartaroshxona ayollarga, go'zallik saloni erkaklarga
+    // ko'rsatilmaydi) katalogning o'zida — backenddagi `availableForGenders` bilan bir xil.
     override suspend fun businessTypes(gender: Gender?): Resource<List<BusinessTypeInfo>> =
-        Resource.Success(
-            BusinessType.entries
-                .filter { availableFor(it, gender) }
-                .map { BusinessTypeInfo.from(it) },
-        )
+        Resource.Success(ListingCatalog.typesForGender(gender).map { BusinessTypeInfo.from(it) })
 
     override suspend fun categories(type: BusinessType, gender: Gender?): Resource<List<CategoryInfo>> =
         Resource.Success(
             ListingCatalog.categoriesFor(type, gender)
                 .mapIndexed { index, category -> CategoryInfo.from(type, category, index) },
         )
-
-    // Sartaroshxona — ayolларга, go'zallik saloni — erkaklarга ko'rsatilmaydi.
-    private fun availableFor(type: BusinessType, gender: Gender?): Boolean = when (gender) {
-        Gender.MALE -> type != BusinessType.BEAUTY_SALON
-        Gender.FEMALE -> type != BusinessType.BARBERSHOP
-        null -> true
-    }
 }

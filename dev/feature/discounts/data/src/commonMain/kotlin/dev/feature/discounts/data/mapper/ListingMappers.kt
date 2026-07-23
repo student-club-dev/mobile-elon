@@ -62,9 +62,9 @@ fun ListingEntity.toDomain(): Listing = Listing(
     id = id,
     ownerId = ownerId,
     businessId = businessId,
-    // Enum nomi buzilgan bo'lsa (eski yozuv, qo'lda tahrir) — e'lonni yo'qotmaymiz,
-    // birinchi turga tushiramiz; foydalanuvchi tahrirlab to'g'rilay oladi.
-    businessType = businessType.toEnum(BusinessType.entries, BusinessType.CAFE_RESTAURANT),
+    // Tur — backend katalogidagi ochiq kalit, shuning uchun hech narsa "noma'lum"ga
+    // tushmaydi: bazadagi qiymat qanday bo'lsa shunday qaytadi.
+    businessType = BusinessType(businessType),
     businessName = businessName,
     categoryKey = categoryKey,
     customCategoryName = customCategoryName,
@@ -105,7 +105,7 @@ fun Listing.toEntity(): ListingEntity = ListingEntity(
     id = id,
     ownerId = ownerId,
     businessId = businessId,
-    businessType = businessType.name,
+    businessType = businessType.key,
     businessName = businessName,
     categoryKey = categoryKey,
     customCategoryName = customCategoryName,

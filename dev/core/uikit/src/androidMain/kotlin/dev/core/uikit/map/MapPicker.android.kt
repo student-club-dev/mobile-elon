@@ -23,10 +23,12 @@ actual fun MapPicker(
     onCenterChanged: (MapPoint) -> Unit,
     modifier: Modifier,
     centerRequest: MapCenterRequest?,
+    onStatus: (MapStatus) -> Unit,
 ) {
     // WebView faqat bir marta quriladi, callback esa har rekompozitsiyada yangilanishi mumkin —
     // ko'prik eng oxirgisini chaqirishi uchun uni shu yerda ushlab turamiz.
     val currentOnCenter by rememberUpdatedState(onCenterChanged)
+    val currentOnStatus by rememberUpdatedState(onStatus)
 
     val hint = stringResource(Res.string.map_drag_hint)
 
@@ -72,9 +74,12 @@ actual fun MapPicker(
                     object {
                         @JavascriptInterface
                         fun onEvent(kind: String, lat: Double, lng: Double) {
-                            if (kind != "center") return
                             // JS oqimidan keladi — Compose holatiga faqat asosiy oqimdan tegamiz.
-                            post { currentOnCenter(MapPoint(lat, lng)) }
+                            when (kind) {
+                                "center" -> post { currentOnCenter(MapPoint(lat, lng)) }
+                                "ready" -> post { currentOnStatus(MapStatus.READY) }
+                                "error" -> post { currentOnStatus(MapStatus.FAILED) }
+                            }
                         }
                     },
                     MAP_BRIDGE,
@@ -109,11 +114,19 @@ actual fun MapPicker(
         // animatsiya sikli tirik qolsa, xaritani bir necha marta ochib-yopgach yangi kontekst
         // ochilmay xarita qora ekranga aylanadi.
         onRelease = { webView ->
+            // AVVAL `map.remove()` — WebGL kontekstini aniq bo'shatadi. `destroy()` ning o'zi
+            // uni darrov qaytarmaydi, shuning uchun xaritani bir necha marta ochib-yopgach
+            // yangisiga kontekst yetmay qolardi: xarita qotib, surish ishlamay qo'yardi.
+            webView.evaluateJavascript(jsDestroyMap(), null)
             webView.removeJavascriptInterface(MAP_BRIDGE)
-            webView.stopLoading()
-            webView.loadUrl("about:blank")
-            (webView.parent as? ViewGroup)?.removeView(webView)
-            webView.destroy()
+            // JS bajarilishiga navbat beramiz — `about:blank` sahifani darrov yiqitsa,
+            // `map.remove()` ulgurmay qolishi mumkin.
+            webView.post {
+                webView.stopLoading()
+                webView.loadUrl("about:blank")
+                (webView.parent as? ViewGroup)?.removeView(webView)
+                webView.destroy()
+            }
         },
     )
 }

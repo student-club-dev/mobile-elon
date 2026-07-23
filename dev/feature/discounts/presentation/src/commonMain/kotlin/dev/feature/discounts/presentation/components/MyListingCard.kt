@@ -42,6 +42,7 @@ import dev.core.uikit.theme.cardShadow
 import dev.feature.discounts.domain.model.Listing
 import dev.feature.discounts.domain.model.ListingStatus
 import dev.feature.discounts.domain.model.formatSum
+import dev.feature.discounts.presentation.catalogAccent
 import dev.feature.discounts.presentation.icon
 import org.jetbrains.compose.resources.stringResource
 
@@ -60,7 +61,7 @@ fun MyListingCard(
     onTogglePaused: () -> Unit,
     onDelete: () -> Unit,
 ) {
-    val accent = Color(listing.businessType.accent)
+    val accent = Color(listing.businessType.catalogAccent)
     val isDiscount = listing.isDiscount
     val cardShape = AppRadius.card
 

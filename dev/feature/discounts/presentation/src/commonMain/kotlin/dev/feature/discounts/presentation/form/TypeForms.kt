@@ -139,13 +139,6 @@ private fun ListingFormScaffold(
                 BranchesSection(state, palette, vm)
             }
 
-            val message = state.message
-            if (message != null) {
-                Box(Modifier.padding(horizontal = AppSpacing.lg)) {
-                    MessageBar(message, palette, onDismiss = vm::consumeMessage)
-                }
-            }
-
             Spacer(Modifier.height(AppSpacing.xs))
         }
 
@@ -153,6 +146,15 @@ private fun ListingFormScaffold(
             Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg, vertical = 10.dp),
             verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
         ) {
+            // Xabar (publish xatosi, "Qoralama saqlandi", rasm xatosi) — AYNAN tugmalar
+            // ustida. Ilgari u aylanadigan ro'yxatning eng oxirida edi: foydalanuvchi forma
+            // boshida turib "E'lon qilish"ni bosса, server rad etgan xabar ekrandan tashqarida
+            // qolar va bosish umuman javobsizdek ko'rinardi.
+            val message = state.message
+            if (message != null) {
+                MessageBar(message, palette, onDismiss = vm::consumeMessage)
+            }
+
             if (state.errors.isNotEmpty()) {
                 Text(
                     stringResource(Res.string.discounts_form_errors, "${state.errors.size}"),

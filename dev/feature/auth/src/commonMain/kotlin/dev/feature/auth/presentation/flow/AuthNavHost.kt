@@ -200,9 +200,16 @@ fun AuthNavHost(
         }
 
         composable(Route.HOME) {
-            // Chiqish: Activity oqimida — ildiz router'ga qaytamiz (onExit); aks holda (iOS)
-            // kirish ekraniga qaytamiz.
-            val loggedOut: () -> Unit = onExit ?: {
+            // Chiqish (logout): navigatsiya grafida to'g'ridan-to'g'ri LOGIN (telefon + parol)
+            // ekraniga qaytamiz va HOME'ni stackdan butunlay olib tashlaymiz.
+            //
+            // MUHIM — nega `onExit` (Android Activity.recreate) GA TAYANMAYMIZ: `recreate()`
+            // ViewModel'larni config-change kabi SAQLAB qoladi, shu bois `AuthFlowViewModel.loggedIn`
+            // (sessiya keshi) qayta yaratishда hali eski `true` qiymatда bo'lib, `startDestination`
+            // HOME hisoblanardi — foydalanuvchi "chiqdim" desa ham HOME'ga tushib qolardi.
+            // Grafik ichida ochiq navigatsiya bu poygani yo'q qiladi va ikkala platformada ham
+            // bir xil deterministik ishlaydi.
+            val loggedOut: () -> Unit = {
                 nav.navigate(Route.LOGIN) {
                     popUpTo(Route.HOME) { inclusive = true }
                     launchSingleTop = true

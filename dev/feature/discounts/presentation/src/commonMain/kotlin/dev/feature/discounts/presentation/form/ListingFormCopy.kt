@@ -49,6 +49,18 @@ import dev.core.uikit.resources.discounts_copy_cloth_subtitle_regular
 import dev.core.uikit.resources.discounts_copy_cloth_title
 import dev.core.uikit.resources.discounts_copy_cloth_title_hint
 import dev.core.uikit.resources.discounts_copy_cloth_title_regular
+import dev.core.uikit.resources.discounts_copy_generic_about
+import dev.core.uikit.resources.discounts_copy_generic_business
+import dev.core.uikit.resources.discounts_copy_generic_business_hint
+import dev.core.uikit.resources.discounts_copy_generic_category_hint
+import dev.core.uikit.resources.discounts_copy_generic_description_hint
+import dev.core.uikit.resources.discounts_copy_generic_images
+import dev.core.uikit.resources.discounts_copy_generic_images_hint
+import dev.core.uikit.resources.discounts_copy_generic_subtitle
+import dev.core.uikit.resources.discounts_copy_generic_subtitle_regular
+import dev.core.uikit.resources.discounts_copy_generic_title
+import dev.core.uikit.resources.discounts_copy_generic_title_hint
+import dev.core.uikit.resources.discounts_copy_generic_title_regular
 import dev.core.uikit.resources.discounts_copy_edu_about
 import dev.core.uikit.resources.discounts_copy_edu_business
 import dev.core.uikit.resources.discounts_copy_edu_business_hint
@@ -119,112 +131,157 @@ data class ListingFormCopy(
     val descriptionHint: StringResource,
 ) {
     companion object {
-        fun of(type: BusinessType): ListingFormCopy = when (type) {
+        /**
+         * Tur → matn to'plami. Ro'yxatda yo'q tur (server yangi qo'shgan yoki unga maxsus
+         * yozuv kerak emas) [GENERIC] ni oladi — forma baribir to'liq va to'g'ri ochiladi.
+         *
+         * Bu **matn** moslamasi, katalog emas: shuning uchun bu yerda kalitlar sanalgani
+         * normal. Katalogning o'zi (turlar, kategoriyalar, maydonlar) serverdan keladi.
+         */
+        fun of(type: BusinessType): ListingFormCopy = byKey[type.key] ?: GENERIC
 
-            BusinessType.CAFE_RESTAURANT -> ListingFormCopy(
-                screenTitle = Res.string.discounts_copy_cafe_title,
-                screenSubtitle = Res.string.discounts_copy_cafe_subtitle,
-                screenTitleRegular = Res.string.discounts_copy_cafe_title_regular,
-                screenSubtitleRegular = Res.string.discounts_copy_cafe_subtitle_regular,
-                businessSection = Res.string.discounts_copy_cafe_business,
-                businessHint = Res.string.discounts_copy_cafe_business_hint,
-                categoryHint = Res.string.discounts_copy_cafe_category_hint,
-                imagesSection = Res.string.discounts_copy_cafe_images,
-                imagesHint = Res.string.discounts_copy_cafe_images_hint,
-                aboutSection = Res.string.discounts_copy_cafe_about,
-                titleHint = Res.string.discounts_copy_cafe_title_hint,
-                descriptionHint = Res.string.discounts_copy_cafe_description_hint,
-            )
+        private val CAFE = ListingFormCopy(
+            screenTitle = Res.string.discounts_copy_cafe_title,
+            screenSubtitle = Res.string.discounts_copy_cafe_subtitle,
+            screenTitleRegular = Res.string.discounts_copy_cafe_title_regular,
+            screenSubtitleRegular = Res.string.discounts_copy_cafe_subtitle_regular,
+            businessSection = Res.string.discounts_copy_cafe_business,
+            businessHint = Res.string.discounts_copy_cafe_business_hint,
+            categoryHint = Res.string.discounts_copy_cafe_category_hint,
+            imagesSection = Res.string.discounts_copy_cafe_images,
+            imagesHint = Res.string.discounts_copy_cafe_images_hint,
+            aboutSection = Res.string.discounts_copy_cafe_about,
+            titleHint = Res.string.discounts_copy_cafe_title_hint,
+            descriptionHint = Res.string.discounts_copy_cafe_description_hint,
+        )
 
-            BusinessType.GAME_CLUB -> ListingFormCopy(
-                screenTitle = Res.string.discounts_copy_game_title,
-                screenSubtitle = Res.string.discounts_copy_game_subtitle,
-                screenTitleRegular = Res.string.discounts_copy_game_title_regular,
-                screenSubtitleRegular = Res.string.discounts_copy_game_subtitle_regular,
-                businessSection = Res.string.discounts_copy_game_business,
-                businessHint = Res.string.discounts_copy_game_business_hint,
-                categoryHint = Res.string.discounts_copy_game_category_hint,
-                imagesSection = Res.string.discounts_copy_game_images,
-                imagesHint = Res.string.discounts_copy_game_images_hint,
-                aboutSection = Res.string.discounts_copy_game_about,
-                titleHint = Res.string.discounts_copy_game_title_hint,
-                descriptionHint = Res.string.discounts_copy_game_description_hint,
-            )
+        private val GAME = ListingFormCopy(
+            screenTitle = Res.string.discounts_copy_game_title,
+            screenSubtitle = Res.string.discounts_copy_game_subtitle,
+            screenTitleRegular = Res.string.discounts_copy_game_title_regular,
+            screenSubtitleRegular = Res.string.discounts_copy_game_subtitle_regular,
+            businessSection = Res.string.discounts_copy_game_business,
+            businessHint = Res.string.discounts_copy_game_business_hint,
+            categoryHint = Res.string.discounts_copy_game_category_hint,
+            imagesSection = Res.string.discounts_copy_game_images,
+            imagesHint = Res.string.discounts_copy_game_images_hint,
+            aboutSection = Res.string.discounts_copy_game_about,
+            titleHint = Res.string.discounts_copy_game_title_hint,
+            descriptionHint = Res.string.discounts_copy_game_description_hint,
+        )
 
-            BusinessType.CLOTHING -> ListingFormCopy(
-                screenTitle = Res.string.discounts_copy_cloth_title,
-                screenSubtitle = Res.string.discounts_copy_cloth_subtitle,
-                screenTitleRegular = Res.string.discounts_copy_cloth_title_regular,
-                screenSubtitleRegular = Res.string.discounts_copy_cloth_subtitle_regular,
-                businessSection = Res.string.discounts_copy_cloth_business,
-                businessHint = Res.string.discounts_copy_cloth_business_hint,
-                categoryHint = Res.string.discounts_copy_cloth_category_hint,
-                imagesSection = Res.string.discounts_copy_cloth_images,
-                imagesHint = Res.string.discounts_copy_cloth_images_hint,
-                aboutSection = Res.string.discounts_copy_cloth_about,
-                titleHint = Res.string.discounts_copy_cloth_title_hint,
-                descriptionHint = Res.string.discounts_copy_cloth_description_hint,
-            )
+        private val CLOTH = ListingFormCopy(
+            screenTitle = Res.string.discounts_copy_cloth_title,
+            screenSubtitle = Res.string.discounts_copy_cloth_subtitle,
+            screenTitleRegular = Res.string.discounts_copy_cloth_title_regular,
+            screenSubtitleRegular = Res.string.discounts_copy_cloth_subtitle_regular,
+            businessSection = Res.string.discounts_copy_cloth_business,
+            businessHint = Res.string.discounts_copy_cloth_business_hint,
+            categoryHint = Res.string.discounts_copy_cloth_category_hint,
+            imagesSection = Res.string.discounts_copy_cloth_images,
+            imagesHint = Res.string.discounts_copy_cloth_images_hint,
+            aboutSection = Res.string.discounts_copy_cloth_about,
+            titleHint = Res.string.discounts_copy_cloth_title_hint,
+            descriptionHint = Res.string.discounts_copy_cloth_description_hint,
+        )
 
-            BusinessType.EDUCATION_CENTER -> ListingFormCopy(
-                screenTitle = Res.string.discounts_copy_edu_title,
-                screenSubtitle = Res.string.discounts_copy_edu_subtitle,
-                screenTitleRegular = Res.string.discounts_copy_edu_title_regular,
-                screenSubtitleRegular = Res.string.discounts_copy_edu_subtitle_regular,
-                businessSection = Res.string.discounts_copy_edu_business,
-                businessHint = Res.string.discounts_copy_edu_business_hint,
-                categoryHint = Res.string.discounts_copy_edu_category_hint,
-                imagesSection = Res.string.discounts_copy_edu_images,
-                imagesHint = Res.string.discounts_copy_edu_images_hint,
-                aboutSection = Res.string.discounts_copy_edu_about,
-                titleHint = Res.string.discounts_copy_edu_title_hint,
-                descriptionHint = Res.string.discounts_copy_edu_description_hint,
-            )
+        private val EDU = ListingFormCopy(
+            screenTitle = Res.string.discounts_copy_edu_title,
+            screenSubtitle = Res.string.discounts_copy_edu_subtitle,
+            screenTitleRegular = Res.string.discounts_copy_edu_title_regular,
+            screenSubtitleRegular = Res.string.discounts_copy_edu_subtitle_regular,
+            businessSection = Res.string.discounts_copy_edu_business,
+            businessHint = Res.string.discounts_copy_edu_business_hint,
+            categoryHint = Res.string.discounts_copy_edu_category_hint,
+            imagesSection = Res.string.discounts_copy_edu_images,
+            imagesHint = Res.string.discounts_copy_edu_images_hint,
+            aboutSection = Res.string.discounts_copy_edu_about,
+            titleHint = Res.string.discounts_copy_edu_title_hint,
+            descriptionHint = Res.string.discounts_copy_edu_description_hint,
+        )
 
-            BusinessType.ENTERTAINMENT -> ListingFormCopy(
-                screenTitle = Res.string.discounts_copy_ent_title,
-                screenSubtitle = Res.string.discounts_copy_ent_subtitle,
-                screenTitleRegular = Res.string.discounts_copy_ent_title_regular,
-                screenSubtitleRegular = Res.string.discounts_copy_ent_subtitle_regular,
-                businessSection = Res.string.discounts_copy_ent_business,
-                businessHint = Res.string.discounts_copy_ent_business_hint,
-                categoryHint = Res.string.discounts_copy_ent_category_hint,
-                imagesSection = Res.string.discounts_copy_ent_images,
-                imagesHint = Res.string.discounts_copy_ent_images_hint,
-                aboutSection = Res.string.discounts_copy_ent_about,
-                titleHint = Res.string.discounts_copy_ent_title_hint,
-                descriptionHint = Res.string.discounts_copy_ent_description_hint,
-            )
+        private val ENT = ListingFormCopy(
+            screenTitle = Res.string.discounts_copy_ent_title,
+            screenSubtitle = Res.string.discounts_copy_ent_subtitle,
+            screenTitleRegular = Res.string.discounts_copy_ent_title_regular,
+            screenSubtitleRegular = Res.string.discounts_copy_ent_subtitle_regular,
+            businessSection = Res.string.discounts_copy_ent_business,
+            businessHint = Res.string.discounts_copy_ent_business_hint,
+            categoryHint = Res.string.discounts_copy_ent_category_hint,
+            imagesSection = Res.string.discounts_copy_ent_images,
+            imagesHint = Res.string.discounts_copy_ent_images_hint,
+            aboutSection = Res.string.discounts_copy_ent_about,
+            titleHint = Res.string.discounts_copy_ent_title_hint,
+            descriptionHint = Res.string.discounts_copy_ent_description_hint,
+        )
 
-            BusinessType.BARBERSHOP -> ListingFormCopy(
-                screenTitle = Res.string.discounts_copy_barber_title,
-                screenSubtitle = Res.string.discounts_copy_barber_subtitle,
-                screenTitleRegular = Res.string.discounts_copy_barber_title_regular,
-                screenSubtitleRegular = Res.string.discounts_copy_barber_subtitle_regular,
-                businessSection = Res.string.discounts_copy_barber_business,
-                businessHint = Res.string.discounts_copy_barber_business_hint,
-                categoryHint = Res.string.discounts_copy_barber_category_hint,
-                imagesSection = Res.string.discounts_copy_barber_images,
-                imagesHint = Res.string.discounts_copy_barber_images_hint,
-                aboutSection = Res.string.discounts_copy_barber_about,
-                titleHint = Res.string.discounts_copy_barber_title_hint,
-                descriptionHint = Res.string.discounts_copy_barber_description_hint,
-            )
+        private val BARBER = ListingFormCopy(
+            screenTitle = Res.string.discounts_copy_barber_title,
+            screenSubtitle = Res.string.discounts_copy_barber_subtitle,
+            screenTitleRegular = Res.string.discounts_copy_barber_title_regular,
+            screenSubtitleRegular = Res.string.discounts_copy_barber_subtitle_regular,
+            businessSection = Res.string.discounts_copy_barber_business,
+            businessHint = Res.string.discounts_copy_barber_business_hint,
+            categoryHint = Res.string.discounts_copy_barber_category_hint,
+            imagesSection = Res.string.discounts_copy_barber_images,
+            imagesHint = Res.string.discounts_copy_barber_images_hint,
+            aboutSection = Res.string.discounts_copy_barber_about,
+            titleHint = Res.string.discounts_copy_barber_title_hint,
+            descriptionHint = Res.string.discounts_copy_barber_description_hint,
+        )
 
-            BusinessType.BEAUTY_SALON -> ListingFormCopy(
-                screenTitle = Res.string.discounts_copy_beauty_title,
-                screenSubtitle = Res.string.discounts_copy_beauty_subtitle,
-                screenTitleRegular = Res.string.discounts_copy_beauty_title_regular,
-                screenSubtitleRegular = Res.string.discounts_copy_beauty_subtitle_regular,
-                businessSection = Res.string.discounts_copy_beauty_business,
-                businessHint = Res.string.discounts_copy_beauty_business_hint,
-                categoryHint = Res.string.discounts_copy_beauty_category_hint,
-                imagesSection = Res.string.discounts_copy_beauty_images,
-                imagesHint = Res.string.discounts_copy_beauty_images_hint,
-                aboutSection = Res.string.discounts_copy_beauty_about,
-                titleHint = Res.string.discounts_copy_beauty_title_hint,
-                descriptionHint = Res.string.discounts_copy_beauty_description_hint,
-            )
-        }
+        private val BEAUTY = ListingFormCopy(
+            screenTitle = Res.string.discounts_copy_beauty_title,
+            screenSubtitle = Res.string.discounts_copy_beauty_subtitle,
+            screenTitleRegular = Res.string.discounts_copy_beauty_title_regular,
+            screenSubtitleRegular = Res.string.discounts_copy_beauty_subtitle_regular,
+            businessSection = Res.string.discounts_copy_beauty_business,
+            businessHint = Res.string.discounts_copy_beauty_business_hint,
+            categoryHint = Res.string.discounts_copy_beauty_category_hint,
+            imagesSection = Res.string.discounts_copy_beauty_images,
+            imagesHint = Res.string.discounts_copy_beauty_images_hint,
+            aboutSection = Res.string.discounts_copy_beauty_about,
+            titleHint = Res.string.discounts_copy_beauty_title_hint,
+            descriptionHint = Res.string.discounts_copy_beauty_description_hint,
+        )
+
+        /** Har qanday turga to'g'ri keladigan neytral yozuvlar. */
+        private val GENERIC = ListingFormCopy(
+            screenTitle = Res.string.discounts_copy_generic_title,
+            screenSubtitle = Res.string.discounts_copy_generic_subtitle,
+            screenTitleRegular = Res.string.discounts_copy_generic_title_regular,
+            screenSubtitleRegular = Res.string.discounts_copy_generic_subtitle_regular,
+            businessSection = Res.string.discounts_copy_generic_business,
+            businessHint = Res.string.discounts_copy_generic_business_hint,
+            categoryHint = Res.string.discounts_copy_generic_category_hint,
+            imagesSection = Res.string.discounts_copy_generic_images,
+            imagesHint = Res.string.discounts_copy_generic_images_hint,
+            aboutSection = Res.string.discounts_copy_generic_about,
+            titleHint = Res.string.discounts_copy_generic_title_hint,
+            descriptionHint = Res.string.discounts_copy_generic_description_hint,
+        )
+
+        private val byKey: Map<String, ListingFormCopy> = mapOf(
+            // Ovqatlanish
+            "NATIONAL_FOOD" to CAFE,
+            "FAST_FOOD" to CAFE,
+            "SOMSA" to CAFE,
+            // O'yin zallari — "sessiya / qurilma" yozuvlari mos tushadi
+            "PLAYSTATION" to GAME,
+            "CYBER_CLUB" to GAME,
+            "BILLIARDS" to GAME,
+            "BOWLING" to GAME,
+            // Ta'lim
+            "EDUCATION_CENTER" to EDU,
+            "TUTOR" to EDU,
+            // Chiptali tadbirlar
+            "CINEMA" to ENT,
+            "KARAOKE" to ENT,
+            // Xizmatlar va savdo
+            "BARBERSHOP" to BARBER,
+            "BEAUTY_SALON" to BEAUTY,
+            "CLOTHING" to CLOTH,
+            // Qolganlari (sport maydonlari, bosmaxona, ijara, kutubxona...) — GENERIC.
+        )
     }
 }

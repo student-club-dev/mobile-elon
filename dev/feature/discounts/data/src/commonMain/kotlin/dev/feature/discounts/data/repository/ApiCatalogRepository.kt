@@ -40,7 +40,7 @@ class ApiCatalogRepository(
         if (!connectivity.isOnline()) return errorOf(AppException.NoInternet())
         return try {
             val body: List<BusinessTypeInfoDto> = api.getBusinessTypes(gender?.toTypesQuery()).body()
-            Resource.Success(body.mapNotNull { it.toDomain() })
+            Resource.Success(body.map { it.toDomain() })
         } catch (e: Exception) {
             errorOf(e.toAppException(connectivity.isOnline()))
         }
@@ -49,7 +49,7 @@ class ApiCatalogRepository(
     override suspend fun categories(type: BusinessType, gender: Gender?): Resource<List<CategoryInfo>> {
         if (!connectivity.isOnline()) return errorOf(AppException.NoInternet())
         return try {
-            val body: List<CategoryDto> = api.getCategories(type.name, gender?.toCategoriesQuery()).body()
+            val body: List<CategoryDto> = api.getCategories(type.key, gender?.toCategoriesQuery()).body()
             Resource.Success(body.map { it.toDomain(type) }.sortedBy { it.sortOrder })
         } catch (e: Exception) {
             errorOf(e.toAppException(connectivity.isOnline()))
@@ -72,19 +72,29 @@ private fun Gender.toCategoriesQuery(): CatalogApi.GenderGetCategories = when (t
     Gender.FEMALE -> CatalogApi.GenderGetCategories.FEMALE
 }
 
-/** Backend bizga noma'lum tur yuborsa — o'tkazib yuboriladi (klient enum'ида yo'q). */
-private fun BusinessTypeInfoDto.toDomain(): BusinessTypeInfo? {
-    val domainType = BusinessType.entries.firstOrNull { it.name == type } ?: return null
+/**
+ * Serverdagi **har** tur o'tadi — hech biri tashlab yuborilmaydi.
+ *
+ * Ilgari bu yerda tur klient enum'iga solishtirilar va topilmasa `null` qaytarilardi:
+ * natijada serverdagi 27 turdan faqat ilova biladigan bir nechtasi ko'rinardi. Endi tur —
+ * ochiq kalit, zaxira katalog esa faqat serverda **bo'lmagan** maydonlarni to'ldiradi.
+ */
+private fun BusinessTypeInfoDto.toDomain(): BusinessTypeInfo {
+    val domainType = BusinessType(type)
+    val fallback = ListingCatalog.info(domainType)
     return BusinessTypeInfo(
         type = domainType,
         nameUz = nameUz,
-        emoji = emoji ?: domainType.emoji,
-        accentColor = accentColor?.toAccentLong() ?: domainType.accent,
-        defaultPriceUnit = defaultPriceUnit.toDomain() ?: domainType.defaultPriceUnit,
+        emoji = emoji ?: fallback?.emoji.orEmpty(),
+        accentColor = accentColor?.toAccentLong() ?: fallback?.accentColor ?: DEFAULT_ACCENT,
+        defaultPriceUnit = defaultPriceUnit.toDomain() ?: ListingCatalog.defaultPriceUnit(domainType),
         priceUnits = priceUnits.mapNotNull { it.toDomain() }.takeIf { it.isNotEmpty() }
             ?: ListingCatalog.priceUnits(domainType),
     )
 }
+
+/** Neytral urg'u rangi — server rang bermasa va tur zaxirada ham bo'lmasa. */
+private const val DEFAULT_ACCENT = 0xFF7C5CFF
 
 private fun CategoryDto.toDomain(type: BusinessType): CategoryInfo = CategoryInfo(
     key = key,
