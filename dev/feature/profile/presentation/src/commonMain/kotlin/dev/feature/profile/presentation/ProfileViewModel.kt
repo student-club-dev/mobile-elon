@@ -15,6 +15,8 @@ import dev.core.domain.repository.JobRepository
 import dev.core.domain.repository.UniversityRepository
 import dev.core.domain.usecase.LogoutUseCase
 import dev.core.domain.usecase.ObserveCurrentUserUseCase
+import dev.core.domain.usecase.RequestPhoneOtpUseCase
+import dev.core.domain.usecase.VerifyPhoneOtpUseCase
 import dev.feature.profile.domain.model.UserProfile
 import dev.feature.profile.domain.usecase.ObserveProfileUseCase
 import dev.feature.profile.domain.usecase.RefreshProfileUseCase
@@ -52,6 +54,8 @@ class ProfileViewModel(
     private val saveProfileUseCase: SaveProfileUseCase,
     private val refreshProfileUseCase: RefreshProfileUseCase,
     private val uploadAvatarUseCase: UploadAvatarUseCase,
+    private val requestPhoneOtpUseCase: RequestPhoneOtpUseCase,
+    private val verifyPhoneOtpUseCase: VerifyPhoneOtpUseCase,
 ) : ViewModel() {
 
     init {
@@ -123,6 +127,41 @@ class ProfileViewModel(
             when (val res = saveProfileUseCase(updated)) {
                 is Resource.Success -> onResult(null)
                 is Resource.Error -> onResult(res.toFormError())
+                else -> onResult(null)
+            }
+        }
+    }
+
+    /**
+     * Raqamga SMS kod yuboradi (`POST /v1/auth/business/otp/request`).
+     *
+     * Nega profil ekranida kerak: backend telefonni almashtirganда uning tasdig'ini **bekor
+     * qiladi** (spec: *"changing the phone number resets its verification"*), tasdiqlanmagan
+     * raqam bilan esa biznes yaratib/tahrirlab bo'lmaydi (`403 PHONE_NOT_VERIFIED`).
+     *
+     * [onResult] — kod ketgan bo'lsa `cooldownSeconds` (qayta yuborish taymeri uchun),
+     * aks holda `error` matni.
+     */
+    fun requestPhoneOtp(phone: String, onResult: (cooldownSeconds: Int?, error: String?) -> Unit) {
+        viewModelScope.launch {
+            when (val res = requestPhoneOtpUseCase(phone)) {
+                is Resource.Success -> onResult(res.data.resendCooldownSeconds, null)
+                is Resource.Error -> onResult(null, res.message)
+                else -> onResult(null, null)
+            }
+        }
+    }
+
+    /** SMS kodni tekshiradi. [onResult] `null` — raqam tasdiqlandi, aks holda xato matni. */
+    fun verifyPhoneOtp(phone: String, code: String, onResult: (String?) -> Unit) {
+        viewModelScope.launch {
+            when (val res = verifyPhoneOtpUseCase(phone, code)) {
+                is Resource.Success -> {
+                    // Tasdiqlangach profilni qayta tortamiz — server holati keshga tushsin.
+                    refreshProfileUseCase()
+                    onResult(null)
+                }
+                is Resource.Error -> onResult(res.message)
                 else -> onResult(null)
             }
         }

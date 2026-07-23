@@ -64,4 +64,8 @@
     <string name="profile_course_master">Master's</string>
     <string name="profile_avatar_content_description">Profile photo</string>
 
+    <string name="profile_phone_verify_title">Verify your number</string>
+    <string name="profile_phone_verify_subtitle">We sent an SMS code to %1$s. Until the number is verified you cannot add or edit a business.</string>
+    <string name="profile_phone_verify_code_placeholder">SMS code</string>
+    <string name="profile_phone_verify_later">Verify later</string>
 </resources>

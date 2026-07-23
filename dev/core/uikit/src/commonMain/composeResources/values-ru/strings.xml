@@ -64,4 +64,8 @@
     <string name="profile_course_master">Магистр</string>
     <string name="profile_avatar_content_description">Фото профиля</string>
 
+    <string name="profile_phone_verify_title">Подтвердите номер</string>
+    <string name="profile_phone_verify_subtitle">Мы отправили SMS-код на %1$s. Пока номер не подтверждён, добавить или изменить бизнес нельзя.</string>
+    <string name="profile_phone_verify_code_placeholder">SMS-код</string>
+    <string name="profile_phone_verify_later">Подтвердить позже</string>
 </resources>

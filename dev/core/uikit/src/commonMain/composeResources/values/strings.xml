@@ -72,4 +72,8 @@
     <string name="profile_course_master">Magistr</string>
     <string name="profile_avatar_content_description">Profil rasmi</string>
 
+    <string name="profile_phone_verify_title">Raqamni tasdiqlang</string>
+    <string name="profile_phone_verify_subtitle">%1$s raqamiga SMS kod yubordik. Raqam tasdiqlanmasa, biznes qo'shish va tahrirlash ishlamaydi.</string>
+    <string name="profile_phone_verify_code_placeholder">SMS kod</string>
+    <string name="profile_phone_verify_later">Keyinroq tasdiqlayman</string>
 </resources>
