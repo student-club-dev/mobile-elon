@@ -2,17 +2,16 @@ package dev.feature.profile.data.remote
 
 import dev.core.common.Resource
 import dev.core.common.map
-import dev.core.network.generated.api.MediaApi
 import dev.core.network.generated.api.ProfileApi
+import dev.core.network.media.MediaPurpose
+import dev.core.network.media.MediaUploader
 import dev.core.network.response.safeCall
 import dev.feature.profile.data.mapper.toDomain
 import dev.feature.profile.data.mapper.toUpdateRequest
 import dev.feature.profile.domain.model.UserProfile
 import dev.feature.profile.domain.repository.ProfileExistence
 import io.ktor.client.plugins.ClientRequestException
-import io.ktor.client.request.forms.InputProvider
 import io.ktor.http.HttpStatusCode
-import kotlinx.io.Buffer
 
 /**
  * Real backend (`GET/PUT /v1/profile/me`) — spetsifikatsiya:
@@ -23,7 +22,7 @@ import kotlinx.io.Buffer
  */
 class ApiProfileRemoteDataSource(
     private val api: ProfileApi,
-    private val media: MediaApi,
+    private val media: MediaUploader,
 ) : ProfileRemoteDataSource {
 
     override suspend fun fetch(): Resource<UserProfile?> = try {
@@ -56,11 +55,6 @@ class ApiProfileRemoteDataSource(
             // Profil rasmi uchun alohida endpoint yo'q — umumiy `POST /v1/media/upload` ishlatiladi,
             // qaytgan URL esa `PUT /profile/me` orqali `avatarUrl` ga yoziladi (repository qiladi).
             // Spec'da `purpose` uchun faqat LOGO | COVER | LISTING bor, avatar uchun eng yaqini — LOGO.
-            val part = InputProvider(bytes.size.toLong()) { Buffer().apply { write(bytes) } }
-            media.upload(file = part, purpose = AVATAR_PURPOSE).body().url
+            media.upload(bytes, fileName, MediaPurpose.LOGO).url
         }
-
-    private companion object {
-        const val AVATAR_PURPOSE = "LOGO"
-    }
 }

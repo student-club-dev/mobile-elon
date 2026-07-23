@@ -8,7 +8,6 @@ import dev.core.network.generated.api.BusinessApi
 import dev.core.network.generated.api.CatalogApi
 import dev.core.network.generated.api.GeoApi
 import dev.core.network.generated.api.ListingsApi
-import dev.core.network.generated.api.MediaApi
 import dev.core.network.generated.api.TradeCentersApi
 import dev.feature.discounts.data.remote.ApiGeoRepository
 import dev.feature.discounts.data.remote.ApiListingRemoteDataSource
@@ -70,7 +69,6 @@ import org.koin.dsl.module
 fun discountsModule() = module {
 
     single { ListingsApi(baseUrl = get<NetworkConfig>().baseUrl, httpClient = get<HttpClient>()) }
-    single { MediaApi(baseUrl = get<NetworkConfig>().baseUrl, httpClient = get<HttpClient>()) }
     single { BusinessApi(baseUrl = get<NetworkConfig>().baseUrl, httpClient = get<HttpClient>()) }
     single { BranchesApi(baseUrl = get<NetworkConfig>().baseUrl, httpClient = get<HttpClient>()) }
     single { CatalogApi(baseUrl = get<NetworkConfig>().baseUrl, httpClient = get<HttpClient>()) }

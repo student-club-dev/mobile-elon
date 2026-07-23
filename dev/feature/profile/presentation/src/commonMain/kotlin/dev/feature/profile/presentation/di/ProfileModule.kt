@@ -30,8 +30,8 @@ fun profileModule() = module {
     // shunda sessiya tokeni (Bearer) har so'rovga avtomatik qo'shiladi.
     single { ProfileApi(baseUrl = get<NetworkConfig>().baseUrl, httpClient = get<HttpClient>()) }
 
-    // Rasm yuklash umumiy endpoint orqali (`POST /v1/media/upload`) — MediaApi
-    // `discountsModule()` da ham ro'yxatdan o'tadi, Koin bitta nusxani ulashadi.
+    // Rasm yuklash umumiy endpoint orqali (`POST /v1/media/upload`) — `MediaUploader`
+    // `coreModules()` da ro'yxatdan o'tadi (generatsiya qilingan klient fayl nomini yubormaydi).
     single<ProfileRemoteDataSource> {
         FallbackProfileRemoteDataSource(ApiProfileRemoteDataSource(get(), get()))
     }

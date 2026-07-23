@@ -2,7 +2,8 @@ package dev.feature.discounts.data.remote
 
 import dev.core.common.Resource
 import dev.core.network.generated.api.ListingsApi
-import dev.core.network.generated.api.MediaApi
+import dev.core.network.media.MediaPurpose
+import dev.core.network.media.MediaUploader
 import dev.core.network.generated.model.CreateListingRequestDto
 import dev.core.network.generated.model.DiscountRequestDto
 import dev.core.network.generated.model.DiscountTypeDto
@@ -15,9 +16,7 @@ import dev.core.network.generated.model.RedemptionMethodDto
 import dev.core.network.generated.model.SelectionTypeDto
 import dev.feature.discounts.domain.model.Listing
 import dev.feature.discounts.domain.model.ListingStatus
-import io.ktor.client.request.forms.InputProvider
 import kotlinx.datetime.Instant
-import kotlinx.io.Buffer
 
 /**
  * Real backend — spetsifikatsiya: `dev/api-client-generator/elon-uz.json`
@@ -29,7 +28,7 @@ import kotlinx.io.Buffer
  */
 class ApiListingRemoteDataSource(
     private val listingsApi: ListingsApi,
-    private val mediaApi: MediaApi,
+    private val mediaApi: MediaUploader,
 ) : ListingRemoteDataSource {
 
     override suspend fun publish(listing: Listing): Resource<Listing> {
@@ -55,8 +54,7 @@ class ApiListingRemoteDataSource(
     }
 
     override suspend fun uploadImage(bytes: ByteArray, fileName: String): Resource<String> = try {
-        val part = InputProvider(bytes.size.toLong()) { Buffer().apply { write(bytes) } }
-        Resource.Success(mediaApi.upload(file = part, purpose = "LISTING").body().url)
+        Resource.Success(mediaApi.upload(bytes, fileName, MediaPurpose.LISTING).url)
     } catch (e: Exception) {
         Resource.Error(e.message ?: "Rasmni yuklab bo'lmadi", e)
     }

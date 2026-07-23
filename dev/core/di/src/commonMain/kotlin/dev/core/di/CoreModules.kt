@@ -51,6 +51,7 @@ import dev.core.domain.usecase.SetPasswordUseCase
 import dev.core.domain.usecase.VerifyPhoneOtpUseCase
 import dev.core.network.NetworkConfig
 import dev.core.network.createHttpClient
+import dev.core.network.media.MediaUploader
 import io.ktor.client.HttpClient
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -86,6 +87,10 @@ val networkModule = module {
     single<TokenStore> { SecureTokenStore(secure = get(), legacy = SqlDelightTokenStore(get())) }
 
     single<HttpClient> { createHttpClient(get(), get()) }
+
+    // Rasm yuklash — generatsiya qilingan `MediaApi` multipart qismiga `filename` qo'ymagani
+    // uchun qo'lda yozilgan (qarang: MediaUploader izohi).
+    single { MediaUploader(client = get(), config = get()) }
 }
 
 val databaseModule = module {
