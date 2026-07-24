@@ -18,6 +18,7 @@ import dev.core.network.generated.model.UpdateBusinessDto
 import dev.core.network.generated.model.WorkingHoursDto
 import dev.feature.discounts.domain.model.BranchWorkingHours
 import dev.feature.discounts.domain.model.Business
+import dev.feature.discounts.domain.model.BusinessStatus
 import dev.feature.discounts.domain.model.BusinessType
 import dev.feature.discounts.domain.model.ListingBranch
 import dev.feature.discounts.domain.model.WeekDay
@@ -102,7 +103,7 @@ class ApiBusinessRepository(
     override suspend fun delete(id: String): Resource<Unit> {
         if (!connectivity.isOnline()) return errorOf(AppException.NoInternet())
         return try {
-            businessApi.archive(id)
+            businessApi.businessArchive(id)
             Resource.Success(Unit)
         } catch (e: Exception) {
             errorOf(e.toAppException(connectivity.isOnline()))
@@ -167,6 +168,8 @@ private fun BusinessDto.toDomain(branches: List<BranchDto> = emptyList()) = Busi
     // Serverdagi e'lonlar soni — `/business/my` javobining o'zida keladi, qo'shimcha
     // so'rovsiz. Kartada shu ko'rsatiladi (filial manzili o'rniga, u endi so'ralmaydi).
     listingsCount = listingsCount,
+    // Moderatsiya holati — biznes ochilganda ("Mening e'lonlarim" sarlavhasi) ko'rsatiladi.
+    status = BusinessStatus.fromKey(status.value),
     createdAt = createdAt.toEpochMilliseconds(),
     updatedAt = createdAt.toEpochMilliseconds(),
 )

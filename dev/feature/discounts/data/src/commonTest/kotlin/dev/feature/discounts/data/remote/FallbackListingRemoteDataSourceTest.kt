@@ -29,7 +29,16 @@ class FallbackListingRemoteDataSourceTest {
         private val publishResult: Resource<Listing>,
         private val uploadResult: Resource<String> = Resource.Success("https://cdn/x.jpg"),
     ) : ListingRemoteDataSource {
+        override suspend fun list(
+            business: dev.feature.discounts.domain.model.Business,
+            status: ListingStatus?,
+            categoryKey: String?,
+            page: Int,
+            size: Int,
+        ) = Resource.Success(dev.feature.discounts.domain.model.ListingPage.EMPTY)
         override suspend fun publish(listing: Listing) = publishResult
+        override suspend fun update(listing: Listing) = publishResult
+        override suspend fun archive(id: String): Resource<Unit> = Resource.Success(Unit)
         override suspend fun uploadImage(bytes: ByteArray, fileName: String) = uploadResult
     }
 

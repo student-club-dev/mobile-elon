@@ -1,6 +1,9 @@
 package dev.feature.auth.presentation.main
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -68,8 +71,10 @@ fun SupportChatScreen(onBack: () -> Unit, vm: ChatViewModel = koinViewModel()) {
 
     val selected = state.selected
     if (selected == null || selected.id != support?.id) {
-        // Suhbat bazadan o'qilguncha bo'sh yuza — miltillovchi ro'yxat ko'rsatmaymiz.
-        Box(Modifier.fillMaxSize())
+        // Suhbat bazadan o'qilguncha — bo'sh yuza o'rniga spinner (miltillovchi ro'yxat emas).
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = palette.primary, strokeWidth = 3.dp)
+        }
         return
     }
     ChatThread(

@@ -2,7 +2,10 @@ package dev.feature.discounts.data.remote
 
 import dev.core.common.Resource
 import dev.core.common.error.AppException
+import dev.feature.discounts.domain.model.Business
 import dev.feature.discounts.domain.model.Listing
+import dev.feature.discounts.domain.model.ListingPage
+import dev.feature.discounts.domain.model.ListingStatus
 
 /**
  * Backend + zaxira: avval [api] ga boradi, unga **yetib bo'lmasa** [local] ga tushadi.
@@ -25,9 +28,30 @@ class FallbackListingRemoteDataSource(
     private val local: ListingRemoteDataSource,
 ) : ListingRemoteDataSource {
 
+    override suspend fun list(
+        business: Business,
+        status: ListingStatus?,
+        categoryKey: String?,
+        page: Int,
+        size: Int,
+    ): Resource<ListingPage> {
+        val result = api.list(business, status, categoryKey, page, size)
+        return if (result.isUnreachable()) local.list(business, status, categoryKey, page, size) else result
+    }
+
     override suspend fun publish(listing: Listing): Resource<Listing> {
         val result = api.publish(listing)
         return if (result.isUnreachable()) local.publish(listing) else result
+    }
+
+    override suspend fun update(listing: Listing): Resource<Listing> {
+        val result = api.update(listing)
+        return if (result.isUnreachable()) local.update(listing) else result
+    }
+
+    override suspend fun archive(id: String): Resource<Unit> {
+        val result = api.archive(id)
+        return if (result.isUnreachable()) local.archive(id) else result
     }
 
     /**

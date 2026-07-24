@@ -415,7 +415,16 @@ class PostListingViewModel(
     fun loadForEdit(listingId: String) {
         if (editingId == listingId) return
         viewModelScope.launch {
-            val listing = getListing(listingId) ?: return@launch
+            _state.update { it.copy(loadError = null) }
+            val listing = getListing(listingId)
+            if (listing == null) {
+                // Aks holда `businessType` hech qачон o'rnatilmasdi va ekran cheksiz spinnerда
+                // qamalib qolardi — xato + qayta urinish/orqaga ko'rsatamiz.
+                _state.update {
+                    it.copy(loadError = "E'lonni yuklab bo'lmadi. Internetni tekshirib, qayta urinib ko'ring.")
+                }
+                return@launch
+            }
             editingId = listing.id
             editingCreatedAt = listing.createdAt
             editingBusinessId = listing.businessId
@@ -470,6 +479,8 @@ class PostListingViewModel(
                     listing,
                     _state.value.categoryAttributes(),
                     requireBranch = _state.value.branches.isNotEmpty(),
+                    // Tahrirlash — mavjud e'lonni `PUT` bilan yangilaydi (dublikat yaratmaydi).
+                    isEdit = editingId != null,
                 )
             ) {
                 is PublishListingUseCase.Result.Success ->

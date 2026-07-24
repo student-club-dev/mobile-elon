@@ -244,8 +244,9 @@ data class BranchWorkingHours(
         get() = isClosed || (open.isValidTime() && close.isValidTime())
 
     companion object {
-        const val DEFAULT_OPEN = "09:00"
-        const val DEFAULT_CLOSE = "21:00"
+        const val DEFAULT_OPEN = "07:00"
+        // Yarim tun (kechqurun 12). `close < open` — backend "tungacha ishlaydi" deb qabul qiladi.
+        const val DEFAULT_CLOSE = "00:00"
 
         /** Yetti kunlik odatiy jadval — forma shu holatда ochiladi. */
         fun defaultWeek(): List<BranchWorkingHours> = WeekDay.entries.map { BranchWorkingHours(it) }

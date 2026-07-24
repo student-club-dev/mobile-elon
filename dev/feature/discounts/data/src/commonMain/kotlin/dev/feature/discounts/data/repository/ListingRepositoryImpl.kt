@@ -8,7 +8,9 @@ import dev.core.database.sql.ElonUzDatabase
 import dev.feature.discounts.data.mapper.toDomain
 import dev.feature.discounts.data.mapper.toEntity
 import dev.feature.discounts.data.remote.ListingRemoteDataSource
+import dev.feature.discounts.domain.model.Business
 import dev.feature.discounts.domain.model.Listing
+import dev.feature.discounts.domain.model.ListingPage
 import dev.feature.discounts.domain.model.ListingStatus
 import dev.feature.discounts.domain.repository.ListingRepository
 import kotlinx.coroutines.flow.Flow
@@ -36,6 +38,22 @@ class ListingRepositoryImpl(
             .asFlow()
             .mapToList(dispatchers.io)
             .map { rows -> rows.map { it.toDomain() } }
+
+    // Serverdan paginatsiyalab oladi — local kesh o'rniga to'g'ridan-to'g'ri masofaviy manba
+    // (biznes ochilganда to'liq ro'yxat, "Mening e'lonlarim"). Mapping data source ichida.
+    override suspend fun listForBusiness(
+        business: Business,
+        status: ListingStatus?,
+        categoryKey: String?,
+        page: Int,
+        size: Int,
+    ): Resource<ListingPage> {
+        val res = remote.list(business, status, categoryKey, page, size)
+        // Serverdan kelgan e'lonlarni local bazaga yozamiz: tahrirlashда [byId] ularni topadi
+        // va offline'да ham ko'rinadi (server ro'yxati bir martalik, o'zi saqlanmaydi).
+        if (res is Resource.Success) res.data.items.forEach { cache(it) }
+        return res
+    }
 
     override fun observeActive(): Flow<List<Listing>> =
         q.selectActive(now = Clock.System.now().toEpochMilliseconds())
@@ -68,15 +86,37 @@ class ListingRepositoryImpl(
         }
     }
 
+    override suspend fun update(listing: Listing): Resource<Listing> {
+        // Avval server (`PUT /listings/{id}`) — u statusni o'zgartirishi mumkin; qaytgan e'lonni
+        // keshga yozamiz. Serverга yetib bo'lmasa Fallback local'ni ishlatadi.
+        return when (val res = remote.update(listing.copy(updatedAt = now()))) {
+            is Resource.Success -> {
+                val updated = res.data.copy(updatedAt = now())
+                cache(updated)
+                Resource.Success(updated)
+            }
+            is Resource.Error -> res
+            Resource.Loading -> Resource.Error("E'lonni tahrirlab bo'lmadi")
+        }
+    }
+
     override suspend fun updateStatus(id: String, status: ListingStatus): Resource<Unit> =
         withContext(dispatchers.io) {
             q.updateStatus(status = status.name, updatedAt = now(), id = id)
             Resource.Success(Unit)
         }
 
-    override suspend fun delete(id: String): Resource<Unit> = withContext(dispatchers.io) {
-        q.deleteById(id)
-        Resource.Success(Unit)
+    override suspend fun delete(id: String): Resource<Unit> {
+        // Serverда arxivlaymiz (`DELETE /listings/{id}`). Muvaffaqiyatli bo'lса — local'дан ham
+        // o'chiramiz; server rad etса (403/404) local'да qoldiramiz va xatoni qaytaramiz.
+        return when (val res = remote.archive(id)) {
+            is Resource.Success -> withContext(dispatchers.io) {
+                q.deleteById(id)
+                Resource.Success(Unit)
+            }
+            is Resource.Error -> res
+            Resource.Loading -> Resource.Error("E'lonni o'chirib bo'lmadi")
+        }
     }
 
     override suspend fun uploadImage(bytes: ByteArray, fileName: String): Resource<String> =

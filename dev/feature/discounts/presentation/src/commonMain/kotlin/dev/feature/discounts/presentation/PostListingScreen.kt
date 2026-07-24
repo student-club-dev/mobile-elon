@@ -53,8 +53,11 @@ fun PostListingScreen(
     val state by vm.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(editListingId) { if (editListingId != null) vm.loadForEdit(editListingId) }
-    LaunchedEffect(businessId) {
-        if (editListingId == null && businessId != null) vm.prefillFromBusiness(businessId)
+    // Tahrirlash bo'lmasa biznesdan to'ldiramiz. `businessId` yo'q bo'lsa ham (nav argumenti
+    // yo'qolган) bo'sh id bilan chaqiramiz — `prefillFromBusiness` xato holatini o'rnatadi va
+    // ekran cheksiz spinner o'rniga "qayta urinish/orqaga" ko'rsatadi.
+    LaunchedEffect(editListingId, businessId) {
+        if (editListingId == null) vm.prefillFromBusiness(businessId.orEmpty())
     }
     LaunchedEffect(initialDiscount) {
         if (editListingId == null && initialDiscount != null) vm.setInitialMode(initialDiscount)
@@ -71,7 +74,11 @@ fun PostListingScreen(
                 message = loadError,
                 palette = palette,
                 onBack = onClose,
-                onRetry = businessId?.let { id -> { vm.prefillFromBusiness(id) } },
+                // Tahrirlashда e'lonni, aks holда biznesni qayta yuklaymiz.
+                onRetry = when {
+                    editListingId != null -> { { vm.loadForEdit(editListingId) } }
+                    else -> { { vm.prefillFromBusiness(businessId.orEmpty()) } }
+                },
             )
         // Biznes turi hali yuklanmoqda — qisqa spinner. "Chegirma e'loni" tur tanlash grid'i YO'Q:
         // e'lon turi biznesdan meros olinadi.

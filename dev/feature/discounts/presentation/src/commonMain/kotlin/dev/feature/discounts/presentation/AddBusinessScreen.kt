@@ -323,17 +323,27 @@ private val FieldGap = 20.dp
 @Composable
 private fun BusinessMapScreen(state: AddBusinessUiState, palette: AppPalette, vm: AddBusinessViewModel) {
     val userLocation = rememberUserLocation()
+    // Avval tanlangan manzil (tahrirlashда yoki xaritani qayta ochganда) — belgi o'sha yerда
+    // tursin, joriy GPS joyiga sakramasin; keyin foydalanuvchi xohlasa o'zgartiradi.
+    val existing = remember { state.branch?.let { MapPoint(it.lat, it.lng) } }
     var centerRequest by remember { mutableStateOf<MapCenterRequest?>(null) }
     var requestId by remember { mutableStateOf(0) }
-    var pickedPoint by remember { mutableStateOf<MapPoint?>(null) }
+    // Tasdiqlash mavjud joyni ishlatsin — foydalanuvchi xaritani surmasa ham (onCenterChanged
+    // otilmasa) belgi eski joyда qoladi.
+    var pickedPoint by remember { mutableStateOf(existing) }
     // `null` — hali yuklanmoqda. Belgi HTML element bo'lgani uchun xarita kelmasa ham
     // ko'rinaveradi, shuning uchun holatni ALOHIDA kuzatamiz.
     var mapStatus by remember { mutableStateOf<MapStatus?>(null) }
 
+    // Boshlang'ich markaz: avval tanlangan manzil bo'lsa — o'sha (GPS'ni kutmaymiz), aks holда
+    // joriy GPS joyi. `centerRequest` bir marta o'rnatiladi.
     LaunchedEffect(userLocation) {
-        if (userLocation != null && centerRequest == null) {
-            requestId++
-            centerRequest = MapCenterRequest(userLocation, requestId)
+        if (centerRequest == null) {
+            val target = existing ?: userLocation
+            if (target != null) {
+                requestId++
+                centerRequest = MapCenterRequest(target, requestId)
+            }
         }
     }
 
@@ -363,7 +373,7 @@ private fun BusinessMapScreen(state: AddBusinessUiState, palette: AppPalette, vm
         Spacer(Modifier.height(10.dp))
         Box(Modifier.fillMaxWidth().weight(1f)) {
             MapPicker(
-                initial = userLocation,
+                initial = existing ?: userLocation,
                 dark = palette.dark,
                 onCenterChanged = { pickedPoint = it },
                 modifier = Modifier.fillMaxSize(),

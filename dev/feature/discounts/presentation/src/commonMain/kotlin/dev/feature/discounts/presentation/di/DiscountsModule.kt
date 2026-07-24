@@ -34,6 +34,7 @@ import dev.feature.discounts.domain.repository.TradeCenterRepository
 import dev.feature.discounts.domain.usecase.CreateBranchFromPointUseCase
 import dev.feature.discounts.domain.usecase.DeleteBusinessUseCase
 import dev.feature.discounts.domain.usecase.DeleteListingUseCase
+import dev.feature.discounts.domain.usecase.GetBusinessListingsUseCase
 import dev.feature.discounts.domain.usecase.GetBusinessTypesUseCase
 import dev.feature.discounts.domain.usecase.GetBusinessUseCase
 import dev.feature.discounts.domain.usecase.GetCategoriesUseCase
@@ -139,6 +140,7 @@ fun discountsModule() = module {
     factory { CreateBranchFromPointUseCase(get()) }
     factory { SearchPlacesUseCase(get()) }
     factory { ObserveMyListingsUseCase(get()) }
+    factory { GetBusinessListingsUseCase(get()) }
     factory { SaveDraftUseCase(get()) }
     factory { PublishListingUseCase(get()) }
     factory { ToggleListingPausedUseCase(get()) }

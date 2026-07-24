@@ -106,17 +106,17 @@ fun BusinessCard(
                 biz.businessType?.localizedLabel() ?: stringResource(Res.string.discounts_business),
                 style = AppType.secondary.copy(fontWeight = AppType.label.fontWeight, color = accent),
             )
-            // Manzil faqat filiallar yuklangan bo'lsa (biznes ochilganda). Ro'yxatда ular
-            // ataylab so'ralmaydi — har bir biznes uchun alohida so'rov ketmasin; o'rniga
-            // javobning o'zidan kelgan e'lonlar soni ko'rsatiladi.
-            Text(
-                biz.primaryBranch?.address?.takeIf { it.isNotBlank() }
-                    ?.let { stringResource(Res.string.discounts_branch_location, it) }
-                    ?: stringResource(Res.string.discounts_listings_count, "${biz.listingsCount}"),
-                style = AppType.caption.copy(color = palette.inkFaint),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+            // Manzil faqat filiallar yuklangan bo'lsa (biznes ochilganda) ko'rsatiladi. Ro'yxatда
+            // filiallar ataylab so'ralmaydi (har biznes uchun alohida so'rov ketmasin), shuning
+            // uchun ro'yxatда bu qator umuman chiqmaydi — e'lonlar soni ko'rsatilmaydi.
+            biz.primaryBranch?.address?.takeIf { it.isNotBlank() }?.let { address ->
+                Text(
+                    stringResource(Res.string.discounts_branch_location, address),
+                    style = AppType.caption.copy(color = palette.inkFaint),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
             IconTile(

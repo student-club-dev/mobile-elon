@@ -25,7 +25,6 @@ import dev.core.domain.model.ThemeMode
 import dev.core.domain.repository.SettingsRepository
 import dev.feature.auth.presentation.flow.AuthNavHost
 import dev.core.uikit.theme.appPalette
-import io.ktor.client.HttpClient
 import org.koin.compose.koinInject
 
 /**
@@ -49,12 +48,13 @@ fun App() {
 /** Umumiy ildiz sozlamasi (rasm yuklovchi, seed, mavzu, inset) — hamma kirish nuqtalari ishlatadi. */
 @Composable
 private fun AppScaffold(content: @Composable () -> Unit) {
-    // Tarmoqdan rasm yuklash (avatar) — Coil ilovaning o'z Ktor klientidan foydalanadi,
-    // shunda so'rovlarga sessiya tokeni ham qo'shiladi (himoyalangan rasm URL'lari uchun).
-    val httpClient = koinInject<HttpClient>()
+    // Rasmlar (e'lon rasmlari, avatarlar) — Coil ularni URL'dan TO'G'RIDAN-TO'G'RI oladi.
+    // `KtorNetworkFetcherFactory()` (klientsiz) — Coil O'ZINING ichki `HttpClient`idan
+    // foydalanadi: ilova klientiga umuman bog'lanmaydi, shuning uchun Bearer token, `/v1/`
+    // baza va Chucker YO'Q. (iym-native-business ham shunday — rasm backend API orqali o'tmaydi.)
     setSingletonImageLoaderFactory { context ->
         ImageLoader.Builder(context)
-            .components { add(KtorNetworkFetcherFactory(httpClient)) }
+            .components { add(KtorNetworkFetcherFactory()) }
             .build()
     }
 

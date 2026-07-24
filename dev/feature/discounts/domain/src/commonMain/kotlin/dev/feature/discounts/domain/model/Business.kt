@@ -29,6 +29,11 @@ data class Business(
     val isOnlineOnly: Boolean = false,
     /** Serverdagi e'lonlar soni (`BusinessDto.listingsCount`) — ro'yxatda ko'rsatiladi. */
     val listingsCount: Int = 0,
+    /**
+     * Moderatsiya holati (`BusinessDto.status`) — biznes ochilganda ko'rsatiladi.
+     * `null` — hali serverdan olinmagan (namuna biznes yoki ro'yxat elementi).
+     */
+    val status: BusinessStatus? = null,
     val createdAt: Long = 0,
     val updatedAt: Long = 0,
 ) {
@@ -38,4 +43,20 @@ data class Business(
     /** Kiritish yakunlanganmi (nom + telefon + kamida bitta joylashuv). */
     val isComplete: Boolean
         get() = name.isNotBlank() && phone.isNotBlank() && branches.isNotEmpty()
+}
+
+/** Biznesning moderatsiya holati — serverdan (`BusinessStatusDto`). */
+enum class BusinessStatus(val label: String) {
+    DRAFT("Qoralama"),
+    PENDING_REVIEW("Moderatsiyada"),
+    APPROVED("Tasdiqlangan"),
+    REJECTED("Rad etilgan"),
+    BLOCKED("Bloklangan"),
+    ARCHIVED("Arxivlangan"),
+    ;
+
+    companion object {
+        /** Server kaliti bo'yicha topadi — noma'lum qiymat `null`. */
+        fun fromKey(key: String): BusinessStatus? = entries.firstOrNull { it.name == key }
+    }
 }

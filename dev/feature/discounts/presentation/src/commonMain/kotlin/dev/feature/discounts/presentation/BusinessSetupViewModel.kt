@@ -201,7 +201,14 @@ class AddBusinessViewModel(
     fun loadForEdit(businessId: String) {
         if (_state.value.editId == businessId) return
         viewModelScope.launch {
-            val biz = getBusiness(businessId) ?: return@launch
+            val biz = getBusiness(businessId)
+            if (biz == null) {
+                // Aks holда jim bo'sh (va "yangi biznes" sarlavhali) forma ko'rinardi — sababsiz.
+                _state.update {
+                    it.copy(error = "Biznes ma'lumotini yuklab bo'lmadi. Internetni tekshirib, qayta urinib ko'ring.")
+                }
+                return@launch
+            }
             val branch = biz.branches.firstOrNull()
             _state.update {
                 it.copy(

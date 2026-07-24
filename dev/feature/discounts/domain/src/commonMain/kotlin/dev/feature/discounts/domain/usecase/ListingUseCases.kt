@@ -2,9 +2,11 @@ package dev.feature.discounts.domain.usecase
 
 import dev.core.common.Resource
 import dev.feature.discounts.domain.model.AttributeSpec
+import dev.feature.discounts.domain.model.Business
 import dev.feature.discounts.domain.model.Listing
 import dev.feature.discounts.domain.model.ListingBranch
 import dev.feature.discounts.domain.model.ListingError
+import dev.feature.discounts.domain.model.ListingPage
 import dev.feature.discounts.domain.model.ListingStatus
 import dev.feature.discounts.domain.model.ListingValidator
 import dev.feature.discounts.domain.repository.GeoRepository
@@ -15,6 +17,20 @@ import kotlinx.coroutines.flow.Flow
 /** Biznes egasining e'lonlari (barcha statuslar) — "Mening e'lonlarim" ekrani. */
 class ObserveMyListingsUseCase(private val repository: ListingRepository) {
     operator fun invoke(ownerId: String): Flow<List<Listing>> = repository.observeMyListings(ownerId)
+}
+
+/**
+ * Biznesning e'lonlarini serverdan paginatsiyalab oladi ("Mening e'lonlarim" biznes ochilganда).
+ * Sahifa raqami [page] dan boshlab; [ListingPage.hasNext] keyingi sahifa borligini bildiradi.
+ */
+class GetBusinessListingsUseCase(private val repository: ListingRepository) {
+    suspend operator fun invoke(
+        business: Business,
+        status: ListingStatus? = null,
+        categoryKey: String? = null,
+        page: Int = 1,
+        size: Int = 20,
+    ): Resource<ListingPage> = repository.listForBusiness(business, status, categoryKey, page, size)
 }
 
 /** Qoralama sifatida saqlaydi — validatsiyasiz (yarim to'ldirilgan forma ham saqlanadi). */
@@ -47,13 +63,17 @@ class PublishListingUseCase(private val repository: ListingRepository) {
         listing: Listing,
         fields: List<AttributeSpec>? = null,
         requireBranch: Boolean = true,
+        isEdit: Boolean = false,
     ): Result {
         val errors = fields
             ?.let { ListingValidator.validate(listing, it, requireBranch) }
             ?: ListingValidator.validate(listing, requireBranch = requireBranch)
         if (errors.isNotEmpty()) return Result.Invalid(errors)
 
-        return when (val res = repository.submit(listing)) {
+        // Tahrirlash — `PUT /listings/{id}` (mavjudini yangilaydi); yangi e'lon — yaratib
+        // moderatsiyaga yuboradi. Ilgari tahrirlashда ham yaratilardi (serverда dublikat).
+        val res = if (isEdit) repository.update(listing) else repository.submit(listing)
+        return when (res) {
             is Resource.Success -> Result.Success(res.data)
             is Resource.Error -> Result.Failed(res.message)
             Resource.Loading -> Result.Failed("E'lonni yuborib bo'lmadi")

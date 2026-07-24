@@ -45,9 +45,18 @@ class ListingRepositoryFlowTest {
 
     /** Serverni taqlid qiladi: o'z id/statusini qaytaradi (haqiqiy backend ham shunday qiladi). */
     private class ServerRemote : ListingRemoteDataSource {
+        override suspend fun list(
+            business: dev.feature.discounts.domain.model.Business,
+            status: ListingStatus?,
+            categoryKey: String?,
+            page: Int,
+            size: Int,
+        ) = Resource.Success(dev.feature.discounts.domain.model.ListingPage.EMPTY)
         override suspend fun publish(listing: Listing) = Resource.Success(
             listing.copy(id = "srv-${listing.id}", status = ListingStatus.PENDING_REVIEW),
         )
+        override suspend fun update(listing: Listing) = Resource.Success(listing)
+        override suspend fun archive(id: String): Resource<Unit> = Resource.Success(Unit)
         override suspend fun uploadImage(bytes: ByteArray, fileName: String) =
             Resource.Success("https://cdn/x.jpg")
     }
@@ -95,7 +104,16 @@ class ListingRepositoryFlowTest {
     @Test
     fun `rad etilgan e'lon keshga tushmaydi`() = runTest(dispatcher) {
         val rejecting = object : ListingRemoteDataSource {
+            override suspend fun list(
+                business: dev.feature.discounts.domain.model.Business,
+                status: ListingStatus?,
+                categoryKey: String?,
+                page: Int,
+                size: Int,
+            ) = Resource.Error("Rad etildi")
             override suspend fun publish(listing: Listing) = Resource.Error("Rad etildi")
+            override suspend fun update(listing: Listing) = Resource.Error("Rad etildi")
+            override suspend fun archive(id: String) = Resource.Error("Rad etildi")
             override suspend fun uploadImage(bytes: ByteArray, fileName: String) =
                 Resource.Error("Rad etildi")
         }
