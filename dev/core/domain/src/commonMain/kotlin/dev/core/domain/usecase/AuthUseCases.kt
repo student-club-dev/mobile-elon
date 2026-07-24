@@ -26,6 +26,14 @@ class LoginUseCase(private val repository: AuthRepository) {
     }
 }
 
+/** Google ID token bilan kirish (yoki avtomatik ro'yxatdan o'tish). */
+class LoginWithGoogleUseCase(private val repository: AuthRepository) {
+    suspend operator fun invoke(idToken: String): Resource<User> {
+        if (idToken.isBlank()) return Resource.Error("Google token bo'sh")
+        return repository.loginWithGoogle(idToken)
+    }
+}
+
 /** Telefon yoki email + parol bilan yangi hisob yaratish. */
 class RegisterUseCase(private val repository: AuthRepository) {
     suspend operator fun invoke(login: String, password: String): Resource<User> {

@@ -38,6 +38,10 @@ kotlin {
             // Biometrik login (F1) — Face ID / barmoq izi
             implementation(libs.androidx.biometric)
             implementation(libs.androidx.fragment)
+            // Google Sign-In — Credential Manager + Google ID (ID token oladi)
+            implementation(libs.androidx.credentials)
+            implementation(libs.androidx.credentials.play.services)
+            implementation(libs.google.identity.googleid)
         }
     }
 }

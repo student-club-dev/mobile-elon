@@ -21,6 +21,7 @@ import dev.core.domain.repository.AuthRepository
 import dev.core.domain.repository.SettingsRepository
 import dev.core.network.generated.api.AuthBusinessApi
 import dev.core.network.generated.model.AuthTokensDto
+import dev.core.network.generated.model.OAuthLoginDto
 import dev.core.network.generated.model.ForgotPasswordDto
 import dev.core.network.generated.model.LoginDto
 import dev.core.network.generated.model.LogoutDto
@@ -88,6 +89,19 @@ class ApiAuthRepository(
                     password = password,
                     email = (identifier as? AuthIdentifier.Email)?.value,
                     phoneNumber = (identifier as? AuthIdentifier.Phone)?.value,
+                    deviceName = deviceName,
+                    platform = platformName,
+                ),
+            ).body()
+        }
+
+    override suspend fun loginWithGoogle(idToken: String): Resource<User> =
+        // Identifikator Google'дан emas, backenddan (token → profil) keladi; shuning uchun
+        // bo'sh email beramiz — profil refresh haqiqiy email/nomni to'ldiradi.
+        authenticate(AuthIdentifier.Email("")) {
+            api.googleOAuth(
+                OAuthLoginDto(
+                    idToken = idToken,
                     deviceName = deviceName,
                     platform = platformName,
                 ),

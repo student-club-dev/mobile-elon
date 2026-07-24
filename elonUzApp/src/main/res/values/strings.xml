@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ElonUz</string>
+    <string name="app_name">QS Business</string>
+
+    <!--
+      Google Sign-In — Google Cloud Console'даgi WEB (server) OAuth client ID.
+      Bo'sh bo'lsa "Google bilan kirish" tugmasi "mavjud emas" beradi.
+      Qadam: Google Cloud → APIs & Services → Credentials → OAuth 2.0 → Web client ID'ni bu yerга qo'ying.
+      Shuningdek Android imzosining SHA-1'ini (debug/release) o'sha loyihaga qo'shing.
+    -->
+    <string name="google_web_client_id" translatable="false"></string>
 </resources>

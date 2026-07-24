@@ -9,6 +9,8 @@ targetSdk = "35"
 
 # AndroidX (android target only)
 androidx-activityCompose = "1.9.3"
+androidx-credentials = "1.3.0"
+google-googleid = "1.1.1"
 androidx-coreKtx = "1.15.0"
 androidx-lifecycle = "2.8.7"
 
@@ -88,6 +90,9 @@ androidx-navigation-compose = { group = "org.jetbrains.androidx.navigation", nam
 
 # AndroidX (android app)
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activityCompose" }
+androidx-credentials = { group = "androidx.credentials", name = "credentials", version.ref = "androidx-credentials" }
+androidx-credentials-play-services = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "androidx-credentials" }
+google-identity-googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "google-googleid" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-coreKtx" }
 
 # Android target — biometrika/fragment

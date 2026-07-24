@@ -221,7 +221,7 @@
     <string name="auth_settings_section_general">Umumiy</string>
     <string name="auth_settings_about">Ilova haqida</string>
     <string name="auth_settings_version">Versiya 1.0.0</string>
-    <string name="auth_settings_about_body">ElonUz — talabalar uchun super-app: chegirmalar, ishlar, e'lonlar va xabarlar.\nVersiya 1.0.0</string>
+    <string name="auth_settings_about_body">QS Business — talabalar uchun super-app: chegirmalar, ishlar, e'lonlar va xabarlar.\nVersiya 1.0.0</string>
 
     <!-- ============ Pastki navigatsiya (talaba karkasi) ============ -->
     <string name="auth_tab_home">Home</string>
@@ -260,4 +260,8 @@
     <string name="auth_reset_subtitle">SMS'dagi kodni kiriting va yangi parol o'ylab toping.</string>
     <string name="auth_reset_submit">Parolni yangilash</string>
     <string name="auth_otp_skip">Keyinroq tasdiqlayman</string>
+    <string name="auth_google_login">Google bilan kirish</string>
+    <string name="auth_telegram_login">Telegram bilan kirish</string>
+    <string name="auth_telegram_soon">Telegram bilan kirish tez orada qo'shiladi</string>
+    <string name="auth_google_unavailable">Google kirish bu qurilmada mavjud emas</string>
 </resources>

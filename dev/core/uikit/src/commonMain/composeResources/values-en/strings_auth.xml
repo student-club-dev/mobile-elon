@@ -204,7 +204,7 @@
     <string name="auth_settings_section_general">General</string>
     <string name="auth_settings_about">About the app</string>
     <string name="auth_settings_version">Version 1.0.0</string>
-    <string name="auth_settings_about_body">ElonUz — a super-app for students: discounts, jobs, listings and messages.\nVersion 1.0.0</string>
+    <string name="auth_settings_about_body">QS Business — a super-app for students: discounts, jobs, listings and messages.\nVersion 1.0.0</string>
 
     <!-- ============ Bottom navigation ============ -->
     <string name="auth_tab_home">Home</string>
@@ -243,4 +243,8 @@
     <string name="auth_reset_subtitle">Enter the code from the SMS and choose a new password.</string>
     <string name="auth_reset_submit">Update password</string>
     <string name="auth_otp_skip">Verify later</string>
+    <string name="auth_google_login">Sign in with Google</string>
+    <string name="auth_telegram_login">Sign in with Telegram</string>
+    <string name="auth_telegram_soon">Telegram sign-in coming soon</string>
+    <string name="auth_google_unavailable">Google sign-in is unavailable on this device</string>
 </resources>

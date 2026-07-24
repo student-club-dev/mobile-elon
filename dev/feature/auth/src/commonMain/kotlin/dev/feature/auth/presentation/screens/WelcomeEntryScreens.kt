@@ -10,6 +10,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.KeyboardType
@@ -32,6 +33,13 @@ import dev.core.uikit.component.SegmentedTabs
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.auth_email_placeholder
 import dev.core.uikit.resources.auth_face_id_login
+import dev.core.uikit.resources.auth_google_login
+import dev.core.uikit.resources.auth_google_unavailable
+import dev.core.uikit.resources.auth_telegram_login
+import dev.core.uikit.resources.auth_telegram_soon
+import dev.feature.auth.oauth.GoogleSignInResult
+import dev.feature.auth.oauth.rememberGoogleSignIn
+import kotlinx.coroutines.launch
 import dev.core.uikit.resources.auth_field_email_label
 import dev.core.uikit.resources.auth_field_password_label
 import dev.core.uikit.resources.auth_forgot_password
@@ -59,6 +67,37 @@ import org.jetbrains.compose.resources.stringResource
  * Asosiy kirish usuli — telefon + parol (`BusinessWelcomeScreen`); bu ekran hisobi emailga
  * bog'langan foydalanuvchilar uchun. Segment tanlagichi telefon ekraniga qaytaradi.
  */
+/**
+ * Ijtimoiy kirish tugmalari — Google (backend tayyor: `/auth/business/oauth/google`) va
+ * Telegram. Telegram backend endpointи yo'q, shuning uchun hozircha "tez orada" xabarini beradi.
+ */
+@Composable
+private fun OAuthLoginButtons(vm: AuthFlowViewModel) {
+    val googleSignIn = rememberGoogleSignIn()
+    val scope = rememberCoroutineScope()
+    val googleUnavailable = stringResource(Res.string.auth_google_unavailable)
+    val telegramSoon = stringResource(Res.string.auth_telegram_soon)
+
+    OutlineButton(
+        stringResource(Res.string.auth_google_login),
+        onClick = {
+            scope.launch {
+                when (val result = googleSignIn.signIn()) {
+                    is GoogleSignInResult.Success -> vm.signInWithGoogle(result.idToken)
+                    is GoogleSignInResult.Failed -> vm.showAuthError(result.message)
+                    GoogleSignInResult.Unavailable -> vm.showAuthError(googleUnavailable)
+                    GoogleSignInResult.Cancelled -> Unit
+                }
+            }
+        },
+    )
+    Spacer(Modifier.height(11.dp))
+    OutlineButton(
+        stringResource(Res.string.auth_telegram_login),
+        onClick = { vm.showAuthError(telegramSoon) },
+    )
+}
+
 @Composable
 fun EmailLoginScreen(
     state: AuthFlowState,
@@ -129,6 +168,8 @@ fun EmailLoginScreen(
             onBiometric,
             leadingIcon = AppIcons.ScanFace,
         )
+        Spacer(Modifier.height(11.dp))
+        OAuthLoginButtons(vm)
 
         ErrorText(state.error)
 

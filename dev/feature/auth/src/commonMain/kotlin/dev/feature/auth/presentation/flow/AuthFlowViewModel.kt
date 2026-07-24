@@ -7,6 +7,7 @@ import dev.core.domain.model.User
 import dev.core.domain.repository.SettingsRepository
 import dev.core.domain.usecase.ForgotPasswordUseCase
 import dev.core.domain.usecase.LoginUseCase
+import dev.core.domain.usecase.LoginWithGoogleUseCase
 import dev.core.domain.usecase.ObserveCurrentUserUseCase
 import dev.core.domain.usecase.RegisterUseCase
 import dev.core.domain.usecase.RequestPhoneOtpUseCase
@@ -55,6 +56,7 @@ sealed interface AuthEvent {
  */
 class AuthFlowViewModel(
     private val loginUseCase: LoginUseCase,
+    private val loginWithGoogleUseCase: LoginWithGoogleUseCase,
     private val registerUseCase: RegisterUseCase,
     private val requestPhoneOtpUseCase: RequestPhoneOtpUseCase,
     private val verifyPhoneOtpUseCase: VerifyPhoneOtpUseCase,
@@ -120,6 +122,22 @@ class AuthFlowViewModel(
             }
         }
     }
+
+    /** Google ID token bilan kirish (login ekranidagi "Google bilan kirish" tugmasi). */
+    fun signInWithGoogle(idToken: String) {
+        if (_state.value.isLoading) return
+        _state.update { it.copy(isLoading = true, error = null) }
+        viewModelScope.launch {
+            when (val result = loginWithGoogleUseCase(idToken)) {
+                is Resource.Success -> finishAuthenticated(result.data)
+                is Resource.Error -> _state.update { it.copy(isLoading = false, error = result.message) }
+                Resource.Loading -> Unit
+            }
+        }
+    }
+
+    /** Tashqi (platform) oqim xatosini ekranга ko'rsatadi — masalan Google bekor qilinди/mavjud emas. */
+    fun showAuthError(message: String) = _state.update { it.copy(isLoading = false, error = message) }
 
     // ------------------------------------------------------------------
     // Ro'yxatdan o'tish

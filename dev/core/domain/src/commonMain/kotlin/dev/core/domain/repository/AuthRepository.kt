@@ -27,6 +27,12 @@ interface AuthRepository {
     /** Yangi biznes hisobi (`POST /auth/business/register`). */
     suspend fun register(identifier: AuthIdentifier, password: String): Resource<User>
 
+    /**
+     * Google bilan kirish (`POST /auth/business/oauth/google`). [idToken] — Google Sign-In
+     * bergan ID token; backend uni tekshirib access/refresh juftligini qaytaradi.
+     */
+    suspend fun loginWithGoogle(idToken: String): Resource<User>
+
     /** Chiqish — refresh token bekor qilinadi, local sessiya va profil keshi tozalanadi. */
     suspend fun logout()
 

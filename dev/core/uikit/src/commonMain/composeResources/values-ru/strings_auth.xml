@@ -204,7 +204,7 @@
     <string name="auth_settings_section_general">Общее</string>
     <string name="auth_settings_about">О приложении</string>
     <string name="auth_settings_version">Версия 1.0.0</string>
-    <string name="auth_settings_about_body">ElonUz — супер-приложение для студентов: скидки, вакансии, объявления и сообщения.\nВерсия 1.0.0</string>
+    <string name="auth_settings_about_body">QS Business — супер-приложение для студентов: скидки, вакансии, объявления и сообщения.\nВерсия 1.0.0</string>
 
     <!-- ============ Нижняя навигация ============ -->
     <string name="auth_tab_home">Главная</string>
@@ -243,4 +243,8 @@
     <string name="auth_reset_subtitle">Введите код из SMS и придумайте новый пароль.</string>
     <string name="auth_reset_submit">Обновить пароль</string>
     <string name="auth_otp_skip">Подтвердить позже</string>
+    <string name="auth_google_login">Войти через Google</string>
+    <string name="auth_telegram_login">Войти через Telegram</string>
+    <string name="auth_telegram_soon">Вход через Telegram скоро появится</string>
+    <string name="auth_google_unavailable">Вход через Google недоступен на этом устройстве</string>
 </resources>

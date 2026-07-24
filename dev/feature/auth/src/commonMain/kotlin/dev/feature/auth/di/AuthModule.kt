@@ -56,6 +56,7 @@ val authFeatureModule = module {
     viewModel {
         AuthFlowViewModel(
             loginUseCase = get(),
+            loginWithGoogleUseCase = get(),
             registerUseCase = get(),
             requestPhoneOtpUseCase = get(),
             verifyPhoneOtpUseCase = get(),

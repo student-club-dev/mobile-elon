@@ -40,6 +40,7 @@ import dev.core.domain.repository.UniversityRepository
 import dev.core.domain.usecase.ForgotPasswordUseCase
 import dev.core.domain.usecase.GetDeviceSessionsUseCase
 import dev.core.domain.usecase.LoginUseCase
+import dev.core.domain.usecase.LoginWithGoogleUseCase
 import dev.core.domain.usecase.LogoutAllDevicesUseCase
 import dev.core.domain.usecase.LogoutUseCase
 import dev.core.domain.usecase.ObserveCurrentUserUseCase
@@ -130,6 +131,7 @@ val repositoryModule = module {
 
 val domainModule = module {
     factory { LoginUseCase(get()) }
+    factory { LoginWithGoogleUseCase(get()) }
     factory { RegisterUseCase(get()) }
     factory { LogoutUseCase(get()) }
     factory { ObserveCurrentUserUseCase(get()) }
