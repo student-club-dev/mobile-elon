@@ -247,4 +247,5 @@
     <string name="auth_telegram_login">Sign in with Telegram</string>
     <string name="auth_telegram_soon">Telegram sign-in coming soon</string>
     <string name="auth_google_unavailable">Google sign-in is unavailable on this device</string>
+    <string name="auth_reset_password_subtitle">Choose a new password — at least 8 characters.</string>
 </resources>

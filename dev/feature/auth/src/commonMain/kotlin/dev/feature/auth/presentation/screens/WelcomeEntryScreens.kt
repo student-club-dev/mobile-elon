@@ -68,15 +68,18 @@ import org.jetbrains.compose.resources.stringResource
  * bog'langan foydalanuvchilar uchun. Segment tanlagichi telefon ekraniga qaytaradi.
  */
 /**
- * Ijtimoiy kirish tugmalari — Google (backend tayyor: `/auth/business/oauth/google`) va
- * Telegram. Telegram backend endpointи yo'q, shuning uchun hozircha "tez orada" xabarini beradi.
+ * "Google bilan kirish" tugmasi (`POST /auth/business/oauth/google`).
+ *
+ * Alohida `public` komponent, chunki u ikki joyда ishlatiladi: telefon kirish ekranида
+ * (`BusinessWelcomeScreen` ga slot sifatida uzatiladi — u boshqa modulда va `rememberGoogleSignIn`
+ * ga bog'lana olmaydi) va email kirish ekranида.
  */
 @Composable
-private fun OAuthLoginButtons(vm: AuthFlowViewModel) {
+fun GoogleSignInButton(vm: AuthFlowViewModel) {
     val googleSignIn = rememberGoogleSignIn()
     val scope = rememberCoroutineScope()
+    // `stringResource` faqat kompozitsiya doirasида — lambda ichида chaqirib bo'lmaydi.
     val googleUnavailable = stringResource(Res.string.auth_google_unavailable)
-    val telegramSoon = stringResource(Res.string.auth_telegram_soon)
 
     OutlineButton(
         stringResource(Res.string.auth_google_login),
@@ -86,11 +89,23 @@ private fun OAuthLoginButtons(vm: AuthFlowViewModel) {
                     is GoogleSignInResult.Success -> vm.signInWithGoogle(result.idToken)
                     is GoogleSignInResult.Failed -> vm.showAuthError(result.message)
                     GoogleSignInResult.Unavailable -> vm.showAuthError(googleUnavailable)
+                    // Foydalanuvchi o'zi bekor qildi — xato ko'rsatilmaydi.
                     GoogleSignInResult.Cancelled -> Unit
                 }
             }
         },
     )
+}
+
+/**
+ * Ijtimoiy kirish tugmalari — Google va Telegram. Telegram backend endpointи yo'q, shuning
+ * uchun hozircha "tez orada" xabarini beradi.
+ */
+@Composable
+private fun OAuthLoginButtons(vm: AuthFlowViewModel) {
+    val telegramSoon = stringResource(Res.string.auth_telegram_soon)
+
+    GoogleSignInButton(vm)
     Spacer(Modifier.height(11.dp))
     OutlineButton(
         stringResource(Res.string.auth_telegram_login),

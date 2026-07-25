@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -48,6 +49,7 @@ import dev.core.uikit.resources.business_welcome_phone_prefix
 import dev.core.uikit.resources.business_welcome_student_hint
 import dev.core.uikit.resources.business_welcome_subtitle
 import dev.core.uikit.resources.business_welcome_title
+import dev.core.uikit.resources.common_or
 import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSize
@@ -57,12 +59,15 @@ import dev.core.uikit.theme.appPalette
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * Biznesmen uchun kirish ekrani — **telefon + parol**.
+ * Biznesmen uchun kirish ekrani — **telefon + parol**, pastida **Google bilan kirish**.
  *
  * Backend'da SMS kod bilan kirish yo'q (kod faqat raqamni tasdiqlash va parolni tiklash uchun),
  * shuning uchun bu ekran to'g'ridan-to'g'ri `POST /auth/business/login` ni chaqiradi.
  *
  * Sof UI — holat/callbacklarni parametr sifatida oladi (auth moduliga bog'lanmaydi).
+ * Google oqimi ham shu sababdan [googleButton] **sloti** orqali beriladi: `rememberGoogleSignIn`
+ * auth modulida, bu modul esa unga bog'lana olmaydi (auth → business, teskarisi aylanma
+ * bog'liqlik bo'lardi). Slot bo'sh qoldirilsa tugma umuman chizilmaydi.
  */
 @Composable
 fun BusinessWelcomeScreen(
@@ -79,6 +84,7 @@ fun BusinessWelcomeScreen(
     onForgot: () -> Unit,
     onEmail: () -> Unit,
     onRegister: () -> Unit,
+    googleButton: (@Composable () -> Unit)? = null,
 ) {
     val palette = appPalette
 
@@ -150,6 +156,14 @@ fun BusinessWelcomeScreen(
 
         ErrorText(error)
 
+        // Muqobil kirish — telefon/parol formasidan keyin, ajratgich bilan.
+        if (googleButton != null) {
+            Spacer(Modifier.height(AppSpacing.lg))
+            OrDivider(palette)
+            Spacer(Modifier.height(AppSpacing.md))
+            googleButton()
+        }
+
         Spacer(Modifier.height(AppSpacing.lg))
         Text(
             stringResource(Res.string.business_welcome_email),
@@ -177,6 +191,20 @@ fun BusinessWelcomeScreen(
 
         Spacer(Modifier.height(14.dp))
         HintText(stringResource(Res.string.business_welcome_student_hint), palette = palette)
+    }
+}
+
+/** "──── yoki ────" — asosiy forma bilan muqobil kirish usullari orasidagi ajratgich. */
+@Composable
+private fun OrDivider(palette: AppPalette) {
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Box(Modifier.weight(1f).height(1.dp).background(palette.divider))
+        Text(
+            stringResource(Res.string.common_or),
+            modifier = Modifier.padding(horizontal = 12.dp),
+            style = AppType.label.copy(fontSize = 12.sp, color = palette.inkFaint),
+        )
+        Box(Modifier.weight(1f).height(1.dp).background(palette.divider))
     }
 }
 

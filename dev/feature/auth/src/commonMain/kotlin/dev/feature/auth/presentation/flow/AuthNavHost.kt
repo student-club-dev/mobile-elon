@@ -27,8 +27,10 @@ import dev.feature.auth.biometric.rememberBiometricAuthenticator
 import dev.feature.auth.presentation.main.SettingsScreen
 import dev.feature.auth.presentation.screens.EmailLoginScreen
 import dev.feature.auth.presentation.screens.ForgotPasswordScreen
+import dev.feature.auth.presentation.screens.GoogleSignInButton
 import dev.feature.auth.presentation.screens.OtpScreen
 import dev.feature.auth.presentation.screens.RegisterScreen
+import dev.feature.auth.presentation.screens.ResetCodeScreen
 import dev.feature.auth.presentation.screens.ResetPasswordScreen
 import dev.feature.business.BusinessShell
 import dev.feature.business.BusinessWelcomeScreen
@@ -52,8 +54,11 @@ private object Route {
     /** Parolni tiklash: raqam kiritish. */
     const val FORGOT = "forgot"
 
-    /** Parolni tiklash: kod + yangi parol. */
-    const val RESET = "reset"
+    /** Parolni tiklash: SMS kodni kiritish. */
+    const val RESET_CODE = "reset_code"
+
+    /** Parolni tiklash: yangi parol (kod allaqachon holatда). */
+    const val RESET_PASSWORD = "reset_password"
 
     const val HOME = "home"
 }
@@ -86,7 +91,7 @@ fun AuthNavHost(
                 AuthEvent.PhoneVerificationSent -> nav.navigate(Route.VERIFY_PHONE) {
                     launchSingleTop = true
                 }
-                AuthEvent.ResetCodeSent -> nav.navigate(Route.RESET) { launchSingleTop = true }
+                AuthEvent.ResetCodeSent -> nav.navigate(Route.RESET_CODE) { launchSingleTop = true }
                 // Parol yangilandi — kirish ekraniga qaytamiz (yangi parol bilan kiradi).
                 AuthEvent.PasswordReset -> nav.navigate(Route.LOGIN) {
                     popUpTo(Route.LOGIN) { inclusive = true }
@@ -119,6 +124,9 @@ fun AuthNavHost(
                 onForgot = { nav.navigate(Route.FORGOT) { launchSingleTop = true } },
                 onEmail = { nav.navigate(Route.EMAIL_LOGIN) { launchSingleTop = true } },
                 onRegister = { nav.navigate(Route.REGISTER) { launchSingleTop = true } },
+                // Google oqimi auth modulida (`rememberGoogleSignIn`), ekran esa business
+                // modulida — shu sabab tugma slot sifatida uzatiladi.
+                googleButton = { GoogleSignInButton(vm) },
             )
         }
 
@@ -189,13 +197,30 @@ fun AuthNavHost(
             )
         }
 
-        composable(Route.RESET) {
-            ResetPasswordScreen(
+        // Tiklash ikki qadamga bo'lingan: avval kod, keyin parol. Sabab — bitta ekranда
+        // 6 raqam va ikki marta parol yozishga ulgurmasdan kod eskirib qolardi.
+        composable(Route.RESET_CODE) {
+            ResetCodeScreen(
                 state = state,
                 vm = vm,
                 onBack = { nav.popBackStack() },
-                onSubmit = vm::resetPassword,
+                onContinue = {
+                    // Kod hali serverга yuborilmaydi — u parol bilan birga ketadi
+                    // (`/password/reset` uchalasini bitta so'rovда kutadi).
+                    vm.clearError()
+                    nav.navigate(Route.RESET_PASSWORD) { launchSingleTop = true }
+                },
                 onResend = vm::resendCode,
+            )
+        }
+
+        composable(Route.RESET_PASSWORD) {
+            ResetPasswordScreen(
+                state = state,
+                vm = vm,
+                // Orqага — kodni qayta kiritish yoki qaytadan so'rash uchun.
+                onBack = { nav.popBackStack() },
+                onSubmit = vm::resetPassword,
             )
         }
 

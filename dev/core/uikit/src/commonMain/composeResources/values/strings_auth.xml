@@ -264,4 +264,5 @@
     <string name="auth_telegram_login">Telegram bilan kirish</string>
     <string name="auth_telegram_soon">Telegram bilan kirish tez orada qo'shiladi</string>
     <string name="auth_google_unavailable">Google kirish bu qurilmada mavjud emas</string>
+    <string name="auth_reset_password_subtitle">Yangi parol o'ylab toping — kamida 8 belgi.</string>
 </resources>
