@@ -15,12 +15,9 @@ enum class OtpPurpose { VERIFY_PHONE, RESET_PASSWORD }
 data class AuthFlowState(
     /** Telefon — faqat 9 xonali local qism ("901234567"), `+998` prefiksi UI'da. */
     val phone: String = "",
-    val email: String = "",
     val password: String = "",
     val confirmPassword: String = "",
     val passwordVisible: Boolean = false,
-    /** Ro'yxatdan o'tishda tanlangan usul — telefon yoki email. */
-    val registerWithEmail: Boolean = false,
     val termsAccepted: Boolean = false,
     // SMS kod
     val otp: String = "",
@@ -39,14 +36,10 @@ data class AuthFlowState(
     /** Kirish tugmasi faolmi — telefon to'liq va parol bo'sh emas. */
     val phoneLoginReady: Boolean get() = phoneValid && password.isNotBlank() && !isLoading
 
-    /** Email bilan kirish tayyormi. */
-    val emailLoginReady: Boolean get() = email.contains('@') && password.isNotBlank() && !isLoading
-
-    /** Ro'yxatdan o'tish tayyormi — usulga mos maydon to'ldirilgan va parollar mos. */
+    /** Ro'yxatdan o'tish tayyormi — raqam to'liq, parollar mos va shartlar qabul qilingan. */
     val registerReady: Boolean
-        get() = !isLoading && termsAccepted &&
-            password.length >= MIN_PASSWORD_LENGTH && password == confirmPassword &&
-            if (registerWithEmail) email.contains('@') else phoneValid
+        get() = !isLoading && termsAccepted && phoneValid &&
+            password.length >= MIN_PASSWORD_LENGTH && password == confirmPassword
 
     /** Parolni tiklash tayyormi — kod to'liq va yangi parollar mos. */
     val resetReady: Boolean

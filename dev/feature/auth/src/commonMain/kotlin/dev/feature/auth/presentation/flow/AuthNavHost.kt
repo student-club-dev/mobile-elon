@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -15,17 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dev.core.uikit.component.AppScreenScaffold
 import dev.core.uikit.component.LogoTile
-import dev.core.uikit.resources.Res
-import dev.core.uikit.resources.auth_biometric_failed
-import dev.core.uikit.resources.auth_biometric_not_configured
-import dev.core.uikit.resources.auth_biometric_prompt_subtitle
-import dev.core.uikit.resources.auth_biometric_unavailable
-import dev.core.uikit.resources.auth_sign_in
-import dev.core.uikit.resources.common_cancel
-import dev.feature.auth.biometric.BiometricOutcome
-import dev.feature.auth.biometric.rememberBiometricAuthenticator
 import dev.feature.auth.presentation.main.SettingsScreen
-import dev.feature.auth.presentation.screens.EmailLoginScreen
 import dev.feature.auth.presentation.screens.ForgotPasswordScreen
 import dev.feature.auth.presentation.screens.GoogleSignInButton
 import dev.feature.auth.presentation.screens.OtpScreen
@@ -34,18 +23,13 @@ import dev.feature.auth.presentation.screens.ResetCodeScreen
 import dev.feature.auth.presentation.screens.ResetPasswordScreen
 import dev.feature.business.BusinessShell
 import dev.feature.business.BusinessWelcomeScreen
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 private object Route {
-    /** Biznes kirish — telefon + parol (ilovaning boshlang'ich ekrani). */
+    /** Biznes kirish — telefon + parol yoki Google (ilovaning boshlang'ich ekrani). */
     const val LOGIN = "login"
 
-    /** Email + parol bilan kirish. */
-    const val EMAIL_LOGIN = "email_login"
-
-    /** Ro'yxatdan o'tish — telefon yoki email + parol. */
+    /** Ro'yxatdan o'tish — telefon + parol. */
     const val REGISTER = "register"
 
     /** SMS kod — raqamni tasdiqlash (ro'yxatdan keyin). */
@@ -66,6 +50,9 @@ private object Route {
 /**
  * Auth oqimining navigatsiya grafi. ElonUz — **biznes** ilovasi, shuning uchun graf bitta
  * oqimdan iborat: kirish → (ro'yxat / parolni tiklash) → bosh ekran.
+ *
+ * Kirish va ro'yxat faqat **telefon** orqali (email oqimi olib tashlangan), muqobil usul —
+ * Google.
  *
  * commonMain'da yashaydi, shu bois Android va iOS'da bir xil ishlaydi.
  */
@@ -122,47 +109,10 @@ fun AuthNavHost(
                 error = state.error,
                 onSignIn = vm::loginWithPhone,
                 onForgot = { nav.navigate(Route.FORGOT) { launchSingleTop = true } },
-                onEmail = { nav.navigate(Route.EMAIL_LOGIN) { launchSingleTop = true } },
                 onRegister = { nav.navigate(Route.REGISTER) { launchSingleTop = true } },
                 // Google oqimi auth modulida (`rememberGoogleSignIn`), ekran esa business
                 // modulida — shu sabab tugma slot sifatida uzatiladi.
                 googleButton = { GoogleSignInButton(vm) },
-            )
-        }
-
-        composable(Route.EMAIL_LOGIN) {
-            val biometric = rememberBiometricAuthenticator()
-            val bioScope = rememberCoroutineScope()
-            // Biometrika matnlari kompozitsiya doirasida o'qiladi — lambda ichida
-            // `stringResource` chaqirib bo'lmaydi (u @Composable emas).
-            val bioTitle = stringResource(Res.string.auth_sign_in)
-            val bioSubtitle = stringResource(Res.string.auth_biometric_prompt_subtitle)
-            val bioCancel = stringResource(Res.string.common_cancel)
-            val bioNotConfigured = stringResource(Res.string.auth_biometric_not_configured)
-            val bioFailed = stringResource(Res.string.auth_biometric_failed)
-            val bioUnavailable = stringResource(Res.string.auth_biometric_unavailable)
-            EmailLoginScreen(
-                state = state,
-                vm = vm,
-                onBack = { nav.popBackStack() },
-                onSwitchPhone = { nav.popBackStack() },
-                onLogin = vm::loginWithEmail,
-                onForgot = { nav.navigate(Route.FORGOT) { launchSingleTop = true } },
-                onBiometric = {
-                    if (!biometric.canAuthenticate()) {
-                        vm.biometricError(bioNotConfigured)
-                    } else {
-                        bioScope.launch {
-                            when (biometric.authenticate(bioTitle, bioSubtitle, bioCancel)) {
-                                BiometricOutcome.SUCCESS -> vm.onBiometricAuthenticated()
-                                BiometricOutcome.FAILED -> vm.biometricError(bioFailed)
-                                BiometricOutcome.UNAVAILABLE -> vm.biometricError(bioUnavailable)
-                                BiometricOutcome.CANCELLED -> Unit
-                            }
-                        }
-                    }
-                },
-                onSignUp = { nav.navigate(Route.REGISTER) { launchSingleTop = true } },
             )
         }
 

@@ -248,4 +248,6 @@
     <string name="auth_telegram_soon">Вход через Telegram скоро появится</string>
     <string name="auth_google_unavailable">Вход через Google недоступен на этом устройстве</string>
     <string name="auth_reset_password_subtitle">Придумайте новый пароль — минимум 8 символов.</string>
+    <string name="legal_terms_title">Условия использования</string>
+    <string name="legal_privacy_title">Политика конфиденциальности</string>
 </resources>

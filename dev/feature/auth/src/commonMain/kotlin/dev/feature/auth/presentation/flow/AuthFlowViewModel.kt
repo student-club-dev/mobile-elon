@@ -39,7 +39,7 @@ sealed interface AuthEvent {
     /** Parol yangilandi — kirish ekraniga qaytamiz. */
     data object PasswordReset : AuthEvent
 
-    /** To'liq kirildi (kirish/ro'yxat/tasdiqlash) — bosh sahifaga o'tish. */
+    /** To'liq kirildi (telefon/parol yoki Google) — bosh sahifaga o'tish. */
     data class Authenticated(val user: User) : AuthEvent
 }
 
@@ -47,10 +47,12 @@ sealed interface AuthEvent {
  * Auth oqimining forma holatini va biznes-amallarini boshqaradi.
  *
  * Backend oqimi (`/v1/auth/business/…`):
- * - **kirish** — telefon yoki email + parol;
- * - **ro'yxat** — telefon yoki email + parol; telefon bilan bo'lsa keyin SMS kod bilan
- *   raqam tasdiqlanadi (hisob esa allaqachon ochilgan);
+ * - **kirish** — telefon + parol yoki Google (`oauth/google`);
+ * - **ro'yxat** — telefon + parol; keyin SMS kod bilan raqam tasdiqlanadi (hisob esa
+ *   allaqachon ochilgan);
  * - **parolni tiklash** — raqamga SMS kod → kod + yangi parol.
+ *
+ * Email bilan kirish/ro'yxatdan o'tish ilovadan olib tashlangan — muqobil usul Google.
  *
  * Token yangilash bu yerda emas — u tarmoq qatlamida avtomatik.
  */
@@ -87,12 +89,10 @@ class AuthFlowViewModel(
         it.copy(phone = v.filter { c -> c.isDigit() }.take(9), error = null)
     }
 
-    fun onEmailChange(v: String) = _state.update { it.copy(email = v, error = null, info = null) }
     fun onPasswordChange(v: String) = _state.update { it.copy(password = v, error = null) }
     fun onConfirmPasswordChange(v: String) = _state.update { it.copy(confirmPassword = v, error = null) }
     fun togglePasswordVisible() = _state.update { it.copy(passwordVisible = !it.passwordVisible) }
     fun toggleTerms() = _state.update { it.copy(termsAccepted = !it.termsAccepted, error = null) }
-    fun onRegisterMethodChange(email: Boolean) = _state.update { it.copy(registerWithEmail = email, error = null) }
 
     fun onOtpChange(v: String) = _state.update {
         it.copy(otp = v.filter { c -> c.isDigit() }.take(OTP_CODE_LENGTH), error = null)
@@ -105,17 +105,12 @@ class AuthFlowViewModel(
     // ------------------------------------------------------------------
 
     /** Biznes kirish ekrani — telefon + parol. */
-    fun loginWithPhone() = login("+998${_state.value.phoneDigits}")
-
-    /** Email kirish ekrani — email + parol. */
-    fun loginWithEmail() = login(_state.value.email)
-
-    private fun login(identifier: String) {
+    fun loginWithPhone() {
         val s = _state.value
         if (s.isLoading) return
         _state.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
-            when (val result = loginUseCase(identifier, s.password)) {
+            when (val result = loginUseCase("+998${s.phoneDigits}", s.password)) {
                 is Resource.Success -> finishAuthenticated(result.data)
                 is Resource.Error -> _state.update { it.copy(isLoading = false, error = result.message) }
                 Resource.Loading -> Unit
@@ -144,9 +139,8 @@ class AuthFlowViewModel(
     // ------------------------------------------------------------------
 
     /**
-     * Hisob yaratadi. Telefon bilan bo'lsa — hisob darhol ochiladi va raqamni tasdiqlash uchun
-     * SMS kod so'raladi (foydalanuvchi uni o'tkazib yuborsa ham ilovaga kirgan bo'ladi).
-     * Email bilan bo'lsa — to'g'ridan-to'g'ri bosh sahifaga.
+     * Hisob yaratadi (telefon + parol). Hisob darhol ochiladi va raqamni tasdiqlash uchun
+     * SMS kod so'raladi — foydalanuvchi uni o'tkazib yuborsa ham ilovaga kirgan bo'ladi.
      */
     fun register() {
         val s = _state.value
@@ -159,21 +153,17 @@ class AuthFlowViewModel(
             _state.update { it.copy(error = "Parollar mos kelmadi.") }
             return
         }
-        val identifier = if (s.registerWithEmail) s.email else "+998${s.phoneDigits}"
         _state.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
-            when (val result = registerUseCase(identifier, s.password)) {
+            when (val result = registerUseCase("+998${s.phoneDigits}", s.password)) {
                 is Resource.Error -> _state.update { it.copy(isLoading = false, error = result.message) }
                 Resource.Loading -> Unit
-                is Resource.Success ->
-                    if (s.registerWithEmail) {
-                        finishAuthenticated(result.data)
-                    } else {
-                        // Hisob ochildi — endi raqamni tasdiqlaymiz (sessiya allaqachon bor,
-                        // shuning uchun OTP so'rovi avtorizatsiya bilan ketadi).
-                        _state.update { it.copy(otp = "", otpPurpose = OtpPurpose.VERIFY_PHONE) }
-                        requestPhoneOtp(onFailure = { finishAuthenticated(result.data) })
-                    }
+                is Resource.Success -> {
+                    // Hisob ochildi — endi raqamni tasdiqlaymiz (sessiya allaqachon bor,
+                    // shuning uchun OTP so'rovi avtorizatsiya bilan ketadi).
+                    _state.update { it.copy(otp = "", otpPurpose = OtpPurpose.VERIFY_PHONE) }
+                    requestPhoneOtp(onFailure = { finishAuthenticated(result.data) })
+                }
             }
         }
     }
@@ -310,30 +300,6 @@ class AuthFlowViewModel(
             }
         }
     }
-
-    // ------------------------------------------------------------------
-    // Biometrika
-    // ------------------------------------------------------------------
-
-    /**
-     * Biometrik tasdiqdan (Face ID / barmoq izi) so'ng chaqiriladi — local keshda sessiya bo'lsa
-     * to'g'ridan-to'g'ri HOME'ga, aks holda xato xabari (avval oddiy kirish kerak).
-     */
-    fun onBiometricAuthenticated() {
-        viewModelScope.launch {
-            val user = observeCurrentUserUseCase().first()
-            if (user != null) {
-                finishAuthenticated(user)
-            } else {
-                _state.update {
-                    it.copy(error = "Saqlangan hisob topilmadi. Avval telefon/parol bilan kiring.")
-                }
-            }
-        }
-    }
-
-    /** Biometrik oqim xatosi (mavjud emas / tanilmadi) uchun xabar. */
-    fun biometricError(message: String) = _state.update { it.copy(error = message) }
 
     // ------------------------------------------------------------------
 

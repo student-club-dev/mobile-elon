@@ -41,7 +41,6 @@ import dev.core.uikit.resources.auth_no_account
 import dev.core.uikit.resources.auth_password_placeholder
 import dev.core.uikit.resources.auth_sign_in
 import dev.core.uikit.resources.auth_sign_up
-import dev.core.uikit.resources.business_welcome_email
 import dev.core.uikit.resources.business_welcome_password_label
 import dev.core.uikit.resources.business_welcome_phone_hint
 import dev.core.uikit.resources.business_welcome_phone_label
@@ -63,6 +62,7 @@ import org.jetbrains.compose.resources.stringResource
  *
  * Backend'da SMS kod bilan kirish yo'q (kod faqat raqamni tasdiqlash va parolni tiklash uchun),
  * shuning uchun bu ekran to'g'ridan-to'g'ri `POST /auth/business/login` ni chaqiradi.
+ * Email bilan kirish olib tashlangan — muqobil usullar: ro'yxatdan o'tish (telefon) va Google.
  *
  * Sof UI — holat/callbacklarni parametr sifatida oladi (auth moduliga bog'lanmaydi).
  * Google oqimi ham shu sababdan [googleButton] **sloti** orqali beriladi: `rememberGoogleSignIn`
@@ -82,7 +82,6 @@ fun BusinessWelcomeScreen(
     error: String?,
     onSignIn: () -> Unit,
     onForgot: () -> Unit,
-    onEmail: () -> Unit,
     onRegister: () -> Unit,
     googleButton: (@Composable () -> Unit)? = null,
 ) {
@@ -163,13 +162,6 @@ fun BusinessWelcomeScreen(
             Spacer(Modifier.height(AppSpacing.md))
             googleButton()
         }
-
-        Spacer(Modifier.height(AppSpacing.lg))
-        Text(
-            stringResource(Res.string.business_welcome_email),
-            modifier = Modifier.fillMaxWidth().height(22.dp).clickableNoRipple(onEmail),
-            style = AppType.label.copy(fontSize = 13.sp, color = palette.primary, textAlign = TextAlign.Center),
-        )
 
         Spacer(Modifier.height(AppSpacing.lg))
         Row(

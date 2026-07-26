@@ -248,4 +248,6 @@
     <string name="auth_telegram_soon">Telegram sign-in coming soon</string>
     <string name="auth_google_unavailable">Google sign-in is unavailable on this device</string>
     <string name="auth_reset_password_subtitle">Choose a new password — at least 8 characters.</string>
+    <string name="legal_terms_title">Terms of Use</string>
+    <string name="legal_privacy_title">Privacy Policy</string>
 </resources>
