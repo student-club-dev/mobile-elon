@@ -59,4 +59,11 @@
     <string name="business_profile_title">Профиль</string>
     <string name="business_profile_no_contact">Контактные данные не указаны</string>
     <string name="business_welcome_password_label">Пароль</string>
+
+    <string name="business_phone_gate_title">Ваш номер телефона</string>
+    <string name="business_phone_gate_subtitle">Чтобы добавить бизнес, в профиле нужен подтверждённый номер. Введите его — отправим SMS-код.</string>
+    <string name="business_phone_gate_continue">Продолжить</string>
+
+    <string name="business_account_gate_title">Войдите в свой аккаунт</string>
+    <string name="business_account_gate_subtitle">Чтобы добавить бизнес, войдите в аккаунт, зарегистрированный на ваш номер телефона.</string>
 </resources>

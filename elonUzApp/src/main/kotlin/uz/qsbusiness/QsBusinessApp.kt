@@ -1,4 +1,4 @@
-package uz.elonuz
+package uz.qsbusiness
 
 import android.app.Application
 import com.chuckerteam.chucker.api.ChuckerInterceptor
@@ -7,8 +7,8 @@ import dev.core.network.OkHttpInterceptors
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 
-/** ElonUz — biznes egalari uchun alohida ilova. Koin shu yerda ishga tushadi. */
-class ElonUzApp : Application() {
+/** QS Business — biznes egalari uchun alohida ilova. Koin shu yerda ishga tushadi. */
+class QsBusinessApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
@@ -19,7 +19,7 @@ class ElonUzApp : Application() {
 
         initKoin {
             androidLogger()
-            androidContext(this@ElonUzApp)
+            androidContext(this@QsBusinessApp)
         }
     }
 }

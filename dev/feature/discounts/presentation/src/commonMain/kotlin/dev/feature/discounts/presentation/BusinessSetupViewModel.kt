@@ -3,7 +3,9 @@ package dev.feature.discounts.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.core.common.Resource
+import dev.core.common.error.AppException
 import dev.core.domain.repository.SettingsRepository
+import dev.core.domain.usecase.ObserveCurrentUserUseCase
 import dev.core.common.text.TextScript
 import dev.feature.discounts.domain.model.BranchWorkingHours
 import dev.feature.discounts.domain.model.Business
@@ -28,6 +30,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -52,6 +56,7 @@ data class MyBusinessesUiState(
 class MyBusinessesViewModel(
     private val observeMyBusinesses: ObserveMyBusinessesUseCase,
     private val deleteBusiness: dev.feature.discounts.domain.usecase.DeleteBusinessUseCase,
+    observeCurrentUser: ObserveCurrentUserUseCase,
 ) : ViewModel() {
 
     /**
@@ -65,6 +70,19 @@ class MyBusinessesViewModel(
 
     /** O'chirish xatosi — ro'yxat bilan bir oqimda yashamaydi, shuning uchun alohida. */
     private val deleteError = MutableStateFlow<String?>(null)
+
+    init {
+        // Sessiya almashsa (masalan "Biznes +" oynasidan boshqa hisobga kirilsa) ro'yxat
+        // eski egasining bizneslari bilan qolib ketardi — foydalanuvchi id'si o'zgarishi
+        // ro'yxatni qaytadan o'qitadi.
+        viewModelScope.launch {
+            observeCurrentUser()
+                .map { it?.id }
+                .distinctUntilChanged()
+                .drop(1) // birinchi qiymat — ro'yxat allaqachon shu bilan yig'ilgan
+                .collect { reload.value += 1 }
+        }
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val state: StateFlow<MyBusinessesUiState> =
@@ -149,6 +167,13 @@ data class AddBusinessUiState(
     val saving: Boolean = false,
     val saved: Boolean = false,
     val error: String? = null,
+    /**
+     * Backend "avval profilingizdagi telefon raqamini kiriting/tasdiqlang" dedi
+     * (`403 PHONE_NOT_VERIFIED`). Bunда oddiy xato matni o'rniga raqam so'raydigan oyna
+     * ochiladi: raqam → `PUT /profile/me` → SMS kod. Tasdiqlangach saqlash **avtomatik
+     * qaytariladi**, chunki foydalanuvchi to'ldirgan formani qayta terishi kerak emas.
+     */
+    val needsPhone: Boolean = false,
     /**
      * Backenddan kelgan biznes turlari (`GET /business/types?gender=`). Backend javob
      * bermasa UseCase klient katalogini beradi — ro'yxat hech qachon bo'sh qolmaydi.
@@ -425,11 +450,42 @@ class AddBusinessViewModel(
             )
             when (val r = saveBusiness(business)) {
                 is Resource.Success -> _state.update { it.copy(saving = false, saved = true) }
-                is Resource.Error -> _state.update { it.copy(saving = false, error = r.message) }
+                is Resource.Error ->
+                    if (r.isPhoneGate()) {
+                        _state.update { it.copy(saving = false, needsPhone = true) }
+                    } else {
+                        _state.update { it.copy(saving = false, error = r.message) }
+                    }
                 Resource.Loading -> Unit
             }
         }
     }
+
+    /** Raqam so'ralgan oyna yopildi (foydalanuvchi voz kechdi) — forma joyida qoladi. */
+    fun dismissPhoneGate() = _state.update { it.copy(needsPhone = false) }
+
+    /** Raqam kiritilib SMS kod bilan tasdiqlandi — saqlashni o'zimiz qayta urinamiz. */
+    fun onPhoneVerified() {
+        _state.update { it.copy(needsPhone = false) }
+        save()
+    }
+}
+
+/**
+ * Xato "avval telefon raqamini tasdiqlang" degani emasmi?
+ *
+ * Backend buni `403 PHONE_NOT_VERIFIED` bilan qaytaradi, lekin matn tili/shakli o'zgarishi
+ * mumkin — shuning uchun typed xato ham, kalit so'zlar ham tekshiriladi. Formadagi biznes
+ * telefoni xatosi bilan chalkashmasligi uchun faqat "tasdiqlash/kiritish" ma'nosidagi
+ * iboralar hisobga olinadi.
+ */
+private fun Resource.Error.isPhoneGate(): Boolean {
+    val fieldTexts = (error as? AppException.Validation)?.fields?.values?.joinToString(" ").orEmpty()
+    val text = "$message $fieldTexts".lowercase()
+    if ("phone_not_verified" in text) return true
+    val aboutPhone = "raqam" in text || "phone" in text || "telefon" in text
+    val aboutMissing = "tasdiq" in text || "verif" in text || "kirit" in text || "required" in text
+    return aboutPhone && aboutMissing
 }
 
 /**

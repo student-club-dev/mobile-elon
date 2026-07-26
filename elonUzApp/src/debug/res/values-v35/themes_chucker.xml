@@ -6,7 +6,7 @@
   shunda uning toolbar'i status bar ostida to'g'ri joylashadi.
 
   Bu faqat Chucker activity'lariga ta'sir qiladi (ular `@style/Chucker.Theme` ni ishlatadi);
-  ilovaning o'z `Theme.ElonUz` mavzusiga tegmaydi.
+  ilovaning o'z `Theme.QsBusiness` mavzusiga tegmaydi.
 -->
 <resources>
     <style name="Chucker.Theme" parent="Chucker.BaseTheme">

@@ -95,6 +95,7 @@ fun AddBusinessScreen(
     // `null` — yangi biznes; aks holda mavjud biznesni tahrirlash.
     businessId: String? = null,
     vm: AddBusinessViewModel = koinViewModel(),
+    phoneGate: @Composable (onVerified: () -> Unit, onCancel: () -> Unit) -> Unit = { _, _ -> },
 ) {
     val palette = appPalette
     val state by vm.state.collectAsStateWithLifecycle()
@@ -301,6 +302,12 @@ fun AddBusinessScreen(
             onDismiss = vm::closeDistrictPicker,
             palette = palette,
         )
+
+        // "Avval telefon raqamingizni tasdiqlang" — forma yopilmaydi, tasdiqlangach
+        // saqlash o'zi qayta uriniladi.
+        if (state.needsPhone) {
+            phoneGate(vm::onPhoneVerified, vm::dismissPhoneGate)
+        }
     }
 }
 

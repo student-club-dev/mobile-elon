@@ -59,4 +59,11 @@
     <string name="business_profile_title">Profile</string>
     <string name="business_profile_no_contact">No contact details yet</string>
     <string name="business_welcome_password_label">Password</string>
+
+    <string name="business_phone_gate_title">Your phone number</string>
+    <string name="business_phone_gate_subtitle">To add a business your profile needs a verified phone number. Enter it and we\'ll send an SMS code.</string>
+    <string name="business_phone_gate_continue">Continue</string>
+
+    <string name="business_account_gate_title">Sign in to your account</string>
+    <string name="business_account_gate_subtitle">To add a business, sign in to the account registered with your phone number.</string>
 </resources>

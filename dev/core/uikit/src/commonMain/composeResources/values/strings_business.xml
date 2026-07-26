@@ -66,4 +66,13 @@
     <string name="business_profile_title">Profil</string>
     <string name="business_profile_no_contact">Aloqa ma'lumoti kiritilmagan</string>
     <string name="business_welcome_password_label">Parol</string>
+
+    <!-- Biznes qo'shishда backend tasdiqlangan raqam talab qilsa ochiladigan oyna. -->
+    <string name="business_phone_gate_title">Telefon raqamingiz</string>
+    <string name="business_phone_gate_subtitle">Biznes qo'shish uchun profilingizда tasdiqlangan telefon raqami bo'lishi kerak. Raqamni kiriting — SMS kod yuboramiz.</string>
+    <string name="business_phone_gate_continue">Davom etish</string>
+
+    <!-- Profilда raqam bo'lmaganda "Biznes +" bosilsa: mavjud hisobga kirish oynasi. -->
+    <string name="business_account_gate_title">Hisobingizga kiring</string>
+    <string name="business_account_gate_subtitle">Biznes qo'shish uchun telefon raqamingiz bilan ro'yxatdan o'tgan hisobingizga kiring.</string>
 </resources>

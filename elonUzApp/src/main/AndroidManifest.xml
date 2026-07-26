@@ -11,17 +11,17 @@
     <uses-feature android:name="android.hardware.location" android:required="false" />
 
     <application
-        android:name=".ElonUzApp"
+        android:name=".QsBusinessApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ElonUz">
+        android:theme="@style/Theme.QsBusiness">
 
-        <!-- Yagona kirish nuqtasi — to'g'ridan-to'g'ri biznes (ElonUz) oqimi. Rol tanlash yo'q. -->
+        <!-- Yagona kirish nuqtasi — to'g'ridan-to'g'ri biznes (QS Business) oqimi. Rol tanlash yo'q. -->
         <activity
-            android:name=".ElonUzActivity"
+            android:name=".QsBusinessActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize"
             android:configChanges="orientation|screenSize|keyboardHidden">

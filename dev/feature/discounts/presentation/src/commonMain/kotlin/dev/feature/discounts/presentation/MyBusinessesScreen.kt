@@ -126,27 +126,30 @@ fun MyBusinessesScreen(
                         maxLines = 1,
                     )
                 }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(9.dp),
-                ) {
-                    IconActionButton(
-                        AppIcons.MessageSquare,
-                        onClick = onMessages,
-                        contentDescription = stringResource(Res.string.discounts_business_messages),
-                        size = TopActionSize,
-                        iconSize = TopActionIconSize,
-                        palette = palette,
-                    )
-                    IconActionButton(
-                        AppIcons.Support,
-                        onClick = onSupport,
-                        contentDescription = stringResource(Res.string.discounts_business_support),
-                        size = TopActionSize,
-                        iconSize = SupportIconSize,
-                        palette = palette,
-                    )
-                }
+                // Xabarlar va Qo'llab-quvvatlash tugmalari vaqtincha yashirilgan (backend
+                // tayyor emas). Marshrutlar (`onMessages`/`onSupport`) va ekranlar joyida —
+                // qayta yoqish uchun shu blokning izohini ochish yetarli.
+                // Row(
+                //     verticalAlignment = Alignment.CenterVertically,
+                //     horizontalArrangement = Arrangement.spacedBy(9.dp),
+                // ) {
+                //     IconActionButton(
+                //         AppIcons.MessageSquare,
+                //         onClick = onMessages,
+                //         contentDescription = stringResource(Res.string.discounts_business_messages),
+                //         size = TopActionSize,
+                //         iconSize = TopActionIconSize,
+                //         palette = palette,
+                //     )
+                //     IconActionButton(
+                //         AppIcons.Support,
+                //         onClick = onSupport,
+                //         contentDescription = stringResource(Res.string.discounts_business_support),
+                //         size = TopActionSize,
+                //         iconSize = SupportIconSize,
+                //         palette = palette,
+                //     )
+                // }
             }
 
             // O'chirib bo'lmadi (masalan biznesda faol e'lon bor yoki tarmoq uzildi) —

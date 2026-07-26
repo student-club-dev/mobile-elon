@@ -12,6 +12,10 @@ kotlin {
             implementation(projects.dev.feature.discounts.presentation)
             implementation(projects.dev.feature.profile.presentation)
             implementation(projects.dev.feature.profile.domain)
+            // Hisobga kirish/parol tiklash use case'lari (auth FEATURE'iga emas, core'ga bog'lanamiz —
+            // `auth -> business` yo'nalishi buzilmasin).
+            implementation(projects.dev.core.domain)
+            implementation(projects.dev.core.common)
             // BusinessShell ichki navigatsiyasi (NavHost).
             implementation(libs.androidx.navigation.compose)
         }

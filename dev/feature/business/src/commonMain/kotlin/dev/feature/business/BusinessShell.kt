@@ -7,6 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -25,7 +28,10 @@ import dev.feature.discounts.presentation.AddBusinessScreen
 import dev.feature.discounts.presentation.MyBusinessesScreen
 import dev.feature.discounts.presentation.MyListingsScreen
 import dev.feature.discounts.presentation.PostListingScreen
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.feature.profile.presentation.EditProfileScreen
+import dev.feature.profile.presentation.ProfileViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 private const val BUSINESSES = "businesses"
 private const val ADD_BUSINESS = "add_business"
@@ -56,6 +62,14 @@ fun BusinessShell(
 ) {
     val palette = appPalette
     val nav = rememberNavController()
+
+    // Profil — "Biznes +" bosilганда raqam bor-yo'qligini shu yerdan bilamiz. Google bilan
+    // kirilgan hisobda raqam bo'lmaydi, biznes esa tasdiqlangan raqamsiz yaratilmaydi.
+    val profileVm: ProfileViewModel = koinViewModel()
+    val profileState by profileVm.state.collectAsStateWithLifecycle()
+    val hasPhone = !profileState.profile?.phoneNumber.isNullOrBlank()
+    var accountGateOpen by remember { mutableStateOf(false) }
+
     val backStack by nav.currentBackStackEntryAsState()
     val current = backStack?.destination?.route ?: BUSINESSES
 
@@ -68,7 +82,11 @@ fun BusinessShell(
                     MyBusinessesScreen(
                         onOpenBusiness = { biz -> nav.navigate("$LISTINGS/${biz.id}") { launchSingleTop = true } },
                         onEditBusiness = { biz -> nav.navigate("$ADD_BUSINESS?businessId=${biz.id}") { launchSingleTop = true } },
-                        onAddBusiness = { nav.navigate(ADD_BUSINESS) { launchSingleTop = true } },
+                        // Raqam yo'q bo'lsa avval hisobga kirish oynasi — forma keyin ochiladi.
+                        onAddBusiness = {
+                            if (hasPhone) nav.navigate(ADD_BUSINESS) { launchSingleTop = true }
+                            else accountGateOpen = true
+                        },
                         onProfile = { nav.navigate(PROFILE) { launchSingleTop = true } },
                         onMessages = { nav.navigate(MESSAGES) { launchSingleTop = true } },
                         onSupport = { nav.navigate(SUPPORT) { launchSingleTop = true } },
@@ -83,6 +101,10 @@ fun BusinessShell(
                         onClose = { nav.popBackStack() },
                         onSaved = { nav.popBackStack() },
                         businessId = entry.arguments?.getString("businessId"),
+                        // Backend tasdiqlangan raqam talab qilsa — raqam + SMS kod oynasi.
+                        phoneGate = { onVerified, onCancel ->
+                            BusinessPhoneGate(onVerified = onVerified, onCancel = onCancel)
+                        },
                     )
                 }
                 // 3. Bitta biznesning e'lonlari.
@@ -170,6 +192,18 @@ fun BusinessShell(
                     palette = palette,
                     onClick = { nav.navigate("$POST_LISTING?businessId=$businessId") { launchSingleTop = true } },
                     modifier = Modifier.align(Alignment.BottomEnd).padding(end = 18.dp, bottom = AppSpacing.screenBottom),
+                )
+            }
+
+            // Raqamsiz hisobda "Biznes +" bosilgan — mavjud hisobga kirish oynasi.
+            // Kirgach forma darhol ochiladi, foydalanuvchi "+" ni qayta bosmaydi.
+            if (accountGateOpen) {
+                BusinessAccountGate(
+                    onLoggedIn = {
+                        accountGateOpen = false
+                        nav.navigate(ADD_BUSINESS) { launchSingleTop = true }
+                    },
+                    onCancel = { accountGateOpen = false },
                 )
             }
         }

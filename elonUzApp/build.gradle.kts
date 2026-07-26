@@ -24,11 +24,11 @@ fun secret(key: String): String {
 }
 
 android {
-    namespace = "uz.elonuz"
+    namespace = "uz.qsbusiness"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "uz.elonuz.app"
+        applicationId = "uz.qsbusiness.app"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
@@ -46,7 +46,7 @@ android {
         create("release") {
             // Kalit `.gitignore` да — repoga tushmaydi. Parollar `local.properties` дан
             // (yoki CI'да o'sha nomdagi muhit o'zgaruvchilaridан).
-            val store = rootProject.file("elonUzApp/release.keystore")
+            val store = rootProject.file("elonUzApp/qsbusiness.keystore")
             if (store.exists() && secret("RELEASE_STORE_PASSWORD").isNotEmpty()) {
                 storeFile = store
                 storePassword = secret("RELEASE_STORE_PASSWORD")
@@ -57,6 +57,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Google Sign-In debug'да ham ishlashi uchun release kaliti bilan imzolaymiz:
+            // shunda SHA-1 bitta bo'ladi va Google Cloud'да ikkinchi Android client kerak emas.
+            // Kalit yo'q dasturchида odatdagi debug kalitiga qaytadi.
+            signingConfig = signingConfigs.getByName("release").takeIf { it.storeFile != null }
+        }
         release {
             // Kalit yo'q bo'lsa (masalan boshqa dasturchida) release build yiqilmasin —
             // shunchaki imzosiz yig'iladi.

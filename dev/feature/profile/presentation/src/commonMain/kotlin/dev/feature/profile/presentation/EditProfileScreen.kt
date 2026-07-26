@@ -420,7 +420,8 @@ fun EditProfileScreen(
                 phone = pending,
                 vm = vm,
                 palette = palette,
-                onDone = { verifyingPhone = null; onBack() },
+                onVerified = { verifyingPhone = null; onBack() },
+                onDismiss = { verifyingPhone = null; onBack() },
             )
         }
     }
@@ -435,13 +436,21 @@ fun EditProfileScreen(
  * foydalanuvchini shu yerдаyoq tasdiqlashga taklif qilamiz.
  *
  * "Keyinroq" tanlansa ham profil saqlangan bo'ladi — faqat raqam tasdiqlanmagan qoladi.
+ *
+ * Ochiq (public), chunki biznes qo'shish oqimi ham shu oynani ishlatadi: u yerда backend
+ * tasdiqlanmagan raqam bilan biznes yaratishga ruxsat bermaydi.
+ *
+ * [onVerified] — kod to'g'ri kelди; [onDismiss] — foydalanuvchi "keyinroq" dedi yoki oynani
+ * yopdi. Ikkisi alohida, chunki chaqiruvchi ko'pincha faqat muvaffaqiyatda ish davom
+ * ettiradi (masalan biznesni qayta saqlaydi).
  */
 @Composable
-private fun PhoneVerificationSheet(
+fun PhoneVerificationSheet(
     phone: String,
     vm: ProfileViewModel,
     palette: AppPalette,
-    onDone: () -> Unit,
+    onVerified: () -> Unit,
+    onDismiss: () -> Unit,
 ) {
     var code by remember { mutableStateOf("") }
     var sending by remember { mutableStateOf(true) }
@@ -472,7 +481,7 @@ private fun PhoneVerificationSheet(
 
     AppBottomSheet(
         visible = true,
-        onDismiss = onDone,
+        onDismiss = onDismiss,
         title = stringResource(Res.string.profile_phone_verify_title),
         palette = palette,
     ) {
@@ -515,7 +524,7 @@ private fun PhoneVerificationSheet(
                 verifying = true
                 vm.verifyPhoneOtp(phone, code) { error ->
                     verifying = false
-                    if (error == null) onDone() else message = error
+                    if (error == null) onVerified() else message = error
                 }
             },
         )
@@ -524,7 +533,7 @@ private fun PhoneVerificationSheet(
         Text(
             stringResource(Res.string.profile_phone_verify_later),
             style = AppType.link.copy(color = palette.inkMuted),
-            modifier = Modifier.fillMaxWidth().clickable(onClick = onDone),
+            modifier = Modifier.fillMaxWidth().clickable(onClick = onDismiss),
             textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(AppSpacing.md))
