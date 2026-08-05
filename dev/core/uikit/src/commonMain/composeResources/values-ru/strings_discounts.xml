@@ -296,11 +296,6 @@
 
     <string name="discounts_image_cover">Обложка</string>
 
-    <!-- ============ Станция метро (ориентир филиала, только Ташкент) ============ -->
-    <string name="discounts_metro_label">Станция метро</string>
-    <string name="discounts_metro_select">Выберите станцию</string>
-    <string name="discounts_metro_note">Необязательно — так студентам легче найти филиал</string>
-    <string name="discounts_metro_line">Линия %1$s</string>
 
     <!-- ============ Модерация бизнеса ============ -->
     <string name="discounts_business_submit">Отправить на проверку</string>

@@ -17,7 +17,6 @@ import dev.feature.discounts.domain.model.GeoCatalog
 import dev.feature.discounts.domain.model.WeekDay
 import dev.feature.discounts.domain.model.ListingBranch
 import dev.feature.discounts.domain.model.ListingCatalog
-import dev.feature.discounts.domain.model.MetroStation
 import dev.feature.discounts.domain.model.Region
 import dev.feature.discounts.domain.repository.RegionRepository
 import dev.feature.discounts.domain.repository.PlaceSuggestion
@@ -200,22 +199,10 @@ data class AddBusinessUiState(
      * to'ladi, topa olmasa foydalanuvchi o'zi tanlaydi.
      */
     val districtId: String? = null,
-    /**
-     * Eng yaqin metro bekati — **ixtiyoriy** mo'ljal, faqat Toshkent shahri filiallari uchun
-     * ([showMetroField]). Xaritadan joy tanlanganda `nearestMetro` dan avtomatik to'ladi.
-     */
-    val metroStation: String = "",
     /** Viloyat tanlash sheet'i ochiqmi (`AppBottomSheet`). */
     val regionPickerOpen: Boolean = false,
     /** Tuman tanlash sheet'i ochiqmi. */
     val districtPickerOpen: Boolean = false,
-    /** Metro bekati tanlash sheet'i ochiqmi. */
-    val metroPickerOpen: Boolean = false,
-    /**
-     * Metro bekatlari (`GET /geo/metro-stations`). Bo'sh bo'lishi mumkin — u holda maydon
-     * oddiy matn kiritish bo'lib qoladi (ro'yxat majburiy emas, backend erkin matn kutadi).
-     */
-    val metroStations: List<MetroStation> = emptyList(),
     /**
      * Filial ish vaqti — backend yetti kunni ham kutadi (`BranchRequestDto.workingHours`),
      * shuning uchun forma odatiy jadval bilan ochiladi.
@@ -269,29 +256,11 @@ data class AddBusinessUiState(
 
     val districtName: String? get() = districts.firstOrNull { it.id == districtId }?.name
 
-    /**
-     * Metro maydoni ko'rsatiladimi — faqat Toshkent shahri tanlanganda. Metro boshqa
-     * viloyatlarda yo'q, shuning uchun u yerda maydon shunchaki shovqin bo'lardi.
-     */
-    val showMetroField: Boolean get() = regionId == TASHKENT_CITY_REGION_ID
-
     val canSave: Boolean
         get() = name.isNotBlank() && phoneDigits.length == 9 && businessType != null &&
             branch != null && regionId != null && districtId != null &&
             workingHours.all { it.isValid } && !saving
 }
-
-/**
- * Biznes qo'shishда oldindan tanlanadigan tur. Kiyim-kechak — eng ko'p uchraydigan tur,
- * shuning uchun forma darrov ishlashga tayyor holatда ochiladi.
- */
-private val DEFAULT_BUSINESS_TYPE = BusinessType.CLOTHING
-
-/**
- * Toshkent shahrining `regionId` si — metro maydoni faqat shu viloyatda ko'rsatiladi.
- * Id backendда ham, klient [GeoCatalog] ida ham bir xil formatda ("TOSHKENT_SHAHRI").
- */
-private const val TASHKENT_CITY_REGION_ID = "TOSHKENT_SHAHRI"
 
 class AddBusinessViewModel(
     private val saveBusiness: SaveBusinessUseCase,
@@ -332,7 +301,6 @@ class AddBusinessViewModel(
                     branch = branch,
                     regionId = branch?.regionId,
                     districtId = branch?.districtId,
-                    metroStation = branch?.metroStation.orEmpty(),
                     // Eski, ish vaqtisiz saqlangan filial ham to'liq haftalik jadval bilan ochiladi.
                     workingHours = BranchWorkingHours.fullWeek(branch?.workingHours.orEmpty()),
                 )
@@ -345,12 +313,6 @@ class AddBusinessViewModel(
         viewModelScope.launch {
             val regions = regionRepository.regions()
             if (regions.isNotEmpty()) _state.update { it.copy(regions = regions) }
-        }
-        // Metro bekatlari — mo'ljal maydonining takliflari. Bo'sh qaytsa maydon oddiy
-        // matn kiritish bo'lib qolaveradi, shuning uchun xato ko'rsatilmaydi.
-        viewModelScope.launch {
-            val stations = regionRepository.metroStations()
-            if (stations.isNotEmpty()) _state.update { it.copy(metroStations = stations) }
         }
         viewModelScope.launch {
             settings.observeValue(SettingsRepository.KEY_GENDER).collect { code ->
@@ -369,17 +331,11 @@ class AddBusinessViewModel(
     private fun loadTypes(gender: Gender?) {
         viewModelScope.launch {
             val types = getBusinessTypes(gender)
-            _state.update { state ->
-                state.copy(
-                    availableTypes = types,
-                    // Yangi biznesда tur oldindan tanlangan bo'ladi — foydalanuvchi ko'pincha
-                    // uni o'zgartirmaydi va bo'sh tanlov saqlashga to'sqinlik qilardi.
-                    // Tahrirlashда yoki foydalanuvchi allaqachon tanlaganда tegilmaydi.
-                    businessType = state.businessType
-                        ?: types.firstOrNull { it.type == DEFAULT_BUSINESS_TYPE }?.type
-                        ?: types.firstOrNull()?.type,
-                )
-            }
+            // Tur OLDINDAN TANLANMAYDI. Ilgari ro'yxatning birinchisi (Kiyim-kechak)
+            // qo'yilardi: forma "tayyor" ko'rinar, e'tibor bermagan foydalanuvchi esa
+            // biznesini butunlay boshqa turda saqlab yuborardi. Endi tanlash foydalanuvchining
+            // ongli qadami — `canSave` uni majburiy qiladi.
+            _state.update { it.copy(availableTypes = types) }
         }
     }
 
@@ -466,9 +422,6 @@ class AddBusinessViewModel(
                         state.regions.firstOrNull { it.id == regionId }?.districts.orEmpty()
                             .any { it.id == id }
                     },
-                    // Geokoder bekat topsa yozamiz; topmasa foydalanuvchi qo'lda tanlagan
-                    // qiymatni o'chirmaymiz (u yangi nuqta uchun ham to'g'ri bo'lishi mumkin).
-                    metroStation = branch.metroStation ?: state.metroStation,
                     resolvingAddress = false,
                     pickingOnMap = false,
                 )
@@ -497,33 +450,6 @@ class AddBusinessViewModel(
     fun onDistrict(districtId: String) = _state.update {
         it.copy(districtId = districtId, districtPickerOpen = false, error = null)
     }
-
-    // -----------------------------------------------------------------------
-    // Metro bekati — ixtiyoriy mo'ljal (faqat Toshkent)
-    // -----------------------------------------------------------------------
-
-    fun openMetroPicker() = _state.update { it.copy(metroPickerOpen = true) }
-
-    fun closeMetroPicker() = _state.update { it.copy(metroPickerOpen = false) }
-
-    /**
-     * Sheet'dan bekat tanlandi. Ayni bekat qayta bosilsa tanlov **bekor qilinadi** — maydon
-     * ixtiyoriy, shuning uchun undan qaytish yo'li bo'lishi kerak.
-     */
-    fun onMetroStationPicked(name: String) = _state.update {
-        it.copy(
-            metroStation = if (it.metroStation == name) "" else name,
-            metroPickerOpen = false,
-            error = null,
-        )
-    }
-
-    /**
-     * Bekat qo'lda yozildi — ro'yxat yuklanmaganda maydon oddiy matn kiritish bo'ladi.
-     * Bu yerда almashtirish yo'q ([onMetroStationPicked] dan farqi shu): har bosilgan harf
-     * yangi qiymat, uni "tanlovni bekor qilish" deb tushunish yozishni buzardi.
-     */
-    fun onMetroStation(value: String) = _state.update { it.copy(metroStation = value, error = null) }
 
     // -----------------------------------------------------------------------
     // Ish vaqti — yetti kunning har biri alohida tahrirlanadi
@@ -565,9 +491,6 @@ class AddBusinessViewModel(
                         name = s.branchName.trim().ifBlank { s.name.trim() },
                         regionId = s.regionId ?: branch.regionId,
                         districtId = s.districtId ?: branch.districtId,
-                        // Metro faqat Toshkentda mazmunli: viloyat almashtirilgan bo'lsa
-                        // eski bekat qiymati filialga yozilib qolmasin.
-                        metroStation = s.metroStation.trim().takeIf { it.isNotEmpty() && s.showMetroField },
                         workingHours = s.workingHours,
                     ),
                 ),

@@ -296,11 +296,6 @@
 
     <string name="discounts_image_cover">Cover</string>
 
-    <!-- ============ Metro station (branch landmark, Tashkent only) ============ -->
-    <string name="discounts_metro_label">Metro station</string>
-    <string name="discounts_metro_select">Select a station</string>
-    <string name="discounts_metro_note">Optional — helps students find the branch</string>
-    <string name="discounts_metro_line">%1$s line</string>
 
     <!-- ============ Business moderation ============ -->
     <string name="discounts_business_submit">Submit for review</string>

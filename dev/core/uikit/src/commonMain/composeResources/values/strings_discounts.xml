@@ -303,11 +303,6 @@
 
     <string name="discounts_image_cover">Muqova</string>
 
-    <!-- ============ Metro bekati (filial mo'ljali, faqat Toshkent) ============ -->
-    <string name="discounts_metro_label">Metro bekati</string>
-    <string name="discounts_metro_select">Bekatni tanlang</string>
-    <string name="discounts_metro_note">Ixtiyoriy — talabalar filialni oson topishi uchun</string>
-    <string name="discounts_metro_line">%1$s liniyasi</string>
 
     <!-- ============ Biznes moderatsiyasi ============ -->
     <string name="discounts_business_submit">Tekshiruvga yuborish</string>
