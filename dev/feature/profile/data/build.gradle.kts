@@ -13,5 +13,8 @@ kotlin {
             // SessionProvider (joriy uid) — implementatsiya auth feature'da.
             implementation(projects.dev.core.domain)
         }
+        commonTest.dependencies {
+            implementation(libs.kotlinx.coroutines.test)
+        }
     }
 }

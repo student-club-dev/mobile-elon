@@ -1,11 +1,14 @@
 package dev.feature.profile.data.remote
 
 import dev.core.common.Resource
+import dev.core.common.error.toAppException
+import dev.core.common.errorOf
 import dev.core.common.map
 import dev.core.network.generated.api.ProfileApi
 import dev.core.network.media.MediaPurpose
 import dev.core.network.media.MediaUploader
 import dev.core.network.response.safeCall
+import dev.core.network.response.toAppExceptionWithFields
 import dev.feature.profile.data.mapper.toDomain
 import dev.feature.profile.data.mapper.toUpdateRequest
 import dev.feature.profile.domain.model.UserProfile
@@ -29,10 +32,15 @@ class ApiProfileRemoteDataSource(
         Resource.Success(api.getMe().body().toDomain())
     } catch (e: ClientRequestException) {
         // 404 — profil hali yaratilmagan; bu xato emas, shunchaki bo'sh profil.
-        if (e.response.status == HttpStatusCode.NotFound) Resource.Success(null)
-        else Resource.Error(e.message, e)
+        if (e.response.status == HttpStatusCode.NotFound) {
+            Resource.Success(null)
+        } else {
+            // Qolgan 4xx — javob tanasidagi backend matni bilan (typed). `e.message` bo'lsa
+            // foydalanuvchi Ktor'ning inglizcha matnini ko'rardi.
+            errorOf(e.toAppExceptionWithFields())
+        }
     } catch (e: Exception) {
-        Resource.Error(e.message ?: "Profilni yuklab bo'lmadi", e)
+        errorOf(e.toAppException())
     }
 
     /**

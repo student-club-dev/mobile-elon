@@ -53,7 +53,9 @@ private suspend fun <T> runSafely(
     } catch (e: ClientRequestException) {
         errorOf(e.toAppExceptionWithFields()) // 4xx — 422 maydon xatolari bilan
     } catch (e: ServerResponseException) {
-        errorOf(AppException.Server(e.response.status.value, e)) // 5xx
+        // 5xx — tanasida backend matni bo'lishi mumkin (503 "xizmat vaqtincha yo'q"), shu bois
+        // 4xx bilan bir xil yo'ldan: avval tana o'qiladi, bo'lmasa status bo'yicha zaxira.
+        errorOf(e.toAppExceptionWithFields())
     } catch (e: Throwable) {
         // Tarmoq/timeout/parse — matn va joriy internet holatiga qarab.
         errorOf(e.toAppException(connectivity?.isOnline() ?: true))
@@ -84,18 +86,26 @@ suspend fun ResponseException.toAppExceptionWithFields(): AppException {
     }
 }
 
-/** HTTP status kodini typed [AppException] ga aylantiradi (javob tanasisiz — zaxira yo'l). */
+/**
+ * HTTP status kodini typed [AppException] ga aylantiradi — **javob tanasisiz** zaxira yo'l
+ * (tana bo'sh, JSON emas yoki o'qib bo'lmadi).
+ *
+ * Bu yerда backend matni yo'q, shuning uchun qoida bo'yicha ko'pchilik holat "server xatosi"
+ * bo'lib chiqadi. Istisno — foydalanuvchi uchun aniq va foydali ma'noga ega statuslar:
+ * 401 (qaytadan kiring), 408 (vaqt tugadi), 429 (chegara). Ilgari 4xx da HTTP'ning inglizcha
+ * izohi ("Bad Request") ko'rsatilar edi — o'zbekcha interfeysда u begona ko'rinardi.
+ */
 fun HttpStatusCode.toAppException(cause: Throwable? = null): AppException = when (value) {
-    401 -> AppException.Unauthorized(cause)
-    403 -> AppException.PermissionDenied(cause)
-    404 -> AppException.NotFound(cause)
+    401 -> AppException.Unauthorized(cause = cause)
+    403 -> AppException.PermissionDenied(cause = cause)
+    404 -> AppException.NotFound(cause = cause)
     408 -> AppException.Timeout(cause)
-    // Konvertsiz zaxira yo'l — kod noma'lum, faqat "chegara to'ldi" ekani aniq.
-    429 -> AppException.LimitReached(code = null, message = "Chegara to'ldi. Birozdan so'ng qayta urining.", cause = cause)
-    in 400..499 -> AppException.Validation(
-        reason = description.ifBlank { "So'rov noto'g'ri." },
+    429 -> AppException.LimitReached(
+        code = null,
+        message = "Chegara to'ldi. Birozdan so'ng qayta urining.",
         cause = cause,
     )
-    in 500..599 -> AppException.Server(value, cause)
-    else -> AppException.Unknown(cause = cause)
+    in 400..499 -> AppException.Validation(AppException.SERVER_ERROR_MESSAGE, cause = cause)
+    in 500..599 -> AppException.Server(value, cause = cause)
+    else -> AppException.Server(value, cause = cause)
 }
