@@ -1,6 +1,8 @@
 package dev.feature.business
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,7 +14,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -21,7 +25,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dev.core.uikit.component.EdgeSwipeBack
 import dev.core.uikit.theme.AppSpacing
+import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.appPalette
+import dev.core.uikit.theme.rowShadow
 import dev.feature.business.components.BusinessTopBar
 import dev.feature.business.components.CreateFab
 import dev.feature.discounts.presentation.AddBusinessScreen
@@ -31,7 +37,11 @@ import dev.feature.discounts.presentation.PostListingScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.feature.profile.presentation.EditProfileScreen
 import dev.feature.profile.presentation.ProfileViewModel
+import dev.feature.profile.presentation.components.ProfileAvatar
 import org.koin.compose.viewmodel.koinViewModel
+
+/** Sarlavhadagi hisob tugmasi bilan bir o'lchamda (`MyBusinessesScreen`). */
+private val AccountAvatarSize = 46.dp
 
 private const val BUSINESSES = "businesses"
 private const val ADD_BUSINESS = "add_business"
@@ -80,6 +90,22 @@ fun BusinessShell(
                 // 1. Bosh ekran — Mening bizneslarim (ro'yxat + "+" tugma).
                 composable(BUSINESSES) {
                     MyBusinessesScreen(
+                        // Sarlavha chapida — foydalanuvchining o'z rasmi (yo'q bo'lsa ismining
+                        // bosh harfi). Profil ma'lumoti shu karkasda, shuning uchun tugma
+                        // ekranga slot sifatida beriladi.
+                        accountButton = { onClick ->
+                            ProfileAvatar(
+                                name = profileState.name,
+                                size = AccountAvatarSize,
+                                fontSize = 18.sp,
+                                palette = palette,
+                                avatarUrl = profileState.profile?.avatarUrl,
+                                modifier = Modifier
+                                    .rowShadow(AppRadius.pill)
+                                    .clip(CircleShape)
+                                    .clickable(onClick = onClick),
+                            )
+                        },
                         onOpenBusiness = { biz -> nav.navigate("$LISTINGS/${biz.id}") { launchSingleTop = true } },
                         onEditBusiness = { biz -> nav.navigate("$ADD_BUSINESS?businessId=${biz.id}") { launchSingleTop = true } },
                         // Raqam yo'q bo'lsa avval hisobga kirish oynasi — forma keyin ochiladi.

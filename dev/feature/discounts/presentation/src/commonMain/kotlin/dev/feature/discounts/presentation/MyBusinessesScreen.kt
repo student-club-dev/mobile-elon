@@ -84,6 +84,12 @@ fun MyBusinessesScreen(
     onEditBusiness: (Business) -> Unit,
     onAddBusiness: () -> Unit,
     onProfile: () -> Unit = {},
+    /**
+     * Sarlavhaning chapidagi hisob tugmasi — karkas (`BusinessShell`) u yerga foydalanuvchi
+     * **rasmini** qo'yadi. Slot sifatida beriladi, chunki profil ma'lumoti karkasda, bu modul
+     * esa profil feature'iga bog'lanmaydi. Berilmasa umumiy ikonka ko'rinadi.
+     */
+    accountButton: (@Composable (onClick: () -> Unit) -> Unit)? = null,
     // Xabarlar va qo'llab-quvvatlash chatlari alohida oqim — karkas (`BusinessShell`)
     // ularni ulaguncha tugmalar ko'rinadi, lekin harakat bermaydi.
     onMessages: () -> Unit = {},
@@ -104,15 +110,19 @@ fun MyBusinessesScreen(
                 horizontalArrangement = Arrangement.spacedBy(AppSpacing.md),
             ) {
                 // Ketma-ketlik: hisob → sarlavha → xabarlar → qo'llab-quvvatlash.
-                GradientIconButton(
-                    AppIcons.User,
-                    onClick = onProfile,
-                    contentDescription = stringResource(Res.string.discounts_profile),
-                    size = AccountButtonSize,
-                    iconSize = AccountIconSize,
-                    shape = AppRadius.md,
-                    palette = palette,
-                )
+                if (accountButton != null) {
+                    accountButton(onProfile)
+                } else {
+                    GradientIconButton(
+                        AppIcons.User,
+                        onClick = onProfile,
+                        contentDescription = stringResource(Res.string.discounts_profile),
+                        size = AccountButtonSize,
+                        iconSize = AccountIconSize,
+                        shape = AppRadius.md,
+                        palette = palette,
+                    )
+                }
                 Column(Modifier.weight(1f)) {
                     Text(
                         stringResource(Res.string.discounts_business_hub),
