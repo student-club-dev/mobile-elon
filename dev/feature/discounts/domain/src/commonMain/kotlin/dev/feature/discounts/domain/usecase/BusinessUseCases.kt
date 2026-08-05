@@ -73,3 +73,23 @@ class DeleteBusinessUseCase(private val repository: BusinessRepository) {
         runCatching { repository.delete(id) }
             .getOrElse { errorOf(it.toAppException()) }
 }
+
+/**
+ * Biznes logosini yuklaydi va ochiq URL qaytaradi.
+ *
+ * Hajm **klientда** tekshiriladi (backend chegarasi ham 5 MB): katta faylni yuklab, keyin
+ * `413` olib kutib o'tirish foydalanuvchi uchun bekorga sarflangan trafik va vaqt.
+ */
+class UploadBusinessLogoUseCase(private val repository: BusinessRepository) {
+
+    suspend operator fun invoke(bytes: ByteArray, fileName: String): Resource<String> {
+        if (bytes.isEmpty()) return Resource.Error("Rasm bo'sh")
+        if (bytes.size > MAX_LOGO_BYTES) return Resource.Error("Rasm juda katta (maks. 5 MB)")
+        return runCatching { repository.uploadLogo(bytes, fileName) }
+            .getOrElse { errorOf(it.toAppException()) }
+    }
+
+    companion object {
+        const val MAX_LOGO_BYTES = 5 * 1024 * 1024
+    }
+}

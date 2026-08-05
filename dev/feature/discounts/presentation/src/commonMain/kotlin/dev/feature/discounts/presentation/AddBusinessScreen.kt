@@ -20,10 +20,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.core.uikit.component.AppBottomSheet
+import dev.core.uikit.component.AppToast
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.AppScreenScaffold
 import dev.core.uikit.component.BottomSheetOption
 import dev.core.uikit.component.GlassTextField
+import dev.core.uikit.media.rememberImagePicker
 import dev.core.uikit.component.PrimaryButton
 import dev.core.uikit.component.ScreenTopBar
 import dev.core.uikit.resources.Res
@@ -34,6 +36,8 @@ import dev.core.uikit.resources.discounts_branch_name_placeholder
 import dev.core.uikit.resources.discounts_business_add
 import dev.core.uikit.resources.discounts_business_edit
 import dev.core.uikit.resources.discounts_business_name_hint
+import dev.core.uikit.resources.discounts_business_logo_hint
+import dev.core.uikit.resources.discounts_business_logo_label
 import dev.core.uikit.resources.discounts_business_name_label
 import dev.core.uikit.resources.discounts_business_save
 import dev.core.uikit.resources.discounts_business_type_label
@@ -63,9 +67,11 @@ import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
 import dev.core.uikit.theme.rowShadow
+import dev.feature.discounts.presentation.components.AddImageTile
+import dev.feature.discounts.presentation.components.ImageThumb
 import dev.feature.discounts.presentation.components.DistrictSheet
 import dev.feature.discounts.presentation.components.LimitContext
-import dev.feature.discounts.presentation.components.LimitHint
+import dev.feature.discounts.presentation.components.limitHintText
 import dev.feature.discounts.presentation.components.MapSearchResults
 import dev.feature.discounts.presentation.components.RegionSheet
 import dev.feature.discounts.presentation.components.SelectorField
@@ -102,6 +108,11 @@ fun AddBusinessScreen(
 ) {
     val palette = appPalette
     val state by vm.state.collectAsStateWithLifecycle()
+
+    // Logo galereyadan tanlanadi va DARROV yuklanadi — formada faqat tayyor URL saqlanadi.
+    val logoPicker = rememberImagePicker { picked ->
+        if (picked != null) vm.onLogoPicked(picked.bytes, picked.fileName)
+    }
 
     LaunchedEffect(businessId) { if (businessId != null) vm.loadForEdit(businessId) }
     LaunchedEffect(state.saved) { if (state.saved) onSaved() }
@@ -150,6 +161,19 @@ fun AddBusinessScreen(
                 palette = palette,
                 trailingIcon = AppIcons.ChevronDown,
             )
+
+            // --- Logo (ixtiyoriy) — `POST /media/upload` (purpose LOGO) darrov yuklaydi ---
+            Spacer(Modifier.height(FieldGap))
+            FieldLabel(stringResource(Res.string.discounts_business_logo_label), palette)
+            Spacer(Modifier.height(FieldLabelGap))
+            val logo = state.logoUrl
+            if (logo != null) {
+                ImageThumb(logo, onRemove = vm::removeLogo, palette = palette)
+            } else {
+                AddImageTile(onClick = logoPicker::pick, loading = state.uploadingLogo, palette = palette)
+            }
+            Spacer(Modifier.height(AppSpacing.sm))
+            HintText(stringResource(Res.string.discounts_business_logo_hint), palette = palette)
 
             Spacer(Modifier.height(FieldGap))
             FieldLabel(stringResource(Res.string.discounts_business_name_label), palette)
@@ -264,14 +288,8 @@ fun AddBusinessScreen(
                 palette = palette,
             )
 
+            // Xato matni bu yerда emas — u ekran ostidagi toastда chiqadi (pastga qarang).
             Spacer(Modifier.height(FieldGap))
-            state.error?.let {
-                Text(it, style = AppType.error.copy(color = palette.danger))
-                // Chegara bo'lsa — nima qilish kerakligi (serverning xabari ustidan emas,
-                // uning ostiga qo'shiladi).
-                LimitHint(state.limitCode, palette, LimitContext.BUSINESS)
-                Spacer(Modifier.height(10.dp))
-            }
             PrimaryButton(
                 stringResource(
                     if (state.saving) Res.string.discounts_saving else Res.string.discounts_business_save,
@@ -324,6 +342,16 @@ fun AddBusinessScreen(
         if (state.needsPhone) {
             phoneGate(vm::onPhoneVerified, vm::dismissPhoneGate)
         }
+
+        // Xato — ekran ostida qalqib chiqadigan toast. Sheet'lardan KEYIN chaqiriladi,
+        // shunda u ochiq oyna ustida ham ko'rinadi. Chegara (429) bo'lsa serverning
+        // xabariga amaliy maslahat ikkinchi qator bo'lib qo'shiladi.
+        AppToast(
+            message = state.error,
+            onDismiss = vm::consumeError,
+            hint = limitHintText(state.limitCode, LimitContext.BUSINESS),
+            palette = palette,
+        )
     }
 }
 

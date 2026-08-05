@@ -16,6 +16,11 @@ import dev.core.network.generated.model.DayOfWeekDto
 import dev.core.network.generated.model.LocationDto
 import dev.core.network.generated.model.UpdateBusinessDto
 import dev.core.network.generated.model.WorkingHoursDto
+import dev.core.network.media.MediaPurpose
+import dev.core.network.response.safeCall
+import dev.core.network.response.toAppExceptionWithFields
+import io.ktor.client.plugins.ResponseException
+import dev.core.network.media.MediaUploader
 import dev.feature.discounts.domain.model.BranchWorkingHours
 import dev.feature.discounts.domain.model.Business
 import dev.feature.discounts.domain.model.BusinessStatus
@@ -41,6 +46,8 @@ class ApiBusinessRepository(
     private val businessApi: BusinessApi,
     private val branchesApi: BranchesApi,
     private val connectivity: NetworkConnectivity,
+    /** Logo yuklash uchun — e'lon rasmlari bilan bir xil endpoint (`/v1/media/upload`). */
+    private val mediaUploader: MediaUploader,
 ) : BusinessRepository {
 
     /**
@@ -55,7 +62,14 @@ class ApiBusinessRepository(
      * Bo'sh ro'yxat — haqiqiy javob (foydalanuvchida hali biznes yo'q), xato emas.
      */
     override fun observeMine(): Flow<List<Business>> = flow {
-        val businesses: List<BusinessDto> = businessApi.getMy().body()
+        // Ktor istisnosi TO'G'RIDAN-TO'G'RI tashlanmaydi: uning matni so'rov va javob tanasini
+        // o'z ichiga oladi va ekranga shu holicha chiqib ketardi. Javob tanasidan typed xato
+        // quriladi — foydalanuvchi backendning o'zbekcha xabarini ko'radi.
+        val businesses: List<BusinessDto> = try {
+            businessApi.getMy().body()
+        } catch (e: ResponseException) {
+            throw e.toAppExceptionWithFields()
+        }
         emit(businesses.map { it.toDomain() }.sortedByDescending { it.createdAt })
     }
 
@@ -75,7 +89,11 @@ class ApiBusinessRepository(
         val type = business.businessType
             ?: return errorOf(AppException.Validation("Biznes turini tanlang"))
 
-        return try {
+        // `safeCall` — 4xx/5xx tanasini o'qib typed xatoga aylantiradi (`toAppExceptionWithFields`).
+        // Ilgari bu yerda oddiy `catch (e: Exception) { e.toAppException() }` turardi va 429 da
+        // Ktor'ning O'Z matni ekranga chiqardi: "Client request(POST .../business) invalid:
+        // 429 Too Many Requests. Text: {...}" — ya'ni so'rov va javob tanasi foydalanuvchiga.
+        return safeCall(connectivity) {
             // Tur faqat yaratishда beriladi — backend uni keyin o'zgartirmaydi (BUSINESS_TYPE_IMMUTABLE).
             val saved: BusinessDto = if (business.id.isBlank()) {
                 businessApi.businessCreate(
@@ -83,19 +101,22 @@ class ApiBusinessRepository(
                         type = type.key,
                         name = business.name,
                         phone = business.phone,
+                        logoUrl = business.logoUrl,
                     ),
                 ).body()
             } else {
                 businessApi.businessUpdate(
                     business.id,
-                    UpdateBusinessDto(name = business.name, phone = business.phone),
+                    UpdateBusinessDto(
+                        name = business.name,
+                        phone = business.phone,
+                        logoUrl = business.logoUrl,
+                    ),
                 ).body()
             }
 
             val branches = syncBranches(saved.id, business.branches)
-            Resource.Success(saved.toDomain(branches))
-        } catch (e: Exception) {
-            errorOf(e.toAppException(connectivity.isOnline()))
+            saved.toDomain(branches)
         }
     }
 
@@ -106,23 +127,19 @@ class ApiBusinessRepository(
      */
     override suspend fun submit(id: String): Resource<Business> {
         if (!connectivity.isOnline()) return errorOf(AppException.NoInternet())
-        return try {
+        return safeCall(connectivity) {
             val submitted: BusinessDto = businessApi.businessSubmit(id).body()
-            Resource.Success(submitted.toDomain(branchesOf(id)))
-        } catch (e: Exception) {
-            errorOf(e.toAppException(connectivity.isOnline()))
+            submitted.toDomain(branchesOf(id))
         }
     }
+
+    override suspend fun uploadLogo(bytes: ByteArray, fileName: String): Resource<String> =
+        safeCall(connectivity) { mediaUploader.upload(bytes, fileName, MediaPurpose.LOGO).url }
 
     /** Backend fizik o'chirmaydi — biznes va uning e'lonlari arxivlanadi. */
     override suspend fun delete(id: String): Resource<Unit> {
         if (!connectivity.isOnline()) return errorOf(AppException.NoInternet())
-        return try {
-            businessApi.businessArchive(id)
-            Resource.Success(Unit)
-        } catch (e: Exception) {
-            errorOf(e.toAppException(connectivity.isOnline()))
-        }
+        return safeCall(connectivity) { businessApi.businessArchive(id) }
     }
 
     /**
@@ -178,6 +195,7 @@ private fun BusinessDto.toDomain(branches: List<BranchDto> = emptyList()) = Busi
     // Kalit ochiq — serverdagi istalgan tur o'zgarishsiz o'tadi (ilova ro'yxati bilan
     // cheklanmaydi). Bo'sh qiymat esa "tur ko'rsatilmagan" degani.
     businessType = type.takeIf { it.isNotBlank() }?.let(::BusinessType),
+    logoUrl = logoUrl?.takeIf { it.isNotBlank() },
     branches = branches.map { it.toDomain() },
     isOnlineOnly = isOnlineOnly,
     // Serverdagi e'lonlar soni — `/business/my` javobining o'zida keladi, qo'shimcha

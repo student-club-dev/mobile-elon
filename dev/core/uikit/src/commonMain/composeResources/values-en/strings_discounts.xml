@@ -111,6 +111,8 @@
     <string name="discounts_business_empty_message">Add your first business — then post discounts and listings for it.</string>
     <string name="discounts_business_add">Add business</string>
     <string name="discounts_business_edit">Edit business</string>
+    <string name="discounts_business_logo_label">Logo</string>
+    <string name="discounts_business_logo_hint">Optional — shown in the business list and listings</string>
     <string name="discounts_business_type_label">Business type</string>
     <string name="discounts_business_type_select">Select a business type</string>
     <string name="discounts_business_name_label">Business name</string>

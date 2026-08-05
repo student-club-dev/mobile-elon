@@ -14,6 +14,11 @@ data class Business(
     val phone: String,
     val businessType: BusinessType? = null,
     /**
+     * Logo (`BusinessDto.logoUrl`) — `POST /v1/media/upload` (purpose `LOGO`) qaytargan ochiq
+     * URL. `null` — logo qo'yilmagan, kartada tur ikonkasi ko'rsatiladi.
+     */
+    val logoUrl: String? = null,
+    /**
      * Joylashuv(lar) — xaritadan tanlangan. E'lonlar shu filiallarni oladi.
      *
      * Bo'sh ro'yxat **ikki ma'noli**: biznes ro'yxatida u "hali so'ralmagan" degani

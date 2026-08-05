@@ -51,6 +51,7 @@ import dev.feature.discounts.domain.usecase.SaveDraftUseCase
 import dev.feature.discounts.domain.usecase.SearchPlacesUseCase
 import dev.feature.discounts.domain.usecase.SubmitBusinessUseCase
 import dev.feature.discounts.domain.usecase.ToggleListingPausedUseCase
+import dev.feature.discounts.domain.usecase.UploadBusinessLogoUseCase
 import dev.feature.discounts.domain.usecase.UploadListingImageUseCase
 import dev.feature.discounts.domain.usecase.VerifyRedemptionUseCase
 import dev.feature.discounts.domain.usecase.WithdrawListingUseCase
@@ -111,10 +112,11 @@ fun discountsModule() = module {
     factory { GetNearbyDiscountsUseCase(get()) }
 
     // Biznes (nom, telefon, tur, filiallar) — faqat backend `/v1/business` + `.../branches`.
-    single<BusinessRepository> { ApiBusinessRepository(get(), get(), get()) }
+    single<BusinessRepository> { ApiBusinessRepository(get(), get(), get(), get()) }
     factory { ObserveMyBusinessesUseCase(get()) }
     factory { GetBusinessUseCase(get()) }
     factory { SaveBusinessUseCase(get()) }
+    factory { UploadBusinessLogoUseCase(get()) }
     factory { DeleteBusinessUseCase(get()) }
     factory { SubmitBusinessUseCase(get()) }
     viewModelOf(::MyBusinessesViewModel)

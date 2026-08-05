@@ -194,6 +194,13 @@ data class AddBusinessUiState(
     val name: String = "",
     val phone: String = "",
     /**
+     * Logo — yuklangandan keyingi ochiq URL (`/v1/media/upload`). `null` bo'lsa biznes
+     * logosiz saqlanadi: backend uni ixtiyoriy deb biladi.
+     */
+    val logoUrl: String? = null,
+    /** Logo hozir yuklanyaptimi — tanlash doirasi kutish holatiga o'tadi. */
+    val uploadingLogo: Boolean = false,
+    /**
      * Filial nomi ("Chilonzor filiali") — `BranchRequestDto.name` majburiy. Bo'sh qoldirilsa
      * saqlashда biznes nomi yoziladi, chunki bitta filialli bizneslar uchun alohida nom
      * so'rash ortiqcha.
@@ -293,6 +300,7 @@ data class AddBusinessUiState(
 
 class AddBusinessViewModel(
     private val saveBusiness: SaveBusinessUseCase,
+    private val uploadLogo: dev.feature.discounts.domain.usecase.UploadBusinessLogoUseCase,
     private val searchPlaces: SearchPlacesUseCase,
     private val createBranch: CreateBranchFromPointUseCase,
     private val settings: SettingsRepository,
@@ -325,6 +333,7 @@ class AddBusinessViewModel(
                     editCreatedAt = biz.createdAt,
                     name = biz.name,
                     phone = biz.phone.removePrefix("+998"),
+                    logoUrl = biz.logoUrl,
                     branchName = branch?.name.orEmpty(),
                     businessType = biz.businessType,
                     branch = branch,
@@ -380,6 +389,27 @@ class AddBusinessViewModel(
 
     /** Filial nomi ("Chilonzor filiali") — biznes nomidan farqli, alifbo cheklovi yo'q. */
     fun onBranchName(v: String) = _state.update { it.copy(branchName = v, error = null) }
+
+    /**
+     * Tanlangan logoni **darrov** serverga yuklaydi va URL'ni holatga yozadi.
+     *
+     * Saqlashgacha kutilmaydi: biznes yaratish so'rovi `logoUrl` ni tayyor URL sifatida
+     * kutadi, ya'ni yuklash baribir alohida qadam. Shu bilan foydalanuvchi rasm o'tdimi-yo'qmi
+     * — "Saqlash" ni bosishдан oldin ko'radi.
+     */
+    fun onLogoPicked(bytes: ByteArray, fileName: String) {
+        _state.update { it.copy(uploadingLogo = true, error = null) }
+        viewModelScope.launch {
+            when (val res = uploadLogo(bytes, fileName)) {
+                is Resource.Success -> _state.update { it.copy(uploadingLogo = false, logoUrl = res.data) }
+                is Resource.Error -> _state.update { it.copy(uploadingLogo = false, error = res.message) }
+                Resource.Loading -> _state.update { it.copy(uploadingLogo = false) }
+            }
+        }
+    }
+
+    /** Logoni olib tashlaydi — biznes logosiz saqlanadi (`logoUrl = null`). */
+    fun removeLogo() = _state.update { it.copy(logoUrl = null, error = null) }
     // Tur tanlanishi bilan sheet yopiladi — tasdiqlash tugmasi yo'q, tanlovning o'zi javob.
     fun onType(t: BusinessType) = _state.update {
         it.copy(businessType = t, typePickerOpen = false, error = null)
@@ -512,6 +542,7 @@ class AddBusinessViewModel(
                 name = s.name.trim(),
                 phone = "+998${s.phoneDigits}",
                 businessType = type,
+                logoUrl = s.logoUrl,
                 // Foydalanuvchi tanlagan viloyat/tuman filialga yoziladi — geokoder topgan qiymat
                 // noto'g'ri bo'lsa ham, e'lon to'g'ri filtrga tushadi.
                 branches = listOf(
@@ -549,6 +580,9 @@ class AddBusinessViewModel(
     fun dismissPhoneGate() = _state.update { it.copy(needsPhone = false) }
 
     /** Raqam kiritilib SMS kod bilan tasdiqlandi — saqlashni o'zimiz qayta urinamiz. */
+    /** Toast yopilgach xato holatini tozalaydi (aks holda u qaytib chiqaverardi). */
+    fun consumeError() = _state.update { it.copy(error = null, limitCode = null) }
+
     fun onPhoneVerified() {
         _state.update { it.copy(needsPhone = false) }
         save()

@@ -32,7 +32,22 @@ fun LimitHint(
     context: LimitContext,
     modifier: Modifier = Modifier,
 ) {
-    val hint = when {
+    val hint = limitHintText(code, context) ?: return
+
+    Text(
+        hint,
+        style = AppType.caption.copy(color = palette.inkMuted),
+        modifier = modifier,
+    )
+}
+
+/**
+ * O'sha maslahat, lekin **matn sifatida** — toast ichiga ikkinchi qator qilib qo'yish uchun
+ * ([LimitHint] o'zi Composable chizadi, uni satr o'rniga ishlatib bo'lmaydi).
+ */
+@Composable
+fun limitHintText(code: String?, context: LimitContext): String? {
+    val res = when {
         code == null -> null
         code == LISTING_LIMIT_REACHED -> Res.string.discounts_limit_listing
         // `RATE_LIMITED` — umumiy kod: biznes formasida u "5 ta biznes" chegarasi,
@@ -40,13 +55,8 @@ fun LimitHint(
         code == RATE_LIMITED && context == LimitContext.BUSINESS -> Res.string.discounts_limit_business
         code == RATE_LIMITED && context == LimitContext.LISTING -> Res.string.discounts_limit_daily
         else -> null
-    } ?: return
-
-    Text(
-        stringResource(hint),
-        style = AppType.caption.copy(color = palette.inkMuted),
-        modifier = modifier,
-    )
+    } ?: return null
+    return stringResource(res)
 }
 
 /** Chegara qaysi oqimda yuz berdi — bir xil kodni to'g'ri o'qish uchun. */

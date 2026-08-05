@@ -150,7 +150,12 @@ fun Throwable.toAppException(isOnline: Boolean = true): AppException {
         msg.containsAny("unavailable", "network", "host", "connection", "internet", "offline", "resolve") ->
             AppException.NoInternet(this)
         msg.containsAny("internal", "server", "unknown error") -> AppException.Server(cause = this)
-        else -> AppException.Unknown(message ?: "Noma'lum xatolik yuz berdi.", this)
+        // Xom `message` FOYDALANUVCHIGA CHIQMAYDI — u faqat `cause` da qoladi (log uchun).
+        // Ktor istisnosining matni butun so'rov va javob tanasini o'z ichiga oladi
+        // ("Client request(POST .../business) invalid: 429 ... Text: {...}") va ilgari shu
+        // holicha ekranga chiqardi. Backendning o'z matni bu yo'ldan kelmaydi — u javob
+        // tanasidan `toAppExceptionWithFields`/`parseErrorEnvelope` orqali olinadi.
+        else -> AppException.Unknown(cause = this)
     }
 }
 

@@ -34,4 +34,11 @@ interface BusinessRepository {
 
     /** Biznesни o'chiradi. */
     suspend fun delete(id: String): Resource<Unit>
+
+    /**
+     * Logo rasmini yuklaydi (`POST /v1/media/upload`, purpose `LOGO`) va ochiq URL qaytaradi.
+     * URL keyin [save] orqali biznesning `logoUrl` maydoniga yoziladi — yuklashning o'zi
+     * biznesni o'zgartirmaydi.
+     */
+    suspend fun uploadLogo(bytes: ByteArray, fileName: String): Resource<String>
 }

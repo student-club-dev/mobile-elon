@@ -118,6 +118,8 @@
     <string name="discounts_business_empty_message">Birinchi biznesingizni qo'shing — keyin unga chegirma va e'lonlar joylaysiz.</string>
     <string name="discounts_business_add">Biznes qo'shish</string>
     <string name="discounts_business_edit">Biznesni tahrirlash</string>
+    <string name="discounts_business_logo_label">Logo</string>
+    <string name="discounts_business_logo_hint">Ixtiyoriy — bizneslar ro'yxatida va e'lonlarda ko'rinadi</string>
     <string name="discounts_business_type_label">Biznes turi</string>
     <string name="discounts_business_type_select">Biznes turini tanlang</string>
     <string name="discounts_business_name_label">Biznes nomi</string>

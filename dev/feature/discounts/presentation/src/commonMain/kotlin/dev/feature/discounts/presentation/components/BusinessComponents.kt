@@ -38,6 +38,7 @@ import dev.core.uikit.resources.discounts_business_submitting
 import dev.core.uikit.resources.discounts_location_hint
 import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
+import dev.core.uikit.theme.AppSize
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.cardShadow
@@ -107,12 +108,18 @@ fun BusinessCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            // Handoff'da nishon kategoriya rangining ochiq gradienti — ikonka esa to'liq aksentda.
-            GradientTile(
-                biz.businessType?.icon ?: BusinessFallbackIcon,
-                gradient = listOf(accent.copy(alpha = 0.18f), accent.copy(alpha = 0.38f)),
-                tint = accent,
-            )
+            // Logo bo'lsa — o'sha, aks holда handoff'dagi nishon: kategoriya rangining ochiq
+            // gradienti va to'liq aksentdagi ikonka.
+            val logo = biz.logoUrl
+            if (logo != null) {
+                ListingImage(logo, Modifier.size(AppSize.categoryTile).clip(AppRadius.lg))
+            } else {
+                GradientTile(
+                    biz.businessType?.icon ?: BusinessFallbackIcon,
+                    gradient = listOf(accent.copy(alpha = 0.18f), accent.copy(alpha = 0.38f)),
+                    tint = accent,
+                )
+            }
             Column(Modifier.weight(1f)) {
                 Text(
                     biz.name,

@@ -111,6 +111,8 @@
     <string name="discounts_business_empty_message">Добавьте первый бизнес — потом разместите к нему скидки и объявления.</string>
     <string name="discounts_business_add">Добавить бизнес</string>
     <string name="discounts_business_edit">Редактировать бизнес</string>
+    <string name="discounts_business_logo_label">Логотип</string>
+    <string name="discounts_business_logo_hint">Необязательно — виден в списке бизнесов и объявлениях</string>
     <string name="discounts_business_type_label">Тип бизнеса</string>
     <string name="discounts_business_type_select">Выберите тип бизнеса</string>
     <string name="discounts_business_name_label">Название бизнеса</string>
