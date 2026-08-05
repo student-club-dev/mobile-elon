@@ -25,7 +25,6 @@ import dev.core.data.repository.NotificationRepositoryImpl
 import dev.core.data.repository.SettingsRepositoryImpl
 import dev.core.data.repository.StudentRepositoryImpl
 import dev.core.data.repository.UniversityRepositoryImpl
-import dev.core.data.seed.LocalDataSeeder
 import dev.core.database.DatabaseFactory
 import dev.core.database.DriverFactory
 import dev.core.database.sql.ElonUzDatabase
@@ -124,9 +123,6 @@ val repositoryModule = module {
     single<ChatRepository> { ChatRepositoryImpl(get(), get(), get(), REMOTE_SYNC_ENABLED, get()) }
     single<SettingsRepository> { SettingsRepositoryImpl(get(), get()) }
     single<NotificationRepository> { NotificationRepositoryImpl(get(), get()) }
-
-    // Dizayndagi namuna ma'lumot bilan bazani to'ldiruvchi (bo'sh bo'lsa).
-    single { LocalDataSeeder(get(), get()) }
 }
 
 val domainModule = module {

@@ -54,9 +54,8 @@ import kotlinx.datetime.Instant
  * (moderatsiyaga yuboradi). Yakuniy narxni **server** hisoblaydi, shuning uchun bu yerda
  * `finalPrice` yuborilmaydi.
  *
- * Xatolar `safeCall` orqali **typed** [AppException] ga aylanadi (422 dagi maydon xatolari ham).
- * Bu shart: [FallbackListingRemoteDataSource] aynan shu turga qarab "backendga yetib bo'lmadi"
- * ni "server rad etdi" dan ajratadi.
+ * Xatolar `safeCall` orqali **typed** [AppException] ga aylanadi (422 dagi maydon xatolari ham),
+ * shuning uchun UI "internet yo'q" ni "server rad etdi" dan ajrata oladi.
  */
 class ApiListingRemoteDataSource(
     private val listingsApi: ListingsApi,

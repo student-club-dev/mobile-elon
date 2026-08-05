@@ -10,45 +10,34 @@ import dev.feature.discounts.domain.model.TypeAttributes
 import dev.feature.discounts.domain.repository.CatalogRepository
 
 /**
- * Katalog UseCase'lari — **backend + zaxira** naqshi.
+ * Katalog UseCase'lari — **faqat backend** (`GET /business/types`, `.../categories`).
  *
- * Qoida: katalog e'lon qo'yishning **birinchi qadami**, shuning uchun u hech qachon
- * "ishlamay qolmasligi" kerak. Backend o'chgan/xato bergan/hali yozilmagan bo'lsa —
- * klientдаgi [ListingCatalog] dan **fake ma'lumot** qaytadi va foydalanuvchi ishini
- * davom ettiraveradi. Ekran hech qachon bo'sh yoki xato ko'rsatmaydi.
+ * Klient katalogiga qaytish (fake) olib tashlandi: uning kalitlari serverникidan farq qilsa,
+ * shu kalit bilan yaratilgan e'lonni server rad etardi, foydalanuvchi esa sababini ko'rmasdi.
+ * So'rov uzilsa ro'yxat **bo'sh** qaytadi va ekran shuni ko'rsatadi.
  *
- * Backend tayyor bo'lganда hech narsa o'zgartirilmaydi — javob kelsa, o'zi ishlatiladi.
+ * [ListingCatalog] o'chirilmagan — u forma taksonomiyasi (atributlar, narx birliklari,
+ * validatsiya) uchun kerak, lekin endi server javobining **o'rnini bosmaydi**.
  */
 
-/** Biznes turlari. Backend ishlamasa — klient katalogi (jinsga qarab filtrlangan). */
+/** Biznes turlari (jinsga qarab filtrlangan). */
 class GetBusinessTypesUseCase(
     private val repository: CatalogRepository,
 ) {
     suspend operator fun invoke(gender: Gender?): List<BusinessTypeInfo> {
         val remote = runCatching { repository.businessTypes(gender) }.getOrNull()
-        val fromApi = (remote as? Resource.Success)?.data.orEmpty()
-        return fromApi.ifEmpty { fake(gender) }
+        return (remote as? Resource.Success)?.data.orEmpty()
     }
-
-    /** Zaxira — klientдаgi katalog. */
-    private fun fake(gender: Gender?): List<BusinessTypeInfo> =
-        ListingCatalog.typesForGender(gender).map { BusinessTypeInfo.from(it) }
 }
 
-/** Kategoriyalar + maydonlari. Backend ishlamasa — klient katalogi. */
+/** Kategoriyalar + maydonlari. */
 class GetCategoriesUseCase(
     private val repository: CatalogRepository,
 ) {
     suspend operator fun invoke(type: BusinessType, gender: Gender?): List<CategoryInfo> {
         val remote = runCatching { repository.categories(type, gender) }.getOrNull()
-        val fromApi = (remote as? Resource.Success)?.data.orEmpty()
-        return fromApi.ifEmpty { fake(type, gender) }
+        return (remote as? Resource.Success)?.data.orEmpty()
     }
-
-    /** Zaxira — klientдаgi katalog (kiyimда jinsga xos kategoriyalar). */
-    private fun fake(type: BusinessType, gender: Gender?): List<CategoryInfo> =
-        ListingCatalog.categoriesFor(type, gender)
-            .mapIndexed { i, c -> CategoryInfo.from(type, c, i) }
 }
 
 /**

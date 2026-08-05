@@ -6,9 +6,9 @@ import dev.feature.discounts.domain.model.DiscountQuery
 import dev.feature.discounts.domain.repository.DiscountFeedRepository
 
 /**
- * Local chegirma feed (`USE_LOCAL_DATA`) — backend'siz. Hozircha bo'sh ro'yxat qaytaradi
- * (talaba tomoni bu ilovaда ikkinchi darajali). Keyin local e'lonlardan chegirma kartalari
- * yig'ib to'ldirilishi mumkin.
+ * Chegirma feed'ining vaqtinchalik o'rni — bu ilovaning spec'ida `GET /discounts` yo'q
+ * (talaba tomoni alohida ilova). **Bo'sh** ro'yxat qaytaradi: soxta karta yasamaydi.
+ * Endpoint qo'shilgach o'rniga `ApiDiscountFeedRepository` bog'lanadi.
  */
 class LocalDiscountFeedRepository : DiscountFeedRepository {
     override suspend fun nearby(query: DiscountQuery): Resource<List<DiscountCard>> =

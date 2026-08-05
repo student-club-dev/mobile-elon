@@ -45,7 +45,8 @@ Bu §3 dagi "ilova hech qaysi holatni hardcode qilmasin" talabining bevosita baj
 - `activate` boshlanish sanasi kelajakda bo'lsa `SCHEDULED` qaytaradi — karta shuni ko'rsatadi;
 - server rad etsa (muddati o'tgan e'lon) kesh **tegilmaydi** va sabab foydalanuvchiga chiqadi.
 
-Ikkalasi ham test bilan qulflangan (`ListingRepositoryFlowTest`, `FallbackListingRemoteDataSourceTest`).
+Bu `ListingRepositoryFlowTest` bilan qulflangan. (`FallbackListingRemoteDataSourceTest` olib
+tashlandi — local zaxira manbasining o'zi endi yo'q, e'lon faqat backendда yaratiladi.)
 
 ### 2.2 `MODERATION_ENABLED` — hech qayerda taxmin yo'q
 

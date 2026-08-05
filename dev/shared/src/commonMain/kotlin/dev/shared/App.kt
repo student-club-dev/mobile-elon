@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.network.ktor3.KtorNetworkFetcherFactory
-import dev.core.data.seed.LocalDataSeeder
 import dev.core.uikit.locale.applyAppLanguage
 import dev.core.uikit.theme.AppTheme
 import dev.core.domain.model.AppLanguage
@@ -57,10 +56,6 @@ private fun AppScaffold(content: @Composable () -> Unit) {
             .components { add(KtorNetworkFetcherFactory()) }
             .build()
     }
-
-    // Local bazani dizayndagi namuna ma'lumot bilan to'ldiramiz (bo'sh bo'lsagina).
-    val seeder = koinInject<LocalDataSeeder>()
-    LaunchedEffect(Unit) { seeder.seedIfEmpty() }
 
     // Foydalanuvchi tanlagan mavzu (Sozlamalar). SYSTEM bo'lsa qurilma rejimiga ergashadi.
     val settings = koinInject<SettingsRepository>()

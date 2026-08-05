@@ -1,6 +1,5 @@
 package dev.feature.discounts.presentation.di
 
-import dev.core.domain.USE_LOCAL_DATA
 import dev.core.network.NetworkConfig
 import dev.core.network.createPublicHttpClient
 import dev.core.network.generated.api.BranchesApi
@@ -13,17 +12,13 @@ import dev.core.network.generated.api.TradeCentersApi
 import dev.feature.discounts.data.remote.ApiGeoRepository
 import dev.feature.discounts.data.remote.ApiListingRemoteDataSource
 import dev.feature.discounts.data.remote.FallbackGeoRepository
-import dev.feature.discounts.data.remote.FallbackListingRemoteDataSource
 import dev.feature.discounts.data.remote.ListingRemoteDataSource
-import dev.feature.discounts.data.remote.LocalListingRemoteDataSource
 import dev.feature.discounts.data.remote.NominatimGeoRepository
 import dev.feature.discounts.data.repository.ApiBusinessRepository
 import dev.feature.discounts.data.repository.ApiCatalogRepository
 import dev.feature.discounts.data.repository.ApiRegionRepository
 import dev.feature.discounts.data.repository.ApiTradeCenterRepository
 import dev.feature.discounts.data.repository.ListingRepositoryImpl
-import dev.feature.discounts.data.repository.LocalBusinessRepository
-import dev.feature.discounts.data.repository.LocalCatalogRepository
 import dev.feature.discounts.data.repository.LocalDiscountFeedRepository
 import dev.feature.discounts.domain.repository.BusinessRepository
 import dev.feature.discounts.domain.repository.CatalogRepository
@@ -73,9 +68,8 @@ import org.koin.dsl.module
  * Chegirmalar feature'ining barcha qatlamlarini bog'laydi (domain / data / presentation).
  *
  * Barcha ma'lumot **backenddan** keladi (OpenAPI'dan generatsiya qilingan klient orqali).
- * Backend javob bermasa har bir oqim o'z zaxirasiga tushadi (katalog → `ListingCatalog`,
- * biznes → `FakeBusinesses`, e'lon → local baza), shuning uchun rejimni tanlaydigan bayroq
- * kerak emas.
+ * Namuna/zaxira manba yo'q: backend javob bermasa xato yuqoriga uzatiladi va ekran shuni
+ * ko'rsatadi. Yagona istisno — geokodlash (Nominatim), u soxta emas, haqiqiy tashqi servis.
  */
 fun discountsModule() = module {
 
@@ -90,11 +84,8 @@ fun discountsModule() = module {
     // Viloyat/tuman ma'lumotnomasi — serverdan (xato bo'lsa klientdagi `GeoCatalog`).
     single<RegionRepository> { ApiRegionRepository(get()) }
 
-    // Katalog (biznes turlari + kategoriyalar) — backenddan. Backend javob bermasa
-    // UseCase klientдаgi ListingCatalog'ga qaytadi, shuning uchun bayroq kerak emas.
-    single<CatalogRepository> {
-        if (USE_LOCAL_DATA) LocalCatalogRepository() else ApiCatalogRepository(get(), get())
-    }
+    // Katalog (biznes turlari + kategoriyalar) — faqat backenddan.
+    single<CatalogRepository> { ApiCatalogRepository(get(), get()) }
     factory { GetBusinessTypesUseCase(get()) }
     factory { GetCategoriesUseCase(get()) }
     factory { GetTypeAttributesUseCase(get()) }
@@ -106,29 +97,21 @@ fun discountsModule() = module {
     factory { GetTradeCenterDetailUseCase(get()) }
 
     // E'lonlar backendда (`POST /v1/business/{id}/listings` + `/submit`, rasm `/v1/media/upload`).
-    // Backendga YETIB BO'LMASA — local zaxira: e'lon darrov faol, rasm `data:` URI. Server rad
-    // etsa xato yutilmaydi (qarang FallbackListingRemoteDataSource).
-    single<ListingRemoteDataSource> {
-        FallbackListingRemoteDataSource(
-            api = ApiListingRemoteDataSource(get(), get(), get(), get()),
-            local = LocalListingRemoteDataSource(),
-        )
-    }
+    // Local zaxira yo'q: internet yo'q bo'lsa e'lon joylanmaydi va foydalanuvchi xatoni ko'radi
+    // (ilgari e'lon faqat telefonda "faol" bo'lib qolar, serverда esa mavjud bo'lmasdi).
+    single<ListingRemoteDataSource> { ApiListingRemoteDataSource(get(), get(), get(), get()) }
 
     // Offline-first: UI local bazani kuzatadi, masofaviy manba publish/upload uchun.
     single<ListingRepository> { ListingRepositoryImpl(get(), get(), get()) }
 
     // Talaba qidiruvi — yangi spec'da chegirma feed'i endpoint'i yo'q (bu biznes ilovasi),
-    // shuning uchun local manba: UseCase local faol e'lonlarga qaytadi.
+    // shuning uchun manba bo'sh ro'yxat qaytaradi. Local e'lonlardan karta yasash zaxirasi
+    // olib tashlandi: u boshqa bizneslarnikini emas, faqat shu qurilmadagini ko'rsatardi.
     single<DiscountFeedRepository> { LocalDiscountFeedRepository() }
-    factory { GetNearbyDiscountsUseCase(get(), get()) }
+    factory { GetNearbyDiscountsUseCase(get()) }
 
-    // Biznes (nom, telefon, tur, filiallar) — backend `/v1/business` + `.../branches`.
-    // Backend javob bermasa UseCase namuna ma'lumotga qaytadi, shuning uchun bayroq kerak emas.
-    single<BusinessRepository> {
-        if (USE_LOCAL_DATA) LocalBusinessRepository(get())
-        else ApiBusinessRepository(get(), get(), get())
-    }
+    // Biznes (nom, telefon, tur, filiallar) — faqat backend `/v1/business` + `.../branches`.
+    single<BusinessRepository> { ApiBusinessRepository(get(), get(), get()) }
     factory { ObserveMyBusinessesUseCase(get()) }
     factory { GetBusinessUseCase(get()) }
     factory { SaveBusinessUseCase(get()) }
@@ -138,16 +121,14 @@ fun discountsModule() = module {
     viewModelOf(::AddBusinessViewModel)
 
     // Geokodlash — backend (`/v1/geo/geocode`, `/v1/geo/reverse-geocode`), u ishlamasa Nominatim.
-    // Nominatim'ga ilovaning umumiy klienti berilmaydi: unda sessiya tokeni bor, uni begona
-    // serverga yuborib bo'lmaydi.
-    //
-    // Local rejimda backend UMUMAN chaqirilmaydi: aks holda xaritadan joy tanlashda har safar
-    // mavjud bo'lmagan serverga so'rov ketib, timeout kutilardi va manzil bir necha soniyadan
-    // keyin chiqardi. Qolgan repository'lar ham shu bayroqqa amal qiladi.
+    // Bu zaxira ataylab qoldirilgan: Nominatim namuna emas, haqiqiy geokoder — noto'g'ri manzil
+    // filialni xato joyga qo'yardi. Nominatim'ga ilovaning umumiy klienti berilmaydi: unda
+    // sessiya tokeni bor, uni begona serverga yuborib bo'lmaydi.
     single<GeoRepository> {
-        val nominatim = NominatimGeoRepository(createPublicHttpClient())
-        if (USE_LOCAL_DATA) nominatim
-        else FallbackGeoRepository(api = ApiGeoRepository(get(), get()), nominatim = nominatim)
+        FallbackGeoRepository(
+            api = ApiGeoRepository(get(), get()),
+            nominatim = NominatimGeoRepository(createPublicHttpClient()),
+        )
     }
 
     factory { CreateBranchFromPointUseCase(get()) }

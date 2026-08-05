@@ -16,8 +16,9 @@ GitLive Firebase (auth/firestore/functions), Firebase Cloud Functions (Node.js).
 Qatlam: `presentation → domain (usecase → repository interface) → data (repo impl) → network/database`.
 
 **Muhim haqiqat:**
-- Foydalanuvchi ko'radigan **deyarli hamma narsa real, ulangan kod** — lekin ma'lumotlar
-  `LocalDataSeeder.kt` orqali SQLDelight'ga **seed qilingan namuna (fake) data**.
+- Foydalanuvchi ko'radigan **deyarli hamma narsa real, ulangan kod**. Namuna (fake) seed
+  ma'lumot olib tashlandi (`LocalDataSeeder.kt` o'chirildi) — endi ekran nimani ko'rsatsa,
+  u backenddan kelgan yoki bo'sh.
 - **Network qatlami (Ktor + OpenAPI) qurilgan, lekin ishlatilmaydi** — birorta ViewModel/UI uni chaqirmaydi.
   Yagona chaqiruv `ClubRepositoryImpl.refreshClubs()` — u ham hech qayerda ishlatilmagan.
 - Auth eng to'liq ishlangan qism (faqat Firebase kalitlari kerak).
@@ -109,9 +110,9 @@ sync qilib DB'ni yangilaydi. Shunda API bo'lmasa ham ilova ishlaydi, API kelsa �
   ℹ️ Eslatma: Club allaqачon `refreshClubs()` ga ega edi (boshqa imzo); Chat faqat suhbatlar ro'yxatini
   sinxronlaydi (xabarlar real-time/alohida — B7).
 
-- [ ] **B5 — `LocalDataSeeder`'ni feature-flag ostiga olish.**
-  `App.kt:15` `seedIfEmpty()`. → `USE_SEED_DATA` bayrog'i: real API bor bo'lsa seed o'chiriladi,
-  yo'q bo'lsa demo uchun qoladi. Seed'ni butunlay o'chirmaslik (offline demo uchun foydali).
+- [x] **B5 — `LocalDataSeeder` olib tashlandi.** Bayroq ostiga olish o'rniga butunlay o'chirildi:
+  namuna ma'lumot ekranda haqiqiy ma'lumotdan farq qilmasdi. Endi seed'ga tayangan bo'limlar
+  (universitetlar ro'yxati, chat, bildirishnomalar) backend endpoint'i chiqmaguncha bo'sh.
 
 - [ ] **B6 — Xatoliklar va yuklanish holati (`Resource<T>`) UI'da ko'rsatilishi.**
   `core:common`'da `Resource` bor. Har ekranda loading/empty/error holatlarini ko'rsatish

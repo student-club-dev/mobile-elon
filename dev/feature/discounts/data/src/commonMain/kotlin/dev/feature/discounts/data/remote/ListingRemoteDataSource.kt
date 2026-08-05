@@ -11,16 +11,11 @@ import dev.feature.discounts.domain.model.RedemptionCheck
 import dev.feature.discounts.domain.model.RedemptionPage
 
 /**
- * E'lonning masofaviy manbasi. Ikkita implementatsiya bor:
+ * E'lonning masofaviy manbasi. Yagona implementatsiya — [ApiListingRemoteDataSource]:
+ * `POST /v1/business/{id}/listings` + `/submit`, rasm `POST /v1/media/upload` orqali.
  *
- * - [ApiListingRemoteDataSource] — real backend: `POST /v1/business/{id}/listings` +
- *   `/submit`, rasm `POST /v1/media/upload` orqali.
- * - [LocalListingRemoteDataSource] — backendsiz (offline) zaxira: rasm `data:` URI'ga
- *   aylanadi, e'lon darrov faol bo'ladi (moderator yo'q).
- *
- * DI'da har doim [FallbackListingRemoteDataSource] o'rnatiladi: u avval backendga boradi va
- * faqat unga **yetib bo'lmaganda** local zaxiraga tushadi. Repository qaysi manba ishlaganini
- * bilmaydi.
+ * Local (offline) zaxira olib tashlandi: u e'lonni faqat shu qurilmada "faol" qilib qo'yar,
+ * serverда esa undan nom-nishon qolmasdi. Endi backendga yetib bo'lmasa xato ko'rinadi.
  */
 interface ListingRemoteDataSource {
 

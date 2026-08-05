@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.core.common.Resource
 import dev.core.common.error.AppException
+import dev.core.common.error.toAppException
 import dev.core.domain.repository.SettingsRepository
 import dev.core.domain.usecase.ObserveCurrentUserUseCase
 import dev.core.common.text.TextScript
@@ -28,7 +29,9 @@ import dev.feature.discounts.domain.usecase.SearchPlacesUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -102,17 +105,31 @@ class MyBusinessesViewModel(
         }
     }
 
+    /**
+     * Ro'yxat oqimi — xato **yutilmaydi**, `Result` ichida holatga aylanadi.
+     *
+     * `catch` shart: namuna ro'yxatga qaytish olib tashlangandan keyin `GET /business/my`
+     * xatosi to'g'ridan-to'g'ri `stateIn` scope'iga chiqib, oqimni o'ldirardi — ekran esa
+     * abadiy "yuklanmoqda" holatida qolardi.
+     */
+    private fun businesses(): Flow<Result<List<Business>>> =
+        observeMyBusinesses()
+            .map { Result.success(it) }
+            .catch { emit(Result.failure(it)) }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val state: StateFlow<MyBusinessesUiState> =
         combine(
-            reload.flatMapLatest { observeMyBusinesses() },
+            reload.flatMapLatest { businesses() },
             deleteError,
             submitState,
-        ) { businesses, error, submit ->
+        ) { result, error, submit ->
             MyBusinessesUiState(
                 loading = false,
-                businesses = businesses,
-                message = error,
+                businesses = result.getOrDefault(emptyList()),
+                // O'chirish/yuborish xatosi ustunroq: u foydalanuvchining aynan hozirgi
+                // amaliga tegishli, ro'yxat xatosi esa fonda qoladi.
+                message = error ?: result.exceptionOrNull()?.toAppException()?.userMessage,
                 submittingId = submit.submittingId,
                 successMessage = submit.success,
             )

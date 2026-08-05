@@ -7,9 +7,8 @@ import dev.feature.profile.domain.repository.ProfileExistence
 /**
  * Profilning masofaviy manbasi.
  *
- * DI [FallbackProfileRemoteDataSource] ni ulaydi: u avval [ApiProfileRemoteDataSource]
- * (`/profile/me`, OpenAPI'dan generatsiya qilingan klient) ga boradi, backend javob bermasa
- * profil local keshда ishlaydi.
+ * DI [ApiProfileRemoteDataSource] ni ulaydi (`/profile/me`, OpenAPI'dan generatsiya qilingan
+ * klient). Zaxira yo'q: backend javob bermasa xato yuqoriga uzatiladi.
  *
  * Repository qaysi manba ulanganini bilmaydi — u faqat shu interfeys bilan ishlaydi.
  */

@@ -4,35 +4,24 @@ import dev.core.common.Resource
 import dev.core.common.error.toAppException
 import dev.core.common.errorOf
 import dev.feature.discounts.domain.model.Business
-import dev.feature.discounts.domain.model.FakeBusinesses
 import dev.feature.discounts.domain.repository.BusinessRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 
 /**
- * Biznes UseCase'lari — **backend + zaxira** naqshi ([CatalogUseCases] bilan bir xil).
+ * Biznes UseCase'lari — **faqat backend**.
  *
- * Backend o'chgan/xato bergan/hali yozilmagan bo'lsa — [FakeBusinesses] namunasi va
- * `Success` qaytadi, foydalanuvchi ishini davom ettiraveradi. Backend tayyor bo'lganда
- * bu yerда hech narsa o'zgartirilmaydi.
- *
- * Diqqat: **bo'sh ro'yxat zaxirani ishga tushirmaydi** — u haqiqiy javob (foydalanuvchida
- * hali biznes yo'q). Zaxira faqat xatoда ishlaydi.
+ * Namuna ma'lumot yo'q: ilgari xatoда `FakeBusinesses` ro'yxati ("Bon Appetit", "Cyber Arena")
+ * chiqar va foydalanuvchi uni o'z biznesi deb o'ylardi — aslida sessiya tugagan yoki internet
+ * yo'q bo'lardi. Endi xato yuqoriga uzatiladi va ekran uni ko'rsatadi.
  */
 
-/** Joriy foydalanuvchi bizneslari ro'yxati (bosh ekran). */
+/** Joriy foydalanuvchi bizneslari ro'yxati (bosh ekran). Xato oqimда uzatiladi. */
 class ObserveMyBusinessesUseCase(private val repository: BusinessRepository) {
-    operator fun invoke(): Flow<List<Business>> =
-        repository.observeMine().catch { emit(FakeBusinesses.sample()) }
+    operator fun invoke(): Flow<List<Business>> = repository.observeMine()
 }
 
 /**
  * Bitta biznesni id bo'yicha oladi (e'lon yuklashda meros olish uchun).
- *
- * ⚠️ Bu yerda zaxira **yo'q**, boshqa UseCase'lardan farqli. Sababi — id: namuna biznesning
- * id'si boshqa (`fake-cafe`), shuning uchun xatoда uni qaytarish e'lon formasini **mavjud
- * bo'lmagan biznesga** bog'lab qo'yardi va `POST /business/fake-cafe/listings` 404 bilan
- * tugardi. Foydalanuvchi esa buni "e'lon saqlanmadi" deb ko'rardi.
  *
  * `null` — chaqiruvchi xato ko'rsatadi va qayta urinish taklif qiladi.
  */
@@ -41,13 +30,15 @@ class GetBusinessUseCase(private val repository: BusinessRepository) {
         runCatching { repository.byId(id) }.getOrNull()
 }
 
-/** Biznesни yaratadi/yangilaydi (nom, telefon, tur, lokatsiya). */
+/**
+ * Biznesни yaratadi/yangilaydi (nom, telefon, tur, lokatsiya).
+ *
+ * Zaxira **yo'q**: ilgari backend javob bermasa forma "saqlandi" deb yopilar, serverда esa
+ * biznes yaratilmagan bo'lardi.
+ */
 class SaveBusinessUseCase(private val repository: BusinessRepository) {
-    suspend operator fun invoke(business: Business): Resource<Business> {
-        val saved = runCatching { repository.save(business) }.getOrNull()
-        // Backend yo'q bo'lsa forma "saqlandi" holatiga o'tsin — kiritilgan ma'lumot qaytariladi.
-        return saved as? Resource.Success ?: Resource.Success(business)
-    }
+    suspend operator fun invoke(business: Business): Resource<Business> =
+        runCatching { repository.save(business) }.getOrElse { errorOf(it.toAppException()) }
 }
 
 /**

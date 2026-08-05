@@ -3,7 +3,6 @@ package dev.feature.profile.presentation.di
 import dev.core.network.NetworkConfig
 import dev.core.network.generated.api.ProfileApi
 import dev.feature.profile.data.remote.ApiProfileRemoteDataSource
-import dev.feature.profile.data.remote.FallbackProfileRemoteDataSource
 import dev.feature.profile.data.remote.ProfileRemoteDataSource
 import dev.feature.profile.data.repository.ProfileRepositoryImpl
 import dev.feature.profile.domain.repository.ProfileRepository
@@ -21,8 +20,8 @@ import org.koin.dsl.module
  * Profil feature'ining barcha qatlamlarini bog'laydi (domain / data / presentation).
  *
  * Profil **backenddan** keladi (`/v1/profile/me`, OpenAPI'dan generatsiya qilingan [ProfileApi]).
- * Backend javob bermasa profil local keshда ishlaydi va tahrirlash `Success` qaytaradi
- * ([FallbackProfileRemoteDataSource]) — shuning uchun rejim bayrog'i kerak emas.
+ * Zaxira yo'q: backend javob bermasa xato ko'rinadi. Ilgari tahrirlash har qanday holatda
+ * `Success` qaytarardi va forma serverга yozilmagan ma'lumotni "saqlandi" deb ko'rsatardi.
  */
 fun profileModule() = module {
 
@@ -32,9 +31,7 @@ fun profileModule() = module {
 
     // Rasm yuklash umumiy endpoint orqali (`POST /v1/media/upload`) — `MediaUploader`
     // `coreModules()` da ro'yxatdan o'tadi (generatsiya qilingan klient fayl nomini yubormaydi).
-    single<ProfileRemoteDataSource> {
-        FallbackProfileRemoteDataSource(ApiProfileRemoteDataSource(get(), get()))
-    }
+    single<ProfileRemoteDataSource> { ApiProfileRemoteDataSource(get(), get()) }
 
     single<ProfileRepository> { ProfileRepositoryImpl(get(), get(), get(), get()) }
 
