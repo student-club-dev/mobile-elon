@@ -33,7 +33,6 @@ import dev.core.uikit.theme.AppType
 import dev.feature.discounts.domain.model.BusinessType
 import dev.feature.discounts.presentation.PostListingUiState
 import dev.feature.discounts.presentation.PostListingViewModel
-import dev.feature.discounts.presentation.components.BranchesSection
 import dev.feature.discounts.presentation.components.LimitContext
 import dev.feature.discounts.presentation.components.LimitHint
 import dev.feature.discounts.presentation.components.MessageBar
@@ -61,14 +60,16 @@ fun TypeListingForm(
         palette = palette,
         vm = vm,
         onBack = onBack,
-        // Kiyim-kechakда avval jins (erkak/ayol) tanlanadi.
-        genderGate = type == BusinessType.CLOTHING,
     )
 }
 
 /**
  * Ekranning umumiy karkasi: sarlavha → bloklar → tugmalar.
- * Bloklarning ketma-ketligi barcha turlarda bir xil (o'rganish oson), yozuvlari — har xil.
+ *
+ * Forma **ataylab qisqa** — faqat e'lonni ma'noli qiladigan bloklar: e'lon turi, kategoriya,
+ * tafsilot, rasm, narx, promokod (chegirmada) va telefon. Turga xos atributlar, qo'shimchalar (option groups),
+ * amal qilish muddati, chegirma turi, foydalanish limitlari va filial tanlash formadan olib
+ * tashlangan. E'lon biznesning **barcha filiallarida** amal qiladi (`branchIds` — hammasi).
  */
 @Composable
 private fun ListingFormScaffold(
@@ -77,8 +78,6 @@ private fun ListingFormScaffold(
     palette: AppPalette,
     vm: PostListingViewModel,
     onBack: () -> Unit,
-    /** `true` (Kiyim-kechak) — avval jins tanlanadi, keyin qolgan forma ochiladi. */
-    genderGate: Boolean = false,
 ) {
     val imagePicker = rememberImagePicker { picked ->
         if (picked != null) vm.addImage(picked.bytes, picked.fileName)
@@ -113,37 +112,20 @@ private fun ListingFormScaffold(
                 palette = palette,
             )
 
-            // Kiyim-kechakда — avval jins tanlash (erkak/ayol kiyimi).
-            if (genderGate) ClothingGenderSection(state, palette, vm)
-
-            // Jins gate: tanlanmaguncha (kiyimda) qolgan forma ko'rinmaydi.
-            if (!genderGate || state.listingGender != null) {
-                // SODDALASHTIRILGAN forma: turi + nomi + rasm + narx + tel + joylashuv.
-                // Bo'lim (kategoriya) — horizontal scroll.
-                CategorySection(state, copy, vm)
-                // Kategoriyaga xos maydonlar — Futbolka → razmerlar, PlayStation → model (PS5/PS4).
-                // Kategoriya tanlanmaguncha bo'sh bo'ladi va ko'rinmaydi.
-                AttributesSection(state, vm)
-                // Nomi + qo'shimcha ma'lumot.
-                AboutSection(state, copy, vm)
-                // Rasm.
-                ImagesSection(state, copy, vm, onAdd = imagePicker::pick)
-                // E'lon turi (Chegirma / Oddiy) — bevosita narx tepasida, chunki u narx
-                // ko'rinishini belgilaydi: chegirmada 2 narx, oddiyda 1 narx.
-                if (!state.modeLocked) ListingModeSection(state, vm)
-                // Narx (birlik, chegirma turi va qiymati, shartlar).
-                PriceAndDiscountSection(state, copy, vm)
-                // Qo'shimchalar — "Hajmni tanlang" kabi guruhlar (ixtiyoriy).
-                OptionGroupsSection(state, vm)
-                // Talaba chegirmani qanday oladi + limitlar.
-                RedemptionSection(state, vm)
-                // Amal qilish muddati (boshlanish sanasi + davomiyligi).
-                ValiditySection(state, vm)
-                // Telefon raqami.
-                ContactSection(state, vm)
-                // E'lon qaysi filiallarda amal qiladi.
-                BranchesSection(state, palette, vm)
-            }
+            // E'lon turi — Chegirma yoki Oddiy (narx bloki va promokod shunga bog'liq).
+            ListingModeSection(state, vm)
+            // Bo'lim (kategoriya) — horizontal scroll.
+            CategorySection(state, copy, vm)
+            // Nomi + qo'shimcha ma'lumot (qolgan hamma tafsilot shu yerda yoziladi).
+            AboutSection(state, copy, vm)
+            // Rasm.
+            ImagesSection(state, copy, vm, onAdd = imagePicker::pick)
+            // Narx: asl narx + chegirma foizi.
+            PriceAndDiscountSection(state, copy, vm)
+            // Promokod — faqat chegirma e'lonida (oddiy e'londa chegirma berilmaydi).
+            if (state.isDiscount) RedemptionSection(state, vm)
+            // Telefon raqami.
+            ContactSection(state, vm)
 
             Spacer(Modifier.height(AppSpacing.xs))
         }

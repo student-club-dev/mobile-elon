@@ -2,7 +2,6 @@ package dev.feature.discounts.domain.usecase
 
 import dev.core.common.Resource
 import dev.core.common.error.AppException
-import dev.feature.discounts.domain.model.AttributeSpec
 import dev.feature.discounts.domain.model.Business
 import dev.feature.discounts.domain.model.Listing
 import dev.feature.discounts.domain.model.ListingBranch
@@ -64,22 +63,16 @@ class PublishListingUseCase(private val repository: ListingRepository) {
     }
 
     /**
-     * [fields] — formadagi maydonlar (serverdan kelgan kategoriya javobidan). Berilmasa
-     * validator zaxira katalogga tushadi.
-     *
      * [requireBranch] — biznes filial taklif qiladimi. Onlayn biznesda (`isOnlineOnly`) yoki
      * filialsiz biznesda `false`: bo'sh `branchIds` backend uchun to'g'ri (= barcha faol
      * filiallar), shuning uchun e'lonni to'sib qo'yish noo'rin bo'lardi.
      */
     suspend operator fun invoke(
         listing: Listing,
-        fields: List<AttributeSpec>? = null,
         requireBranch: Boolean = true,
         isEdit: Boolean = false,
     ): Result {
-        val errors = fields
-            ?.let { ListingValidator.validate(listing, it, requireBranch) }
-            ?: ListingValidator.validate(listing, requireBranch = requireBranch)
+        val errors = ListingValidator.validate(listing, requireBranch = requireBranch)
         if (errors.isNotEmpty()) return Result.Invalid(errors)
 
         // Tahrirlash — `PUT /listings/{id}` (mavjudini yangilaydi); yangi e'lon — yaratib

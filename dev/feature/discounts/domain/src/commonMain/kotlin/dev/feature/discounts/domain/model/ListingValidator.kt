@@ -41,15 +41,13 @@ object ListingValidator {
     /**
      * Bo'sh ro'yxat — e'lon publish qilishga tayyor.
      *
-     * [fields] — formada **haqiqatan ko'ringan** maydonlar (`GET .../categories` javobidagi
-     * `fields[]`). Ular tashqaridan beriladi, chunki maydonlar ro'yxati serverda turadi va
-     * o'zgarishi mumkin: klient katalogiga qarab tekshirilsa, foydalanuvchi ekranda yo'q
-     * maydon uchun "tanlanmagan" xatosini olishi (yoki aksincha) mumkin edi. Berilmasa —
-     * zaxira katalogdan (oflayn holat).
+     * Turga xos atributlar (`fields[]`) **tekshirilmaydi**: forma ularni umuman so'ramaydi,
+     * shuning uchun "model — tanlanmagan" kabi xato foydalanuvchini formadan chiqolmaydigan
+     * holatga tushirardi (ekranda to'ldiradigan maydon yo'q edi). Server o'zi talab qilsa,
+     * xato javobdan kelib, xabar sifatida ko'rinadi.
      */
     fun validate(
         listing: Listing,
-        fields: List<AttributeSpec> = ListingCatalog.categoryAttributes(listing.businessType, listing.categoryKey),
         requireBranch: Boolean = true,
     ): List<ListingError> = buildList {
         // Biznes nomi endi formadan so'ralmaydi (biznes profilidан keladi) — majburiy emas.
@@ -73,11 +71,6 @@ object ListingValidator {
         if (listing.originalPrice <= 0) {
             add(ListingError(ListingField.PRICE, "Narxni kiriting"))
         }
-
-        // Turga xos MAJBURIY maydonlar — masalan Futbolkaда razmer, PlayStation'да model.
-        // Katalog `required = true` desa, to'ldirilmasdan e'lon joylanmaydi.
-        fields.filter { it.required && listing.attributes[it.key].isNullOrBlank() }
-            .forEach { add(ListingError(ListingField.ATTRIBUTES, "${it.label} — tanlanmagan")) }
 
         // Oddiy e'londa chegirma yo'q — faqat chegirma e'lonida tekshiriladi.
         if (listing.attributes[ListingCatalog.REGULAR_KEY] != "1") {

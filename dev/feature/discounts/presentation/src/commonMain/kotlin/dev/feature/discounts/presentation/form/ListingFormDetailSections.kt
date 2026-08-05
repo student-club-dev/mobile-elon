@@ -19,19 +19,10 @@ import androidx.compose.ui.unit.dp
 import dev.core.uikit.component.GlassTextField
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.discounts_about_subtitle
-import dev.core.uikit.resources.discounts_applies_to_options
-import dev.core.uikit.resources.discounts_conditions_hint
-import dev.core.uikit.resources.discounts_conditions_label
 import dev.core.uikit.resources.discounts_contact_hint
 import dev.core.uikit.resources.discounts_contact_subtitle
-import dev.core.uikit.resources.discounts_days
-import dev.core.uikit.resources.discounts_discount_type_label
-import dev.core.uikit.resources.discounts_duration_label
 import dev.core.uikit.resources.discounts_images_subtitle
-import dev.core.uikit.resources.discounts_limit_unlimited_hint
-import dev.core.uikit.resources.discounts_per_user_limit_label
 import dev.core.uikit.resources.discounts_percent_off
-import dev.core.uikit.resources.discounts_percent_suffix
 import dev.core.uikit.resources.discounts_phone_label
 import dev.core.uikit.resources.discounts_price_label
 import dev.core.uikit.resources.discounts_price_new_hint
@@ -41,40 +32,24 @@ import dev.core.uikit.resources.discounts_price_old_label
 import dev.core.uikit.resources.discounts_price_section
 import dev.core.uikit.resources.discounts_price_subtitle_discount
 import dev.core.uikit.resources.discounts_price_subtitle_regular
-import dev.core.uikit.resources.discounts_price_unit_label
 import dev.core.uikit.resources.discounts_promo_hint
 import dev.core.uikit.resources.discounts_redemption_section
-import dev.core.uikit.resources.discounts_redemption_url_hint
-import dev.core.uikit.resources.discounts_start_date_hint
-import dev.core.uikit.resources.discounts_start_date_invalid
-import dev.core.uikit.resources.discounts_start_date_label
 import dev.core.uikit.resources.discounts_student_pays
 import dev.core.uikit.resources.discounts_sum_suffix
-import dev.core.uikit.resources.discounts_total_limit_label
-import dev.core.uikit.resources.discounts_validity_section
-import dev.core.uikit.resources.discounts_validity_subtitle
 import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSize
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
-import dev.feature.discounts.domain.model.BusinessType
-import dev.feature.discounts.domain.model.DiscountType
-import dev.feature.discounts.domain.model.ListingCatalog
-import dev.feature.discounts.domain.model.PriceUnit
 import dev.feature.discounts.domain.model.ListingField
 import dev.feature.discounts.domain.model.ListingValidator
-import dev.feature.discounts.domain.model.RedemptionMethod
-import dev.feature.discounts.domain.model.RedemptionPeriod
 import dev.feature.discounts.domain.model.formatSum
 import dev.feature.discounts.presentation.PostListingUiState
 import dev.feature.discounts.presentation.PostListingViewModel
 import dev.feature.discounts.presentation.components.AddImageTile
-import dev.feature.discounts.presentation.components.ChipFlow
 import dev.feature.discounts.presentation.components.FormSection
 import dev.feature.discounts.presentation.components.ImageThumb
-import dev.feature.discounts.presentation.components.SelectChip
 import org.jetbrains.compose.resources.stringResource
 import dev.core.uikit.component.AppFieldType
 import dev.core.uikit.util.UZ_DIALING_CODE
@@ -154,19 +129,8 @@ fun PriceAndDiscountSection(
         error = state.errorFor(ListingField.PRICE) ?: state.errorFor(ListingField.DISCOUNT),
         palette = palette,
     ) {
-        // Narx birligi (`priceUnit`) — biznes turiga ruxsat etilganlari. Bitta variant
-        // bo'lsa tanlash shart emas (masalan kiyim doim "dona uchun").
-        // Tur tanlanmagan bo'lsa cheklamaymiz — `priceUnits` barcha birliklarni beradi.
-        val units = state.businessType?.let(ListingCatalog::priceUnits) ?: PriceUnit.entries
-        if (units.size > 1) {
-            MiniLabel(stringResource(Res.string.discounts_price_unit_label), palette)
-            ChipFlow {
-                units.forEach { unit ->
-                    SelectChip(unit.label, state.priceUnit == unit, { vm.onPriceUnit(unit) })
-                }
-            }
-        }
-
+        // Narx birligi ("soat uchun", "dona uchun") formada so'ralmaydi — u biznes turining
+        // odatiy qiymatidan olinadi (`prefillFromBusiness`).
         MiniLabel(
             stringResource(
                 if (state.isDiscount) Res.string.discounts_price_old_label else Res.string.discounts_price_label,
@@ -182,57 +146,18 @@ fun PriceAndDiscountSection(
         )
 
         if (state.isDiscount) {
-            // Chegirma turi (`discount.type`) — har biri qiymat maydonini boshqacha o'qiydi.
-            MiniLabel(stringResource(Res.string.discounts_discount_type_label), palette)
-            ChipFlow {
-                DiscountType.entries.forEach { type ->
-                    SelectChip(type.label, state.discountType == type, { vm.onDiscountType(type) })
-                }
-            }
-
-            // "1+1" da qiymat yo'q — nima berilishi shartda yoziladi.
-            if (state.discountType != DiscountType.FREE_ITEM) {
-                // Yorliq va misol tur bilan birga keladi ("Foiz (%)" / "20").
-                MiniLabel(state.discountType.valueLabel, palette)
-                GlassTextField(
-                    state.discountValue, vm::onDiscountValue,
-                    state.discountType.hint,
-                    height = AppSize.fieldHeight,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    trailing = {
-                        Suffix(
-                            stringResource(
-                                if (state.discountType == DiscountType.PERCENT) {
-                                    Res.string.discounts_percent_suffix
-                                } else {
-                                    Res.string.discounts_sum_suffix
-                                },
-                            ),
-                            palette,
-                        )
-                    },
-                    palette = palette,
-                )
-            }
-
-            // `discount.conditions` — "faqat ish kunlari", "ikkinchi kofe bepul".
-            MiniLabel(stringResource(Res.string.discounts_conditions_label), palette)
+            // Chegirma **yangi narx** sifatida so'raladi (`SPECIAL_PRICE`): foizni tizim o'zi
+            // hisoblaydi va pastda ko'rsatadi. Chegirma turini tanlash, shartlar matni va
+            // "qo'shimchalarga tegishli" bayrog'i formadan olib tashlangan.
+            MiniLabel(stringResource(Res.string.discounts_price_new_label), palette)
             GlassTextField(
-                state.conditions, vm::onConditions, stringResource(Res.string.discounts_conditions_hint),
+                state.discountValue, vm::onDiscountValue,
+                stringResource(Res.string.discounts_price_new_hint),
                 height = AppSize.fieldHeight,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                trailing = { Suffix(stringResource(Res.string.discounts_sum_suffix), palette) },
                 palette = palette,
             )
-
-            // `discount.appliesToOptions` — faqat qo'shimchalar bo'lganda ma'noga ega.
-            if (state.optionGroups.isNotEmpty()) {
-                ChipFlow {
-                    SelectChip(
-                        stringResource(Res.string.discounts_applies_to_options),
-                        state.appliesToOptions,
-                        { vm.onAppliesToOptions(!state.appliesToOptions) },
-                    )
-                }
-            }
 
             val old = state.originalPrice.toLongOrNull() ?: 0
             val new = state.finalPrice
@@ -287,112 +212,28 @@ private fun MiniLabel(text: String, palette: AppPalette) {
     Text(text, style = AppType.fieldLabel.copy(color = palette.inkMuted))
 }
 
-/** 5. Qanday ishlatiladi — usul, kod/havola va limitlar (`redemption`). */
+/**
+ * 5. Promokod — talaba chegirmani shu kod bilan oladi (`redemption.promoCode`).
+ *
+ * **Faqat chegirma e'lonida** ko'rinadi (oddiy e'londa beriladigan chegirma yo'q, demak kod
+ * ham keraksiz — qarang `TypeForms`). Usul tanlash (talaba ID / QR / onlayn havola) va
+ * foydalanish limitlari formadan olib tashlangan: usul har doim `PROMO_CODE`.
+ */
 @Composable
 fun RedemptionSection(state: PostListingUiState, vm: PostListingViewModel) {
     val palette = appPalette
     FormSection(
         title = stringResource(Res.string.discounts_redemption_section),
         subtitle = state.redemptionMethod.hint,
-        error = state.errorFor(ListingField.PROMO_CODE)
-            ?: state.errorFor(ListingField.REDEMPTION_URL)
-            ?: state.errorFor(ListingField.LIMITS),
+        error = state.errorFor(ListingField.PROMO_CODE),
         palette = palette,
     ) {
-        ChipFlow {
-            RedemptionMethod.entries.forEach { method ->
-                SelectChip(method.label, state.redemptionMethod == method, { vm.onRedemptionMethod(method) })
-            }
-        }
-        if (state.redemptionMethod == RedemptionMethod.PROMO_CODE) {
-            GlassTextField(
-                state.promoCode,
-                vm::onPromoCode,
-                stringResource(Res.string.discounts_promo_hint),
-                height = AppSize.fieldHeight,
-            )
-        }
-        // "Onlayn havola" usulida talaba chegirmani tashqi saytda ishlatadi — backend
-        // `redemption.url` ni kutadi, shu sabab maydon usul bilan birga chiqadi.
-        if (state.redemptionMethod == RedemptionMethod.ONLINE_LINK) {
-            GlassTextField(
-                state.redemptionUrl,
-                vm::onRedemptionUrl,
-                stringResource(Res.string.discounts_redemption_url_hint),
-                height = AppSize.fieldHeight,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
-            )
-        }
-
-        // `perUserLimit` + `perUserPeriod` — bo'sh maydon "cheksiz" degani.
-        MiniLabel(stringResource(Res.string.discounts_per_user_limit_label), palette)
         GlassTextField(
-            state.perUserLimit,
-            vm::onPerUserLimit,
-            stringResource(Res.string.discounts_limit_unlimited_hint),
+            state.promoCode,
+            vm::onPromoCode,
+            stringResource(Res.string.discounts_promo_hint),
             height = AppSize.fieldHeight,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            palette = palette,
         )
-        ChipFlow {
-            RedemptionPeriod.entries.forEach { period ->
-                SelectChip(period.label, state.perUserPeriod == period, { vm.onPerUserPeriod(period) })
-            }
-        }
-
-        // `totalLimit` — to'lgach e'lon avtomatik SOLD_OUT bo'ladi (spec §6.5).
-        MiniLabel(stringResource(Res.string.discounts_total_limit_label), palette)
-        GlassTextField(
-            state.totalLimit,
-            vm::onTotalLimit,
-            stringResource(Res.string.discounts_limit_unlimited_hint),
-            height = AppSize.fieldHeight,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            palette = palette,
-        )
-    }
-}
-
-private val durationOptions = listOf(7, 14, 30, 60, 90)
-
-/** 6. Amal qilish muddati — boshlanish sanasi (`validFrom`) va davomiyligi (`validTo`). */
-@Composable
-fun ValiditySection(state: PostListingUiState, vm: PostListingViewModel) {
-    val palette = appPalette
-    FormSection(
-        title = stringResource(Res.string.discounts_validity_section),
-        subtitle = stringResource(Res.string.discounts_validity_subtitle, "${state.durationDays}"),
-        error = state.errorFor(ListingField.VALIDITY),
-        palette = palette,
-    ) {
-        // Bo'sh qoldirilsa — bugundan. Kelajakdagi sana e'lonni belgilangan kunga rejalashtiradi
-        // (server uni `SCHEDULED` qilib qo'yadi va vaqti kelganda yoqadi).
-        MiniLabel(stringResource(Res.string.discounts_start_date_label), palette)
-        GlassTextField(
-            state.startDate,
-            vm::onStartDate,
-            stringResource(Res.string.discounts_start_date_hint),
-            height = AppSize.fieldHeight,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            palette = palette,
-        )
-        if (!state.startDateValid) {
-            Text(
-                stringResource(Res.string.discounts_start_date_invalid),
-                style = AppType.hint.copy(fontWeight = AppType.label.fontWeight, color = palette.danger),
-            )
-        }
-
-        MiniLabel(stringResource(Res.string.discounts_duration_label), palette)
-        ChipFlow {
-            durationOptions.forEach { days ->
-                SelectChip(
-                    stringResource(Res.string.discounts_days, "$days"),
-                    state.durationDays == days,
-                    { vm.onDuration(days) },
-                )
-            }
-        }
     }
 }
 

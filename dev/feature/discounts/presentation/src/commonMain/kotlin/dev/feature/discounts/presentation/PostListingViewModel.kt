@@ -6,10 +6,8 @@ import dev.core.common.Resource
 import dev.core.common.text.TextScript
 import dev.core.domain.repository.SettingsRepository
 import dev.core.domain.usecase.ObserveCurrentUserUseCase
-import dev.feature.discounts.domain.model.AttributeSpec
 import dev.feature.discounts.domain.model.BusinessType
 import dev.feature.discounts.domain.model.CategoryInfo
-import dev.feature.discounts.domain.model.TypeAttributes
 import dev.feature.discounts.domain.model.Gender
 import dev.feature.discounts.domain.model.DiscountType
 import dev.feature.discounts.domain.model.Listing
@@ -22,13 +20,10 @@ import dev.feature.discounts.domain.model.ListingRedemption
 import dev.feature.discounts.domain.model.ListingStatus
 import dev.feature.discounts.domain.model.ListingValidator
 import dev.feature.discounts.domain.model.OptionGroup
-import dev.feature.discounts.domain.model.OptionItem
 import dev.feature.discounts.domain.model.PriceUnit
 import dev.feature.discounts.domain.model.RedemptionMethod
 import dev.feature.discounts.domain.model.RedemptionPeriod
-import dev.feature.discounts.domain.model.SelectionType
 import dev.feature.discounts.domain.usecase.GetCategoriesUseCase
-import dev.feature.discounts.domain.usecase.GetTypeAttributesUseCase
 import dev.feature.discounts.domain.usecase.GetListingUseCase
 import dev.feature.discounts.domain.usecase.PublishListingUseCase
 import dev.feature.discounts.domain.usecase.SaveDraftUseCase
@@ -70,14 +65,6 @@ data class PostListingUiState(
      */
     val categoryList: List<CategoryInfo> = emptyList(),
     /**
-     * Turning dinamik forma sxemasi (`GET /business/types/{type}/attributes-schema`) — undagi
-     * **umumiy** maydonlar kategoriya maydonlariga qo'shiladi.
-     *
-     * `null` — hali yuklanmagan yoki so'rov uzilgan. Ikkala holatda ham forma kategoriya
-     * maydonlari bilan ishlayveradi, shuning uchun bu yerда xato holati yo'q.
-     */
-    val typeAttributes: TypeAttributes? = null,
-    /**
      * Biznesni yuklab bo'lmadi (internet/xato/o'chirilgan) — tur meros olinmaydi. Shunда forma
      * o'rniga xato + "Qayta urinish"/"Orqaga" ko'rsatiladi (cheksiz spinner tuzog'i bo'lmasin).
      */
@@ -92,26 +79,33 @@ data class PostListingUiState(
      * ataylab tanlanadi.
      */
     val isDiscount: Boolean = false,
-    /** Rejim tashqaridan (tab) belgilangan — E'lon turi tanlovi yashiriladi. */
-    val modeLocked: Boolean = false,
 
     val title: String = "",
     val description: String = "",
     val images: List<String> = emptyList(),
     val uploadingImage: Boolean = false,
 
-    /** Narx birligi (`priceUnit`) — biznes turiga ruxsat etilganlar ichidan tanlanadi. */
+    /**
+     * Narx birligi (`priceUnit`) — formada tanlanmaydi, biznes turining odatiy qiymati
+     * olinadi (PlayStation → soat uchun, kafe → dona uchun).
+     */
     val priceUnit: PriceUnit = PriceUnit.PER_ITEM,
     val originalPrice: String = "",
 
+    /**
+     * Formada tur tanlanmaydi — chegirma **yangi narx** sifatida kiritiladi (`SPECIAL_PRICE`),
+     * foizni tizim o'zi hisoblaydi. Boshqa turlar (`PERCENT`, `FIXED_AMOUNT`, `FREE_ITEM`)
+     * modelda qoladi: eski e'lonlar ular bilan saqlangan va tahrirlashда to'g'ri o'qilishi kerak.
+     */
     val discountType: DiscountType = DiscountType.SPECIAL_PRICE,
     val discountValue: String = "",
-    /** `discount.conditions` — aksiya sharti ("ikkinchi kofe bepul", "faqat ish kunlari"). */
+    /** `discount.conditions` — formadan olib tashlangan, tahrirlashда eski qiymat saqlanadi. */
     val conditions: String = "",
-    /** `discount.appliesToOptions` — chegirma qo'shimchalar narxiga ham tarqaladimi. */
+    /** `discount.appliesToOptions` — formadan olib tashlangan (qo'shimchalar ham yo'q). */
     val appliesToOptions: Boolean = false,
 
-    val redemptionMethod: RedemptionMethod = RedemptionMethod.STUDENT_ID,
+    /** Usul formada tanlanmaydi — har doim promokod. */
+    val redemptionMethod: RedemptionMethod = RedemptionMethod.PROMO_CODE,
     val promoCode: String = "",
     /** "Onlayn havola" usulida chegirma ishlatiladigan sayt (`redemption.url`). */
     val redemptionUrl: String = "",
@@ -128,7 +122,10 @@ data class PostListingUiState(
 
     /** Biznesning filiallari — e'lon qaysilarida amal qilishini shu ro'yxatdan tanlanadi. */
     val branches: List<ListingBranch> = emptyList(),
-    /** `branchIds` — belgilangan filiallar. Bo'sh bo'lsa e'lon hech qayerda amal qilmaydi. */
+    /**
+     * `branchIds` — e'lon amal qiladigan filiallar. Formada tanlanmaydi: biznes yuklanganда
+     * **hammasi** belgilanadi (tahrirlashда — e'londa saqlangani).
+     */
     val selectedBranchIds: Set<String> = emptySet(),
 
     /**
@@ -171,7 +168,6 @@ class PostListingViewModel(
     private val settings: SettingsRepository,
     private val getBusiness: dev.feature.discounts.domain.usecase.GetBusinessUseCase,
     private val getCategories: GetCategoriesUseCase,
-    private val getTypeAttributes: GetTypeAttributesUseCase,
 ) : ViewModel() {
 
     /** E'lon tegishli biznes id'si (biznesdan meros olinganda yoki tahrirlashda). */
@@ -211,30 +207,8 @@ class PostListingViewModel(
             val list = getCategories(type, g)
             _state.update { it.copy(categoryList = list) }
         }
-        loadTypeAttributes(type)
     }
 
-    /**
-     * Turning umumiy maydonlarini oladi (`attributes-schema`).
-     *
-     * Kategoriyalardan **alohida** so'rov: sxema jinsga bog'liq emas, shuning uchun kiyimda
-     * jins almashganда uni qayta so'rash keraksiz bo'lardi. Shu sabab bir xil tur uchun
-     * ikkinchi marta yuklanmaydi.
-     *
-     * Uzilsa xato ko'rsatilmaydi — UseCase bo'sh sxema beradi va forma kategoriya maydonlari
-     * bilan avvalgidek ishlaydi.
-     */
-    private fun loadTypeAttributes(type: BusinessType) {
-        if (_state.value.typeAttributes?.businessType == type) return
-        viewModelScope.launch {
-            val attributes = getTypeAttributes(type)
-            // Javob kelguncha tur almashgan bo'lsa (foydalanuvchi orqaga qaytib boshqa biznes
-            // ochgan) eski javobni yozmaymiz.
-            if (_state.value.businessType == type) {
-                _state.update { it.copy(typeAttributes = attributes) }
-            }
-        }
-    }
     val state: StateFlow<PostListingUiState> = _state.asStateFlow()
 
     /** Tahrirlanayotgan e'lonning id/yaratilgan vaqti — publish o'shani upsert qiladi. */
@@ -247,11 +221,6 @@ class PostListingViewModel(
     // -----------------------------------------------------------------------
 
     /** Kiyim-kechak e'loni uchun jins (erkak/ayol kiyimi). Kategoriyalar shunga moslanadi. */
-    fun onListingGender(g: Gender) {
-        _state.update { it.copy(listingGender = g, categoryKey = "") }
-        loadCategories() // erkak/ayol kategoriyalari boshqacha
-    }
-
     /**
      * E'lon tanlangan biznesga tegishli — tur, nom va lokatsiya biznesdan **meros** olinadi.
      * Biznes turi bor bo'lgani uchun tur tanlash grid'i o'tkazib yuboriladi (forma darrov ochiladi).
@@ -289,19 +258,15 @@ class PostListingViewModel(
     // Kategoriya o'zgarsa — kategoriyaга xos maydonlar boshqacha, shuning uchun tozalanadi.
     fun onCategory(key: String) = _state.update { it.copy(categoryKey = key, attributeValues = emptyMap()) }
 
-    /** Kategoriyaga xos maydon qiymatini yozadi (bo'sh bo'lsa o'chiradi). */
-    fun onAttribute(key: String, value: String) = _state.update {
-        it.copy(attributeValues = if (value.isBlank()) it.attributeValues - key else it.attributeValues + (key to value))
-    }
-
-    /** E'lon rejimi: chegirma yoki oddiy. */
+    /**
+     * E'lon turi: chegirma yoki oddiy. Chegirmada narx 2 ta (eski + yangi) va promokod
+     * so'raladi, oddiy e'londa bitta narx.
+     */
     fun onListingMode(discount: Boolean) = _state.update { it.copy(isDiscount = discount) }
 
-    /** Yaratishда rejimni tab belgilaydi — qulflab qo'yamiz (tanlov ko'rinmaydi). */
-    // Chegirma — e'lon formasi ICHIDAGI toggle (qulflanmaydi): "Chegirma e'loni" tanlansa
-    // narx 2 ta (Oldingi + Hozirgi), "Oddiy e'lon" bo'lsa narx bitta.
+    /** Ekranga kirilgan tab (Chegirma / E'lon) boshlang'ich turni belgilaydi. */
     fun setInitialMode(discount: Boolean) = _state.update {
-        it.copy(isDiscount = discount, modeLocked = false, discountType = DiscountType.SPECIAL_PRICE)
+        it.copy(isDiscount = discount, discountType = DiscountType.SPECIAL_PRICE)
     }
 
     /** Aloqa telefoni. */
@@ -316,107 +281,14 @@ class PostListingViewModel(
     fun onBusinessName(v: String) = _state.update { it.copy(businessName = TextScript.stripCyrillic(v)) }
     fun onTitle(v: String) = _state.update { it.copy(title = v) }
     fun onDescription(v: String) = _state.update { it.copy(description = v) }
-    fun onPriceUnit(v: PriceUnit) = _state.update { it.copy(priceUnit = v) }
     fun onPrice(v: String) = _state.update { it.copy(originalPrice = v.digits()) }
 
-    fun onDiscountType(v: DiscountType) = _state.update {
-        // 1+1 da qiymat maydoni yo'q — eski foizni tozalaymiz, aks holda u yashirin qolib ketadi.
-        it.copy(discountType = v, discountValue = if (v == DiscountType.FREE_ITEM) "" else it.discountValue)
-    }
-
     fun onDiscountValue(v: String) = _state.update { it.copy(discountValue = v.digits()) }
-    fun onConditions(v: String) = _state.update { it.copy(conditions = v) }
-    fun onAppliesToOptions(v: Boolean) = _state.update { it.copy(appliesToOptions = v) }
-
-    fun onRedemptionMethod(v: RedemptionMethod) = _state.update { it.copy(redemptionMethod = v) }
     fun onPromoCode(v: String) = _state.update { it.copy(promoCode = v.uppercase()) }
-    fun onRedemptionUrl(v: String) = _state.update { it.copy(redemptionUrl = v.trim()) }
-
-    /** Bo'sh matn — cheksiz (`null` yuboriladi). */
-    fun onPerUserLimit(v: String) = _state.update { it.copy(perUserLimit = v.digits().take(4)) }
-    fun onPerUserPeriod(v: RedemptionPeriod) = _state.update { it.copy(perUserPeriod = v) }
-    fun onTotalLimit(v: String) = _state.update { it.copy(totalLimit = v.digits().take(6)) }
-
-    fun onStartDate(v: String) = _state.update { it.copy(startDate = formatDateInput(v)) }
-    fun onDuration(days: Int) = _state.update { it.copy(durationDays = days) }
-
     // -----------------------------------------------------------------------
     // Filiallar — `branchIds`
     // -----------------------------------------------------------------------
 
-    /**
-     * E'lon qaysi filiallarda amal qilishini belgilaydi. Yangi filial bu yerда qo'shilmaydi:
-     * u backendда alohida resurs (`POST /business/{id}/branches`) va tuman/ish vaqtini talab
-     * qiladi — shuning uchun biznes profilida yaratiladi, e'lon esa faqat tanlaydi.
-     */
-    fun toggleBranch(id: String) = _state.update { state ->
-        state.copy(
-            selectedBranchIds = if (id in state.selectedBranchIds) {
-                state.selectedBranchIds - id
-            } else {
-                state.selectedBranchIds + id
-            },
-        )
-    }
-
-    // -----------------------------------------------------------------------
-    // Qo'shimchalar (`optionGroups`)
-    // -----------------------------------------------------------------------
-
-    fun addOptionGroup() = _state.update {
-        it.copy(optionGroups = it.optionGroups + OptionGroup(name = "", options = listOf(OptionItem(""))))
-    }
-
-    fun removeOptionGroup(index: Int) = _state.update {
-        it.copy(optionGroups = it.optionGroups.filterIndexed { i, _ -> i != index })
-    }
-
-    fun onGroupName(index: Int, v: String) = updateGroup(index) { it.copy(name = v) }
-
-    fun onGroupSelectionType(index: Int, v: SelectionType) = updateGroup(index) {
-        // Bitta tanlovli guruhда min/maks ma'nosiz — ular yashirin qolib ketmasin.
-        if (v == SelectionType.SINGLE) it.copy(selectionType = v, minSelect = null, maxSelect = null)
-        else it.copy(selectionType = v)
-    }
-
-    fun onGroupRequired(index: Int, v: Boolean) = updateGroup(index) { it.copy(isRequired = v) }
-
-    fun onGroupMinSelect(index: Int, v: String) = updateGroup(index) {
-        it.copy(minSelect = v.digits().take(2).toIntOrNull())
-    }
-
-    fun onGroupMaxSelect(index: Int, v: String) = updateGroup(index) {
-        it.copy(maxSelect = v.digits().take(2).toIntOrNull())
-    }
-
-    fun addOption(groupIndex: Int) = updateGroup(groupIndex) { it.copy(options = it.options + OptionItem("")) }
-
-    fun removeOption(groupIndex: Int, optionIndex: Int) = updateGroup(groupIndex) { group ->
-        group.copy(options = group.options.filterIndexed { i, _ -> i != optionIndex })
-    }
-
-    fun onOptionName(groupIndex: Int, optionIndex: Int, v: String) =
-        updateOption(groupIndex, optionIndex) { it.copy(name = v) }
-
-    /** Qo'shimcha narxi manfiy ham bo'lishi mumkin ("kichik hajm — 5000 arzon"). */
-    fun onOptionPriceDelta(groupIndex: Int, optionIndex: Int, v: String) =
-        updateOption(groupIndex, optionIndex) {
-            val negative = v.startsWith("-")
-            val amount = v.digits().take(9).toLongOrNull() ?: 0
-            it.copy(priceDelta = if (negative) -amount else amount)
-        }
-
-    fun onOptionAvailable(groupIndex: Int, optionIndex: Int, v: Boolean) =
-        updateOption(groupIndex, optionIndex) { it.copy(isAvailable = v) }
-
-    private fun updateGroup(index: Int, transform: (OptionGroup) -> OptionGroup) = _state.update { state ->
-        state.copy(optionGroups = state.optionGroups.mapIndexed { i, g -> if (i == index) transform(g) else g })
-    }
-
-    private fun updateOption(groupIndex: Int, optionIndex: Int, transform: (OptionItem) -> OptionItem) =
-        updateGroup(groupIndex) { group ->
-            group.copy(options = group.options.mapIndexed { i, o -> if (i == optionIndex) transform(o) else o })
-        }
 
     fun consumeMessage() = _state.update { it.copy(message = null, limitCode = null) }
 
@@ -497,18 +369,6 @@ class PostListingViewModel(
     }
 
     fun publish() {
-        // Chala yozilgan sana jimgina "bugun" ga aylanib qolmasin — foydalanuvchi uni ko'radi
-        // va tuzatadi. Qoralamada bunday tekshiruv yo'q: qoralama to'liq bo'lmasligi mumkin.
-        if (!_state.value.startDateValid) {
-            _state.update {
-                it.copy(
-                    errors = listOf(
-                        ListingError(ListingField.VALIDITY, "Boshlanish sanasini to'liq yozing (kk.oo.yyyy)"),
-                    ),
-                )
-            }
-            return
-        }
         val listing = buildListing() ?: return
         viewModelScope.launch {
             _state.update { it.copy(submitting = true, errors = emptyList()) }
@@ -517,7 +377,6 @@ class PostListingViewModel(
             when (
                 val res = publishListing(
                     listing,
-                    _state.value.categoryAttributes(),
                     requireBranch = _state.value.branches.isNotEmpty(),
                     // Tahrirlash — mavjud e'lonni `PUT` bilan yangilaydi (dublikat yaratmaydi).
                     isEdit = editingId != null,
@@ -574,7 +433,9 @@ class PostListingViewModel(
                 appliesToOptions = s.appliesToOptions,
             ),
             redemption = ListingRedemption(
-                method = s.redemptionMethod,
+                // Oddiy e'londa promokod so'ralmaydi (chegirma yo'q) — usul "Talaba ID",
+                // aks holда validator bo'sh kod uchun e'lonni to'sib qo'yardi.
+                method = if (s.isDiscount) s.redemptionMethod else RedemptionMethod.STUDENT_ID,
                 promoCode = s.promoCode.trim().ifBlank { null },
                 url = s.redemptionUrl.trim().ifBlank { null },
                 // Bo'sh maydon — cheksiz (`null`), backend ham shunday tushunadi.
@@ -601,7 +462,6 @@ class PostListingViewModel(
         customCategoryName = customCategoryName.orEmpty(),
         attributeValues = attributes - ListingCatalog.REGULAR_KEY - ListingCatalog.PHONE_KEY - ListingCatalog.GENDER_KEY,
         isDiscount = attributes[ListingCatalog.REGULAR_KEY] != "1",
-        modeLocked = true,
         contactPhone = attributes[ListingCatalog.PHONE_KEY].orEmpty(),
         // Kiyim e'lonini tahrirlashда tanlangan jinsni tiklaymiz.
         listingGender = when (attributes[ListingCatalog.GENDER_KEY]) {
@@ -614,8 +474,11 @@ class PostListingViewModel(
         images = images,
         priceUnit = priceUnit,
         originalPrice = originalPrice.toString(),
-        discountType = discount.type,
-        discountValue = discount.value.toString(),
+        // Forma chegirmani faqat "yangi narx" ko'rinishida biladi. Eski e'lon foiz yoki summa
+        // bilan saqlangan bo'lsa, uni shu ko'rinishga o'giramiz — aks holда maydonda narx
+        // o'rniga "20" (foiz) turib qolardi va saqlansa narx 20 so'mga aylanardi.
+        discountType = DiscountType.SPECIAL_PRICE,
+        discountValue = discount.finalPrice(originalPrice).toString(),
         conditions = discount.conditions.orEmpty(),
         appliesToOptions = discount.appliesToOptions,
         redemptionMethod = redemption.method,
@@ -690,22 +553,4 @@ private fun Int.pad2(): String = toString().padStart(2, '0')
 /** Kategoriyalar — backenddan yuklangan ro'yxat (zaxira: klient katalogi, UseCase beradi). */
 fun PostListingUiState.categories(): List<CategoryInfo> = categoryList
 
-/**
- * Formada ko'rsatiladigan dinamik maydonlar — turning **umumiy** maydonlari + tanlangan
- * kategoriyaniki.
- *
- * Umumiy maydonlar `attributes-schema` dan keladi va turning barcha e'lonlariga tegishli
- * (masalan har qanday PlayStation e'lonida "Joylar soni"). Sxema yuklanmagan bo'lsa —
- * faqat kategoriya maydonlari, ya'ni forma baribir ishlaydi.
- *
- * Kategoriya maydonlarining manbai `categories` javobi bo'lib qoladi: unda ular allaqachon
- * ichma-ich (`options` bilan) keladi va jinsga qarab filtrlangan bo'ladi.
- */
-fun PostListingUiState.categoryAttributes(): List<AttributeSpec> {
-    val categoryFields = categoryList.firstOrNull { it.key == categoryKey }?.fields.orEmpty()
-    val common = typeAttributes?.common.orEmpty()
-    if (common.isEmpty()) return categoryFields
-    // Kalit takrorlansa umumiysi qoladi — bir xil kalit bitta maydonni anglatadi.
-    return common + categoryFields.filterNot { field -> common.any { it.key == field.key } }
-}
 
