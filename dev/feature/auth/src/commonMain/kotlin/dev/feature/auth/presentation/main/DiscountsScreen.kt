@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -96,7 +97,7 @@ private fun DiscountsGrid(
     onOpen: (DiscountCategory) -> Unit,
 ) {
     Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+        Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState())
             .padding(horizontal = AppSpacing.lg).padding(top = 54.dp),
     ) {
         // Talaba ko'rinishi — faqat chegirmalarni ko'rish. E'lon qo'yish biznesmen shell'ida.

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -195,7 +196,9 @@ fun EditProfileScreen(
 
     // Tasdiqlash oynasi kontent USTIDA chizilishi kerak — shuning uchun ildiz `Box`.
     Box(Modifier.fillMaxSize()) {
-        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+        // imePadding scroll'dan OLDIN — ko'rinadigan maydon qisqaradi, fokusdagi maydon esa
+        // o'zini klaviatura ustiga suradi (`GlassTextField.keyboardAware`).
+        Column(Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState())) {
             // Header
             Row(
                 Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg).padding(top = 54.dp),

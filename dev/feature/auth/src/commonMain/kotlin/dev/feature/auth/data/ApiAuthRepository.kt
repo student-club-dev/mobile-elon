@@ -185,6 +185,9 @@ class ApiAuthRepository(
         userQueries.clear()
         database.profileQueries.clear()
         database.appSettingQueries.deleteByKey(SettingsRepository.KEY_SELECTED_ROLE)
+        // Tugallanmagan ro'yxat bosqichi ham sessiyaga bog'liq — aks holda keyingi
+        // foydalanuvchi kirganда uni begona hisobning OTP ekrani kutib olardi.
+        database.appSettingQueries.deleteByKey(SettingsRepository.KEY_SIGNUP_STAGE)
     }
 
     override suspend fun currentUser(): User? =

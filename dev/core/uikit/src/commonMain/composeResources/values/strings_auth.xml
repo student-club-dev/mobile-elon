@@ -103,11 +103,11 @@
     <string name="auth_email_verify_spam_hint">Spam papkasini ham tekshiring.</string>
 
     <!-- ============ Email + parol bilan ro'yxatdan o'tish ============ -->
-    <string name="auth_register_subtitle">Email va parol bilan bir daqiqada ro'yxatdan o'ting.</string>
+    <string name="auth_register_subtitle">Telefon raqami va parol bilan ro'yxatdan o'ting.</string>
     <string name="auth_password_min_placeholder">Kamida 6 belgi</string>
     <string name="auth_confirm_password_label">Parolni tasdiqlang</string>
     <string name="auth_confirm_password_placeholder">Parolni qayta kiriting</string>
-    <string name="auth_register_hint">Ro'yxatdan o'tgach rol va profil ma'lumotlarini to'ldirasiz.</string>
+    <string name="auth_register_hint">Keyingi qadamda raqamingizni SMS kod bilan tasdiqlaysiz va ism-familiyangizni kiritasiz.</string>
 
     <!-- ============ Rol tanlash ============ -->
     <string name="auth_role_title">Kim sifatida davom etamiz?</string>
@@ -259,7 +259,7 @@
     <string name="auth_reset_title">Yangi parol</string>
     <string name="auth_reset_subtitle">SMS'dagi kodni kiriting va yangi parol o'ylab toping.</string>
     <string name="auth_reset_submit">Parolni yangilash</string>
-    <string name="auth_otp_skip">Keyinroq tasdiqlayman</string>
+    <string name="auth_otp_cancel">Bekor qilish va kirish ekraniga qaytish</string>
     <string name="auth_google_login">Google bilan kirish</string>
     <string name="auth_telegram_login">Telegram bilan kirish</string>
     <string name="auth_telegram_soon">Telegram bilan kirish tez orada qo'shiladi</string>
@@ -267,4 +267,10 @@
     <string name="auth_reset_password_subtitle">Yangi parol o'ylab toping — kamida 8 belgi.</string>
     <string name="legal_terms_title">Foydalanish shartlari</string>
     <string name="legal_privacy_title">Maxfiylik siyosati</string>
+
+    <!-- ============ Hisob yaratish (ro'yxatning oxirgi qadami) ============ -->
+    <string name="auth_account_setup_title">Hisob yaratish</string>
+    <string name="auth_account_setup_subtitle">Ism va familiyangizni kiriting — ular biznes va e'lonlaringizda ko'rinadi.</string>
+    <string name="auth_account_setup_email_hint">Email ixtiyoriy — hisobingiz bilan bog'lanish uchun.</string>
+    <string name="auth_account_setup_hint">Ism va familiya majburiy. Rasm va emailni keyinroq profildan o'zgartirasiz.</string>
 </resources>

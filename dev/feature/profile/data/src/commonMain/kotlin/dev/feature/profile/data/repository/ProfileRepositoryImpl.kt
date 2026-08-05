@@ -59,7 +59,18 @@ class ProfileRepositoryImpl(
         val uid = currentUid ?: return Resource.Error("Sessiya topilmadi — avval kiring")
         return when (val res = remote.save(profile)) {
             is Resource.Success -> {
-                cache(uid, res.data)
+                // Backend `email`/`businessName`/`businessType` ni bilmaydi — javobda ular
+                // DOIM `null`. Faqat keshdagi eskisiga tayansak (qarang: [cache]), foydalanuvchi
+                // ayni shu saqlashда kiritgan yangi qiymat yo'qolardi; shuning uchun so'rovdagi
+                // qiymatni javob ustiga qaytarib qo'yamiz.
+                cache(
+                    uid,
+                    res.data.copy(
+                        email = profile.email ?: res.data.email,
+                        businessName = profile.businessName ?: res.data.businessName,
+                        businessType = profile.businessType ?: res.data.businessType,
+                    ),
+                )
                 Resource.Success(Unit)
             }
             is Resource.Error -> res

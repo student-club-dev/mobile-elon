@@ -21,7 +21,7 @@ import dev.core.uikit.component.ScreenTitle
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.auth_otp_phone_prefix
 import dev.core.uikit.resources.auth_otp_sent_suffix
-import dev.core.uikit.resources.auth_otp_skip
+import dev.core.uikit.resources.auth_otp_cancel
 import dev.core.uikit.resources.auth_otp_title
 import dev.core.uikit.resources.auth_resend_code
 import dev.core.uikit.resources.auth_resend_code_timer_prefix
@@ -41,11 +41,13 @@ import dev.feature.auth.presentation.screens.components.clickableNoRipple
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * Telefon raqamini tasdiqlash (`POST /auth/business/otp/verify`).
+ * Telefon raqamini tasdiqlash (`POST /auth/business/otp/verify`) — ro'yxatdan o'tishning
+ * **majburiy** 2-qadami.
  *
- * Bu ekran **kirish qadami emas**: hisob ro'yxatdan o'tishda allaqachon ochilgan va sessiya
- * bor. Shuning uchun tasdiqlashni o'tkazib yuborish ham mumkin — raqamni keyinroq
- * (Sozlamalarда) tasdiqlash mumkin, lekin parolni tiklash faqat tasdiqlangan raqam bilan ishlaydi.
+ * Hisob bu paytda serverда allaqachon ochilgan (backend `register` da sessiya beradi), lekin
+ * bu foydalanuvchi uchun "kirdim" degani emas: tasdiqlanmagan raqam bilan biznes yaratib
+ * bo'lmaydi (`403 PHONE_NOT_VERIFIED`) va parolni tiklash ham ishlamaydi. Shuning uchun
+ * "keyinroq tasdiqlayman" yo'q — [onBack] esa oqimni butunlay bekor qiladi.
  */
 @Composable
 fun OtpScreen(
@@ -54,7 +56,6 @@ fun OtpScreen(
     onBack: () -> Unit,
     onVerify: () -> Unit,
     onResend: () -> Unit,
-    onSkip: () -> Unit,
     palette: AppPalette = appPalette,
 ) {
     AppScreenScaffold(scroll = false) {
@@ -102,12 +103,15 @@ fun OtpScreen(
 
         ErrorText(state.error)
 
-        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(AppSpacing.md))
+        // Oqimni tashlab ketish yo'li — "keyinroq tasdiqlayman" emas: raqam tasdiqlanmasa
+        // ilovada qiladigan ish yo'q. Chiqib ketgan foydalanuvchi keyin o'sha raqam va parol
+        // bilan kiraveradi.
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Text(
-                stringResource(Res.string.auth_otp_skip),
-                style = AppType.hint.copy(fontWeight = AppType.label.fontWeight, color = palette.primary),
-                modifier = Modifier.clickableNoRipple(onSkip),
+                stringResource(Res.string.auth_otp_cancel),
+                style = AppType.hint.copy(fontWeight = AppType.label.fontWeight, color = palette.inkMuted),
+                modifier = Modifier.clickableNoRipple(onBack),
             )
         }
     }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -156,7 +157,9 @@ private fun AdTypePicker(palette: AppPalette, onClose: () -> Unit, onPick: (AdTy
 @Composable
 private fun AdForm(state: PostAdUiState, palette: AppPalette, onBack: () -> Unit, vm: PostAdViewModel) {
     val info = adTypes.first { it.type == state.type }
-    Column(Modifier.fillMaxSize()) {
+    // imePadding — klaviatura chiqqanda forma uning ustiga ko'chadi, pastdagi maydonlar
+    // klaviatura ostida qolmaydi.
+    Column(Modifier.fillMaxSize().imePadding()) {
         Column(
             Modifier.weight(1f).verticalScroll(rememberScrollState())
                 .padding(horizontal = AppSpacing.lg).padding(top = 54.dp),

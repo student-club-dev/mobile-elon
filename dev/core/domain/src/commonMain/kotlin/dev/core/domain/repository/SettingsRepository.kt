@@ -34,5 +34,17 @@ interface SettingsRepository {
 
         /** Foydalanuvchi jinsi ("MALE"/"FEMALE") — biznes turlari/kategoriyalarni moslaydi. */
         const val KEY_GENDER = "gender"
+
+        /**
+         * Tugallanmagan ro'yxatdan o'tish bosqichi — `"OTP"` yoki `"PROFILE"` (yo'q bo'lsa
+         * oqim tugagan).
+         *
+         * Nega local saqlanadi: backend `register` javobida hisobni DARHOL ochadi va sessiya
+         * beradi, raqam tasdig'i esa alohida (`/otp/verify`) — ya'ni "hisob bor, lekin oqim
+         * tugamagan" holati faqat ilova tomonda ma'lum (profil sxemasida `phoneVerified` yo'q).
+         * Bayroqsiz ilova qayta ochilganда foydalanuvchi to'g'ridan-to'g'ri bosh ekranga
+         * tushib, tasdiqlashni ham, ism-familiyani ham berib ketmasdi.
+         */
+        const val KEY_SIGNUP_STAGE = "signup_stage"
     }
 }

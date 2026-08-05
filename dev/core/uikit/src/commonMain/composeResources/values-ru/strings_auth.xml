@@ -95,11 +95,11 @@
     <string name="auth_email_verify_spam_hint">Проверьте также папку «Спам».</string>
 
     <!-- ============ Регистрация по почте и паролю ============ -->
-    <string name="auth_register_subtitle">Зарегистрируйтесь за минуту по почте и паролю.</string>
+    <string name="auth_register_subtitle">Зарегистрируйтесь по номеру телефона и паролю.</string>
     <string name="auth_password_min_placeholder">Минимум 6 символов</string>
     <string name="auth_confirm_password_label">Подтвердите пароль</string>
     <string name="auth_confirm_password_placeholder">Введите пароль ещё раз</string>
-    <string name="auth_register_hint">После регистрации вы выберете роль и заполните профиль.</string>
+    <string name="auth_register_hint">Дальше вы подтвердите номер SMS-кодом и укажете имя и фамилию.</string>
 
     <!-- ============ Выбор роли ============ -->
     <string name="auth_role_title">Кем вы продолжите?</string>
@@ -242,7 +242,7 @@
     <string name="auth_reset_title">Новый пароль</string>
     <string name="auth_reset_subtitle">Введите код из SMS и придумайте новый пароль.</string>
     <string name="auth_reset_submit">Обновить пароль</string>
-    <string name="auth_otp_skip">Подтвердить позже</string>
+    <string name="auth_otp_cancel">Отменить и вернуться ко входу</string>
     <string name="auth_google_login">Войти через Google</string>
     <string name="auth_telegram_login">Войти через Telegram</string>
     <string name="auth_telegram_soon">Вход через Telegram скоро появится</string>
@@ -250,4 +250,10 @@
     <string name="auth_reset_password_subtitle">Придумайте новый пароль — минимум 8 символов.</string>
     <string name="legal_terms_title">Условия использования</string>
     <string name="legal_privacy_title">Политика конфиденциальности</string>
+
+    <!-- ============ Данные аккаунта (последний шаг регистрации) ============ -->
+    <string name="auth_account_setup_title">Создать аккаунт</string>
+    <string name="auth_account_setup_subtitle">Укажите имя и фамилию — они видны в вашем бизнесе и объявлениях.</string>
+    <string name="auth_account_setup_email_hint">Email не обязателен — для связи по вашему аккаунту.</string>
+    <string name="auth_account_setup_hint">Имя и фамилия обязательны. Фото и email можно изменить позже в профиле.</string>
 </resources>

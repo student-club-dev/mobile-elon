@@ -63,6 +63,12 @@ val authFeatureModule = module {
             forgotPasswordUseCase = get(),
             resetPasswordUseCase = get(),
             observeCurrentUserUseCase = get(),
+            logoutUseCase = get(),
+            // Ro'yxatning oxirgi qadami — ism/familiya/rasm/email profilга yoziladi.
+            observeProfileUseCase = get(),
+            hasProfileUseCase = get(),
+            saveProfileUseCase = get(),
+            uploadAvatarUseCase = get(),
             settingsRepository = get(),
         )
     }

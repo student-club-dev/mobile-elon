@@ -95,11 +95,11 @@
     <string name="auth_email_verify_spam_hint">Check your spam folder too.</string>
 
     <!-- ============ Email + password registration ============ -->
-    <string name="auth_register_subtitle">Register in a minute with your email and password.</string>
+    <string name="auth_register_subtitle">Sign up with your phone number and a password.</string>
     <string name="auth_password_min_placeholder">At least 6 characters</string>
     <string name="auth_confirm_password_label">Confirm password</string>
     <string name="auth_confirm_password_placeholder">Re-enter your password</string>
-    <string name="auth_register_hint">After registering you'll pick a role and fill in your profile.</string>
+    <string name="auth_register_hint">Next you'll confirm your number with an SMS code and enter your name.</string>
 
     <!-- ============ Role choice ============ -->
     <string name="auth_role_title">How will you continue?</string>
@@ -242,7 +242,7 @@
     <string name="auth_reset_title">New password</string>
     <string name="auth_reset_subtitle">Enter the code from the SMS and choose a new password.</string>
     <string name="auth_reset_submit">Update password</string>
-    <string name="auth_otp_skip">Verify later</string>
+    <string name="auth_otp_cancel">Cancel and return to sign in</string>
     <string name="auth_google_login">Sign in with Google</string>
     <string name="auth_telegram_login">Sign in with Telegram</string>
     <string name="auth_telegram_soon">Telegram sign-in coming soon</string>
@@ -250,4 +250,10 @@
     <string name="auth_reset_password_subtitle">Choose a new password — at least 8 characters.</string>
     <string name="legal_terms_title">Terms of Use</string>
     <string name="legal_privacy_title">Privacy Policy</string>
+
+    <!-- ============ Account details (last sign-up step) ============ -->
+    <string name="auth_account_setup_title">Create account</string>
+    <string name="auth_account_setup_subtitle">Enter your first and last name — they appear on your business and listings.</string>
+    <string name="auth_account_setup_email_hint">Email is optional — used to reach you about your account.</string>
+    <string name="auth_account_setup_hint">First and last name are required. Photo and email can be changed later in your profile.</string>
 </resources>

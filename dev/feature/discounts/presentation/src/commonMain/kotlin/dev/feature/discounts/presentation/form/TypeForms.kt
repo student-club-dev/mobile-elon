@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -83,7 +84,10 @@ private fun ListingFormScaffold(
         if (picked != null) vm.addImage(picked.bytes, picked.fileName)
     }
 
-    Column(Modifier.fillMaxSize()) {
+    // imePadding — klaviatura chiqqanda forma va pastdagi amal paneli uning ustiga ko'chadi;
+    // scroll qismi qisqaradi, fokusdagi maydon esa o'zini ko'rinadigan joyga suradi
+    // (`GlassTextField` ichidagi `keyboardAware`).
+    Column(Modifier.fillMaxSize().imePadding()) {
         Column(
             Modifier.weight(1f).verticalScroll(rememberScrollState())
                 .padding(top = 54.dp),

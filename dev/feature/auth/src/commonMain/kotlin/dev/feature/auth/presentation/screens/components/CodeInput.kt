@@ -24,6 +24,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import dev.core.uikit.component.AppIcons
+import dev.core.uikit.component.keyboardAware
 import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSize
@@ -50,7 +51,9 @@ fun CodeInput(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
         textStyle = TextStyle(color = Color.Transparent),
         cursorBrush = SolidColor(Color.Transparent),
-        modifier = modifier.fillMaxWidth(),
+        // Kataklar ham klaviatura ostida qolmasin (ekran kichik bo'lsa yoki
+        // tepasida uzun matn bo'lsa) — fokusda o'zini ko'rinadigan joyga suradi.
+        modifier = modifier.keyboardAware().fillMaxWidth(),
         decorationBox = {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
                 repeat(length) { i ->

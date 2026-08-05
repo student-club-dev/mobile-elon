@@ -62,6 +62,9 @@ fun GlassTextField(
     // Yangi dizaynda maydonni chegara emas, SOYA ajratadi — u oq karta bilan bir xil yuzada.
     // Fokusda esa brend rangli nozik halqa qo'shiladi, shunda faol maydon aniq ko'rinadi.
     val box = modifier
+        // Fokusga kelganda o'zini klaviatura ustiga suradi — ilovadagi HAMMA matn maydoni
+        // shu komponentdan foydalanadi, shuning uchun qoida shu yerda, bir joyda turadi.
+        .keyboardAware()
         .fillMaxWidth()
         .height(height)
         .rowShadow(shape)

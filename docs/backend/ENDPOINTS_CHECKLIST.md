@@ -49,6 +49,12 @@
   - Maydonlar: `firstName, lastName, phoneNumber, gender, role, universityId,
     universityEmail, birthYear, courseYear, avatarUrl` (barchasi ixtiyoriy — upsert).
   - `uid` mavjud bo'lmasa profil **yaratsin**, bo'lsa **yangilasин**.
+  - [ ] ⚠️ **`email` maydoni yetishmayapti.** Ro'yxatdan o'tishning oxirgi qadamida ("Hisob
+        yaratish" ekrani) foydalanuvchi ism-familiya bilan birga **aloqa emailini** kiritadi,
+        lekin `UpdateProfileDto` da bunday maydon yo'q — `RegisterDto.email` esa ro'yxatning
+        BIRINCHI qadamida, email hali so'ralmagan paytда ketadi. Hozircha email faqat
+        ilovaning local keshida saqlanadi va serverga umuman bormaydi. Iltimos
+        `UpdateProfileDto` va `UserProfileDto` ga `email` (nullable) qo'shing.
 - [ ] **`POST /profile/me/avatar`** — `multipart/form-data` (rasm) → `200 AvatarUploadResponseDto { avatarUrl* }`
 
 ## 2. Biznes (`BusinessApi`)

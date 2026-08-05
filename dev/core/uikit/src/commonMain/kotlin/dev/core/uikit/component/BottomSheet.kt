@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -85,6 +86,10 @@ fun AppBottomSheet(
             ) {
                 Column(
                     Modifier
+                        // Klaviatura ochilsa oyna uning USTIGA ko'chadi va balandligini qolgan
+                        // joydan oladi (shu sabab `imePadding` o'lchamdan OLDIN turibdi) —
+                        // aks holda oynadagi maydonlar klaviatura ostida qolardi.
+                        .imePadding()
                         .fillMaxWidth()
                         .fillMaxHeight(0.7f)
                         .clip(AppRadius.sheetTop)

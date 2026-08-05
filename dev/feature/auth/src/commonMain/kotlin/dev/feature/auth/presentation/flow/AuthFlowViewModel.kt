@@ -8,11 +8,18 @@ import dev.core.domain.repository.SettingsRepository
 import dev.core.domain.usecase.ForgotPasswordUseCase
 import dev.core.domain.usecase.LoginUseCase
 import dev.core.domain.usecase.LoginWithGoogleUseCase
+import dev.core.domain.usecase.LogoutUseCase
 import dev.core.domain.usecase.ObserveCurrentUserUseCase
 import dev.core.domain.usecase.RegisterUseCase
 import dev.core.domain.usecase.RequestPhoneOtpUseCase
 import dev.core.domain.usecase.ResetPasswordUseCase
 import dev.core.domain.usecase.VerifyPhoneOtpUseCase
+import dev.feature.profile.domain.model.UserProfile
+import dev.feature.profile.domain.repository.ProfileExistence
+import dev.feature.profile.domain.usecase.HasProfileUseCase
+import dev.feature.profile.domain.usecase.ObserveProfileUseCase
+import dev.feature.profile.domain.usecase.SaveProfileUseCase
+import dev.feature.profile.domain.usecase.UploadAvatarUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -21,8 +28,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -30,8 +37,11 @@ import kotlinx.coroutines.launch
 
 /** UI navigatsiyasini boshqaradigan bir martalik hodisalar. */
 sealed interface AuthEvent {
-    /** Hisob yaratildi va raqamga SMS kod ketdi — tasdiqlash ekraniga. */
+    /** Ro'yxatdan o'tildi va raqamga SMS kod ketdi — tasdiqlash ekraniga. */
     data object PhoneVerificationSent : AuthEvent
+
+    /** Raqam tasdiqlandi — endi hisob ma'lumotlari (ism, familiya, rasm, email). */
+    data object AccountSetupRequired : AuthEvent
 
     /** Parolni tiklash kodi yuborildi — yangi parol ekraniga. */
     data object ResetCodeSent : AuthEvent
@@ -39,18 +49,30 @@ sealed interface AuthEvent {
     /** Parol yangilandi — kirish ekraniga qaytamiz. */
     data object PasswordReset : AuthEvent
 
+    /** Ro'yxat bekor qilindi (orqaga) — sessiya tozalandi, kirish ekraniga. */
+    data object SignupCancelled : AuthEvent
+
     /** To'liq kirildi (telefon/parol yoki Google) — bosh sahifaga o'tish. */
     data class Authenticated(val user: User) : AuthEvent
 }
+
+/** Ilova ochilishida qaysi ekran birinchi ko'rinishi. */
+enum class AuthStart { LOGIN, VERIFY_PHONE, ACCOUNT_SETUP, HOME }
 
 /**
  * Auth oqimining forma holatini va biznes-amallarini boshqaradi.
  *
  * Backend oqimi (`/v1/auth/business/…`):
  * - **kirish** — telefon + parol yoki Google (`oauth/google`);
- * - **ro'yxat** — telefon + parol; keyin SMS kod bilan raqam tasdiqlanadi (hisob esa
- *   allaqachon ochilgan);
+ * - **ro'yxat** — telefon + parol → SMS kod → ism/familiya (+ rasm, email);
  * - **parolni tiklash** — raqamga SMS kod → kod + yangi parol.
+ *
+ * MUHIM — ro'yxatdan o'tish **uch qadamli, uzilmaydigan** oqim. `POST /register` hisobni
+ * darhol ochib sessiya beradi, lekin bu foydalanuvchi uchun "kirdim" degani emas: raqam
+ * tasdiqlanmagan (OTP chaqiruvlari sessiyani talab qiladi, shu bois kod ro'yxatdan
+ * OLDIN so'ralishi mumkin emas) va profilда ismi yo'q. Shuning uchun oqim tugagunча
+ * bosh ekranga o'tkazmaymiz va bosqichni [SignupStage] bayrog'ida saqlaymiz — ilova
+ * yopilib qayta ochilsa ham o'sha joydan davom etadi.
  *
  * Email bilan kirish/ro'yxatdan o'tish ilovadan olib tashlangan — muqobil usul Google.
  *
@@ -65,6 +87,11 @@ class AuthFlowViewModel(
     private val forgotPasswordUseCase: ForgotPasswordUseCase,
     private val resetPasswordUseCase: ResetPasswordUseCase,
     private val observeCurrentUserUseCase: ObserveCurrentUserUseCase,
+    private val logoutUseCase: LogoutUseCase,
+    private val observeProfileUseCase: ObserveProfileUseCase,
+    private val hasProfileUseCase: HasProfileUseCase,
+    private val saveProfileUseCase: SaveProfileUseCase,
+    private val uploadAvatarUseCase: UploadAvatarUseCase,
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
 
@@ -75,14 +102,49 @@ class AuthFlowViewModel(
     val events: Flow<AuthEvent> = _events.receiveAsFlow()
 
     /**
-     * Ilova ochilishida avtomatik kirish holati (local sessiya keshidan):
-     * `null` — hali tekshirilmoqda (splash), `true` — kirgan (HOME), `false` — kirmagan.
+     * Ilova ochilishida qaysi ekrandan boshlash (`null` — hali o'qilmoqda, splash).
+     *
+     * Sessiya bor bo'lishi yetarli emas: tugallanmagan ro'yxat bosqichi bo'lsa oqim
+     * o'sha joydan davom etadi. Aks holда `register` dan keyin ilova yopilsa, foydalanuvchi
+     * raqami tasdiqlanmagan va ismsiz holда bosh ekranga tushib qolardi.
      */
-    val loggedIn: StateFlow<Boolean?> = observeCurrentUserUseCase()
-        .map { it != null }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+    val start: StateFlow<AuthStart?> = combine(
+        observeCurrentUserUseCase(),
+        settingsRepository.observeValue(SettingsRepository.KEY_SIGNUP_STAGE),
+    ) { user, stage ->
+        when {
+            user == null -> AuthStart.LOGIN
+            SignupStage.parse(stage) == SignupStage.OTP -> AuthStart.VERIFY_PHONE
+            SignupStage.parse(stage) == SignupStage.PROFILE -> AuthStart.ACCOUNT_SETUP
+            else -> AuthStart.HOME
+        }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     private var timerJob: Job? = null
+
+    init {
+        // Oqim yarmida ilova qayta ochilgan bo'lsa formani tiklaymiz: OTP ekrani qaysi
+        // raqamga kod ketganini, hisob ekrani esa qisman to'ldirilgan profilni ko'rsatsin.
+        viewModelScope.launch {
+            val stage = SignupStage.parse(
+                settingsRepository.observeValue(SettingsRepository.KEY_SIGNUP_STAGE).first(),
+            ) ?: return@launch
+            val phone = observeCurrentUserUseCase().first()?.phoneNumber
+            val profile = observeProfileUseCase().first()
+            _state.update {
+                it.copy(
+                    phone = phone?.filter(Char::isDigit)?.takeLast(9) ?: it.phone,
+                    otpPurpose = OtpPurpose.VERIFY_PHONE,
+                    firstName = profile?.firstName.orEmpty(),
+                    lastName = profile?.lastName.orEmpty(),
+                    email = profile?.email.orEmpty(),
+                    avatarUrl = profile?.avatarUrl,
+                )
+            }
+            // Kod eskirgan bo'lishi mumkin — qayta yuborish tugmasi darhol faol bo'lsin.
+            if (stage == SignupStage.OTP) _state.update { it.copy(resendSeconds = 0) }
+        }
+    }
 
     // --- Forma yangilanishlari ---
     fun onPhoneChange(v: String) = _state.update {
@@ -111,7 +173,7 @@ class AuthFlowViewModel(
         _state.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
             when (val result = loginUseCase("+998${s.phoneDigits}", s.password)) {
-                is Resource.Success -> finishAuthenticated(result.data)
+                is Resource.Success -> finishLogin(result.data)
                 is Resource.Error -> _state.update { it.copy(isLoading = false, error = result.message) }
                 Resource.Loading -> Unit
             }
@@ -124,7 +186,7 @@ class AuthFlowViewModel(
         _state.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
             when (val result = loginWithGoogleUseCase(idToken)) {
-                is Resource.Success -> finishAuthenticated(result.data)
+                is Resource.Success -> finishLogin(result.data)
                 is Resource.Error -> _state.update { it.copy(isLoading = false, error = result.message) }
                 Resource.Loading -> Unit
             }
@@ -139,8 +201,12 @@ class AuthFlowViewModel(
     // ------------------------------------------------------------------
 
     /**
-     * Hisob yaratadi (telefon + parol). Hisob darhol ochiladi va raqamni tasdiqlash uchun
-     * SMS kod so'raladi — foydalanuvchi uni o'tkazib yuborsa ham ilovaga kirgan bo'ladi.
+     * Ro'yxatdan o'tishning 1-qadami (telefon + parol).
+     *
+     * Backend hisobni shu yerda ochib sessiya beradi, lekin oqim tugamaydi: darhol SMS kod
+     * so'raymiz va tasdiqlash ekraniga o'tamiz. Kod ketmasa ham **o'sha ekranga** o'tamiz,
+     * faqat xato bilan — foydalanuvchi "Qayta yuborish"ni bosadi. Ilgari bu holatda ilovaga
+     * kiritib yuborilardi va tasdiqlash keyin, biznes ekranidan chiqib qolardi.
      */
     fun register() {
         val s = _state.value
@@ -159,32 +225,34 @@ class AuthFlowViewModel(
                 is Resource.Error -> _state.update { it.copy(isLoading = false, error = result.message) }
                 Resource.Loading -> Unit
                 is Resource.Success -> {
-                    // Hisob ochildi — endi raqamni tasdiqlaymiz (sessiya allaqachon bor,
-                    // shuning uchun OTP so'rovi avtorizatsiya bilan ketadi).
+                    // Hisob ochildi — bosqichni belgilaymiz (ilova yopilsa ham shu yerdan davom).
+                    setSignupStage(SignupStage.OTP)
                     _state.update { it.copy(otp = "", otpPurpose = OtpPurpose.VERIFY_PHONE) }
-                    requestPhoneOtp(onFailure = { finishAuthenticated(result.data) })
+                    requestPhoneOtp()
+                    _events.send(AuthEvent.PhoneVerificationSent)
                 }
             }
         }
     }
 
     /**
-     * Raqamni tasdiqlash uchun SMS kod so'raydi. Kod ketmasa (masalan SMS xizmati javob bermasa)
-     * [onFailure] chaqiriladi — hisob baribir ochilgani uchun foydalanuvchini ushlab qolmaymiz.
+     * Raqamni tasdiqlash uchun SMS kod so'raydi. Kod ketmasa xato holatда qoladi — chaqiruvchi
+     * ekranni o'zi hal qiladi (ro'yxatда baribir tasdiqlash ekraniga o'tiladi).
      */
-    private suspend fun requestPhoneOtp(onFailure: suspend () -> Unit) {
+    private suspend fun requestPhoneOtp() {
         when (val sent = requestPhoneOtpUseCase("+998${_state.value.phoneDigits}")) {
             is Resource.Success -> {
-                _state.update { it.copy(isLoading = false) }
+                _state.update { it.copy(isLoading = false, error = null) }
                 startResendTimer(sent.data.resendCooldownSeconds)
-                _events.send(AuthEvent.PhoneVerificationSent)
             }
-            is Resource.Error -> onFailure()
+            is Resource.Error -> _state.update {
+                it.copy(isLoading = false, resendSeconds = 0, error = sent.message)
+            }
             Resource.Loading -> Unit
         }
     }
 
-    /** Tasdiqlash ekrani — kodni tekshiradi va bosh sahifaga o'tadi. */
+    /** 2-qadam — kodni tekshiradi va hisob ma'lumotlari ekraniga o'tadi. */
     fun verifyPhone() {
         val s = _state.value
         if (s.isLoading) return
@@ -192,12 +260,9 @@ class AuthFlowViewModel(
         viewModelScope.launch {
             when (val result = verifyPhoneOtpUseCase("+998${s.phoneDigits}", s.otp)) {
                 is Resource.Success -> {
-                    val user = observeCurrentUserUseCase().first()
-                    if (user != null) {
-                        finishAuthenticated(user)
-                    } else {
-                        _state.update { it.copy(isLoading = false, error = "Sessiya topilmadi. Qaytadan kiring.") }
-                    }
+                    setSignupStage(SignupStage.PROFILE)
+                    _state.update { it.copy(isLoading = false, otp = "") }
+                    _events.send(AuthEvent.AccountSetupRequired)
                 }
                 is Resource.Error -> _state.update { it.copy(isLoading = false, error = result.message) }
                 Resource.Loading -> Unit
@@ -205,12 +270,91 @@ class AuthFlowViewModel(
         }
     }
 
-    /** Tasdiqlashni o'tkazib yuborish — hisob allaqachon ochilgan. */
-    fun skipPhoneVerification() {
+    /**
+     * Ro'yxatni yarim yo'lda bekor qiladi (tasdiqlash yoki hisob ekranidagi "orqaga").
+     *
+     * Sessiya tozalanadi va kirish ekraniga qaytamiz. Hisob serverда qoladi — foydalanuvchi
+     * keyinroq o'sha raqam va parol bilan kiraveradi; qayta ro'yxatdan o'tishga urinsa
+     * backend "raqam band" der edi, shuning uchun bu yerда `logout` to'g'ri yechim.
+     */
+    fun cancelSignup() {
         viewModelScope.launch {
-            observeCurrentUserUseCase().first()?.let { finishAuthenticated(it) }
+            logoutUseCase()
+            setSignupStage(null)
+            _state.update {
+                AuthFlowState(phone = it.phone) // raqam qolsin — kirish ekranida qayta terilmasin
+            }
+            _events.send(AuthEvent.SignupCancelled)
         }
     }
+
+    // ------------------------------------------------------------------
+    // Hisob ma'lumotlari (ro'yxatning oxirgi qadami)
+    // ------------------------------------------------------------------
+
+    fun onFirstNameChange(v: String) = _state.update { it.copy(firstName = v, error = null) }
+    fun onLastNameChange(v: String) = _state.update { it.copy(lastName = v, error = null) }
+    fun onEmailChange(v: String) = _state.update { it.copy(email = v.trim(), error = null) }
+
+    /**
+     * Profil rasmini yuklaydi. Rasm darhol serverга ketadi va URL holatда saqlanadi —
+     * "Davom etish" bosilganda profil bitta so'rov bilan to'liq saqlanadi.
+     */
+    fun uploadAvatar(bytes: ByteArray, fileName: String) {
+        _state.update { it.copy(avatarUploading = true, error = null) }
+        viewModelScope.launch {
+            when (val result = uploadAvatarUseCase(bytes, fileName)) {
+                is Resource.Success -> _state.update {
+                    it.copy(avatarUploading = false, avatarUrl = result.data)
+                }
+                is Resource.Error -> _state.update {
+                    it.copy(avatarUploading = false, error = result.message)
+                }
+                Resource.Loading -> Unit
+            }
+        }
+    }
+
+    /** 3-qadam — ism/familiya (majburiy) + email/rasm (ixtiyoriy) saqlanadi va oqim tugaydi. */
+    fun completeAccountSetup() {
+        val s = _state.value
+        if (s.isLoading) return
+        val first = s.firstName.trim()
+        val last = s.lastName.trim()
+        if (first.isEmpty() || last.isEmpty()) {
+            _state.update { it.copy(error = "Ism va familiyani kiriting.") }
+            return
+        }
+        _state.update { it.copy(isLoading = true, error = null) }
+        viewModelScope.launch {
+            val existing = observeProfileUseCase().first() ?: UserProfile()
+            val profile = existing.copy(
+                firstName = first,
+                lastName = last,
+                phoneNumber = existing.phoneNumber ?: "+998${s.phoneDigits}",
+                email = s.email.trim().ifBlank { null },
+                avatarUrl = s.avatarUrl ?: existing.avatarUrl,
+            )
+            when (val saved = saveProfileUseCase(profile)) {
+                is Resource.Error -> _state.update { it.copy(isLoading = false, error = saved.message) }
+                Resource.Loading -> Unit
+                is Resource.Success -> {
+                    setSignupStage(null)
+                    val user = observeCurrentUserUseCase().first()
+                    if (user != null) {
+                        finishAuthenticated(user)
+                    } else {
+                        _state.update {
+                            it.copy(isLoading = false, error = "Sessiya topilmadi. Qaytadan kiring.")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun setSignupStage(stage: SignupStage?) =
+        settingsRepository.setValue(SettingsRepository.KEY_SIGNUP_STAGE, stage?.name)
 
     // ------------------------------------------------------------------
     // Parolni tiklash
@@ -276,15 +420,7 @@ class AuthFlowViewModel(
             OtpPurpose.RESET_PASSWORD -> requestPasswordReset()
             OtpPurpose.VERIFY_PHONE -> {
                 _state.update { it.copy(isLoading = true, error = null) }
-                viewModelScope.launch {
-                    requestPhoneOtp(
-                        onFailure = {
-                            _state.update {
-                                it.copy(isLoading = false, error = "Kodni yuborib bo'lmadi. Qayta urining.")
-                            }
-                        },
-                    )
-                }
+                viewModelScope.launch { requestPhoneOtp() }
             }
         }
     }
@@ -302,6 +438,35 @@ class AuthFlowViewModel(
     }
 
     // ------------------------------------------------------------------
+
+    /**
+     * Kirish tugadi — lekin hisobда ism bo'lmasa avval uni so'raymiz.
+     *
+     * Nega kerak: ilovaning hamma joyida ism ko'rinadi (biznes kartasi, e'lon, suhbat), va
+     * ro'yxat oqimi yarim yo'lda tashlab ketilgan bo'lishi mumkin — hisob serverда ochilgan,
+     * profil esa bo'sh. Bunda foydalanuvchi ismsiz ichkariga kirsa, uni hech qayerда to'ldirishga
+     * majburlamas edik.
+     *
+     * Noaniq holatда ([ProfileExistence.ERROR] — tarmoq/token muammosi) **ushlab qolmaymiz**:
+     * profil bor-yo'qligini bilmasak, bekorga forma ko'rsatgandan ko'ra ichkariga kiritgan
+     * yaxshi.
+     */
+    private suspend fun finishLogin(user: User) {
+        val needsSetup = when (hasProfileUseCase()) {
+            ProfileExistence.MISSING -> true
+            ProfileExistence.EXISTS -> observeProfileUseCase().first()?.displayName.isNullOrBlank()
+            ProfileExistence.ERROR -> false
+        }
+        if (!needsSetup) {
+            finishAuthenticated(user)
+            return
+        }
+        setSignupStage(SignupStage.PROFILE)
+        _state.update {
+            it.copy(isLoading = false, password = "", confirmPassword = "", otp = "")
+        }
+        _events.send(AuthEvent.AccountSetupRequired)
+    }
 
     private suspend fun finishAuthenticated(user: User) {
         // Rolni local saqlaymiz — ildiz router keyingi ochilishda shu bo'yicha yo'naltiradi.

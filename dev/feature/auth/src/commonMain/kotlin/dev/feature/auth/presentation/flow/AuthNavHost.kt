@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -15,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import dev.core.uikit.component.AppScreenScaffold
 import dev.core.uikit.component.LogoTile
 import dev.feature.auth.presentation.main.SettingsScreen
+import dev.feature.auth.presentation.screens.AccountSetupScreen
 import dev.feature.auth.presentation.screens.ForgotPasswordScreen
 import dev.feature.auth.presentation.screens.GoogleSignInButton
 import dev.feature.auth.presentation.screens.OtpScreen
@@ -35,6 +37,9 @@ private object Route {
     /** SMS kod — raqamni tasdiqlash (ro'yxatdan keyin). */
     const val VERIFY_PHONE = "verify_phone"
 
+    /** Hisob ma'lumotlari — ism, familiya, rasm, email (ro'yxatning oxirgi qadami). */
+    const val ACCOUNT_SETUP = "account_setup"
+
     /** Parolni tiklash: raqam kiritish. */
     const val FORGOT = "forgot"
 
@@ -45,6 +50,15 @@ private object Route {
     const val RESET_PASSWORD = "reset_password"
 
     const val HOME = "home"
+
+    /**
+     * Grafning o'zining marshruti. Kerak, chunki auth oqimi tugaganда butun stackni tozalash
+     * uchun `popUpTo(<graf>) { inclusive = true }` ishlatiladi: bitta ekranга `popUpTo` qilish
+     * ishonchsiz — o'sha ekran oqim ichida allaqachon olib tashlangan bo'lishi mumkin
+     * (masalan tasdiqlangan OTP), va u holда hech narsa tozalanmasdi. `NavController.graph.id`
+     * esa faqat Android'да bor, KMP'да yo'q — shuning uchun marshrut nomi bilan.
+     */
+    const val GRAPH = "auth_graph"
 }
 
 /**
@@ -61,15 +75,31 @@ fun AuthNavHost(
     onExit: (() -> Unit)? = null,
     vm: AuthFlowViewModel = koinViewModel(),
 ) {
-    // Local sessiya keshini tekshiramiz: kirgan bo'lsa to'g'ridan-to'g'ri HOME.
-    val loggedIn by vm.loggedIn.collectAsStateWithLifecycle()
-    if (loggedIn == null) {
+    // Local sessiya keshi + tugallanmagan ro'yxat bosqichi: qaysi ekrandan boshlashni
+    // ViewModel hal qiladi.
+    val start by vm.start.collectAsStateWithLifecycle()
+    val resolved = start ?: run {
         BootSplash() // kesh o'qilmaguncha qisqa splash
         return
     }
 
     val nav = rememberNavController()
     val state by vm.state.collectAsStateWithLifecycle()
+
+    // MUHIM — boshlang'ich yo'nalish FAQAT birinchi qiymatdan olinadi va keyin o'zgarmaydi.
+    // `NavHost` grafni `startDestination` bo'yicha eslab qoladi: qiymat oqim o'rtasida
+    // o'zgarsa graf QAYTA quriladi va navigatsiya stack'i yangi boshlang'ich ekranga
+    // tashlanadi. Aynan shu sabab ro'yxatdan o'tishда `register` sessiya ochishi bilan
+    // ekran "Mening biznesларim"ga sakrab ketar, SMS kod ekrani esa uning ustidan
+    // ochilardi — foydalanuvchi tasdiqlamasdan ilova ichiga tushib qolardi.
+    val startDestination = rememberSaveable {
+        when (resolved) {
+            AuthStart.LOGIN -> Route.LOGIN
+            AuthStart.VERIFY_PHONE -> Route.VERIFY_PHONE
+            AuthStart.ACCOUNT_SETUP -> Route.ACCOUNT_SETUP
+            AuthStart.HOME -> Route.HOME
+        }
+    }
 
     // Bir martalik hodisalar navigatsiyani boshqaradi (async auth natijalari).
     LaunchedEffect(Unit) {
@@ -78,24 +108,33 @@ fun AuthNavHost(
                 AuthEvent.PhoneVerificationSent -> nav.navigate(Route.VERIFY_PHONE) {
                     launchSingleTop = true
                 }
+                // Kod tasdiqlandi — orqaga qaytishда OTP ekrani qolmasin (kod allaqachon ishlatilgan).
+                AuthEvent.AccountSetupRequired -> nav.navigate(Route.ACCOUNT_SETUP) {
+                    popUpTo(Route.VERIFY_PHONE) { inclusive = true }
+                    launchSingleTop = true
+                }
                 AuthEvent.ResetCodeSent -> nav.navigate(Route.RESET_CODE) { launchSingleTop = true }
                 // Parol yangilandi — kirish ekraniga qaytamiz (yangi parol bilan kiradi).
                 AuthEvent.PasswordReset -> nav.navigate(Route.LOGIN) {
                     popUpTo(Route.LOGIN) { inclusive = true }
                     launchSingleTop = true
                 }
+                // Ro'yxat bekor qilindi — butun oqimni stackdan olib tashlaymiz.
+                AuthEvent.SignupCancelled -> nav.navigate(Route.LOGIN) {
+                    // Butun grafni tozalaymiz — ro'yxat ekranlariga orqaga qaytish yo'q.
+                    popUpTo(Route.GRAPH) { inclusive = true }
+                    launchSingleTop = true
+                }
                 is AuthEvent.Authenticated -> nav.navigate(Route.HOME) {
-                    popUpTo(Route.LOGIN) { inclusive = true }
+                    // Auth oqimi tugadi — orqaga bosilganда unga qaytib bo'lmasin.
+                    popUpTo(Route.GRAPH) { inclusive = true }
                     launchSingleTop = true
                 }
             }
         }
     }
 
-    NavHost(
-        navController = nav,
-        startDestination = if (loggedIn == true) Route.HOME else Route.LOGIN,
-    ) {
+    NavHost(navController = nav, startDestination = startDestination, route = Route.GRAPH) {
         composable(Route.LOGIN) {
             BusinessWelcomeScreen(
                 phone = state.phone,
@@ -126,14 +165,25 @@ fun AuthNavHost(
             )
         }
 
+        // Tasdiqlash — ro'yxatning majburiy qadami. Orqaga qaytish REGISTER ga EMAS
+        // (hisob serverда allaqachon ochilgan, qayta ro'yxat "raqam band" der edi), balki
+        // oqimni bekor qilib kirish ekraniga olib chiqadi.
         composable(Route.VERIFY_PHONE) {
             OtpScreen(
                 state = state,
                 vm = vm,
-                onBack = { nav.popBackStack() },
+                onBack = vm::cancelSignup,
                 onVerify = vm::verifyPhone,
                 onResend = vm::resendCode,
-                onSkip = vm::skipPhoneVerification,
+            )
+        }
+
+        composable(Route.ACCOUNT_SETUP) {
+            AccountSetupScreen(
+                state = state,
+                vm = vm,
+                onBack = vm::cancelSignup,
+                onContinue = vm::completeAccountSetup,
             )
         }
 

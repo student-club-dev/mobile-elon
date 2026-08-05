@@ -55,7 +55,7 @@ import dev.core.uikit.resources.auth_phone_placeholder
 import dev.core.uikit.resources.auth_register_hint
 import dev.core.uikit.resources.auth_register_subtitle
 import dev.core.uikit.resources.auth_sign_in
-import dev.core.uikit.resources.auth_signup_title
+import dev.core.uikit.resources.auth_sign_up
 import dev.core.uikit.resources.auth_terms_agree_suffix
 import dev.core.uikit.resources.auth_terms_and
 import dev.core.uikit.resources.auth_terms_prefix
@@ -76,12 +76,15 @@ import dev.feature.auth.presentation.screens.components.clickableNoRipple
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * Yangi biznes hisobi (`POST /auth/business/register`) — **telefon** + parol.
+ * Ro'yxatdan o'tishning **1-qadami** (`POST /auth/business/register`) — telefon + parol.
+ *
+ * Ekran "Hisob yaratish" emas, "Ro'yxatdan o'tish" deb ataladi: hisob shu yerda tugamaydi,
+ * undan keyin SMS kod va ism-familiya ("Hisob yaratish" ekrani) bor. Ilgari sarlavha ham,
+ * tugma ham "Hisob yaratish" edi va foydalanuvchi bosgan zahoti ish tugadi deb o'ylardi.
  *
  * Faqat telefon: parolni tiklash ham faqat SMS orqali ishlaydi
- * (`/auth/business/password/forgot`). Hisob darhol ochiladi, raqam esa keyingi ekranda
- * SMS kod bilan tasdiqlanadi. Email bilan ro'yxatdan o'tish ilovadan olib tashlangan —
- * muqobil usul sifatida kirish ekranida Google bor.
+ * (`/auth/business/password/forgot`). Email bilan ro'yxatdan o'tish ilovadan olib
+ * tashlangan — muqobil usul sifatida kirish ekranida Google bor.
  */
 @Composable
 fun RegisterScreen(
@@ -103,7 +106,7 @@ fun RegisterScreen(
             Spacer(Modifier.height(AppSpacing.xl))
             LogoTile(size = 48.dp, radius = 15.dp, iconSize = 26.dp)
             Spacer(Modifier.height(AppSpacing.lg))
-            ScreenTitle(stringResource(Res.string.auth_signup_title))
+            ScreenTitle(stringResource(Res.string.auth_sign_up))
             Spacer(Modifier.height(6.dp))
             ScreenSubtitle(stringResource(Res.string.auth_register_subtitle))
             Spacer(Modifier.height(AppSpacing.xl))
@@ -163,7 +166,7 @@ fun RegisterScreen(
 
             Spacer(Modifier.height(AppSpacing.xl))
             PrimaryButton(
-                stringResource(Res.string.auth_signup_title),
+                stringResource(Res.string.auth_sign_up),
                 onCreate,
                 enabled = state.registerReady,
                 trailingIcon = AppIcons.ArrowRight,
