@@ -38,6 +38,7 @@ class ApiGeoRepository(
                     address = address,
                     regionId = body.regionId,
                     districtId = body.districtId,
+                    metroStation = body.nearestMetro?.takeIf { it.isNotBlank() },
                 ),
             )
         }

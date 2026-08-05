@@ -7,7 +7,7 @@
 > Bu hujjat — ilova **hozir chaqiradigan** endpointlar (1-daraja) uchun bajariladigan ro'yxat.
 > Har bir DTO maydoni yonidagi `*` — majburiy (required).
 
-- **Base URL:** `https://api.elon.uz/v1`
+- **Base URL:** `https://api.studentclub.uz/v1`
 - **Format:** JSON (media yuklash — `multipart/form-data`)
 - **Sana/vaqt:** ISO-8601 (`date-time`), millisekund emas
 
@@ -23,14 +23,20 @@
 
 ## 0. Barcha endpointlarga umumiy (avval shuni qiling)
 
-- [ ] **Firebase ID token tekshiruvi (middleware).** Kirish Firebase orqali — backend
-      autentifikatsiya qilmaydi, faqat **tokenни tasdiqlaydi**. Har so'rovda:
-      `Authorization: Bearer <Firebase ID token>` → **Firebase Admin SDK** `verifyIdToken()`.
-      Token'dan `uid`, `phone_number`, `email` olinadi; token yaroqsiz/yo'q → **401**.
-- [ ] **Egalik (ownership) tekshiruvi.** `uid` → foydalanuvchi. Biznes/e'lon/filial faqat
-      egasига tegishli bo'lsa o'zgartirilsin (aks holda **403**).
-- [ ] **Xato formati** — barcha endpointlarда bir xil JSON (masalan `{ "message": "...", "code": "..." }`).
-- [ ] **CORS/rate-limit** — mos ravishда.
+- [x] ~~**Firebase ID token tekshiruvi (middleware).**~~ ⚠️ **Bekor qilindi.** Ilova Firebase'dan
+      **voz kechdi** va backendning o'z JWT'sini (access + refresh) ishlatadi — bu
+      `DISCOUNTS_BUSINESS_API_RESPONSE.md` §5.5 da ham qayd etilgan. Kirish
+      `POST /auth/business/login` · `/register` · `/otp/*` · `/oauth/google` orqali;
+      `Authorization: Bearer <access token>`, `TOKEN_EXPIRED` da `/auth/business/refresh`.
+      Ilovadagi manba: `dev/feature/auth/data/ApiAuthRepository.kt`.
+- [x] **Egalik (ownership) tekshiruvi.** Begona resurs uchun **404 emas, 403** qaytadi
+      (`DISCOUNTS_BUSINESS_API_RESPONSE.md` §5.6) — ilova shunga moslangan.
+- [x] **Xato formati** — `BaseResponse` konverti (pastga qarang); ilova uni
+      `EnvelopeUnwrapPlugin` + `AppException` bilan bir joyда ochadi.
+- [x] **Rate-limit** — `429` javob ilovada **alohida** tur (`AppException.LimitReached`),
+      validatsiya xatosi emas: unda tuzatiladigan maydon yo'q. `error.code`
+      (`RATE_LIMITED`, `LISTING_LIMIT_REACHED`) o'qiladi va foydalanuvchiga nima qilish
+      kerakligi aytiladi (`LimitHint.kt`).
 
 ---
 
@@ -83,7 +89,7 @@
 
 ## 6. Media (`MediaApi`)
 
-- [ ] **`POST /media/upload`** — `multipart/form-data` (rasm + `purpose` query, masalan `LISTING`)
+- [ ] **`POST /media/upload`** — `multipart/form-data` (rasm `file` + `purpose` — ikkalasi ham body maydoni, masalan `LISTING`)
       → `200 MediaUploadResponseDto { url*, thumbUrl, cardUrl }`
 
 ## 7. Geo (`GeoApi`)
@@ -94,30 +100,64 @@
 - [ ] **`POST /geo/geocode`** — body `GeocodeRequestDto { query*, regionId }` → `200 [GeocodeResultDto]`
 - [ ] **`POST /geo/reverse-geocode`** — body `ReverseGeocodeRequestDto { lat*, lng* }` → `200 ReverseGeocodeResponseDto`
 
-## 8. Chegirma feed — talaba tomoni (`DiscountsApi`)
+## 8. Chegirma feed — talaba tomoni
 
-- [ ] **`GET /discounts`** → `200 DiscountPageDto { items*, page*, size*, total*, hasNext }`
-  - Query (geo qidiruv): `lat, lng, radiusMeters, type, categoryKey, regionId, districtId,
-    isOpenNow, hasDelivery, query, sort, page, size`.
+> ⛔️ **`GET /discounts` qurilmaydi.** U bu yerda Level-1 sifatida sanalgan edi, lekin hech
+> qachon implement qilinmagan va o'rnini `POST /v1/discounts/search` egalladi — spec:
+> `docs/api/client/STUDENT_FEED.md` §2. `elon-uz.json` da yo'l `deprecated` deb belgilangan
+> holda, tarix uchun qoladi.
+>
+> Sabab: GET query-param modeli feed filtrini ko'tara olmaydi (`attributes[]` operatorlar
+> bilan, `bbox`, `attributesMatch`, id massivlari — id hech qachon URL'da bo'lmaydi), va ikki
+> yo'lni saqlash bir ma'lumot ustida ikki sort lug'ati (4 va 9 qiymat) demakdir.
+
+- [ ] **`POST /v1/discounts/search`** → `200 { items*, page*, size*, total*, hasNext }`
+  - Tana: `mode` (LIST | MAP | COUNT) + `filter` + `sort` + `page`. To'liq model —
+    `STUDENT_FEED.md` §4.
+  - Talaba tomonining qolgan endpointlari (`/catalog/groups`, `/catalog/types`,
+    `/catalog/filter-schema`, `/discounts/suggest`, `/discounts/detail`,
+    `/discounts/favorites/*`) ham o'sha hujjatda — ular bu checklistning qamrovidan tashqarida.
 
 ---
 
-## ✅ 1-daraja yakuni: **22 endpoint** — ilovaning hozirgi funksiyalari uchun shart.
+## ✅ 1-daraja yakuni: **21 endpoint** (`GET /discounts` chiqarilgandan keyin) — ilovaning
+hozirgi funksiyalari uchun shart. Talaba feed'i alohida yo'l xaritasi bo'yicha quriladi.
 
 ---
 
-## 2-daraja — spec'da bor, ilova hali chaqirmaydi (keyin)
+## 2-daraja — ✅ ULANDI
 
-Hozir e'lon **tahrirlash/pauza/o'chirish** ilovada local DB orqali ishlaydi; "to'liq" backend
-uchun bularni keyin ulash kerak:
+Ilgari e'lon **pauza/o'chirish** ilovada faqat local DB orqali ishlardi. Bu jiddiy muammo edi:
+biznes egasi e'lonni "to'xtatdim" deb ko'rar, serverда esa u hamon `ACTIVE` bo'lib, talabalar
+uni ko'rishда davom etardi. Endi hammasi backend orqali:
 
-- `GET /business/{id}/listings` · `GET /listings/{id}` · `PUT /listings/{id}` · `DELETE /listings/{id}`
-- `POST /listings/{id}/pause` · `/activate` · `/duplicate` · `/withdraw`
-- `GET /listings/{id}/stats` · `/redemptions`
-- `POST /listings/{id}/redeem/verify` · `/redeem/confirm` (kassir QR/promo)
-- `POST /business/{id}/submit` (biznesни moderatsiyaga)
-- `GET /business/types/{type}/attributes-schema` (dinamik `attributes` uchun JSON Schema)
-- `GET /geo/regions` · `GET /geo/regions/{id}/districts`
+- [x] `GET /business/{id}/listings` · `PUT /listings/{id}` · `DELETE /listings/{id}`
+- [x] `POST /listings/{id}/pause` · `/activate` · `/withdraw` · `/duplicate`
+      — **qaytgan status keshga aynan yoziladi**, kutilgani emas: `activate` boshlanish
+      sanasi kelajakda bo'lgan e'lonni `SCHEDULED` qiladi.
+- [x] `GET /listings/{id}/stats` · `/redemptions` — e'lon kartasidagi "Statistika" oynasi.
+- [x] `POST /listings/{id}/redeem/verify` · `/redeem/confirm` — kassir oqimi (ikki qadam:
+      tekshirish hech narsani o'zgartirmaydi, tasdiqlash foydalanishni hisobga oladi).
+
+### ✅ Qurildi (`DISCOUNTS_BUSINESS_API_RESPONSE.md`)
+
+- [x] **`POST /business/{id}/submit`** → `BusinessDto`. `DRAFT | REJECTED → PENDING_REVIEW`;
+      moderatsiya o'chirilgan bo'lsa darrov `APPROVED`.
+- [x] **`GET /business/types/{type}/attributes-schema`** → `AttributesSchemaDto`
+      (`{ businessType, common[], byCategory[] }`). JSON Schema emas — `AttributeFieldDto`,
+      ya'ni `…/categories` qaytaradigan o'sha format.
+- [x] **`GET /geo/regions`** · **`GET /geo/regions/{regionId}/districts`** — kontrakt yo'llari.
+      Mavjud `/regions` va `/districts` ham ishlashda davom etadi (admin panel ularni chaqiradi).
+- [x] **`GET /geo/metro-stations`** → `MetroStationDto[]` — Toshkent metrosi, 50 bekat / 4 liniya.
+      ✅ **Spec'ga qo'shilgan** (yangi `business.json` da bor) va klientga generatsiya qilingan
+      (`GeoApi.getMetroStations()`). Filial formasida (faqat Toshkent shahri) liniya bo'yicha
+      guruhlangan tanlov sifatida ishlatiladi; `Branch.metroStation` erkin matn bo'lib qolgani
+      uchun ro'yxat yuklanmasa maydon qo'lda yoziladi.
+- [x] **Moderatsiya (admin panel):** `POST /admin/businesses/{id}/approve` · `/reject` va
+      `POST /admin/listings/{id}/approve` · `/reject`. `MODERATION_ENABLED` bayrog'i bilan
+      boshqariladi — hozir **o'chirilgan**, shuning uchun `submit` avvalgidek darrov chop etadi.
+- [x] **§6.4 limitlar:** 5 biznes/foydalanuvchi · 100 faol e'lon/biznes · 50 `submit`/kun.
+      (`POST /media/upload` 100/soat avvaldan bor edi.)
 
 ## Ishlatilmaydi
 

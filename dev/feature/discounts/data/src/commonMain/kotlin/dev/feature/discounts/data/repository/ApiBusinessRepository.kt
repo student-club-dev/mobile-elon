@@ -99,6 +99,21 @@ class ApiBusinessRepository(
         }
     }
 
+    /**
+     * Moderatsiyaga yuboradi. Filiallar bilan birga qaytariladi, chunki chaqiruvchi ekran
+     * ro'yxatdagi kartani shu javob bilan almashtiradi — filialsiz qaytarsak karta ochilgan
+     * biznesning manzilini yo'qotardi.
+     */
+    override suspend fun submit(id: String): Resource<Business> {
+        if (!connectivity.isOnline()) return errorOf(AppException.NoInternet())
+        return try {
+            val submitted: BusinessDto = businessApi.businessSubmit(id).body()
+            Resource.Success(submitted.toDomain(branchesOf(id)))
+        } catch (e: Exception) {
+            errorOf(e.toAppException(connectivity.isOnline()))
+        }
+    }
+
     /** Backend fizik o'chirmaydi — biznes va uning e'lonlari arxivlanadi. */
     override suspend fun delete(id: String): Resource<Unit> {
         if (!connectivity.isOnline()) return errorOf(AppException.NoInternet())
@@ -170,6 +185,7 @@ private fun BusinessDto.toDomain(branches: List<BranchDto> = emptyList()) = Busi
     listingsCount = listingsCount,
     // Moderatsiya holati — biznes ochilganda ("Mening e'lonlarim" sarlavhasi) ko'rsatiladi.
     status = BusinessStatus.fromKey(status.value),
+    rejectionReason = rejectionReason?.takeIf { it.isNotBlank() },
     createdAt = createdAt.toEpochMilliseconds(),
     updatedAt = createdAt.toEpochMilliseconds(),
 )
@@ -183,6 +199,7 @@ private fun BranchDto.toDomain() = ListingBranch(
     landmark = location.landmark,
     regionId = location.regionId,
     districtId = location.districtId,
+    metroStation = location.metroStation,
     tradeCenterId = tradeCenter?.id,
     tradeCenterName = tradeCenter?.name,
     tradeCenterFields = tradeCenterFields.associate { it.label to it.value },
@@ -208,6 +225,9 @@ private fun ListingBranch.toRequest() = BranchRequestDto(
         lat = lat,
         lng = lng,
         landmark = landmark,
+        // Bo'sh matn yuborilmaydi — backend uchun "bekat ko'rsatilmagan" `null` bilan
+        // ifodalanadi, bo'sh satr esa keyin ro'yxatda bo'sh mo'ljal bo'lib ko'rinardi.
+        metroStation = metroStation?.takeIf { it.isNotBlank() },
     ),
     workingHours = BranchWorkingHours.fullWeek(workingHours).map { it.toDto() },
     tradeCenterId = tradeCenterId,

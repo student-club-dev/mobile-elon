@@ -8,6 +8,7 @@ import dev.core.common.network.NetworkConnectivity
 import dev.core.network.generated.api.CatalogApi
 import dev.core.network.generated.model.AttributeFieldDto
 import dev.core.network.generated.model.AttributeFieldTypeDto
+import dev.core.network.generated.model.AttributesSchemaDto
 import dev.core.network.generated.model.BusinessTypeInfoDto
 import dev.core.network.generated.model.CategoryDto
 import dev.core.network.generated.model.PriceUnitDto
@@ -19,6 +20,7 @@ import dev.feature.discounts.domain.model.CategoryInfo
 import dev.feature.discounts.domain.model.Gender
 import dev.feature.discounts.domain.model.ListingCatalog
 import dev.feature.discounts.domain.model.PriceUnit
+import dev.feature.discounts.domain.model.TypeAttributes
 import dev.feature.discounts.domain.repository.CatalogRepository
 import io.ktor.client.call.body
 
@@ -51,6 +53,24 @@ class ApiCatalogRepository(
         return try {
             val body: List<CategoryDto> = api.getCategories(type.key, gender?.toCategoriesQuery()).body()
             Resource.Success(body.map { it.toDomain(type) }.sortedBy { it.sortOrder })
+        } catch (e: Exception) {
+            errorOf(e.toAppException(connectivity.isOnline()))
+        }
+    }
+
+    override suspend fun attributesSchema(type: BusinessType): Resource<TypeAttributes> {
+        if (!connectivity.isOnline()) return errorOf(AppException.NoInternet())
+        return try {
+            val body: AttributesSchemaDto = api.getAttributesSchema(type.key).body()
+            Resource.Success(
+                TypeAttributes(
+                    // Server javobidagi turni ishlatamiz, so'ralganini emas: ular bir xil
+                    // bo'lishi kerak, lekin haqiqat manbai — server.
+                    businessType = BusinessType(body.businessType),
+                    common = body.common.map { it.toDomain() },
+                    byCategory = body.byCategory.associate { it.categoryKey to it.fields.map { f -> f.toDomain() } },
+                ),
+            )
         } catch (e: Exception) {
             errorOf(e.toAppException(connectivity.isOnline()))
         }

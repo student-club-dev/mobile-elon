@@ -5,7 +5,11 @@ import dev.core.common.error.AppException
 import dev.feature.discounts.domain.model.Business
 import dev.feature.discounts.domain.model.Listing
 import dev.feature.discounts.domain.model.ListingPage
+import dev.feature.discounts.domain.model.ListingStats
 import dev.feature.discounts.domain.model.ListingStatus
+import dev.feature.discounts.domain.model.Redemption
+import dev.feature.discounts.domain.model.RedemptionCheck
+import dev.feature.discounts.domain.model.RedemptionPage
 
 /**
  * Backend + zaxira: avval [api] ga boradi, unga **yetib bo'lmasa** [local] ga tushadi.
@@ -53,6 +57,41 @@ class FallbackListingRemoteDataSource(
         val result = api.archive(id)
         return if (result.isUnreachable()) local.archive(id) else result
     }
+
+    /**
+     * Holat o'zgarishi zaxiraga tushadi: e'lonni to'xtatish/yoqish local bazada ham mazmunli
+     * (ro'yxat darrov yangilanadi), tarmoq tiklanganda esa serverdagi holat baribir ustun
+     * bo'ladi — ro'yxat har ochilganda serverdan o'qiladi.
+     */
+    override suspend fun changeStatus(
+        id: String,
+        transition: ListingTransition,
+    ): Resource<ListingStatus> {
+        val result = api.changeStatus(id, transition)
+        return if (result.isUnreachable()) local.changeStatus(id, transition) else result
+    }
+
+    // Quyidagi to'rttasi uchun zaxira YO'Q — ular sof server amallari (nusxa, statistika,
+    // foydalanishlar, kassir kodi) va local javob soxta bo'lardi. `local` ularга ochiq xato
+    // qaytaradi, shuning uchun uni chaqirish ham mumkin, lekin bevosita `api` javobini
+    // qaytarish xatoni aniqroq qiladi: "internet yo'q" o'z holicha yetib boradi.
+    override suspend fun duplicate(id: String, business: Business): Resource<Listing> =
+        api.duplicate(id, business)
+
+    override suspend fun stats(id: String): Resource<ListingStats> = api.stats(id)
+
+    override suspend fun redemptions(id: String, page: Int, size: Int): Resource<RedemptionPage> =
+        api.redemptions(id, page, size)
+
+    override suspend fun verifyRedemption(id: String, code: String): Resource<RedemptionCheck> =
+        api.verifyRedemption(id, code)
+
+    override suspend fun confirmRedemption(
+        id: String,
+        code: String,
+        branchId: String?,
+        amount: Long?,
+    ): Resource<Redemption> = api.confirmRedemption(id, code, branchId, amount)
 
     /**
      * Rasm ham xuddi shu qoida bilan: server "bu fayl yaramaydi" desa, uni jimgina `data:`

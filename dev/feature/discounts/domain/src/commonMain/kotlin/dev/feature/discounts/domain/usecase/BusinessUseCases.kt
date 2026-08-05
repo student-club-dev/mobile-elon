@@ -51,6 +51,27 @@ class SaveBusinessUseCase(private val repository: BusinessRepository) {
 }
 
 /**
+ * Biznesni moderatsiyaga yuboradi.
+ *
+ * Zaxira **yo'q** (`SaveBusinessUseCase` dan farqi shu): "yuborildi" deb ko'rsatib, serverда
+ * hech narsa o'zgarmagan bo'lsa foydalanuvchi tekshiruvni kutib o'tirardi. Xato uning
+ * o'ziga ko'rinishi kerak.
+ *
+ * Holat oldindan tekshiriladi: backend faqat `DRAFT`/`REJECTED` dan o'tkazadi va boshqasidan
+ * `409` qaytaradi — bu tekshiruv shu keraksiz so'rovni oldini oladi.
+ */
+class SubmitBusinessUseCase(private val repository: BusinessRepository) {
+    suspend operator fun invoke(business: Business): Resource<Business> {
+        val status = business.status
+        if (status != null && !status.canSubmit) {
+            return Resource.Error("Bu holatda yuborib bo'lmaydi: ${status.label}")
+        }
+        return runCatching { repository.submit(business.id) }
+            .getOrElse { errorOf(it.toAppException()) }
+    }
+}
+
+/**
  * Biznesни o'chiradi (backend uni arxivlaydi).
  *
  * Xato **yutilmaydi**: ilgari har qanday holatda `Success` qaytardi va ro'yxat yangilanganda

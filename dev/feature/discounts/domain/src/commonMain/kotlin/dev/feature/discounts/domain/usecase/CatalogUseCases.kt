@@ -6,6 +6,7 @@ import dev.feature.discounts.domain.model.BusinessTypeInfo
 import dev.feature.discounts.domain.model.CategoryInfo
 import dev.feature.discounts.domain.model.Gender
 import dev.feature.discounts.domain.model.ListingCatalog
+import dev.feature.discounts.domain.model.TypeAttributes
 import dev.feature.discounts.domain.repository.CatalogRepository
 
 /**
@@ -48,4 +49,21 @@ class GetCategoriesUseCase(
     private fun fake(type: BusinessType, gender: Gender?): List<CategoryInfo> =
         ListingCatalog.categoriesFor(type, gender)
             .mapIndexed { i, c -> CategoryInfo.from(type, c, i) }
+}
+
+/**
+ * Turning dinamik forma sxemasi (`GET /business/types/{type}/attributes-schema`).
+ *
+ * Bu yerдаgi zaxira **bo'sh sxema**, klient katalogi emas: kategoriya maydonlarini forma
+ * allaqachon `GetCategoriesUseCase` dan oladi, bu so'rov esa faqat **umumiy** maydonlarni
+ * qo'shadi. So'rov uzilsa forma avvalgidek — kategoriya maydonlari bilan — ishlashda davom
+ * etadi, ya'ni yangi endpoint hech qachon e'lon qo'yishga to'sqinlik qilmaydi.
+ */
+class GetTypeAttributesUseCase(
+    private val repository: CatalogRepository,
+) {
+    suspend operator fun invoke(type: BusinessType): TypeAttributes {
+        val remote = runCatching { repository.attributesSchema(type) }.getOrNull()
+        return (remote as? Resource.Success)?.data ?: TypeAttributes.empty(type)
+    }
 }

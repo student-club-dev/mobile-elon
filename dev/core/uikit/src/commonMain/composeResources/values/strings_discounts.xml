@@ -302,4 +302,62 @@
     <string name="discounts_branches_add_note">Yangi filial biznes profilida qo\'shiladi</string>
 
     <string name="discounts_image_cover">Muqova</string>
+
+    <!-- ============ Metro bekati (filial mo'ljali, faqat Toshkent) ============ -->
+    <string name="discounts_metro_label">Metro bekati</string>
+    <string name="discounts_metro_select">Bekatni tanlang</string>
+    <string name="discounts_metro_note">Ixtiyoriy — talabalar filialni oson topishi uchun</string>
+    <string name="discounts_metro_line">%1$s liniyasi</string>
+
+    <!-- ============ Biznes moderatsiyasi ============ -->
+    <string name="discounts_business_submit">Tekshiruvga yuborish</string>
+    <string name="discounts_business_submitting">Yuborilmoqda...</string>
+    <string name="discounts_business_status">Holat: %1$s</string>
+    <string name="discounts_business_rejected_reason">Rad etish sababi: %1$s</string>
+    <string name="discounts_business_submit_hint">Biznes tasdiqlangach e\'lonlaringiz talabalarga ko\'rinadi</string>
+    <string name="discounts_business_submitted">Tekshiruvga yuborildi</string>
+
+    <!-- ============ E'lon: qo'shimcha amallar ============ -->
+    <string name="discounts_action_withdraw">Tekshiruvdan qaytarish</string>
+    <string name="discounts_action_duplicate">Nusxa olish</string>
+    <string name="discounts_action_stats">Statistika</string>
+    <string name="discounts_action_more">Boshqa amallar</string>
+    <string name="discounts_duplicated">Nusxa qoralama sifatida yaratildi</string>
+    <string name="discounts_withdrawn">E\'lon tekshiruvdan qaytarildi</string>
+
+    <!-- ============ E'lon statistikasi ============ -->
+    <string name="discounts_stats_title">Statistika</string>
+    <string name="discounts_stats_views">Ko\'rishlar</string>
+    <string name="discounts_stats_favorites">Saqlanganlar</string>
+    <string name="discounts_stats_redemptions">Foydalanishlar</string>
+    <string name="discounts_stats_conversion">Konversiya</string>
+    <string name="discounts_stats_revenue">Umumiy summa</string>
+    <string name="discounts_stats_failed">Statistikani yuklab bo\'lmadi</string>
+
+    <!-- ============ Foydalanishlar ro'yxati ============ -->
+    <string name="discounts_redemptions_title">Foydalanishlar</string>
+    <string name="discounts_redemptions_empty">Hali hech kim bu chegirmadan foydalanmagan</string>
+    <string name="discounts_redemptions_amount">%1$s so\'m</string>
+
+    <!-- ============ Kassir: kodni tekshirish ============ -->
+    <string name="discounts_redeem_title">Kodni tekshirish</string>
+    <string name="discounts_redeem_code_label">Talaba ko\'rsatgan kod</string>
+    <string name="discounts_redeem_code_hint">Masalan: A7K2M9</string>
+    <string name="discounts_redeem_verify">Tekshirish</string>
+    <string name="discounts_redeem_confirm">Tasdiqlash</string>
+    <string name="discounts_redeem_confirming">Tasdiqlanmoqda...</string>
+    <string name="discounts_redeem_valid">Kod haqiqiy</string>
+    <string name="discounts_redeem_confirmed">Chegirma qo\'llandi</string>
+    <string name="discounts_redeem_branch">Qaysi filialda</string>
+    <string name="discounts_redeem_amount_label">Chek summasi (ixtiyoriy)</string>
+    <string name="discounts_redeem_invalid_code">Bunday kod topilmadi</string>
+    <string name="discounts_redeem_already">Bu koddan allaqachon foydalanilgan</string>
+    <string name="discounts_redeem_expired">Kod muddati tugagan</string>
+    <string name="discounts_redeem_limit">Foydalanish chegarasi to\'lgan</string>
+    <string name="discounts_redeem_invalid">Kod yaroqsiz</string>
+
+    <!-- ============ Chegaralar (429) ============ -->
+    <string name="discounts_limit_business">Bir foydalanuvchi ko\'pi bilan 5 ta biznes ocha oladi. Eskisini arxivlang yoki keyinroq urining.</string>
+    <string name="discounts_limit_listing">Bu biznesda faol e\'lonlar chegarasi to\'ldi. Eski e\'lonni to\'xtating yoki o\'chiring.</string>
+    <string name="discounts_limit_daily">Bugungi yuborish chegarasi to\'ldi. Ertaga davom ettiring.</string>
 </resources>

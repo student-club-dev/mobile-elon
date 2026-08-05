@@ -6,6 +6,7 @@ import dev.feature.discounts.domain.model.BusinessTypeInfo
 import dev.feature.discounts.domain.model.CategoryInfo
 import dev.feature.discounts.domain.model.Gender
 import dev.feature.discounts.domain.model.ListingCatalog
+import dev.feature.discounts.domain.model.TypeAttributes
 import dev.feature.discounts.domain.repository.CatalogRepository
 
 /**
@@ -23,5 +24,19 @@ class LocalCatalogRepository : CatalogRepository {
         Resource.Success(
             ListingCatalog.categoriesFor(type, gender)
                 .mapIndexed { index, category -> CategoryInfo.from(type, category, index) },
+        )
+
+    /**
+     * Klient katalogida turga umumiy maydonlar tushunchasi yo'q — hamma maydon kategoriyaga
+     * bog'langan. Shuning uchun `common` bo'sh qaytadi va forma faqat kategoriya
+     * maydonlarini ko'rsatadi (backendsiz rejimdagi ilgarigi xatti-harakat).
+     */
+    override suspend fun attributesSchema(type: BusinessType): Resource<TypeAttributes> =
+        Resource.Success(
+            TypeAttributes(
+                businessType = type,
+                byCategory = ListingCatalog.categoriesFor(type, gender = null)
+                    .associate { it.key to ListingCatalog.categoryAttributes(type, it.key) },
+            ),
         )
 }

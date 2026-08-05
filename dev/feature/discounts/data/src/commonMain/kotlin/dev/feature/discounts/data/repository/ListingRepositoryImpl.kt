@@ -8,10 +8,15 @@ import dev.core.database.sql.ElonUzDatabase
 import dev.feature.discounts.data.mapper.toDomain
 import dev.feature.discounts.data.mapper.toEntity
 import dev.feature.discounts.data.remote.ListingRemoteDataSource
+import dev.feature.discounts.data.remote.ListingTransition
 import dev.feature.discounts.domain.model.Business
 import dev.feature.discounts.domain.model.Listing
 import dev.feature.discounts.domain.model.ListingPage
+import dev.feature.discounts.domain.model.ListingStats
 import dev.feature.discounts.domain.model.ListingStatus
+import dev.feature.discounts.domain.model.Redemption
+import dev.feature.discounts.domain.model.RedemptionCheck
+import dev.feature.discounts.domain.model.RedemptionPage
 import dev.feature.discounts.domain.repository.ListingRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -100,11 +105,71 @@ class ListingRepositoryImpl(
         }
     }
 
-    override suspend fun updateStatus(id: String, status: ListingStatus): Resource<Unit> =
-        withContext(dispatchers.io) {
-            q.updateStatus(status = status.name, updatedAt = now(), id = id)
-            Resource.Success(Unit)
+    /**
+     * Holat **avval serverda** o'zgaradi, keyin keshga yoziladi.
+     *
+     * Ilgari bu metod faqat local bazaga yozardi va oqibati og'ir edi: biznes egasi e'lonni
+     * "to'xtatdim" deb ko'rardi, talabalar esa uni ko'rishда davom etardi — serverда e'lon
+     * hamon `ACTIVE` edi. Endi server rad etsa (masalan muddati o'tgan e'lonni yoqishga
+     * urinish) kesh ham tegilmaydi va xato foydalanuvchiga qaytadi.
+     */
+    override suspend fun setPaused(id: String, paused: Boolean): Resource<ListingStatus> =
+        applyStatus(id) {
+            remote.changeStatus(
+                id,
+                if (paused) ListingTransition.PAUSE else ListingTransition.ACTIVATE,
+            )
         }
+
+    override suspend fun withdraw(id: String): Resource<ListingStatus> =
+        applyStatus(id) { remote.changeStatus(id, ListingTransition.WITHDRAW) }
+
+    /**
+     * Masofaviy o'tishni bajaradi va **qaytgan** holatni keshga yozadi.
+     *
+     * Qaytgan holat so'ralganidan farq qilishi mumkin (`activate` → `SCHEDULED`), shuning
+     * uchun keshga aynan server aytgani yoziladi, kutilgan qiymat emas.
+     */
+    private suspend fun applyStatus(
+        id: String,
+        transition: suspend () -> Resource<ListingStatus>,
+    ): Resource<ListingStatus> = when (val res = transition()) {
+        is Resource.Success -> {
+            withContext(dispatchers.io) { q.updateStatus(status = res.data.name, updatedAt = now(), id = id) }
+            res
+        }
+        is Resource.Error -> res
+        Resource.Loading -> Resource.Error("E'lon holatini o'zgartirib bo'lmadi")
+    }
+
+    /** Nusxa serverда yaratiladi va darrov keshga tushadi — ro'yxatда qoralama sifatida ko'rinadi. */
+    override suspend fun duplicate(id: String, business: Business): Resource<Listing> =
+        when (val res = remote.duplicate(id, business)) {
+            is Resource.Success -> {
+                cache(res.data)
+                res
+            }
+            is Resource.Error -> res
+            Resource.Loading -> Resource.Error("E'londan nusxa olib bo'lmadi")
+        }
+
+    // Statistika, foydalanishlar va kassir oqimi KESHLANMAYDI: ular vaqtga bog'liq sonlar va
+    // eskirgan nusxasi noto'g'ri qaror qabul qildiradi ("bugun hech kim kelmadi" — aslida
+    // kecha o'qilgan). Shuning uchun to'g'ridan-to'g'ri masofaviy manbaga o'tadi.
+    override suspend fun stats(id: String): Resource<ListingStats> = remote.stats(id)
+
+    override suspend fun redemptions(id: String, page: Int, size: Int): Resource<RedemptionPage> =
+        remote.redemptions(id, page, size)
+
+    override suspend fun verifyRedemption(id: String, code: String): Resource<RedemptionCheck> =
+        remote.verifyRedemption(id, code)
+
+    override suspend fun confirmRedemption(
+        id: String,
+        code: String,
+        branchId: String?,
+        amount: Long?,
+    ): Resource<Redemption> = remote.confirmRedemption(id, code, branchId, amount)
 
     override suspend fun delete(id: String): Resource<Unit> {
         // Serverда arxivlaymiz (`DELETE /listings/{id}`). Muvaffaqiyatli bo'lса — local'дан ham

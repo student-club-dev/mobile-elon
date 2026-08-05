@@ -5,9 +5,11 @@ import dev.core.common.error.AppException
 import dev.core.common.errorOf
 import dev.core.common.network.NetworkConnectivity
 import dev.core.network.generated.api.ListingsApi
+import dev.core.network.generated.api.RedemptionsApi
 import dev.core.network.media.MediaPurpose
 import dev.core.network.media.MediaUploader
 import dev.core.network.response.safeCall
+import dev.core.network.generated.model.ConfirmRedemptionRequestDto
 import dev.core.network.generated.model.CreateListingRequestDto
 import dev.core.network.generated.model.DiscountDto
 import dev.core.network.generated.model.DiscountRequestDto
@@ -17,21 +19,28 @@ import dev.core.network.generated.model.ListingStatusDto
 import dev.core.network.generated.model.OptionDto
 import dev.core.network.generated.model.OptionGroupDto
 import dev.core.network.generated.model.PriceUnitDto
+import dev.core.network.generated.model.RedemptionDto
 import dev.core.network.generated.model.RedemptionInfoDto
 import dev.core.network.generated.model.RedemptionMethodDto
 import dev.core.network.generated.model.RedemptionPeriodDto
 import dev.core.network.generated.model.SelectionTypeDto
 import dev.core.network.generated.model.UpdateListingRequestDto
+import dev.core.network.generated.model.VerifyRedemptionRequestDto
 import dev.feature.discounts.domain.model.Business
 import dev.feature.discounts.domain.model.DiscountType
 import dev.feature.discounts.domain.model.Listing
 import dev.feature.discounts.domain.model.ListingDiscount
 import dev.feature.discounts.domain.model.ListingPage
 import dev.feature.discounts.domain.model.ListingRedemption
+import dev.feature.discounts.domain.model.ListingStats
 import dev.feature.discounts.domain.model.ListingStatus
 import dev.feature.discounts.domain.model.OptionGroup
 import dev.feature.discounts.domain.model.OptionItem
 import dev.feature.discounts.domain.model.PriceUnit
+import dev.feature.discounts.domain.model.Redemption
+import dev.feature.discounts.domain.model.RedemptionCheck
+import dev.feature.discounts.domain.model.RedemptionInvalidReason
+import dev.feature.discounts.domain.model.RedemptionPage
 import dev.feature.discounts.domain.model.RedemptionMethod
 import dev.feature.discounts.domain.model.RedemptionPeriod
 import dev.feature.discounts.domain.model.SelectionType
@@ -51,6 +60,11 @@ import kotlinx.datetime.Instant
  */
 class ApiListingRemoteDataSource(
     private val listingsApi: ListingsApi,
+    /**
+     * Kassir oqimi va foydalanishlar tarixi backendда alohida kontrollerda
+     * (`Redemptions` tag'i), shuning uchun generatsiya qilingan klientда ham alohida klass.
+     */
+    private val redemptionsApi: RedemptionsApi,
     private val mediaApi: MediaUploader,
     private val connectivity: NetworkConnectivity,
 ) : ListingRemoteDataSource {
@@ -115,9 +129,93 @@ class ApiListingRemoteDataSource(
     override suspend fun archive(id: String): Resource<Unit> =
         safeCall(connectivity) { listingsApi.listingArchive(id).body() }
 
+    /**
+     * Har o'tish o'z endpoint'iga boradi va **serverning javobidagi** statusni qaytaradi:
+     * `activate` dan keyin e'lon `ACTIVE` emas, `SCHEDULED` bo'lishi mumkin (boshlanish sanasi
+     * kelajakda), `withdraw` esa `DRAFT` beradi. Bu qiymatlarni klientda taxmin qilib bo'lmaydi.
+     */
+    override suspend fun changeStatus(
+        id: String,
+        transition: ListingTransition,
+    ): Resource<ListingStatus> = safeCall(connectivity) {
+        val dto = when (transition) {
+            ListingTransition.PAUSE -> listingsApi.pause(id)
+            ListingTransition.ACTIVATE -> listingsApi.activate(id)
+            ListingTransition.WITHDRAW -> listingsApi.withdraw(id)
+        }.body()
+        dto.status.toDomain()
+    }
+
+    override suspend fun duplicate(id: String, business: Business): Resource<Listing> =
+        safeCall(connectivity) { listingsApi.duplicate(id).body().toDomain(business) }
+
+    override suspend fun stats(id: String): Resource<ListingStats> = safeCall(connectivity) {
+        val dto = listingsApi.stats(id).body()
+        ListingStats(
+            listingId = dto.listingId,
+            views = dto.viewsCount,
+            favorites = dto.favoritesCount,
+            redemptions = dto.redemptionsCount,
+            conversionRate = dto.conversionRate,
+            totalRevenue = dto.totalRevenue,
+        )
+    }
+
+    override suspend fun redemptions(id: String, page: Int, size: Int): Resource<RedemptionPage> =
+        safeCall(connectivity) {
+            val dto = redemptionsApi.redemptionsList(listingId = id, page = page, size = size).body()
+            RedemptionPage(
+                items = dto.items.map { it.toDomain() },
+                page = dto.page,
+                size = dto.propertySize,
+                total = dto.total,
+                hasNext = dto.hasNext,
+            )
+        }
+
+    override suspend fun verifyRedemption(id: String, code: String): Resource<RedemptionCheck> =
+        safeCall(connectivity) {
+            val dto = redemptionsApi.redeemVerify(id, VerifyRedemptionRequestDto(code = code)).body()
+            RedemptionCheck(
+                isValid = dto.isValid,
+                invalidReason = RedemptionInvalidReason.fromKey(dto.invalidReason?.value),
+                studentName = dto.student?.fullName,
+                studentUsername = dto.student?.username,
+                finalPrice = dto.discount?.finalPrice,
+                originalPrice = dto.discount?.originalPrice,
+            )
+        }
+
+    override suspend fun confirmRedemption(
+        id: String,
+        code: String,
+        branchId: String?,
+        amount: Long?,
+    ): Resource<Redemption> = safeCall(connectivity) {
+        redemptionsApi.redeemConfirm(
+            listingId = id,
+            confirmRedemptionRequestDto = ConfirmRedemptionRequestDto(
+                code = code,
+                branchId = branchId,
+                amount = amount,
+            ),
+        ).body().toDomain()
+    }
+
     override suspend fun uploadImage(bytes: ByteArray, fileName: String): Resource<String> =
         safeCall(connectivity) { mediaApi.upload(bytes, fileName, MediaPurpose.LISTING).url }
 }
+
+private fun RedemptionDto.toDomain() = Redemption(
+    id = id,
+    listingId = listingId,
+    branchId = branchId,
+    studentId = student.id,
+    studentName = student.fullName,
+    studentUsername = student.username,
+    amount = amount,
+    redeemedAt = redeemedAt?.toEpochMilliseconds(),
+)
 
 internal fun Listing.toCreateRequest() = CreateListingRequestDto(
     // Backendda filial alohida obyekt (`POST /business/{id}/branches`) va e'lon unga

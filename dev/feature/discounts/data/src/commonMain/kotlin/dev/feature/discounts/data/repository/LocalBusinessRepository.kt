@@ -3,6 +3,7 @@ package dev.feature.discounts.data.repository
 import dev.core.common.Resource
 import dev.core.domain.repository.SessionProvider
 import dev.feature.discounts.domain.model.Business
+import dev.feature.discounts.domain.model.BusinessStatus
 import dev.feature.discounts.domain.model.BusinessType
 import dev.feature.discounts.domain.repository.BusinessRepository
 import kotlinx.coroutines.flow.Flow
@@ -41,6 +42,24 @@ class LocalBusinessRepository(
         )
         store.update { list -> list.filterNot { it.id == id } + saved }
         return Resource.Success(saved)
+    }
+
+    /**
+     * Local rejimda moderator yo'q, shuning uchun biznes darrov [BusinessStatus.APPROVED]
+     * bo'ladi — bu backenddagi `MODERATION_ENABLED = false` holatining aynan ekvivalenti.
+     * Ekran baribir **qaytgan** statusni o'qiydi, shuning uchun ikkala rejim bir xil kod bilan
+     * ishlaydi.
+     */
+    override suspend fun submit(id: String): Resource<Business> {
+        val business = store.value.firstOrNull { it.id == id }
+            ?: return Resource.Error("Biznes topilmadi")
+        val submitted = business.copy(
+            status = BusinessStatus.APPROVED,
+            rejectionReason = null,
+            updatedAt = Clock.System.now().toEpochMilliseconds(),
+        )
+        store.update { list -> list.map { if (it.id == id) submitted else it } }
+        return Resource.Success(submitted)
     }
 
     override suspend fun delete(id: String): Resource<Unit> {

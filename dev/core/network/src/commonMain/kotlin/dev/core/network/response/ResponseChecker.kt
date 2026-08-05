@@ -42,6 +42,12 @@ fun BaseResponse<*>.toAppException(httpStatus: Int? = null): AppException {
         403 -> AppException.PermissionDenied()
         404 -> AppException.NotFound()
         408 -> AppException.Timeout()
+        // 429 — chegara (limit/rate). Validatsiyadan ataylab ajratilgan: tuzatiladigan
+        // maydon yo'q, shuning uchun forma uni maydon xatosi sifatida ko'rsatmasligi kerak.
+        429 -> AppException.LimitReached(
+            code = error?.code,
+            message = text ?: "Chegara to'ldi. Birozdan so'ng qayta urining.",
+        )
         null -> validationOrUnknown(text, fields)
         in 400..499 -> AppException.Validation(text ?: "So'rov noto'g'ri.", fields)
         in 500..599 -> if (fields.isNotEmpty()) {

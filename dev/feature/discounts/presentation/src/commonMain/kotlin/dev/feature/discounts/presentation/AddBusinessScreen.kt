@@ -39,6 +39,9 @@ import dev.core.uikit.resources.discounts_business_save
 import dev.core.uikit.resources.discounts_business_type_label
 import dev.core.uikit.resources.discounts_business_type_select
 import dev.core.uikit.resources.discounts_district_label
+import dev.core.uikit.resources.discounts_metro_label
+import dev.core.uikit.resources.discounts_metro_note
+import dev.core.uikit.resources.discounts_metro_select
 import dev.core.uikit.resources.discounts_district_needs_region
 import dev.core.uikit.resources.discounts_district_select
 import dev.core.uikit.resources.discounts_location_hint
@@ -63,7 +66,10 @@ import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
 import dev.core.uikit.theme.rowShadow
 import dev.feature.discounts.presentation.components.DistrictSheet
+import dev.feature.discounts.presentation.components.LimitContext
+import dev.feature.discounts.presentation.components.LimitHint
 import dev.feature.discounts.presentation.components.MapSearchResults
+import dev.feature.discounts.presentation.components.MetroStationSheet
 import dev.feature.discounts.presentation.components.RegionSheet
 import dev.feature.discounts.presentation.components.SelectorField
 import dev.feature.discounts.presentation.components.MyLocationButton
@@ -113,7 +119,11 @@ fun AddBusinessScreen(
     ) { vm.closeDistrictPicker() }
     AppBackHandler(
         enabled = !state.typePickerOpen && !state.regionPickerOpen && !state.districtPickerOpen &&
-            state.pickingOnMap,
+            state.metroPickerOpen,
+    ) { vm.closeMetroPicker() }
+    AppBackHandler(
+        enabled = !state.typePickerOpen && !state.regionPickerOpen && !state.districtPickerOpen &&
+            !state.metroPickerOpen && state.pickingOnMap,
     ) { vm.closeMap() }
 
     if (state.pickingOnMap) {
@@ -225,6 +235,36 @@ fun AddBusinessScreen(
                 palette = palette,
             )
 
+            // --- Metro bekati: ixtiyoriy mo'ljal, faqat Toshkent shahrida ---
+            //
+            // Ro'yxat (`GET /geo/metro-stations`) yuklangan bo'lsa — sheet'dan tanlanadi;
+            // yuklanmagan bo'lsa maydon oddiy matn kiritishga aylanadi. Backend bu maydonni
+            // erkin matn sifatida saqlagani uchun ikkala yo'l ham to'g'ri.
+            if (state.showMetroField) {
+                Spacer(Modifier.height(FieldGap))
+                FieldLabel(stringResource(Res.string.discounts_metro_label), palette)
+                Spacer(Modifier.height(FieldLabelGap))
+                if (state.metroStations.isNotEmpty()) {
+                    SelectorField(
+                        icon = AppIcons.Pin,
+                        value = state.metroStation.takeIf { it.isNotBlank() },
+                        placeholder = stringResource(Res.string.discounts_metro_select),
+                        onClick = vm::openMetroPicker,
+                        palette = palette,
+                    )
+                } else {
+                    GlassTextField(
+                        state.metroStation,
+                        vm::onMetroStation,
+                        stringResource(Res.string.discounts_metro_select),
+                        modifier = Modifier.rowShadow(AppRadius.lg),
+                        palette = palette,
+                    )
+                }
+                Spacer(Modifier.height(AppSpacing.sm))
+                HintText(stringResource(Res.string.discounts_metro_note), palette = palette)
+            }
+
             // --- Filial nomi: `BranchRequestDto.name` majburiy ---
             Spacer(Modifier.height(FieldGap))
             FieldLabel(stringResource(Res.string.discounts_branch_name_label), palette)
@@ -254,6 +294,9 @@ fun AddBusinessScreen(
             Spacer(Modifier.height(FieldGap))
             state.error?.let {
                 Text(it, style = AppType.error.copy(color = palette.danger))
+                // Chegara bo'lsa — nima qilish kerakligi (serverning xabari ustidan emas,
+                // uning ostiga qo'shiladi).
+                LimitHint(state.limitCode, palette, LimitContext.BUSINESS)
                 Spacer(Modifier.height(10.dp))
             }
             PrimaryButton(
@@ -300,6 +343,15 @@ fun AddBusinessScreen(
             districtId = state.districtId,
             onSelect = vm::onDistrict,
             onDismiss = vm::closeDistrictPicker,
+            palette = palette,
+        )
+
+        MetroStationSheet(
+            visible = state.metroPickerOpen,
+            stations = state.metroStations,
+            selected = state.metroStation.takeIf { it.isNotBlank() },
+            onSelect = vm::onMetroStationPicked,
+            onDismiss = vm::closeMetroPicker,
             palette = palette,
         )
 

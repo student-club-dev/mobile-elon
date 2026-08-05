@@ -29,6 +29,7 @@ import dev.core.uikit.component.SoftPill
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.common_delete
 import dev.core.uikit.resources.common_edit
+import dev.core.uikit.resources.discounts_action_more
 import dev.core.uikit.resources.discounts_action_pause
 import dev.core.uikit.resources.discounts_action_resume
 import dev.core.uikit.resources.discounts_branch_extra
@@ -60,6 +61,15 @@ fun MyListingCard(
     onEdit: () -> Unit,
     onTogglePaused: () -> Unit,
     onDelete: () -> Unit,
+    /**
+     * "Boshqa amallar" — statistika, nusxa olish, tekshiruvdan qaytarish. Ular kartaga
+     * sig'maydi va kundalik emas, shuning uchun alohida menyuда: kartadagi to'rtta tugma
+     * (tahrirlash / to'xtatish / boshqa / o'chirish) chegara — beshinchisi ularni mayda
+     * belgichalarga aylantirib yuborardi.
+     *
+     * `null` — menyu tugmasi umuman chiqmaydi (backendsiz ro'yxatda bu amallar yo'q).
+     */
+    onMore: (() -> Unit)? = null,
 ) {
     val accent = Color(listing.businessType.catalogAccent)
     val isDiscount = listing.isDiscount
@@ -145,6 +155,9 @@ fun MyListingCard(
                     palette,
                     onTogglePaused,
                 )
+            }
+            if (onMore != null) {
+                CardAction(AppIcons.More, stringResource(Res.string.discounts_action_more), palette, onMore)
             }
             CardAction(AppIcons.Close, stringResource(Res.string.common_delete), palette, onDelete)
         }

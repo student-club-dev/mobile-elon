@@ -295,4 +295,62 @@
     <string name="discounts_branches_add_note">New branches are added in the business profile</string>
 
     <string name="discounts_image_cover">Cover</string>
+
+    <!-- ============ Metro station (branch landmark, Tashkent only) ============ -->
+    <string name="discounts_metro_label">Metro station</string>
+    <string name="discounts_metro_select">Select a station</string>
+    <string name="discounts_metro_note">Optional — helps students find the branch</string>
+    <string name="discounts_metro_line">%1$s line</string>
+
+    <!-- ============ Business moderation ============ -->
+    <string name="discounts_business_submit">Submit for review</string>
+    <string name="discounts_business_submitting">Submitting...</string>
+    <string name="discounts_business_status">Status: %1$s</string>
+    <string name="discounts_business_rejected_reason">Rejection reason: %1$s</string>
+    <string name="discounts_business_submit_hint">Once approved, your listings become visible to students</string>
+    <string name="discounts_business_submitted">Submitted for review</string>
+
+    <!-- ============ Listing: extra actions ============ -->
+    <string name="discounts_action_withdraw">Withdraw from review</string>
+    <string name="discounts_action_duplicate">Duplicate</string>
+    <string name="discounts_action_stats">Statistics</string>
+    <string name="discounts_action_more">More actions</string>
+    <string name="discounts_duplicated">A copy was created as a draft</string>
+    <string name="discounts_withdrawn">The listing was withdrawn from review</string>
+
+    <!-- ============ Listing statistics ============ -->
+    <string name="discounts_stats_title">Statistics</string>
+    <string name="discounts_stats_views">Views</string>
+    <string name="discounts_stats_favorites">Saved</string>
+    <string name="discounts_stats_redemptions">Redemptions</string>
+    <string name="discounts_stats_conversion">Conversion</string>
+    <string name="discounts_stats_revenue">Total amount</string>
+    <string name="discounts_stats_failed">Could not load statistics</string>
+
+    <!-- ============ Redemptions list ============ -->
+    <string name="discounts_redemptions_title">Redemptions</string>
+    <string name="discounts_redemptions_empty">Nobody has used this discount yet</string>
+    <string name="discounts_redemptions_amount">%1$s so\'m</string>
+
+    <!-- ============ Cashier: verify a code ============ -->
+    <string name="discounts_redeem_title">Verify a code</string>
+    <string name="discounts_redeem_code_label">Code the student showed</string>
+    <string name="discounts_redeem_code_hint">For example: A7K2M9</string>
+    <string name="discounts_redeem_verify">Verify</string>
+    <string name="discounts_redeem_confirm">Confirm</string>
+    <string name="discounts_redeem_confirming">Confirming...</string>
+    <string name="discounts_redeem_valid">The code is valid</string>
+    <string name="discounts_redeem_confirmed">Discount applied</string>
+    <string name="discounts_redeem_branch">At which branch</string>
+    <string name="discounts_redeem_amount_label">Receipt total (optional)</string>
+    <string name="discounts_redeem_invalid_code">No such code</string>
+    <string name="discounts_redeem_already">This code has already been used</string>
+    <string name="discounts_redeem_expired">The code has expired</string>
+    <string name="discounts_redeem_limit">The redemption limit is reached</string>
+    <string name="discounts_redeem_invalid">The code is not valid</string>
+
+    <!-- ============ Limits (429) ============ -->
+    <string name="discounts_limit_business">One user can open at most 5 businesses. Archive an old one or try later.</string>
+    <string name="discounts_limit_listing">This business reached its active listing limit. Pause or delete an old listing.</string>
+    <string name="discounts_limit_daily">Today\'s submission limit is reached. Continue tomorrow.</string>
 </resources>

@@ -288,6 +288,12 @@ data class ListingBranch(
     val regionId: String? = null,
     val districtId: String? = null,
     /**
+     * Eng yaqin metro bekati (`LocationDto.metroStation`) — faqat Toshkent shahri uchun
+     * mo'ljal. Teskari geokodlash topsa avtomatik to'ladi, foydalanuvchi tuzatishi mumkin.
+     * Erkin matn: backend uni ma'lumotnomaga bog'lamaydi ([MetroStation] izohiga qarang).
+     */
+    val metroStation: String? = null,
+    /**
      * Filial savdo markazi ichida bo'lsa — markaz id'si (`GET /v1/trade-centers`).
      * `null` — alohida bino/ko'chada.
      */

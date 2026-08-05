@@ -90,6 +90,8 @@ fun HttpStatusCode.toAppException(cause: Throwable? = null): AppException = when
     403 -> AppException.PermissionDenied(cause)
     404 -> AppException.NotFound(cause)
     408 -> AppException.Timeout(cause)
+    // Konvertsiz zaxira yo'l — kod noma'lum, faqat "chegara to'ldi" ekani aniq.
+    429 -> AppException.LimitReached(code = null, message = "Chegara to'ldi. Birozdan so'ng qayta urining.", cause = cause)
     in 400..499 -> AppException.Validation(
         reason = description.ifBlank { "So'rov noto'g'ri." },
         cause = cause,

@@ -22,6 +22,8 @@ import dev.core.uikit.component.BottomSheetOption
 import dev.core.uikit.component.rememberKeyboardDismiss
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.discounts_district_select
+import dev.core.uikit.resources.discounts_metro_line
+import dev.core.uikit.resources.discounts_metro_select
 import dev.core.uikit.resources.discounts_region_select
 import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
@@ -30,6 +32,7 @@ import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.rowShadow
 import dev.feature.discounts.domain.model.District
+import dev.feature.discounts.domain.model.MetroStation
 import dev.feature.discounts.domain.model.Region
 import org.jetbrains.compose.resources.stringResource
 
@@ -154,6 +157,55 @@ fun DistrictSheet(
                 onClick = { onSelect(district.id) },
                 palette = palette,
             )
+        }
+    }
+}
+
+/**
+ * Metro bekati tanlash sheet'i (`GET /geo/metro-stations`) — filial mo'ljali, **ixtiyoriy**.
+ *
+ * Bekatlar liniya bo'yicha guruhlanadi: 50 ta bekatning tekis ro'yxatida kerakligini topish
+ * qiyin, liniya esa foydalanuvchi allaqachon biladigan ajratgich. Guruhlash `line` **kaliti**
+ * bo'yicha ketadi, nomi bo'yicha emas — birinchi bekat nomi liniya nomi bilan bir xil
+ * bo'lishi tasodif ("Chilonzor").
+ *
+ * Tanlangan bekatni qayta bosish uni bekor qiladi (maydon ixtiyoriy — qaytish yo'li kerak).
+ *
+ * [stations] bo'sh bo'lsa sheet umuman ochilmaydi: chaqiruvchi bunda maydonni qo'lda
+ * yoziladigan qilib ko'rsatadi, chunki backend `metroStation` ni erkin matn sifatida qabul
+ * qiladi va ro'yxatning yuklanmagani yozishga to'sqinlik qilmasligi kerak.
+ */
+@Composable
+fun MetroStationSheet(
+    visible: Boolean,
+    stations: List<MetroStation>,
+    selected: String?,
+    onSelect: (String) -> Unit,
+    onDismiss: () -> Unit,
+    palette: AppPalette,
+) {
+    AppBottomSheet(
+        visible = visible,
+        onDismiss = onDismiss,
+        title = stringResource(Res.string.discounts_metro_select),
+        palette = palette,
+    ) {
+        // `groupBy` kelgan tartibni saqlaydi — backend bekatlarni liniya bo'ylab tartibda
+        // beradi, shuning uchun ro'yxat xaritadagi ketma-ketlikka mos tushadi.
+        stations.groupBy { it.line }.forEach { (line, lineStations) ->
+            Text(
+                stringResource(Res.string.discounts_metro_line, line),
+                style = AppType.caption.copy(color = palette.inkFaint),
+                modifier = Modifier.padding(horizontal = AppSpacing.lg, vertical = AppSpacing.sm),
+            )
+            lineStations.forEach { station ->
+                BottomSheetOption(
+                    label = station.name,
+                    selected = station.name == selected,
+                    onClick = { onSelect(station.name) },
+                    palette = palette,
+                )
+            }
         }
     }
 }

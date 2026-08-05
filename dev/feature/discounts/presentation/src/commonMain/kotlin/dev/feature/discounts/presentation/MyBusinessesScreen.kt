@@ -41,6 +41,7 @@ import dev.core.uikit.resources.discounts_business_delete_title
 import dev.core.uikit.resources.discounts_business_empty_message
 import dev.core.uikit.resources.discounts_business_empty_title
 import dev.core.uikit.resources.discounts_business_hub
+import dev.core.uikit.resources.discounts_business_submitted
 import dev.core.uikit.resources.discounts_business_messages
 import dev.core.uikit.resources.discounts_business_support
 import dev.core.uikit.resources.discounts_my_businesses
@@ -165,6 +166,20 @@ fun MyBusinessesScreen(
                 )
             }
 
+            // "Tekshiruvga yuborildi" — qaytgan HOLAT bilan birga. Moderatsiya o'chirilgan
+            // bo'lsa biznes darrov tasdiqlanadi, yoqilganda navbatga tushadi; foydalanuvchi
+            // qaysi biri bo'lganini shu yerda ko'radi.
+            state.successMessage?.let { status ->
+                StatusBanner(
+                    text = stringResource(Res.string.discounts_business_submitted) + " — " + status,
+                    tone = BannerTone.SUCCESS,
+                    modifier = Modifier
+                        .padding(horizontal = AppSpacing.screenHorizontal, vertical = 6.dp)
+                        .clickable(onClick = vm::consumeMessage),
+                    palette = palette,
+                )
+            }
+
             when {
                 state.loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(color = palette.primary, strokeWidth = 3.dp)
@@ -195,6 +210,8 @@ fun MyBusinessesScreen(
                             onClick = { onOpenBusiness(biz) },
                             onEdit = { onEditBusiness(biz) },
                             onDelete = { toDelete = biz },
+                            onSubmit = { vm.submit(biz) },
+                            submitting = state.submittingId == biz.id,
                         )
                     }
                 }

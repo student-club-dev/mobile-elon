@@ -38,6 +38,24 @@ sealed class AppException(
         AppException("Serverда xatolik. Birozdan so'ng qayta urining.", cause)
 
     /**
+     * Chegara to'ldi (429) — `RATE_LIMITED`, `LISTING_LIMIT_REACHED` va shu kabilar
+     * (`DISCOUNTS_BUSINESS_API_RESPONSE.md` §4: 5 biznes/foydalanuvchi, 100 faol e'lon/biznes,
+     * 50 `submit`/kun, 100 rasm/soat).
+     *
+     * Nega [Validation] emas: 429 — foydalanuvchi **kiritgan ma'lumot** haqida emas. Validatsiya
+     * deb qabul qilinsa forma maydonlarni qizartirib, "nimani tuzatay?" degan savol qoldirardi;
+     * bu yerda esa tuzatadigan narsa yo'q, kutish yoki eskisini o'chirish kerak.
+     *
+     * [code] — backend bergan mashina o'qiydigan kalit (`error.code`); ekran shunga qarab aniq
+     * maslahat beradi. [userMessage] — backendning o'zbekcha matni (u har doim keladi).
+     */
+    class LimitReached(
+        val code: String?,
+        message: String,
+        cause: Throwable? = null,
+    ) : AppException(message, cause)
+
+    /**
      * Kiritilgan ma'lumot noto'g'ri (validatsiya / 4xx).
      *
      * [fields] — backend qaytargan **maydonga bog'langan** xatolar: `{"phoneNumber": "Noto'g'ri

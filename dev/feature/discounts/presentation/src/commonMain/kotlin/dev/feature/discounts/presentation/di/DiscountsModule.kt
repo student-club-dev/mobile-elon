@@ -8,6 +8,7 @@ import dev.core.network.generated.api.BusinessApi
 import dev.core.network.generated.api.CatalogApi
 import dev.core.network.generated.api.GeoApi
 import dev.core.network.generated.api.ListingsApi
+import dev.core.network.generated.api.RedemptionsApi
 import dev.core.network.generated.api.TradeCentersApi
 import dev.feature.discounts.data.remote.ApiGeoRepository
 import dev.feature.discounts.data.remote.ApiListingRemoteDataSource
@@ -33,13 +34,18 @@ import dev.feature.discounts.domain.repository.RegionRepository
 import dev.feature.discounts.domain.repository.TradeCenterRepository
 import dev.feature.discounts.domain.usecase.CreateBranchFromPointUseCase
 import dev.feature.discounts.domain.usecase.DeleteBusinessUseCase
+import dev.feature.discounts.domain.usecase.ConfirmRedemptionUseCase
 import dev.feature.discounts.domain.usecase.DeleteListingUseCase
+import dev.feature.discounts.domain.usecase.DuplicateListingUseCase
+import dev.feature.discounts.domain.usecase.GetListingRedemptionsUseCase
+import dev.feature.discounts.domain.usecase.GetListingStatsUseCase
 import dev.feature.discounts.domain.usecase.GetBusinessListingsUseCase
 import dev.feature.discounts.domain.usecase.GetBusinessTypesUseCase
 import dev.feature.discounts.domain.usecase.GetBusinessUseCase
 import dev.feature.discounts.domain.usecase.GetCategoriesUseCase
 import dev.feature.discounts.domain.usecase.GetListingUseCase
 import dev.feature.discounts.domain.usecase.GetNearbyDiscountsUseCase
+import dev.feature.discounts.domain.usecase.GetTypeAttributesUseCase
 import dev.feature.discounts.domain.usecase.GetTradeCenterDetailUseCase
 import dev.feature.discounts.domain.usecase.GetTradeCentersUseCase
 import dev.feature.discounts.domain.usecase.ObserveMyBusinessesUseCase
@@ -48,13 +54,17 @@ import dev.feature.discounts.domain.usecase.PublishListingUseCase
 import dev.feature.discounts.domain.usecase.SaveBusinessUseCase
 import dev.feature.discounts.domain.usecase.SaveDraftUseCase
 import dev.feature.discounts.domain.usecase.SearchPlacesUseCase
+import dev.feature.discounts.domain.usecase.SubmitBusinessUseCase
 import dev.feature.discounts.domain.usecase.ToggleListingPausedUseCase
 import dev.feature.discounts.domain.usecase.UploadListingImageUseCase
+import dev.feature.discounts.domain.usecase.VerifyRedemptionUseCase
+import dev.feature.discounts.domain.usecase.WithdrawListingUseCase
 import dev.feature.discounts.presentation.AddBusinessViewModel
 import dev.feature.discounts.presentation.MyBusinessesViewModel
 import dev.feature.discounts.presentation.MyListingsViewModel
 import dev.feature.discounts.presentation.NearbyDiscountsViewModel
 import dev.feature.discounts.presentation.PostListingViewModel
+import dev.feature.discounts.presentation.RedeemViewModel
 import io.ktor.client.HttpClient
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -75,6 +85,7 @@ fun discountsModule() = module {
     single { CatalogApi(baseUrl = get<NetworkConfig>().baseUrl, httpClient = get<HttpClient>()) }
     single { TradeCentersApi(baseUrl = get<NetworkConfig>().baseUrl, httpClient = get<HttpClient>()) }
     single { GeoApi(baseUrl = get<NetworkConfig>().baseUrl, httpClient = get<HttpClient>()) }
+    single { RedemptionsApi(baseUrl = get<NetworkConfig>().baseUrl, httpClient = get<HttpClient>()) }
 
     // Viloyat/tuman ma'lumotnomasi — serverdan (xato bo'lsa klientdagi `GeoCatalog`).
     single<RegionRepository> { ApiRegionRepository(get()) }
@@ -86,6 +97,7 @@ fun discountsModule() = module {
     }
     factory { GetBusinessTypesUseCase(get()) }
     factory { GetCategoriesUseCase(get()) }
+    factory { GetTypeAttributesUseCase(get()) }
 
     // Savdo markazlari — filial shu markaz ichida bo'lsa, uning dinamik maydonlari
     // (`GET /v1/trade-centers/{id}`) formaга qo'shiladi.
@@ -98,7 +110,7 @@ fun discountsModule() = module {
     // etsa xato yutilmaydi (qarang FallbackListingRemoteDataSource).
     single<ListingRemoteDataSource> {
         FallbackListingRemoteDataSource(
-            api = ApiListingRemoteDataSource(get(), get(), get()),
+            api = ApiListingRemoteDataSource(get(), get(), get(), get()),
             local = LocalListingRemoteDataSource(),
         )
     }
@@ -121,6 +133,7 @@ fun discountsModule() = module {
     factory { GetBusinessUseCase(get()) }
     factory { SaveBusinessUseCase(get()) }
     factory { DeleteBusinessUseCase(get()) }
+    factory { SubmitBusinessUseCase(get()) }
     viewModelOf(::MyBusinessesViewModel)
     viewModelOf(::AddBusinessViewModel)
 
@@ -144,6 +157,12 @@ fun discountsModule() = module {
     factory { SaveDraftUseCase(get()) }
     factory { PublishListingUseCase(get()) }
     factory { ToggleListingPausedUseCase(get()) }
+    factory { WithdrawListingUseCase(get()) }
+    factory { DuplicateListingUseCase(get()) }
+    factory { GetListingStatsUseCase(get()) }
+    factory { GetListingRedemptionsUseCase(get()) }
+    factory { VerifyRedemptionUseCase(get()) }
+    factory { ConfirmRedemptionUseCase(get()) }
     factory { DeleteListingUseCase(get()) }
     factory { UploadListingImageUseCase(get()) }
     factory { GetListingUseCase(get()) }
@@ -151,4 +170,5 @@ fun discountsModule() = module {
     viewModelOf(::PostListingViewModel)
     viewModelOf(::MyListingsViewModel)
     viewModelOf(::NearbyDiscountsViewModel)
+    viewModelOf(::RedeemViewModel)
 }

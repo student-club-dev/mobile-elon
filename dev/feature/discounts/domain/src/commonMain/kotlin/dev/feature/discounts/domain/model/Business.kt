@@ -34,6 +34,12 @@ data class Business(
      * `null` — hali serverdan olinmagan (namuna biznes yoki ro'yxat elementi).
      */
     val status: BusinessStatus? = null,
+    /**
+     * Moderator ko'rsatgan rad etish sababi (`BusinessDto.rejectionReason`) — faqat
+     * [BusinessStatus.REJECTED] da to'ladi. Busiz foydalanuvchi "rad etildi" degan xabarni
+     * ko'rib, nimani tuzatishni bilmasdi.
+     */
+    val rejectionReason: String? = null,
     val createdAt: Long = 0,
     val updatedAt: Long = 0,
 ) {
@@ -54,6 +60,15 @@ enum class BusinessStatus(val label: String) {
     BLOCKED("Bloklangan"),
     ARCHIVED("Arxivlangan"),
     ;
+
+    /**
+     * Shu holatdan moderatsiyaga yuborsa bo'ladimi (`POST /business/{id}/submit`).
+     *
+     * Backend faqat `DRAFT` va `REJECTED` dan o'tishga ruxsat beradi, boshqasidan
+     * `409 INVALID_STATUS_TRANSITION` qaytaradi — shuning uchun tugma faqat shu ikkisida
+     * ko'rsatiladi va foydalanuvchi qaytariladigan xatoga urilmaydi.
+     */
+    val canSubmit: Boolean get() = this == DRAFT || this == REJECTED
 
     companion object {
         /** Server kaliti bo'yicha topadi — noma'lum qiymat `null`. */

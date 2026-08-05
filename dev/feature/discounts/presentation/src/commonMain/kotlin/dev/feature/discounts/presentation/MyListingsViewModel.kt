@@ -9,12 +9,18 @@ import dev.core.common.network.NetworkConnectivity
 import dev.core.domain.usecase.ObserveCurrentUserUseCase
 import dev.feature.discounts.domain.model.Business
 import dev.feature.discounts.domain.model.Listing
+import dev.feature.discounts.domain.model.ListingStats
 import dev.feature.discounts.domain.model.ListingStatus
+import dev.feature.discounts.domain.model.Redemption
 import dev.feature.discounts.domain.usecase.DeleteListingUseCase
+import dev.feature.discounts.domain.usecase.DuplicateListingUseCase
 import dev.feature.discounts.domain.usecase.GetBusinessListingsUseCase
 import dev.feature.discounts.domain.usecase.GetBusinessUseCase
+import dev.feature.discounts.domain.usecase.GetListingRedemptionsUseCase
+import dev.feature.discounts.domain.usecase.GetListingStatsUseCase
 import dev.feature.discounts.domain.usecase.ObserveMyListingsUseCase
 import dev.feature.discounts.domain.usecase.ToggleListingPausedUseCase
+import dev.feature.discounts.domain.usecase.WithdrawListingUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ensureActive
@@ -53,6 +59,30 @@ data class MyListingsUiState(
      * qarab ro'yxatni tepaga suradi (yangi e'lon "eng yangi birinchi" tartibда tepada turadi).
      */
     val reloadTick: Int = 0,
+    /**
+     * Karta amali (to'xtatish, o'chirish, nusxa olish, qaytarib olish) **rad etilgan**
+     * bo'lsa — sababi. Bu [error] dan farq qiladi: ro'yxat joyida turadi, faqat bitta amal
+     * bajarilmadi, shuning uchun ekran retry emas, yopiladigan banner ko'rsatadi.
+     */
+    val actionMessage: String? = null,
+    /**
+     * Statistika oynasi ochilgan e'lon (`null` — yopiq).
+     *
+     * Sonlar keshlanmaydi: har ochilganda serverdan olinadi, chunki ular vaqtga bog'liq va
+     * eskirgan qiymat noto'g'ri xulosa qildiradi ("bugun hech kim kelmadi" — aslida kecha
+     * o'qilgan son).
+     */
+    val statsListing: Listing? = null,
+    val statsLoading: Boolean = false,
+    val stats: ListingStats? = null,
+    /**
+     * Oxirgi foydalanishlar — statistika bilan bitta oynada ko'rsatiladi: sonlar "nechta"
+     * degan savolga, ro'yxat "kim va qachon" degan savolga javob beradi va ular birga
+     * o'qilganda mazmunli.
+     */
+    val recentRedemptions: List<Redemption> = emptyList(),
+    /** Statistikani yuklab bo'lmadi — oyna ichida ko'rsatiladi (ro'yxat buzilmaydi). */
+    val statsError: String? = null,
 )
 
 /** "Mening e'lonlarim" — biznes egasi yuklagan chegirmalar (barcha statuslar). */
@@ -62,6 +92,10 @@ class MyListingsViewModel(
     private val getBusiness: GetBusinessUseCase,
     private val getBusinessListings: GetBusinessListingsUseCase,
     private val togglePaused: ToggleListingPausedUseCase,
+    private val withdrawListing: WithdrawListingUseCase,
+    private val duplicateListing: DuplicateListingUseCase,
+    private val getListingStats: GetListingStatsUseCase,
+    private val getListingRedemptions: GetListingRedemptionsUseCase,
     private val deleteListing: DeleteListingUseCase,
     private val connectivity: NetworkConnectivity,
 ) : ViewModel() {
@@ -237,33 +271,128 @@ class MyListingsViewModel(
         if (businessId == null) observeLocal() else refresh()
     }
 
+    /**
+     * E'lonni to'xtatadi / qayta yoqadi.
+     *
+     * Yangi holat **serverdan** olinadi va kartaga aynan o'sha yoziladi: `activate` boshlanish
+     * sanasi kelajakda bo'lgan e'lonni `SCHEDULED` qiladi, ya'ni "ACTIVE ⇄ PAUSED" deb taxmin
+     * qilish kartani noto'g'ri ko'rsatardi. Xato bo'lsa sababi banner'da chiqadi — ilgari u
+     * jimgina yutilardi va tugma "ishlamayotgandek" tuyulardi.
+     */
     fun togglePaused(listing: Listing) {
         viewModelScope.launch {
-            if (togglePaused.invoke(listing) is Resource.Success) {
-                // Server ro'yxati kuzatilmaydi (bir martalik so'rov), shuning uchun kartani
-                // xotiradagi ro'yxatда darrov yangilaymiz.
-                val next = when (listing.status) {
-                    ListingStatus.ACTIVE -> ListingStatus.PAUSED
-                    ListingStatus.PAUSED -> ListingStatus.ACTIVE
-                    else -> return@launch
+            when (val res = togglePaused.invoke(listing)) {
+                is Resource.Success -> _state.update { st ->
+                    st.copy(
+                        listings = st.listings.map {
+                            if (it.id == listing.id) it.copy(status = res.data) else it
+                        },
+                        actionMessage = null,
+                    )
                 }
-                _state.update { st ->
-                    st.copy(listings = st.listings.map { if (it.id == listing.id) it.copy(status = next) else it })
+                is Resource.Error -> _state.update { it.copy(actionMessage = res.message) }
+                Resource.Loading -> Unit
+            }
+        }
+    }
+
+    /** Tekshiruvdagi e'lonni qaytarib oladi — u qoralamaga tushadi va tahrirlash mumkin bo'ladi. */
+    fun withdraw(listing: Listing) {
+        viewModelScope.launch {
+            when (val res = withdrawListing(listing)) {
+                is Resource.Success -> _state.update { st ->
+                    st.copy(
+                        listings = st.listings.map {
+                            if (it.id == listing.id) it.copy(status = res.data) else it
+                        },
+                        actionMessage = null,
+                    )
                 }
+                is Resource.Error -> _state.update { it.copy(actionMessage = res.message) }
+                Resource.Loading -> Unit
+            }
+        }
+    }
+
+    /**
+     * E'londan nusxa oladi. Server yangi qoralama yaratadi, shuning uchun ro'yxat
+     * **serverdan** qayta o'qiladi: nusxani qo'lda tepaga qo'shish tartibni buzardi
+     * (ro'yxat "eng yangi birinchi" bo'yicha serverда saralanadi).
+     */
+    fun duplicate(listing: Listing) {
+        val business = loadedBusiness ?: return
+        viewModelScope.launch {
+            when (val res = duplicateListing(listing, business)) {
+                is Resource.Success -> {
+                    _state.update { it.copy(actionMessage = null) }
+                    reloadListings()
+                }
+                is Resource.Error -> _state.update { it.copy(actionMessage = res.message) }
+                Resource.Loading -> Unit
             }
         }
     }
 
     fun delete(listing: Listing) {
         viewModelScope.launch {
-            if (deleteListing(listing.id) is Resource.Success) {
-                _state.update { st -> st.copy(listings = st.listings.filterNot { it.id == listing.id }) }
+            when (val res = deleteListing(listing.id)) {
+                is Resource.Success -> _state.update { st ->
+                    st.copy(listings = st.listings.filterNot { it.id == listing.id }, actionMessage = null)
+                }
+                // Ilgari xato yutilardi: e'lon ro'yxatда qolar, sababi esa hech qayerda
+                // ko'rinmasdi — foydalanuvchi tugmani qayta-qayta bosardi.
+                is Resource.Error -> _state.update { it.copy(actionMessage = res.message) }
+                Resource.Loading -> Unit
             }
         }
+    }
+
+    fun consumeActionMessage() = _state.update { it.copy(actionMessage = null) }
+
+    /**
+     * Statistika oynasini ochadi va sonlar bilan oxirgi foydalanishlarni **birga** yuklaydi.
+     *
+     * Ikkala so'rov ketma-ket ketadi, chunki foydalanishlar ro'yxati bo'sh bo'lishi mumkin
+     * (hali hech kim foydalanmagan) — bu xato emas, shuning uchun uning uzilishi statistikani
+     * ko'rsatishga to'sqinlik qilmaydi.
+     */
+    fun openStats(listing: Listing) {
+        _state.update {
+            it.copy(
+                statsListing = listing,
+                statsLoading = true,
+                stats = null,
+                recentRedemptions = emptyList(),
+                statsError = null,
+            )
+        }
+        viewModelScope.launch {
+            when (val res = getListingStats(listing.id)) {
+                is Resource.Success -> _state.update { it.copy(stats = res.data, statsLoading = false) }
+                is Resource.Error -> _state.update { it.copy(statsLoading = false, statsError = res.message) }
+                Resource.Loading -> Unit
+            }
+            // Foydalanishlar — qo'shimcha ma'lumot: uzilsa statistika baribir ko'rinadi.
+            val redemptions = getListingRedemptions(listing.id, page = 1, size = RECENT_REDEMPTIONS)
+            if (redemptions is Resource.Success) {
+                _state.update { it.copy(recentRedemptions = redemptions.data.items) }
+            }
+        }
+    }
+
+    fun closeStats() = _state.update {
+        it.copy(statsListing = null, stats = null, recentRedemptions = emptyList(), statsError = null)
     }
 
     private companion object {
         /** Bir sahifadagi e'lonlar soni (`GET /business/{id}/listings` `size`, spec default 20). */
         const val PAGE_SIZE = 20
+
+        /**
+         * Statistika oynasidagi oxirgi foydalanishlar soni. Oyna to'liq tarix uchun emas —
+         * u yerда "so'nggi paytda kim keldi" savoliga javob beriladi, shuning uchun qisqa
+         * ro'yxat yetarli va so'rov ham yengil bo'ladi.
+         */
+        const val RECENT_REDEMPTIONS = 10
     }
 }

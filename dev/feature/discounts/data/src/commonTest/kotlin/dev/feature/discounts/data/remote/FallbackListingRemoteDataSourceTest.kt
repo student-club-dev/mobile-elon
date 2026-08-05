@@ -25,28 +25,26 @@ import kotlin.test.assertTrue
  */
 class FallbackListingRemoteDataSourceTest {
 
+    /** Faqat shu test qiziqadigan uchta yo'l — qolganini [FakeListingRemoteDataSource] beradi. */
     private class FakeApi(
         private val publishResult: Resource<Listing>,
         private val uploadResult: Resource<String> = Resource.Success("https://cdn/x.jpg"),
-    ) : ListingRemoteDataSource {
-        override suspend fun list(
-            business: dev.feature.discounts.domain.model.Business,
-            status: ListingStatus?,
-            categoryKey: String?,
-            page: Int,
-            size: Int,
-        ) = Resource.Success(dev.feature.discounts.domain.model.ListingPage.EMPTY)
+        /** Holat o'zgarishi — zaxira shu natijaga qarab ishga tushadi (yoki tushmaydi). */
+        private val statusResult: Resource<ListingStatus> = Resource.Success(ListingStatus.PAUSED),
+    ) : FakeListingRemoteDataSource() {
         override suspend fun publish(listing: Listing) = publishResult
         override suspend fun update(listing: Listing) = publishResult
         override suspend fun archive(id: String): Resource<Unit> = Resource.Success(Unit)
+        override suspend fun changeStatus(id: String, transition: ListingTransition) = statusResult
         override suspend fun uploadImage(bytes: ByteArray, fileName: String) = uploadResult
     }
 
     private fun sourceWith(
         publishResult: Resource<Listing>,
         uploadResult: Resource<String> = Resource.Success("https://cdn/x.jpg"),
+        statusResult: Resource<ListingStatus> = Resource.Success(ListingStatus.PAUSED),
     ) = FallbackListingRemoteDataSource(
-        api = FakeApi(publishResult, uploadResult),
+        api = FakeApi(publishResult, uploadResult, statusResult),
         local = LocalListingRemoteDataSource(),
     )
 
@@ -90,6 +88,50 @@ class FallbackListingRemoteDataSourceTest {
 
         assertTrue(result is Resource.Success)
         assertEquals("srv-1", result.data.id)
+    }
+
+    // -----------------------------------------------------------------------
+    // changeStatus — server nima desa, o'sha
+    // -----------------------------------------------------------------------
+
+    /**
+     * `activate` boshlanish sanasi kelajakda bo'lgan e'lonni `ACTIVE` emas, `SCHEDULED`
+     * qiladi. Zaxira qatlami bu qiymatni **o'zgartirmasligi** kerak: aks holda karta e'lonni
+     * "faol" deb ko'rsatib, talabalar esa uni hali ko'rmayotgan bo'lardi.
+     */
+    @Test
+    fun serverStatusIsPassedThroughUnchanged() = runTest {
+        val result = sourceWith(
+            publishResult = Resource.Success(listing()),
+            statusResult = Resource.Success(ListingStatus.SCHEDULED),
+        ).changeStatus("lst-1", ListingTransition.ACTIVATE)
+
+        assertTrue(result is Resource.Success)
+        assertEquals(ListingStatus.SCHEDULED, result.data, "Server bergan holat almashtirildi")
+    }
+
+    /** Server rad etsa (masalan muddati o'tgan e'lon) — zaxira uni yashirmaydi. */
+    @Test
+    fun rejectedStatusChangeIsNotSwallowed() = runTest {
+        val result = sourceWith(
+            publishResult = Resource.Success(listing()),
+            statusResult = errorOf(AppException.Validation("Muddati o'tgan e'lonni yoqib bo'lmaydi")),
+        ).changeStatus("lst-1", ListingTransition.ACTIVATE)
+
+        assertTrue(result is Resource.Error, "Server rad etdi, zaxira uni Success qildi")
+        assertEquals("Muddati o'tgan e'lonni yoqib bo'lmaydi", result.message)
+    }
+
+    /** Internet yo'q bo'lsa to'xtatish local bazada bajariladi — ro'yxat darrov yangilanadi. */
+    @Test
+    fun offlineStatusChangeFallsBackToLocal() = runTest {
+        val result = sourceWith(
+            publishResult = Resource.Success(listing()),
+            statusResult = errorOf(AppException.NoInternet()),
+        ).changeStatus("lst-1", ListingTransition.PAUSE)
+
+        assertTrue(result is Resource.Success, "Internetsiz to'xtatish local bajarilishi kerak")
+        assertEquals(ListingStatus.PAUSED, result.data)
     }
 
     // -----------------------------------------------------------------------

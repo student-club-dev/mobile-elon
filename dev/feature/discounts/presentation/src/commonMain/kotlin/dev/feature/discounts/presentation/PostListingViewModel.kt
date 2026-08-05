@@ -6,8 +6,10 @@ import dev.core.common.Resource
 import dev.core.common.text.TextScript
 import dev.core.domain.repository.SettingsRepository
 import dev.core.domain.usecase.ObserveCurrentUserUseCase
+import dev.feature.discounts.domain.model.AttributeSpec
 import dev.feature.discounts.domain.model.BusinessType
 import dev.feature.discounts.domain.model.CategoryInfo
+import dev.feature.discounts.domain.model.TypeAttributes
 import dev.feature.discounts.domain.model.Gender
 import dev.feature.discounts.domain.model.DiscountType
 import dev.feature.discounts.domain.model.Listing
@@ -26,6 +28,7 @@ import dev.feature.discounts.domain.model.RedemptionMethod
 import dev.feature.discounts.domain.model.RedemptionPeriod
 import dev.feature.discounts.domain.model.SelectionType
 import dev.feature.discounts.domain.usecase.GetCategoriesUseCase
+import dev.feature.discounts.domain.usecase.GetTypeAttributesUseCase
 import dev.feature.discounts.domain.usecase.GetListingUseCase
 import dev.feature.discounts.domain.usecase.PublishListingUseCase
 import dev.feature.discounts.domain.usecase.SaveDraftUseCase
@@ -66,6 +69,14 @@ data class PostListingUiState(
      * Backend javob bermasa UseCase klient katalogini beradi — ro'yxat bo'sh qolmaydi.
      */
     val categoryList: List<CategoryInfo> = emptyList(),
+    /**
+     * Turning dinamik forma sxemasi (`GET /business/types/{type}/attributes-schema`) — undagi
+     * **umumiy** maydonlar kategoriya maydonlariga qo'shiladi.
+     *
+     * `null` — hali yuklanmagan yoki so'rov uzilgan. Ikkala holatda ham forma kategoriya
+     * maydonlari bilan ishlayveradi, shuning uchun bu yerда xato holati yo'q.
+     */
+    val typeAttributes: TypeAttributes? = null,
     /**
      * Biznesni yuklab bo'lmadi (internet/xato/o'chirilgan) — tur meros olinmaydi. Shunда forma
      * o'rniga xato + "Qayta urinish"/"Orqaga" ko'rsatiladi (cheksiz spinner tuzog'i bo'lmasin).
@@ -133,6 +144,11 @@ data class PostListingUiState(
     val published: Boolean = false,
     /** Bir martalik xabar (masalan rasm yuklashdagi xato). */
     val message: String? = null,
+    /**
+     * Chegara kodi (`LISTING_LIMIT_REACHED`, `RATE_LIMITED`) — [message] bilan birga keladi.
+     * Ekran shunga qarab nima qilish kerakligini aytadi; oddiy xatolarda `null`.
+     */
+    val limitCode: String? = null,
     val editing: Boolean = false,
 ) {
     /** Live hisoblanadigan yakuniy narx — foydalanuvchi yozayotganda ko'rinadi. */
@@ -155,6 +171,7 @@ class PostListingViewModel(
     private val settings: SettingsRepository,
     private val getBusiness: dev.feature.discounts.domain.usecase.GetBusinessUseCase,
     private val getCategories: GetCategoriesUseCase,
+    private val getTypeAttributes: GetTypeAttributesUseCase,
 ) : ViewModel() {
 
     /** E'lon tegishli biznes id'si (biznesdan meros olinganda yoki tahrirlashda). */
@@ -193,6 +210,29 @@ class PostListingViewModel(
         viewModelScope.launch {
             val list = getCategories(type, g)
             _state.update { it.copy(categoryList = list) }
+        }
+        loadTypeAttributes(type)
+    }
+
+    /**
+     * Turning umumiy maydonlarini oladi (`attributes-schema`).
+     *
+     * Kategoriyalardan **alohida** so'rov: sxema jinsga bog'liq emas, shuning uchun kiyimda
+     * jins almashganда uni qayta so'rash keraksiz bo'lardi. Shu sabab bir xil tur uchun
+     * ikkinchi marta yuklanmaydi.
+     *
+     * Uzilsa xato ko'rsatilmaydi — UseCase bo'sh sxema beradi va forma kategoriya maydonlari
+     * bilan avvalgidek ishlaydi.
+     */
+    private fun loadTypeAttributes(type: BusinessType) {
+        if (_state.value.typeAttributes?.businessType == type) return
+        viewModelScope.launch {
+            val attributes = getTypeAttributes(type)
+            // Javob kelguncha tur almashgan bo'lsa (foydalanuvchi orqaga qaytib boshqa biznes
+            // ochgan) eski javobni yozmaymiz.
+            if (_state.value.businessType == type) {
+                _state.update { it.copy(typeAttributes = attributes) }
+            }
         }
     }
     val state: StateFlow<PostListingUiState> = _state.asStateFlow()
@@ -378,7 +418,7 @@ class PostListingViewModel(
             group.copy(options = group.options.mapIndexed { i, o -> if (i == optionIndex) transform(o) else o })
         }
 
-    fun consumeMessage() = _state.update { it.copy(message = null) }
+    fun consumeMessage() = _state.update { it.copy(message = null, limitCode = null) }
 
     // -----------------------------------------------------------------------
     // Rasmlar
@@ -491,7 +531,9 @@ class PostListingViewModel(
                     _state.update { it.copy(submitting = false, errors = res.errors) }
 
                 is PublishListingUseCase.Result.Failed ->
-                    _state.update { it.copy(submitting = false, message = res.message) }
+                    _state.update {
+                        it.copy(submitting = false, message = res.message, limitCode = res.limitCode)
+                    }
             }
         }
     }
@@ -648,8 +690,22 @@ private fun Int.pad2(): String = toString().padStart(2, '0')
 /** Kategoriyalar — backenddan yuklangan ro'yxat (zaxira: klient katalogi, UseCase beradi). */
 fun PostListingUiState.categories(): List<CategoryInfo> = categoryList
 
-/** Tanlangan KATEGORIYAга xos maydonlar (masalan Game Club > PlayStation). */
-/** Tanlangan kategoriyaning maydonlari — o'sha javobning ичидан (yangi so'rov yo'q). */
-fun PostListingUiState.categoryAttributes() =
-    categoryList.firstOrNull { it.key == categoryKey }?.fields.orEmpty()
+/**
+ * Formada ko'rsatiladigan dinamik maydonlar — turning **umumiy** maydonlari + tanlangan
+ * kategoriyaniki.
+ *
+ * Umumiy maydonlar `attributes-schema` dan keladi va turning barcha e'lonlariga tegishli
+ * (masalan har qanday PlayStation e'lonida "Joylar soni"). Sxema yuklanmagan bo'lsa —
+ * faqat kategoriya maydonlari, ya'ni forma baribir ishlaydi.
+ *
+ * Kategoriya maydonlarining manbai `categories` javobi bo'lib qoladi: unda ular allaqachon
+ * ichma-ich (`options` bilan) keladi va jinsga qarab filtrlangan bo'ladi.
+ */
+fun PostListingUiState.categoryAttributes(): List<AttributeSpec> {
+    val categoryFields = categoryList.firstOrNull { it.key == categoryKey }?.fields.orEmpty()
+    val common = typeAttributes?.common.orEmpty()
+    if (common.isEmpty()) return categoryFields
+    // Kalit takrorlansa umumiysi qoladi — bir xil kalit bitta maydonni anglatadi.
+    return common + categoryFields.filterNot { field -> common.any { it.key == field.key } }
+}
 

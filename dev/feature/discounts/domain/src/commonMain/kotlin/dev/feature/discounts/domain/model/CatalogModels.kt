@@ -40,6 +40,43 @@ data class BusinessTypeInfo(
 }
 
 /**
+ * Biznes turining dinamik forma sxemasi (`GET /business/types/{type}/attributes-schema`).
+ *
+ * [common] — turning **barcha** e'lonlariga tegishli maydonlar (masalan har qanday
+ * PlayStation e'lonida "Joylar soni"), [byCategory] — kategoriya tanlangandan keyin
+ * qo'shiladigan maydonlar (`categoryKey → maydonlar`).
+ *
+ * Forma ikkalasini birlashtiradi: `common + byCategory[tanlangan]` ([fieldsFor]).
+ *
+ * ⚠️ Turlar va ularning maydonlari **serverda** o'sib boradi — 27 ta tur bor va `attributes`
+ * bazadagi `attribute_specs` jadvalidan keladi. Shuning uchun bu ro'yxat hech qachon ilovada
+ * qotirilmaydi (`DISCOUNTS_BUSINESS_API_RESPONSE.md` §5.1).
+ */
+data class TypeAttributes(
+    val businessType: BusinessType,
+    val common: List<AttributeSpec> = emptyList(),
+    val byCategory: Map<String, List<AttributeSpec>> = emptyMap(),
+) {
+    /**
+     * Tanlangan kategoriya uchun to'liq maydonlar ro'yxati.
+     *
+     * Umumiy maydonlar **oldinda** turadi: ular butun turga tegishli va foydalanuvchi ularni
+     * kategoriya tafsilotlaridan oldin to'ldirishi tabiiyroq. Kalit bo'yicha takrorlanish
+     * bo'lsa kategoriyaniki emas, umumiysi qoladi — server ikkalasida bir xil kalit bersa,
+     * bu bitta maydon, ikkita emas.
+     */
+    fun fieldsFor(categoryKey: String?): List<AttributeSpec> {
+        val categoryFields = byCategory[categoryKey].orEmpty()
+        return common + categoryFields.filterNot { field -> common.any { it.key == field.key } }
+    }
+
+    companion object {
+        /** Sxema yuklanmaganda ishlatiladigan bo'sh qiymat — forma kategoriya maydonlari bilan ishlaydi. */
+        fun empty(type: BusinessType) = TypeAttributes(type)
+    }
+}
+
+/**
  * Kategoriya + uning maydonlari (`GET /business/types/{type}/categories`).
  *
  * [fields] — ichma-ich tuzilma: maydon → `options` (masalan PlayStation → Model → PS5/PS4/PS3).

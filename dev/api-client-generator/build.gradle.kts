@@ -63,6 +63,11 @@ val apiServerUrl = "https://api.studentclub.uz/v1"
  * 8. **`$ref` yonidagi `nullable` saqlanadi** — OpenAPI 3.0 da `$ref` bilan yonma-yon turgan
  *    kalitlar e'tiborsiz qoladi, shuning uchun `{"nullable": true, "$ref": X}` `allOf` ichiga
  *    o'raladi (aks holda `UserProfileDto.gender` null bo'lolmay, javob parse bo'lmasdi).
+ * 9. **Yetib bo'lmaydigan sxemalar kesiladi.** Backend bitta katta swagger chiqaradi: biznes
+ *    spec'ida `components.schemas` ichida admin panel va talaba ilovasining ham (Admin*,
+ *    Story*, Message*, Search*…) 200 dan ortiq modeli yotadi, holbuki 48 ta yo'lning
+ *    birortasi ularga tegmaydi. Kesilmasa generator o'sha modellarni ham chiqaradi va
+ *    `:dev:api-client` keraksiz yuzlab fayl bilan shishadi.
  */
 val cleanSwagger = tasks.register("cleanSwagger") {
     group = "openapi"
@@ -93,6 +98,28 @@ val cleanSwagger = tasks.register("cleanSwagger") {
                 else -> c
             }
         }
+
+        // --- operationId → metod nomi (qo'lda berilgan nomlar) ---------------------------
+        // Qisqartirilgan nom spec bo'yicha noyob bo'lmasa, pastdagi qoida uni kontroller
+        // nomi bilan prefikslaydi (`ListingSubmitController_submit` → `listingSubmitSubmit`).
+        // Bir nechta joyda bu ham chirkin, ham chaqiruv joyini bekorga sindiradi, shuning
+        // uchun to'qnashgan juftlarга nom SHU YERDA beriladi: har biriga o'z ma'nosidagi
+        // nom, tarixiy chaqiruvchi esa qisqa nomni saqlab qoladi.
+        val operationNames = mapOf(
+            // `submit` — ikkitasi: e'lon (ilova ancha oldindan chaqiradi) va biznes (yangi).
+            "ListingSubmitController_submit" to "submit",
+            "BusinessController_submit" to "businessSubmit",
+            // `verify` — OTP tasdiqlash (mavjud) va kassirning kod tekshiruvi (yangi).
+            "BusinessOtpController_verify" to "verify",
+            "RedemptionsController_verify" to "redeemVerify",
+            "RedemptionsController_confirm" to "redeemConfirm",
+            // Geo: kontrakt yo'llari (`/geo/regions`) va admin panel ishlatadigan eski
+            // yo'llar (`/regions`) bitta servis ustida — ikkalasi ham spec'da qoladi.
+            "RegionsController_getRegions" to "getRegions",
+            "GeoRegionsController_getRegions" to "getGeoRegions",
+            "DistrictsController_getDistricts" to "getDistricts",
+            "GeoRegionsController_getDistricts" to "getGeoDistricts",
+        )
 
         // --- Sxema tugunlarini tiplash ---------------------------------------------------
         // Tipi `format`/`example` dan aniqlanmaydigan mantiqiy maydonlar (NestJS ularni ham
@@ -138,15 +165,25 @@ val cleanSwagger = tasks.register("cleanSwagger") {
                         retype(map, propName)
                     }
 
-                    // (5) `number` → `integer`. Kasrli maydonlarda doim `format: double` bor,
-                    // shuning uchun formatsiz `number` — har doim butun son.
+                    // (5) `number` → `integer`. NestJS hamma sonni `number` deb yozadi;
+                    // kasrlilarida odatда `format: double` bo'ladi, shuning uchun formatsiz
+                    // `number` — deyarli har doim butun son (`sortOrder`, `viewsCount`).
+                    //
+                    // "Deyarli" — chunki istisno bor: `MetroStationDto.lat/lng` formatsiz
+                    // `number`, lekin qiymati kasrli (41.27436). Ularni `Int` qilib qo'ysak
+                    // javob parse bo'lmaydi, shuning uchun `example` kasrli bo'lsa u
+                    // formatsizlikdan kuchliroq dalil — maydon `double` bo'lib qoladi.
                     if (map["type"] == "number") {
                         val format = map["format"] as? String
-                        if (format == null) {
-                            map["type"] = "integer"
-                            map["format"] = "int32"
-                        } else if (format == "int32" || format == "int64") {
-                            map["type"] = "integer"
+                        val fractionalExample = (map["example"] as? Number)
+                            ?.let { it.toDouble() != it.toLong().toDouble() } == true
+                        when {
+                            fractionalExample -> map["format"] = "double"
+                            format == null -> {
+                                map["type"] = "integer"
+                                map["format"] = "int32"
+                            }
+                            format == "int32" || format == "int64" -> map["type"] = "integer"
                         }
                     }
 
@@ -182,7 +219,8 @@ val cleanSwagger = tasks.register("cleanSwagger") {
                 @Suppress("UNCHECKED_CAST")
                 val operation = op as MutableMap<String, Any?>
                 val raw = operation["operationId"]?.toString().orEmpty()
-                shortNames.add(raw.substringAfter('_', raw))
+                // Nomi qo'lda berilganlar to'qnashuvda qatnashmaydi.
+                if (raw !in operationNames) shortNames.add(raw.substringAfter('_', raw))
             }
         }
         val ambiguous = shortNames.groupingBy { it }.eachCount().filterValues { it > 1 }.keys
@@ -204,7 +242,7 @@ val cleanSwagger = tasks.register("cleanSwagger") {
                 // (6) operationId → qisqa nom (spec bo'yicha noyob bo'lsa)
                 val rawId = operation["operationId"]?.toString().orEmpty()
                 val short = rawId.substringAfter('_', rawId)
-                operation["operationId"] = if (short in ambiguous) {
+                operation["operationId"] = operationNames[rawId] ?: if (short in ambiguous) {
                     val prefix = rawId.substringBefore('_').removeSuffix("Controller")
                     prefix.replaceFirstChar(Char::lowercaseChar) + short.replaceFirstChar(Char::uppercaseChar)
                 } else {
@@ -242,6 +280,44 @@ val cleanSwagger = tasks.register("cleanSwagger") {
             rewrittenPaths[path.removePrefix("/v1")] = item
         }
         root["paths"] = rewrittenPaths
+
+        // (9) yetib bo'lmaydigan sxemalarni kesish — TIPLASHDAN OLDIN, aks holda mehnat
+        // hech kim ishlatmaydigan 200 dan ortiq model ustida bekorga sarflanadi.
+        @Suppress("UNCHECKED_CAST")
+        val components = root["components"] as? MutableMap<String, Any?>
+        @Suppress("UNCHECKED_CAST")
+        val schemas = components?.get("schemas") as? MutableMap<String, Any?>
+        if (schemas != null) {
+            fun refsOf(node: Any?, into: MutableSet<String>) {
+                when (node) {
+                    is Map<*, *> -> node.forEach { (key, value) ->
+                        if (key == "\$ref" && value is String) {
+                            into.add(value.substringAfterLast('/'))
+                        } else {
+                            refsOf(value, into)
+                        }
+                    }
+                    is List<*> -> node.forEach { refsOf(it, into) }
+                }
+            }
+
+            // Yo'llardan boshlab tranzitiv yopilma: sxema faqat boshqa saqlanadigan
+            // sxemadan yoki yo'ldan havola qilinsa qoladi.
+            val reachable = mutableSetOf<String>()
+            val queue = ArrayDeque<String>()
+            mutableSetOf<String>().also { refsOf(root["paths"], it) }.forEach {
+                if (reachable.add(it)) queue.addLast(it)
+            }
+            while (queue.isNotEmpty()) {
+                val next = mutableSetOf<String>()
+                refsOf(schemas[queue.removeFirst()], next)
+                next.forEach { if (reachable.add(it)) queue.addLast(it) }
+            }
+
+            val dropped = schemas.keys.size - reachable.size
+            schemas.keys.retainAll(reachable)
+            logger.lifecycle("cleanSwagger: $dropped ta ishlatilmaydigan sxema kesildi, ${schemas.size} tasi qoldi")
+        }
 
         // (4)(5) barcha sxemalarni tiplash — komponentlar va inline sxemalar birgalikda
         fixTypes(root["components"], null)

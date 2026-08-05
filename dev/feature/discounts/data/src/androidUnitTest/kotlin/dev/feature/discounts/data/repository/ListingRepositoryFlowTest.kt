@@ -4,7 +4,9 @@ import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import dev.core.common.AppDispatchers
 import dev.core.common.Resource
 import dev.core.database.sql.ElonUzDatabase
+import dev.feature.discounts.data.remote.FakeListingRemoteDataSource
 import dev.feature.discounts.data.remote.ListingRemoteDataSource
+import dev.feature.discounts.data.remote.ListingTransition
 import dev.feature.discounts.domain.model.BusinessType
 import dev.feature.discounts.domain.model.DiscountType
 import dev.feature.discounts.domain.model.Listing
@@ -44,19 +46,16 @@ class ListingRepositoryFlowTest {
     }
 
     /** Serverni taqlid qiladi: o'z id/statusini qaytaradi (haqiqiy backend ham shunday qiladi). */
-    private class ServerRemote : ListingRemoteDataSource {
-        override suspend fun list(
-            business: dev.feature.discounts.domain.model.Business,
-            status: ListingStatus?,
-            categoryKey: String?,
-            page: Int,
-            size: Int,
-        ) = Resource.Success(dev.feature.discounts.domain.model.ListingPage.EMPTY)
+    private class ServerRemote(
+        /** `pause`/`activate`/`withdraw` javobi — keshga aynan shu yozilishi tekshiriladi. */
+        private val statusResult: Resource<ListingStatus> = Resource.Success(ListingStatus.PAUSED),
+    ) : FakeListingRemoteDataSource() {
         override suspend fun publish(listing: Listing) = Resource.Success(
             listing.copy(id = "srv-${listing.id}", status = ListingStatus.PENDING_REVIEW),
         )
         override suspend fun update(listing: Listing) = Resource.Success(listing)
         override suspend fun archive(id: String): Resource<Unit> = Resource.Success(Unit)
+        override suspend fun changeStatus(id: String, transition: ListingTransition) = statusResult
         override suspend fun uploadImage(bytes: ByteArray, fileName: String) =
             Resource.Success("https://cdn/x.jpg")
     }
@@ -103,26 +102,52 @@ class ListingRepositoryFlowTest {
     /** Server rad etsa keshga hech narsa yozilmasligi kerak — aks holda "arvoh" e'lon qoladi. */
     @Test
     fun `rad etilgan e'lon keshga tushmaydi`() = runTest(dispatcher) {
-        val rejecting = object : ListingRemoteDataSource {
-            override suspend fun list(
-                business: dev.feature.discounts.domain.model.Business,
-                status: ListingStatus?,
-                categoryKey: String?,
-                page: Int,
-                size: Int,
-            ) = Resource.Error("Rad etildi")
-            override suspend fun publish(listing: Listing) = Resource.Error("Rad etildi")
-            override suspend fun update(listing: Listing) = Resource.Error("Rad etildi")
-            override suspend fun archive(id: String) = Resource.Error("Rad etildi")
-            override suspend fun uploadImage(bytes: ByteArray, fileName: String) =
-                Resource.Error("Rad etildi")
-        }
-        val repo = repository(rejecting)
+        // Asosdagi har bir metod allaqachon xato qaytaradi — `publish` ham shu qatorda.
+        val repo = repository(object : FakeListingRemoteDataSource() {})
 
         val result = repo.submit(listing())
 
         assertTrue(result is Resource.Error)
         assertTrue(repo.observeMyListings(OWNER).first().isEmpty(), "rad etilgan e'lon keshga yozildi")
+    }
+
+    /**
+     * Holat **serverdagi javob bo'yicha** keshga yoziladi, so'ralgan o'tish bo'yicha emas.
+     *
+     * `activate` boshlanish sanasi kelajakda bo'lgan e'lonni `SCHEDULED` qiladi; kesh
+     * `ACTIVE` deb yozib qo'ysa ro'yxat e'lonni faol ko'rsatib, talabalar esa uni hali
+     * ko'rmayotgan bo'lardi.
+     */
+    @Test
+    fun `holat serverdan qaytgan qiymat bilan keshlanadi`() = runTest(dispatcher) {
+        val repo = repository(ServerRemote(Resource.Success(ListingStatus.SCHEDULED)))
+        repo.submit(listing())
+
+        val result = repo.setPaused("srv-lst-1", paused = false)
+
+        assertTrue(result is Resource.Success, "holat o'zgarmadi: $result")
+        assertEquals(ListingStatus.SCHEDULED, result.data)
+        assertEquals(
+            ListingStatus.SCHEDULED,
+            repo.observeMyListings(OWNER).first().first().status,
+            "keshga server bergan holat emas, kutilgan holat yozildi",
+        )
+    }
+
+    /** Server rad etsa kesh **tegilmasligi** kerak — aks holda ro'yxat yolg'on ko'rsatadi. */
+    @Test
+    fun `rad etilgan holat o'zgarishi keshga tushmaydi`() = runTest(dispatcher) {
+        val repo = repository(ServerRemote(Resource.Error("Muddati o'tgan")))
+        repo.submit(listing())
+
+        val result = repo.setPaused("srv-lst-1", paused = true)
+
+        assertTrue(result is Resource.Error)
+        assertEquals(
+            ListingStatus.PENDING_REVIEW,
+            repo.observeMyListings(OWNER).first().first().status,
+            "server rad etdi, lekin kesh o'zgardi",
+        )
     }
 
     private fun listing() = Listing(

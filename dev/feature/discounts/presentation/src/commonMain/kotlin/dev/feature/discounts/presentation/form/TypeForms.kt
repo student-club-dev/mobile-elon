@@ -33,6 +33,8 @@ import dev.feature.discounts.domain.model.BusinessType
 import dev.feature.discounts.presentation.PostListingUiState
 import dev.feature.discounts.presentation.PostListingViewModel
 import dev.feature.discounts.presentation.components.BranchesSection
+import dev.feature.discounts.presentation.components.LimitContext
+import dev.feature.discounts.presentation.components.LimitHint
 import dev.feature.discounts.presentation.components.MessageBar
 import org.jetbrains.compose.resources.stringResource
 
@@ -153,6 +155,9 @@ private fun ListingFormScaffold(
             val message = state.message
             if (message != null) {
                 MessageBar(message, palette, onDismiss = vm::consumeMessage)
+                // Chegara (429) bo'lsa — serverning xabari ostiga amaliy maslahat qo'shiladi:
+                // "chegara to'ldi" o'zi nima qilish kerakligini aytmaydi.
+                LimitHint(state.limitCode, palette, LimitContext.LISTING)
             }
 
             if (state.errors.isNotEmpty()) {

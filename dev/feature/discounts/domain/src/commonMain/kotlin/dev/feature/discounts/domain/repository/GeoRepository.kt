@@ -7,6 +7,15 @@ data class ResolvedAddress(
     val address: String,
     val regionId: String? = null,
     val districtId: String? = null,
+    /**
+     * Eng yaqin metro bekati (`ReverseGeocodeResponseDto.nearestMetro`) — faqat Toshkent
+     * shahri, va faqat 3 km radiusdа. Backend ilgari bu maydonni doim `null` qaytarardi;
+     * bekatlar bazaga seed qilingandan keyin haqiqiy nom keladi
+     * (`DISCOUNTS_BUSINESS_API_RESPONSE.md` §2.3).
+     *
+     * `null` — bekat yaqin emas yoki shahar Toshkent emas. Ikkalasi ham xato emas.
+     */
+    val metroStation: String? = null,
 )
 
 /** Qidiruv natijasi — xaritada topilgan joy. */

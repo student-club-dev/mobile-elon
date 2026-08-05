@@ -7,6 +7,25 @@ data class Region(val id: String, val name: String, val districts: List<District
 data class District(val id: String, val name: String)
 
 /**
+ * Toshkent metro bekati (`GET /geo/metro-stations`) — filial formasidagi mo'ljal maydoni
+ * uchun. Faqat **autocomplete**: `BranchDto.location.metroStation` erkin matn bo'lib qoladi,
+ * shuning uchun ro'yxatda yo'q yangi bekatni qo'lda yozish ham mumkin
+ * ([dev.feature.discounts.domain.repository.RegionRepository.metroStations] izohiga qarang).
+ */
+data class MetroStation(
+    val id: String,
+    val name: String,
+    /**
+     * Liniya **kaliti** (`CHILONZOR`, `OZBEKISTON`, `YUNUSOBOD`, `HALQA`) — ro'yxatni
+     * guruhlash aynan shu bo'yicha qilinadi, bekat nomi bo'yicha emas: liniya nomi va uning
+     * birinchi bekati nomi ba'zan bir xil (`CHILONZOR`), lekin bu tasodif.
+     */
+    val line: String,
+    val lat: Double,
+    val lng: Double,
+)
+
+/**
  * O'zbekiston viloyat/tuman ma'lumotnomasi — lokatsiya tanlash uchun.
  *
  * Bu backenddagi `GET /geo/regions` va `GET /geo/regions/{id}/districts` ning offline

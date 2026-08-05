@@ -295,4 +295,62 @@
     <string name="discounts_branches_add_note">Новый филиал добавляется в профиле бизнеса</string>
 
     <string name="discounts_image_cover">Обложка</string>
+
+    <!-- ============ Станция метро (ориентир филиала, только Ташкент) ============ -->
+    <string name="discounts_metro_label">Станция метро</string>
+    <string name="discounts_metro_select">Выберите станцию</string>
+    <string name="discounts_metro_note">Необязательно — так студентам легче найти филиал</string>
+    <string name="discounts_metro_line">Линия %1$s</string>
+
+    <!-- ============ Модерация бизнеса ============ -->
+    <string name="discounts_business_submit">Отправить на проверку</string>
+    <string name="discounts_business_submitting">Отправляется...</string>
+    <string name="discounts_business_status">Статус: %1$s</string>
+    <string name="discounts_business_rejected_reason">Причина отказа: %1$s</string>
+    <string name="discounts_business_submit_hint">После одобрения ваши объявления увидят студенты</string>
+    <string name="discounts_business_submitted">Отправлено на проверку</string>
+
+    <!-- ============ Объявление: дополнительные действия ============ -->
+    <string name="discounts_action_withdraw">Отозвать с проверки</string>
+    <string name="discounts_action_duplicate">Дублировать</string>
+    <string name="discounts_action_stats">Статистика</string>
+    <string name="discounts_action_more">Другие действия</string>
+    <string name="discounts_duplicated">Копия создана как черновик</string>
+    <string name="discounts_withdrawn">Объявление отозвано с проверки</string>
+
+    <!-- ============ Статистика объявления ============ -->
+    <string name="discounts_stats_title">Статистика</string>
+    <string name="discounts_stats_views">Просмотры</string>
+    <string name="discounts_stats_favorites">Сохранили</string>
+    <string name="discounts_stats_redemptions">Использования</string>
+    <string name="discounts_stats_conversion">Конверсия</string>
+    <string name="discounts_stats_revenue">Общая сумма</string>
+    <string name="discounts_stats_failed">Не удалось загрузить статистику</string>
+
+    <!-- ============ Список использований ============ -->
+    <string name="discounts_redemptions_title">Использования</string>
+    <string name="discounts_redemptions_empty">Этой скидкой пока никто не воспользовался</string>
+    <string name="discounts_redemptions_amount">%1$s сум</string>
+
+    <!-- ============ Кассир: проверка кода ============ -->
+    <string name="discounts_redeem_title">Проверка кода</string>
+    <string name="discounts_redeem_code_label">Код, который показал студент</string>
+    <string name="discounts_redeem_code_hint">Например: A7K2M9</string>
+    <string name="discounts_redeem_verify">Проверить</string>
+    <string name="discounts_redeem_confirm">Подтвердить</string>
+    <string name="discounts_redeem_confirming">Подтверждается...</string>
+    <string name="discounts_redeem_valid">Код действителен</string>
+    <string name="discounts_redeem_confirmed">Скидка применена</string>
+    <string name="discounts_redeem_branch">В каком филиале</string>
+    <string name="discounts_redeem_amount_label">Сумма чека (необязательно)</string>
+    <string name="discounts_redeem_invalid_code">Такой код не найден</string>
+    <string name="discounts_redeem_already">Этот код уже использован</string>
+    <string name="discounts_redeem_expired">Срок действия кода истёк</string>
+    <string name="discounts_redeem_limit">Лимит использований исчерпан</string>
+    <string name="discounts_redeem_invalid">Код недействителен</string>
+
+    <!-- ============ Лимиты (429) ============ -->
+    <string name="discounts_limit_business">Один пользователь может открыть не более 5 бизнесов. Архивируйте старый или попробуйте позже.</string>
+    <string name="discounts_limit_listing">В этом бизнесе исчерпан лимит активных объявлений. Остановите или удалите старое.</string>
+    <string name="discounts_limit_daily">Дневной лимит отправок исчерпан. Продолжите завтра.</string>
 </resources>

@@ -1,14 +1,19 @@
 package dev.feature.discounts.domain.usecase
 
 import dev.core.common.Resource
+import dev.core.common.error.AppException
 import dev.feature.discounts.domain.model.AttributeSpec
 import dev.feature.discounts.domain.model.Business
 import dev.feature.discounts.domain.model.Listing
 import dev.feature.discounts.domain.model.ListingBranch
 import dev.feature.discounts.domain.model.ListingError
 import dev.feature.discounts.domain.model.ListingPage
+import dev.feature.discounts.domain.model.ListingStats
 import dev.feature.discounts.domain.model.ListingStatus
 import dev.feature.discounts.domain.model.ListingValidator
+import dev.feature.discounts.domain.model.Redemption
+import dev.feature.discounts.domain.model.RedemptionCheck
+import dev.feature.discounts.domain.model.RedemptionPage
 import dev.feature.discounts.domain.repository.GeoRepository
 import dev.feature.discounts.domain.repository.PlaceSuggestion
 import dev.feature.discounts.domain.repository.ListingRepository
@@ -48,7 +53,14 @@ class PublishListingUseCase(private val repository: ListingRepository) {
     sealed interface Result {
         data class Success(val listing: Listing) : Result
         data class Invalid(val errors: List<ListingError>) : Result
-        data class Failed(val message: String) : Result
+
+        /**
+         * Server rad etdi. [limitCode] — chegara kodi (`LISTING_LIMIT_REACHED`,
+         * `RATE_LIMITED`), bo'lsa: bu holatda tuzatiladigan maydon yo'q, shuning uchun ekran
+         * xatoni forma xatosi sifatida emas, nima qilish kerakligini aytadigan maslahat bilan
+         * ko'rsatadi. Boshqa xatolarda `null`.
+         */
+        data class Failed(val message: String, val limitCode: String? = null) : Result
     }
 
     /**
@@ -75,21 +87,104 @@ class PublishListingUseCase(private val repository: ListingRepository) {
         val res = if (isEdit) repository.update(listing) else repository.submit(listing)
         return when (res) {
             is Resource.Success -> Result.Success(res.data)
-            is Resource.Error -> Result.Failed(res.message)
+            is Resource.Error -> Result.Failed(
+                message = res.message,
+                limitCode = (res.error as? AppException.LimitReached)?.code,
+            )
             Resource.Loading -> Result.Failed("E'lonni yuborib bo'lmadi")
         }
     }
 }
 
-/** E'lonni to'xtatib turish / qayta yoqish (ACTIVE ⇄ PAUSED). */
+/**
+ * E'lonni to'xtatib turish / qayta yoqish (ACTIVE ⇄ PAUSED).
+ *
+ * **Serverdagi yangi holatni** qaytaradi, `Unit` emas: `activate` boshlanish sanasi kelajakda
+ * bo'lgan e'lonni `ACTIVE` emas, `SCHEDULED` qiladi va kartada aynan shu ko'rinishi kerak.
+ */
 class ToggleListingPausedUseCase(private val repository: ListingRepository) {
-    suspend operator fun invoke(listing: Listing): Resource<Unit> {
-        val next = when (listing.status) {
-            ListingStatus.ACTIVE -> ListingStatus.PAUSED
-            ListingStatus.PAUSED -> ListingStatus.ACTIVE
-            else -> return Resource.Error("Bu holatda to'xtatib bo'lmaydi: ${listing.status.label}")
+    suspend operator fun invoke(listing: Listing): Resource<ListingStatus> = when (listing.status) {
+        ListingStatus.ACTIVE -> repository.setPaused(listing.id, paused = true)
+        ListingStatus.PAUSED -> repository.setPaused(listing.id, paused = false)
+        else -> Resource.Error("Bu holatda to'xtatib bo'lmaydi: ${listing.status.label}")
+    }
+}
+
+/**
+ * Moderatsiyadagi e'lonni qaytarib oladi — u qoralamaga tushadi va tahrirlash mumkin bo'ladi.
+ *
+ * Faqat `PENDING_REVIEW` da mazmunli: backend boshqa holatdan `409` qaytaradi, shuning uchun
+ * so'rov yuborilmasdan oldin to'xtatiladi.
+ */
+class WithdrawListingUseCase(private val repository: ListingRepository) {
+    suspend operator fun invoke(listing: Listing): Resource<ListingStatus> =
+        if (listing.status == ListingStatus.PENDING_REVIEW) {
+            repository.withdraw(listing.id)
+        } else {
+            Resource.Error("Faqat tekshiruvdagi e'lonni qaytarib olish mumkin")
         }
-        return repository.updateStatus(listing.id, next)
+}
+
+/**
+ * E'londan nusxa oladi — server yangi **qoralama** yaratadi.
+ *
+ * [business] kerak: server javobida biznes nomi/turi va to'liq filiallar yo'q (faqat
+ * `branchIds`), shuning uchun to'liq [Listing] ni yig'ish uchun ochilgan biznes konteksti
+ * bo'lishi shart ([GetBusinessListingsUseCase] bilan bir xil sabab).
+ */
+class DuplicateListingUseCase(private val repository: ListingRepository) {
+    suspend operator fun invoke(listing: Listing, business: Business): Resource<Listing> =
+        repository.duplicate(listing.id, business)
+}
+
+/** E'lon statistikasi — ko'rishlar, saqlanganlar, foydalanishlar, konversiya, summa. */
+class GetListingStatsUseCase(private val repository: ListingRepository) {
+    suspend operator fun invoke(id: String): Resource<ListingStats> = repository.stats(id)
+}
+
+/** Foydalanishlar tarixi (kim, qachon, qancha summaga). */
+class GetListingRedemptionsUseCase(private val repository: ListingRepository) {
+    suspend operator fun invoke(id: String, page: Int = 1, size: Int = 20): Resource<RedemptionPage> =
+        repository.redemptions(id, page, size)
+}
+
+/**
+ * Kassir: talaba ko'rsatgan kodni tekshiradi. Bu qadam hech narsani o'zgartirmaydi, shuning
+ * uchun uni xohlagancha takrorlash mumkin — chegirma faqat [ConfirmRedemptionUseCase] da
+ * hisobga olinadi.
+ *
+ * Bo'sh kod serverga yuborilmaydi: javob baribir `INVALID_CODE` bo'lardi.
+ */
+class VerifyRedemptionUseCase(private val repository: ListingRepository) {
+    suspend operator fun invoke(listingId: String, code: String): Resource<RedemptionCheck> {
+        val trimmed = code.trim()
+        if (trimmed.isEmpty()) return Resource.Error("Kodni kiriting")
+        return repository.verifyRedemption(listingId, trimmed)
+    }
+}
+
+/**
+ * Kassir: chegirmani qo'llaydi va foydalanishni hisobga oladi.
+ *
+ * [amount] — kassa chekining summasi, **ixtiyoriy**: u faqat statistikadagi umumiy summaga
+ * qo'shiladi va chegirmaning o'ziga ta'sir qilmaydi. Nol yoki manfiy qiymat yuborilmaydi —
+ * u "kiritilmagan" bilan bir xil ma'noni beradi, lekin hisobotni buzardi.
+ */
+class ConfirmRedemptionUseCase(private val repository: ListingRepository) {
+    suspend operator fun invoke(
+        listingId: String,
+        code: String,
+        branchId: String? = null,
+        amount: Long? = null,
+    ): Resource<Redemption> {
+        val trimmed = code.trim()
+        if (trimmed.isEmpty()) return Resource.Error("Kodni kiriting")
+        return repository.confirmRedemption(
+            id = listingId,
+            code = trimmed,
+            branchId = branchId,
+            amount = amount?.takeIf { it > 0 },
+        )
     }
 }
 
@@ -166,6 +261,9 @@ class CreateBranchFromPointUseCase(private val geoRepository: GeoRepository) {
                 ?: "${lat.round5()}, ${lng.round5()}",
             regionId = resolved?.regionId,
             districtId = resolved?.districtId,
+            // Toshkentda bo'lsa metro mo'ljali ham to'ladi (`nearestMetro`); boshqa shaharda
+            // yoki bekat 3 km dan uzoq bo'lsa `null` keladi va maydon bo'sh qoladi.
+            metroStation = resolved?.metroStation,
         )
     }
 
