@@ -41,6 +41,7 @@ import dev.core.uikit.resources.discounts_business_type_select
 import dev.core.uikit.resources.discounts_district_label
 import dev.core.uikit.resources.discounts_district_needs_region
 import dev.core.uikit.resources.discounts_district_select
+import dev.core.uikit.resources.discounts_district_unresolved
 import dev.core.uikit.resources.discounts_location_hint
 import dev.core.uikit.resources.discounts_location_label
 import dev.core.uikit.resources.discounts_map_business_title
@@ -197,25 +198,6 @@ fun AddBusinessScreen(
                 palette = palette,
             )
 
-            // --- Tuman: `LocationDto.districtId` majburiy va viloyatga bog'liq ---
-            Spacer(Modifier.height(FieldGap))
-            FieldLabel(stringResource(Res.string.discounts_district_label), palette)
-            Spacer(Modifier.height(FieldLabelGap))
-            SelectorField(
-                icon = AppIcons.Pin,
-                value = state.districtName,
-                placeholder = stringResource(
-                    // Viloyat tanlanmaguncha tuman ro'yxati bo'sh — buni maydonning o'zi aytadi.
-                    if (state.regionId == null) {
-                        Res.string.discounts_district_needs_region
-                    } else {
-                        Res.string.discounts_district_select
-                    },
-                ),
-                onClick = { if (state.regionId != null) vm.openDistrictPicker() },
-                palette = palette,
-            )
-
             Spacer(Modifier.height(FieldGap))
             FieldLabel(stringResource(Res.string.discounts_location_label), palette)
             Spacer(Modifier.height(FieldLabelGap))
@@ -226,6 +208,35 @@ fun AddBusinessScreen(
                 onClick = vm::openMap,
                 palette = palette,
             )
+
+            // --- Tuman: odatda SO'RALMAYDI — uni xaritadagi nuqta beradi (teskari geokodlash).
+            //
+            // Maydon faqat zaxira sifatida, geokoder tumanni aniqlay olmaganda chiqadi. Uni
+            // butunlay olib tashlab bo'lmaydi: `LocationDto.districtId` backendда majburiy va
+            // viloyatga tegishli bo'lishi shart (`422 DISTRICT_REGION_MISMATCH`) — aks holda
+            // foydalanuvchi sababini ko'rmaydigan xatoga tushib, formadan chiqolmay qolardi.
+            // Viloyat qo'lda almashtirilganda ham shu yerga tushadi (eski tuman bekor bo'ladi).
+            if (state.needsDistrictChoice) {
+                Spacer(Modifier.height(FieldGap))
+                FieldLabel(stringResource(Res.string.discounts_district_label), palette)
+                Spacer(Modifier.height(FieldLabelGap))
+                SelectorField(
+                    icon = AppIcons.Pin,
+                    value = state.districtName,
+                    placeholder = stringResource(
+                        // Viloyat tanlanmaguncha tuman ro'yxati bo'sh — buni maydonning o'zi aytadi.
+                        if (state.regionId == null) {
+                            Res.string.discounts_district_needs_region
+                        } else {
+                            Res.string.discounts_district_select
+                        },
+                    ),
+                    onClick = { if (state.regionId != null) vm.openDistrictPicker() },
+                    palette = palette,
+                )
+                Spacer(Modifier.height(AppSpacing.sm))
+                HintText(stringResource(Res.string.discounts_district_unresolved), palette = palette)
+            }
 
             // --- Filial nomi: `BranchRequestDto.name` majburiy ---
             Spacer(Modifier.height(FieldGap))

@@ -256,6 +256,18 @@ data class AddBusinessUiState(
 
     val districtName: String? get() = districts.firstOrNull { it.id == districtId }?.name
 
+    /**
+     * Tuman maydonini KO'RSATISH kerakmi.
+     *
+     * Odatda tuman so'ralmaydi — uni xaritadagi nuqta beradi. Lekin `LocationDto.districtId`
+     * backendда majburiy: geokoder tumanni topa olmasa yoki viloyat qo'lda almashtirilib eski
+     * tuman bekor bo'lsa, foydalanuvchi uni o'zi ko'rsatishi kerak. Aks holda saqlash
+     * `422 DISTRICT_REGION_MISMATCH` bilan yiqilar va formada tuzatadigan joy bo'lmasdi.
+     *
+     * Joy tanlanmaguncha maydon umuman chiqmaydi: avval xarita, keyin — agar kerak bo'lsa — tuman.
+     */
+    val needsDistrictChoice: Boolean get() = branch != null && districtId == null
+
     val canSave: Boolean
         get() = name.isNotBlank() && phoneDigits.length == 9 && businessType != null &&
             branch != null && regionId != null && districtId != null &&

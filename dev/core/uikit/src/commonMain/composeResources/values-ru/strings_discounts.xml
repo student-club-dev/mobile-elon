@@ -348,4 +348,5 @@
     <string name="discounts_limit_business">Один пользователь может открыть не более 5 бизнесов. Архивируйте старый или попробуйте позже.</string>
     <string name="discounts_limit_listing">В этом бизнесе исчерпан лимит активных объявлений. Остановите или удалите старое.</string>
     <string name="discounts_limit_daily">Дневной лимит отправок исчерпан. Продолжите завтра.</string>
+    <string name="discounts_district_unresolved">Район не определился по карте — выберите его сами</string>
 </resources>

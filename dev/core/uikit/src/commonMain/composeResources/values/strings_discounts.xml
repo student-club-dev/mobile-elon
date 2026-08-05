@@ -355,4 +355,5 @@
     <string name="discounts_limit_business">Bir foydalanuvchi ko\'pi bilan 5 ta biznes ocha oladi. Eskisini arxivlang yoki keyinroq urining.</string>
     <string name="discounts_limit_listing">Bu biznesda faol e\'lonlar chegarasi to\'ldi. Eski e\'lonni to\'xtating yoki o\'chiring.</string>
     <string name="discounts_limit_daily">Bugungi yuborish chegarasi to\'ldi. Ertaga davom ettiring.</string>
+    <string name="discounts_district_unresolved">Tuman xaritadan aniqlanmadi — o'zingiz tanlang</string>
 </resources>

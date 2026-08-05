@@ -348,4 +348,5 @@
     <string name="discounts_limit_business">One user can open at most 5 businesses. Archive an old one or try later.</string>
     <string name="discounts_limit_listing">This business reached its active listing limit. Pause or delete an old listing.</string>
     <string name="discounts_limit_daily">Today\'s submission limit is reached. Continue tomorrow.</string>
+    <string name="discounts_district_unresolved">We couldn't determine the district from the map — please pick it</string>
 </resources>
