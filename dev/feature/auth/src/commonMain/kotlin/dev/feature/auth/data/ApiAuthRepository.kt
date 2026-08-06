@@ -82,13 +82,34 @@ class ApiAuthRepository(
             ).body()
         }
 
-    override suspend fun register(identifier: AuthIdentifier, password: String): Resource<User> =
+    /**
+     * Hisob yaratilishidan OLDINgi qadam — raqamga kod (`/auth/business/register/otp`).
+     *
+     * Token yuborilmaydi (hisob hali yo'q), shuning uchun generatsiya qilingan klientning
+     * `requiresAuthentication = false` chaqiruvi ishlatiladi.
+     */
+    override suspend fun requestRegistrationOtp(phone: String): Resource<OtpChallenge> =
+        safeCall(connectivity) {
+            val result = api.businessRegistrationOtpRequest(OtpRequestDto(phoneNumber = phone)).body()
+            OtpChallenge(
+                expiresInSeconds = result.expiresInSeconds,
+                resendCooldownSeconds = result.resendCooldownSeconds,
+            )
+        }
+
+    override suspend fun register(
+        identifier: AuthIdentifier,
+        password: String,
+        otpCode: String?,
+    ): Resource<User> =
         authenticate(identifier) {
             api.register(
                 RegisterDto(
                     password = password,
                     email = (identifier as? AuthIdentifier.Email)?.value,
                     phoneNumber = (identifier as? AuthIdentifier.Phone)?.value,
+                    // Raqam bilan ro'yxatdan o'tishда backend buni majburiy qiladi (422).
+                    otpCode = otpCode?.takeIf { it.isNotBlank() },
                     deviceName = deviceName,
                     platform = platformName,
                 ),
@@ -205,7 +226,7 @@ class ApiAuthRepository(
 
     override suspend fun requestPhoneOtp(phone: String): Resource<OtpChallenge> =
         safeCall(connectivity) {
-            val result = api.request(OtpRequestDto(phoneNumber = phone)).body()
+            val result = api.businessOtpRequest(OtpRequestDto(phoneNumber = phone)).body()
             OtpChallenge(
                 expiresInSeconds = result.expiresInSeconds,
                 resendCooldownSeconds = result.resendCooldownSeconds,

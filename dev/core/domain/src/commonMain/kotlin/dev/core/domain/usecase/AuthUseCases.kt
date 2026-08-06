@@ -34,15 +34,34 @@ class LoginWithGoogleUseCase(private val repository: AuthRepository) {
     }
 }
 
-/** Telefon yoki email + parol bilan yangi hisob yaratish. */
+/**
+ * Ro'yxatdan o'tish uchun raqamga SMS kod (`register/otp`) — hisob yaratilishidan oldin.
+ */
+class RequestRegistrationOtpUseCase(private val repository: AuthRepository) {
+    suspend operator fun invoke(phone: String): Resource<OtpChallenge> {
+        val identifier = AuthIdentifier.of(phone) as? AuthIdentifier.Phone
+            ?: return Resource.Error("To'liq 9 xonali raqam kiriting")
+        return repository.requestRegistrationOtp(identifier.value)
+    }
+}
+
+/**
+ * Telefon yoki email + parol bilan yangi hisob yaratish.
+ *
+ * [otpCode] — telefon bilan ro'yxatdan o'tishда majburiy ([RequestRegistrationOtpUseCase]
+ * yuborgan kod). Email bilan ro'yxatdan o'tishда kerak emas.
+ */
 class RegisterUseCase(private val repository: AuthRepository) {
-    suspend operator fun invoke(login: String, password: String): Resource<User> {
+    suspend operator fun invoke(login: String, password: String, otpCode: String? = null): Resource<User> {
         val identifier = AuthIdentifier.of(login)
             ?: return Resource.Error("Telefon raqami yoki email manzilini to'g'ri kiriting")
         if (password.length < MIN_PASSWORD_LENGTH) {
             return Resource.Error("Parol kamida $MIN_PASSWORD_LENGTH belgidan iborat bo'lsin")
         }
-        return repository.register(identifier, password)
+        if (identifier is AuthIdentifier.Phone && otpCode.isNullOrBlank()) {
+            return Resource.Error("SMS kodni kiriting")
+        }
+        return repository.register(identifier, password, otpCode)
     }
 }
 

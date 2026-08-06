@@ -9,7 +9,15 @@ enum class Role { STUDENT, BUSINESS, EMPLOYER, UNIVERSITY }
  * Backend'da SMS kod **kirish usuli emas**: u faqat raqamni tasdiqlash
  * (`/auth/business/otp/…`) va parolni tiklash (`/auth/business/password/…`) uchun.
  */
-enum class OtpPurpose { VERIFY_PHONE, RESET_PASSWORD }
+enum class OtpPurpose {
+    /** Ro'yxatdan o'tish kodi (`register/otp`) — hisob hali YARATILMAGAN. */
+    REGISTER,
+
+    /** Mavjud hisob raqamini tasdiqlash (`otp/request`). */
+    VERIFY_PHONE,
+
+    RESET_PASSWORD,
+}
 
 /**
  * Ro'yxatdan o'tish qayerда to'xtaganini bildiradi — ilova yopilib qayta ochilsa ham oqim

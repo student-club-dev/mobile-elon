@@ -24,8 +24,26 @@ interface AuthRepository {
     /** Telefon yoki email + parol bilan kirish (`POST /auth/business/login`). */
     suspend fun login(identifier: AuthIdentifier, password: String): Resource<User>
 
-    /** Yangi biznes hisobi (`POST /auth/business/register`). */
-    suspend fun register(identifier: AuthIdentifier, password: String): Resource<User>
+    /**
+     * Ro'yxatdan o'tishdan OLDIN raqamga kod yuboradi (`POST /auth/business/register/otp`).
+     *
+     * Token talab qilmaydi — hisob hali yo'q. Bu `/otp/request` EMAS: u mavjud hisobning
+     * raqamini tasdiqlaydi va token so'raydi; kodlar ham bir-biriga yaramaydi.
+     */
+    suspend fun requestRegistrationOtp(phone: String): Resource<OtpChallenge>
+
+    /**
+     * Yangi biznes hisobi (`POST /auth/business/register`).
+     *
+     * [otpCode] — [requestRegistrationOtp] yuborgan kod. Raqam bilan ro'yxatdan o'tishda
+     * **majburiy**: raqam bazada unique, ya'ni tasdiqsiz ro'yxat begona raqamni butunlay
+     * band qilib qo'yardi (backend uni `422` bilan rad etadi).
+     */
+    suspend fun register(
+        identifier: AuthIdentifier,
+        password: String,
+        otpCode: String? = null,
+    ): Resource<User>
 
     /**
      * Google bilan kirish (`POST /auth/business/oauth/google`). [idToken] — Google Sign-In

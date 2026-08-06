@@ -45,6 +45,7 @@ import dev.core.domain.usecase.LogoutUseCase
 import dev.core.domain.usecase.ObserveCurrentUserUseCase
 import dev.core.domain.usecase.RegisterUseCase
 import dev.core.domain.usecase.RequestPhoneOtpUseCase
+import dev.core.domain.usecase.RequestRegistrationOtpUseCase
 import dev.core.domain.usecase.ResetPasswordUseCase
 import dev.core.domain.usecase.RevokeDeviceSessionUseCase
 import dev.core.domain.usecase.SetPasswordUseCase
@@ -132,6 +133,7 @@ val domainModule = module {
     factory { LogoutUseCase(get()) }
     factory { ObserveCurrentUserUseCase(get()) }
     factory { RequestPhoneOtpUseCase(get()) }
+    factory { RequestRegistrationOtpUseCase(get()) }
     factory { VerifyPhoneOtpUseCase(get()) }
     factory { ForgotPasswordUseCase(get()) }
     factory { ResetPasswordUseCase(get()) }

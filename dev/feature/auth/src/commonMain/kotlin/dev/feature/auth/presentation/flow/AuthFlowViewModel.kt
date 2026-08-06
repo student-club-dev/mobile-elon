@@ -11,6 +11,7 @@ import dev.core.domain.usecase.LoginWithGoogleUseCase
 import dev.core.domain.usecase.LogoutUseCase
 import dev.core.domain.usecase.ObserveCurrentUserUseCase
 import dev.core.domain.usecase.RegisterUseCase
+import dev.core.domain.usecase.RequestRegistrationOtpUseCase
 import dev.core.domain.usecase.RequestPhoneOtpUseCase
 import dev.core.domain.usecase.ResetPasswordUseCase
 import dev.core.domain.usecase.VerifyPhoneOtpUseCase
@@ -82,6 +83,7 @@ class AuthFlowViewModel(
     private val loginUseCase: LoginUseCase,
     private val loginWithGoogleUseCase: LoginWithGoogleUseCase,
     private val registerUseCase: RegisterUseCase,
+    private val requestRegistrationOtpUseCase: RequestRegistrationOtpUseCase,
     private val requestPhoneOtpUseCase: RequestPhoneOtpUseCase,
     private val verifyPhoneOtpUseCase: VerifyPhoneOtpUseCase,
     private val forgotPasswordUseCase: ForgotPasswordUseCase,
@@ -201,12 +203,15 @@ class AuthFlowViewModel(
     // ------------------------------------------------------------------
 
     /**
-     * Ro'yxatdan o'tishning 1-qadami (telefon + parol).
+     * Ro'yxatdan o'tishning 1-qadami — **hisob hali yaratilmaydi**, faqat raqamga kod ketadi
+     * (`POST /auth/business/register/otp`).
      *
-     * Backend hisobni shu yerda ochib sessiya beradi, lekin oqim tugamaydi: darhol SMS kod
-     * so'raymiz va tasdiqlash ekraniga o'tamiz. Kod ketmasa ham **o'sha ekranga** o'tamiz,
-     * faqat xato bilan — foydalanuvchi "Qayta yuborish"ni bosadi. Ilgari bu holatda ilovaga
-     * kiritib yuborilardi va tasdiqlash keyin, biznes ekranidan chiqib qolardi.
+     * Tartib ataylab shunday: raqam bazada unique, shuning uchun backend tasdiqsiz ro'yxatni
+     * umuman qabul qilmaydi (`otpCode` siz `422`). Ilgari avval hisob ochilar, kod esa keyin
+     * so'ralardi — begona raqamni yozgan odam o'sha raqamni butunlay band qilib qo'yishi
+     * mumkin edi.
+     *
+     * Kod ketmasa tasdiqlash ekraniga **o'tilmaydi**: kiritadigan kod yo'q.
      */
     fun register() {
         val s = _state.value
@@ -219,17 +224,47 @@ class AuthFlowViewModel(
             _state.update { it.copy(error = "Parollar mos kelmadi.") }
             return
         }
+        if (s.password.length < MIN_PASSWORD_LENGTH) {
+            _state.update { it.copy(error = "Parol kamida $MIN_PASSWORD_LENGTH belgidan iborat bo'lsin") }
+            return
+        }
         _state.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
-            when (val result = registerUseCase("+998${s.phoneDigits}", s.password)) {
+            when (val sent = requestRegistrationOtpUseCase("+998${s.phoneDigits}")) {
+                is Resource.Error -> _state.update { it.copy(isLoading = false, error = sent.message) }
+                Resource.Loading -> Unit
+                is Resource.Success -> {
+                    // Bosqich SAQLANMAYDI (`setSignupStage` yo'q): hisob ham, sessiya ham hali
+                    // yo'q va parol faqat xotirada. Ilova shu yerда yopilsa, oqimni kirish
+                    // ekranidan boshlash — yarim holatni tiklashga urinishdan to'g'riroq.
+                    _state.update {
+                        it.copy(isLoading = false, otp = "", otpPurpose = OtpPurpose.REGISTER)
+                    }
+                    startResendTimer(sent.data.resendCooldownSeconds)
+                    _events.send(AuthEvent.PhoneVerificationSent)
+                }
+            }
+        }
+    }
+
+    /**
+     * Ro'yxatning 2-qadami — kod bilan hisob yaratiladi (`register` + `otpCode`).
+     *
+     * Muvaffaqiyatda raqam allaqachon tasdiqlangan (`phoneVerified: true`), shuning uchun
+     * ilgarigi qo'shimcha `otp/request` → `otp/verify` qadami umuman bo'lmaydi.
+     */
+    private fun completeRegistration() {
+        val s = _state.value
+        _state.update { it.copy(isLoading = true, error = null) }
+        viewModelScope.launch {
+            when (val result = registerUseCase("+998${s.phoneDigits}", s.password, s.otp)) {
                 is Resource.Error -> _state.update { it.copy(isLoading = false, error = result.message) }
                 Resource.Loading -> Unit
                 is Resource.Success -> {
-                    // Hisob ochildi — bosqichni belgilaymiz (ilova yopilsa ham shu yerdan davom).
-                    setSignupStage(SignupStage.OTP)
-                    _state.update { it.copy(otp = "", otpPurpose = OtpPurpose.VERIFY_PHONE) }
-                    requestPhoneOtp()
-                    _events.send(AuthEvent.PhoneVerificationSent)
+                    // Hisob ochildi — endi profil qadami (ilova yopilsa ham shu yerdan davom).
+                    setSignupStage(SignupStage.PROFILE)
+                    _state.update { it.copy(isLoading = false, otp = "") }
+                    _events.send(AuthEvent.AccountSetupRequired)
                 }
             }
         }
@@ -252,10 +287,18 @@ class AuthFlowViewModel(
         }
     }
 
-    /** 2-qadam — kodni tekshiradi va hisob ma'lumotlari ekraniga o'tadi. */
+    /**
+     * Kod tugmasi — maqsadga qarab ikki xil ish qiladi:
+     * ro'yxatда hisob YARATADI (kod `register` ichida ketadi), mavjud hisobда esa raqamni
+     * tasdiqlaydi (`otp/verify`).
+     */
     fun verifyPhone() {
         val s = _state.value
         if (s.isLoading) return
+        if (s.otpPurpose == OtpPurpose.REGISTER) {
+            completeRegistration()
+            return
+        }
         _state.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
             when (val result = verifyPhoneOtpUseCase("+998${s.phoneDigits}", s.otp)) {
@@ -278,8 +321,10 @@ class AuthFlowViewModel(
      * backend "raqam band" der edi, shuning uchun bu yerда `logout` to'g'ri yechim.
      */
     fun cancelSignup() {
+        val pendingRegistration = _state.value.otpPurpose == OtpPurpose.REGISTER
         viewModelScope.launch {
-            logoutUseCase()
+            // Kod bosqichida hisob hali yaratilmagan — chiqadigan sessiya ham yo'q.
+            if (!pendingRegistration) logoutUseCase()
             setSignupStage(null)
             _state.update {
                 AuthFlowState(phone = it.phone) // raqam qolsin — kirish ekranida qayta terilmasin
@@ -418,6 +463,8 @@ class AuthFlowViewModel(
         if (s.isLoading || s.resendSeconds > 0) return
         when (s.otpPurpose) {
             OtpPurpose.RESET_PASSWORD -> requestPasswordReset()
+            // Ro'yxatда hisob yo'q — kod `register/otp` dan qayta so'raladi.
+            OtpPurpose.REGISTER -> register()
             OtpPurpose.VERIFY_PHONE -> {
                 _state.update { it.copy(isLoading = true, error = null) }
                 viewModelScope.launch { requestPhoneOtp() }

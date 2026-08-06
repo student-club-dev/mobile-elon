@@ -59,6 +59,7 @@ val authFeatureModule = module {
             loginWithGoogleUseCase = get(),
             registerUseCase = get(),
             requestPhoneOtpUseCase = get(),
+            requestRegistrationOtpUseCase = get(),
             verifyPhoneOtpUseCase = get(),
             forgotPasswordUseCase = get(),
             resetPasswordUseCase = get(),
