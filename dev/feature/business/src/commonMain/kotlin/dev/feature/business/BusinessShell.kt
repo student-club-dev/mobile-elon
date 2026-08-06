@@ -191,7 +191,6 @@ fun BusinessShell(
                     EditProfileScreen(
                         onBack = { nav.popBackStack() },
                         // Biznes egasi talaba emas — universitet va kurs so'ralmaydi.
-                        showStudentFields = false,
                     )
                 }
                 composable(SETTINGS) {

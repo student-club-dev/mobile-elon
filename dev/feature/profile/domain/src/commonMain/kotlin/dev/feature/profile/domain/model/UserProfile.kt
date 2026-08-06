@@ -29,7 +29,14 @@ data class UserProfile(
     val displayName: String?
         get() = listOfNotNull(firstName, lastName).joinToString(" ").ifBlank { null }
 
-    /** Profil to'ldirilgan hisoblanadimi (kamida ism yoki universitet bor). */
+    /**
+     * Profil to'ldirilgan hisoblanadimi — **ism bor-yo'qligiga** qarab.
+     *
+     * Ilgari universitet ham hisobga olinardi: biznes egasida u hech qachon to'lmaydi
+     * (forma uni so'ramaydi, u talaba maydoni), lekin eski talaba profilida saqlanib
+     * qolgan qiymat ismsiz profilni ham "to'liq" deb ko'rsatib, ro'yxatdan o'tishdagi
+     * hisob qadamini o'tkazib yuborishi mumkin edi.
+     */
     val isComplete: Boolean
-        get() = !firstName.isNullOrBlank() || !universityId.isNullOrBlank()
+        get() = !firstName.isNullOrBlank()
 }

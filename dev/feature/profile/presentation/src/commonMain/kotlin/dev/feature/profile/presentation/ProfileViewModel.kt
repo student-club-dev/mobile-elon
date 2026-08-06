@@ -8,11 +8,9 @@ import dev.core.common.error.toFormError
 import dev.core.domain.model.Ad
 import dev.core.domain.model.DiscountOffer
 import dev.core.domain.model.JobApplication
-import dev.core.domain.model.University
 import dev.core.domain.repository.AdRepository
 import dev.core.domain.repository.DiscountRepository
 import dev.core.domain.repository.JobRepository
-import dev.core.domain.repository.UniversityRepository
 import dev.core.domain.usecase.LogoutUseCase
 import dev.core.domain.usecase.ObserveCurrentUserUseCase
 import dev.core.domain.usecase.RequestPhoneOtpUseCase
@@ -31,22 +29,17 @@ import kotlinx.coroutines.launch
 /** Profil (1z) ekranining holati. */
 data class ProfileUiState(
     val name: String = "Talaba",
-    val universityMonogram: String? = null,
-    val courseLabel: String? = null,
     val contact: String = "",
     val myAds: List<Ad> = emptyList(),
     val savedDiscounts: List<DiscountOffer> = emptyList(),
     val applications: List<JobApplication> = emptyList(),
     /** Tahrirlash ekrani uchun xom profil ma'lumoti (local keshdan). */
     val profile: UserProfile? = null,
-    /** Universitet tanlash uchun ro'yxat. */
-    val universities: List<University> = emptyList(),
 )
 
 class ProfileViewModel(
     observeCurrentUserUseCase: ObserveCurrentUserUseCase,
     observeProfileUseCase: ObserveProfileUseCase,
-    universityRepository: UniversityRepository,
     private val adRepository: AdRepository,
     discountRepository: DiscountRepository,
     jobRepository: JobRepository,
@@ -65,23 +58,20 @@ class ProfileViewModel(
         viewModelScope.launch { adRepository.refresh() }
     }
 
+    // Universitet/kurs bu yerда yo'q: ular talaba profilining maydonlari (spec'da "students
+    // only"), biznes egasida hech qachon to'lmaydi.
     private val header = combine(
         observeCurrentUserUseCase(),
         observeProfileUseCase(),
-        universityRepository.observeUniversities(),
-    ) { user, profile, universities ->
-        val uni = universities.firstOrNull { it.id == profile?.universityId }
+    ) { user, profile ->
         Header(
             // Ism profildan olinadi; profil hali to'ldirilmagan bo'lsa — sessiya nomidan.
             name = profile?.displayName
                 ?: user?.fullName?.takeIf { it.isNotBlank() }
                 ?: "Talaba",
-            monogram = uni?.monogram,
-            course = profile?.courseYear?.let(::courseLabel),
             contact = user?.phoneNumber ?: user?.email.orEmpty(),
             ownerId = (user?.id ?: 0L).toString(),
             profile = profile,
-            universities = universities,
         )
     }
 
@@ -94,14 +84,11 @@ class ProfileViewModel(
     val state: StateFlow<ProfileUiState> = combine(header, lists) { h, l ->
         ProfileUiState(
             name = h.name,
-            universityMonogram = h.monogram,
-            courseLabel = h.course,
             contact = h.contact,
             myAds = l.ads.filter { it.ownerId == h.ownerId },
             savedDiscounts = l.saved,
             applications = l.applications,
             profile = h.profile,
-            universities = h.universities,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ProfileUiState())
 
@@ -184,12 +171,9 @@ class ProfileViewModel(
 
     private data class Header(
         val name: String,
-        val monogram: String?,
-        val course: String?,
         val contact: String,
         val ownerId: String,
         val profile: UserProfile?,
-        val universities: List<University>,
     )
 
     private data class Lists(
@@ -199,11 +183,3 @@ class ProfileViewModel(
     )
 }
 
-private fun courseLabel(courseYear: String): String = when (courseYear) {
-    "1", "ONE" -> "1-kurs"
-    "2", "TWO" -> "2-kurs"
-    "3", "THREE" -> "3-kurs"
-    "4", "FOUR" -> "4-kurs"
-    "MASTER" -> "Magistr"
-    else -> courseYear
-}

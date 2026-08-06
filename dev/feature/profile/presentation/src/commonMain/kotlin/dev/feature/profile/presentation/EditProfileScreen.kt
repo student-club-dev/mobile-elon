@@ -13,17 +13,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.core.common.error.FormError
-import dev.core.domain.model.University
 import dev.core.uikit.component.AppBottomSheet
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.BackButton
@@ -52,20 +50,11 @@ import dev.core.uikit.resources.common_back
 import dev.core.uikit.resources.common_save
 import dev.core.uikit.resources.profile_avatar_change
 import dev.core.uikit.resources.profile_avatar_uploading
-import dev.core.uikit.resources.profile_course_1
-import dev.core.uikit.resources.profile_course_2
-import dev.core.uikit.resources.profile_course_3
-import dev.core.uikit.resources.profile_course_4
-import dev.core.uikit.resources.profile_course_master
-import dev.core.uikit.resources.profile_field_course
 import dev.core.uikit.resources.profile_field_first_name
 import dev.core.uikit.resources.profile_field_gender
 import dev.core.uikit.resources.profile_field_last_name
 import dev.core.uikit.resources.profile_field_phone
 import dev.core.uikit.resources.profile_field_phone_placeholder
-import dev.core.uikit.resources.profile_field_university
-import dev.core.uikit.resources.profile_field_university_email
-import dev.core.uikit.resources.profile_field_university_email_placeholder
 import dev.core.uikit.resources.profile_gender_female
 import dev.core.uikit.resources.profile_gender_male
 import dev.core.uikit.resources.profile_phone_verify_code_placeholder
@@ -73,13 +62,11 @@ import dev.core.uikit.resources.profile_phone_verify_later
 import dev.core.uikit.resources.profile_phone_verify_subtitle
 import dev.core.uikit.resources.profile_phone_verify_title
 import dev.core.uikit.resources.profile_saving
-import dev.core.uikit.resources.profile_university_select
 import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
-import dev.core.uikit.theme.cardShadow
 import dev.core.uikit.theme.rowShadow
 import dev.feature.profile.domain.model.UserProfile
 import dev.feature.profile.presentation.components.ProfileAvatar
@@ -94,14 +81,6 @@ import dev.core.uikit.util.fullUzPhoneOrNull
 
 /** Chip tanlovi (kurs, jins) — qiymat serverga ketadi, yorlig'i resursdan olinadi. */
 private data class ChipOption(val value: String, val label: StringResource)
-
-private val courseOptions = listOf(
-    ChipOption("1", Res.string.profile_course_1),
-    ChipOption("2", Res.string.profile_course_2),
-    ChipOption("3", Res.string.profile_course_3),
-    ChipOption("4", Res.string.profile_course_4),
-    ChipOption("MASTER", Res.string.profile_course_master),
-)
 
 /** Qiymatlar spec'dagi `GenderDto` bilan bir xil ("MALE" | "FEMALE"). */
 private val genderOptions = listOf(
@@ -134,11 +113,6 @@ private object ProfileField {
 @Composable
 fun EditProfileScreen(
     onBack: () -> Unit,
-    /**
-     * Universitet va kurs maydonlari faqat TALABA oqimida ko'rsatiladi. Biznes egasi
-     * talaba emas — unga bu maydonlar begona, shuning uchun biznes oqimi `false` uzatadi.
-     */
-    showStudentFields: Boolean = true,
     vm: ProfileViewModel = koinViewModel(),
 ) {
     val palette = appPalette
@@ -149,13 +123,6 @@ fun EditProfileScreen(
     var lastName by remember(profile) { mutableStateOf(profile?.lastName.orEmpty()) }
     var phone by remember(profile) { mutableStateOf(nationalPhoneDigits(profile?.phoneNumber)) }
     var gender by remember(profile) { mutableStateOf(profile?.gender) }
-    var universityId by remember(profile) { mutableStateOf(profile?.universityId) }
-    // Universitet emaili `PUT /profile/me` tanasida bor va 422 shu kalit bilan qaytadi —
-    // maydonsiz foydalanuvchi xatoni tuzata olmasdi.
-    var universityEmail by remember(profile) { mutableStateOf(profile?.universityEmail.orEmpty()) }
-    var courseYear by remember(profile) { mutableStateOf(profile?.courseYear) }
-
-    var uniExpanded by remember { mutableStateOf(false) }
     var saving by remember { mutableStateOf(false) }
 
     // Raqam almashtirilganда backend uning tasdig'ini bekor qiladi, tasdiqlanmagan raqam bilan
@@ -310,71 +277,12 @@ fun EditProfileScreen(
                 }
                 FieldError(fieldErrors[ProfileField.GENDER], palette)
 
-                if (showStudentFields) {
-                    // Universitet tanlash
-                    FieldLabel(stringResource(Res.string.profile_field_university), palette = palette)
-                    val selectedUni = state.universities.firstOrNull { it.id == universityId }
-                    Row(
-                        // Maydon — oq yuza + yumshoq soya, chegara yo'q.
-                        Modifier.fillMaxWidth().rowShadow(AppRadius.lg).clip(AppRadius.lg)
-                            .background(palette.fieldBg)
-                            .clickable { uniExpanded = !uniExpanded }
-                            .padding(horizontal = AppSpacing.md, vertical = 15.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(AppIcons.GraduationCap, null, tint = palette.inkFaint, modifier = Modifier.size(17.dp))
-                        Spacer(Modifier.width(9.dp))
-                        Text(
-                            selectedUni?.name ?: stringResource(Res.string.profile_university_select),
-                            style = AppType.bodyStrong.copy(
-                                color = if (selectedUni != null) palette.ink else palette.inkFaint,
-                            ),
-                            modifier = Modifier.weight(1f),
-                        )
-                        Icon(AppIcons.ChevronDown, null, tint = palette.inkFaint, modifier = Modifier.size(18.dp))
-                    }
-                    if (uniExpanded) {
-                        Column(
-                            Modifier.fillMaxWidth().cardShadow(AppRadius.lg).clip(AppRadius.lg)
-                                .background(palette.card),
-                        ) {
-                            state.universities.forEach { uni ->
-                                UniversityRow(uni, selected = uni.id == universityId, palette = palette) {
-                                    universityId = uni.id
-                                    uniExpanded = false
-                                    clearFieldError(ProfileField.UNIVERSITY)
-                                }
-                            }
-                        }
-                    }
-                    FieldError(fieldErrors[ProfileField.UNIVERSITY], palette)
-
-                    FieldLabel(stringResource(Res.string.profile_field_university_email), palette = palette)
-                    GlassTextField(
-                        universityEmail,
-                        { universityEmail = it; clearFieldError(ProfileField.UNIVERSITY_EMAIL) },
-                        stringResource(Res.string.profile_field_university_email_placeholder),
-                        leading = AppIcons.GraduationCap,
-                        type = AppFieldType.Email,
-                    )
-                    FieldError(fieldErrors[ProfileField.UNIVERSITY_EMAIL], palette)
-
-                    // Kurs tanlash
-                    FieldLabel(stringResource(Res.string.profile_field_course), palette = palette)
-                    ChipRow(courseOptions, selected = courseYear, palette = palette) {
-                        courseYear = it
-                        clearFieldError(ProfileField.COURSE)
-                    }
-                    FieldError(fieldErrors[ProfileField.COURSE], palette)
-                }
-
-                // Forma ko'rsata oladigan kalitlar — biznes oqimida talaba maydonlari yo'q.
-                val shownKeys = if (showStudentFields) {
-                    ProfileField.known
-                } else {
-                    ProfileField.known - ProfileField.UNIVERSITY -
-                        ProfileField.UNIVERSITY_EMAIL - ProfileField.COURSE
-                }
+                // Forma ko'rsata oladigan kalitlar. Universitet/kurs/universitet emaili
+                // formada yo'q — ular talaba profilining maydonlari (spec'da ham "students
+                // only"), biznes egasiga begona. Serverdan shu kalit bilan xato kelsa u
+                // pastdagi "noma'lum maydon" ro'yxatiga tushadi va jim yo'qolmaydi.
+                val shownKeys = ProfileField.known -
+                    ProfileField.UNIVERSITY - ProfileField.UNIVERSITY_EMAIL - ProfileField.COURSE
                 // Umumiy xabar — maydon ostida ko'rinadigan xato bo'lmaganda (takrorlamaslik uchun).
                 if (fieldErrors.keys.none { it in shownKeys }) {
                     error?.let { InlineErrorText(it.message, palette = palette) }
@@ -398,9 +306,8 @@ fun EditProfileScreen(
                             lastName = lastName.trim().ifBlank { null },
                             phoneNumber = newPhone,
                             gender = gender,
-                            universityId = universityId,
-                            universityEmail = universityEmail.trim().ifBlank { null },
-                            courseYear = courseYear,
+                            // universityId / universityEmail / courseYear — formada yo'q,
+                            // shuning uchun profildagi qiymat o'zgarishsiz uzatiladi.
                         )
                         vm.saveProfile(updated) { err ->
                             saving = false
@@ -552,7 +459,7 @@ private fun FieldError(message: String?, palette: AppPalette) {
     if (message != null) InlineErrorText(message, palette = palette)
 }
 
-/** Bir qatorli tanlov (kurs, jins) — variantlar teng kenglikda taqsimlanadi. */
+/** Bir qatorli tanlov (jins) — variantlar teng kenglikda taqsimlanadi. */
 @Composable
 private fun ChipRow(
     options: List<ChipOption>,
@@ -582,21 +489,3 @@ private fun ChipRow(
     }
 }
 
-@Composable
-private fun UniversityRow(uni: University, selected: Boolean, palette: AppPalette, onClick: () -> Unit) {
-    Row(
-        Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 14.dp, vertical = 13.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            uni.monogram,
-            style = AppType.fieldLabel.copy(fontWeight = AppType.screenTitle.fontWeight, color = palette.primary),
-            modifier = Modifier.width(48.dp),
-        )
-        Column(Modifier.weight(1f)) {
-            Text(uni.name, style = AppType.label.copy(color = palette.ink))
-            Text(uni.city, style = AppType.caption.copy(color = palette.inkFaint))
-        }
-        if (selected) Icon(AppIcons.ShieldCheck, null, tint = palette.primary, modifier = Modifier.size(17.dp))
-    }
-}

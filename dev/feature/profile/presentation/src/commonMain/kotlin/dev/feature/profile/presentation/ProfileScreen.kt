@@ -18,10 +18,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -131,10 +131,9 @@ fun ProfileScreen(
                         Text(state.name, style = AppType.cardTitle.copy(color = palette.ink))
                         Icon(AppIcons.ShieldCheck, null, tint = palette.success, modifier = Modifier.size(15.dp))
                     }
-                    val sub = listOfNotNull(state.universityMonogram, state.courseLabel)
-                        .joinToString(" · ")
-                        .ifBlank { state.contact }
-                    Text(sub, style = AppType.hint.copy(color = palette.inkFaint))
+                    // Ilgari bu yerда universitet monogrammasi va kurs turardi — ular
+                    // talaba maydonlari; biznes egasi uchun aloqa (telefon/email) qoladi.
+                    Text(state.contact, style = AppType.hint.copy(color = palette.inkFaint))
                     Spacer(Modifier.height(AppSpacing.xs))
                     Row(
                         Modifier.clip(AppRadius.sm).clickable(onClick = onEditProfile),
