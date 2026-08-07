@@ -246,6 +246,13 @@ object AppIcons {
         "M 9 13 h 6",
         "M 9 17 h 6",
     )
+    /** Ilovadan tashqariga (brauzerga) olib chiqadigan havola — qutidan chiquvchi strelka. */
+    val ExternalLink = strokeIcon(
+        "ExternalLink",
+        "M 18 13 v 6 a 2 2 0 0 1 -2 2 H 5 a 2 2 0 0 1 -2 -2 V 8 a 2 2 0 0 1 2 -2 h 6",
+        "M 15 3 h 6 v 6",
+        "M 10 14 L 21 3",
+    )
     val Pencil = strokeIcon(
         "Pencil",
         "M 12 20 h 9",

@@ -1,5 +1,6 @@
 package dev.core.uikit.component
 
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -12,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -21,11 +23,13 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.common_loading
+import dev.core.uikit.resources.legal_open_full_document
 import dev.core.uikit.resources.legal_privacy_title
 import dev.core.uikit.resources.legal_terms_title
 import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
+import dev.core.uikit.util.LegalLinks
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 
@@ -70,7 +74,30 @@ fun LegalSheet(
         LegalDocument.PRIVACY -> stringResource(Res.string.legal_privacy_title)
     }
 
-    AppBottomSheet(visible = document != null, onDismiss = onDismiss, title = title, palette = palette) {
+    // Nashr qilingan to'liq hujjat (PDF) — hozircha faqat Maxfiylik siyosati uchun bor.
+    // Foydalanish shartlari veb-manzilga joylangach, bu yerga ham qo'shiladi.
+    val uriHandler = LocalUriHandler.current
+    val openPdf = stringResource(Res.string.legal_open_full_document)
+    val footer: (@Composable ColumnScope.() -> Unit)? = if (shown == LegalDocument.PRIVACY) {
+        {
+            OutlineButton(
+                text = openPdf,
+                onClick = { runCatching { uriHandler.openUri(LegalLinks.privacy(language)) } },
+                leadingIcon = AppIcons.ExternalLink,
+                palette = palette,
+            )
+        }
+    } else {
+        null
+    }
+
+    AppBottomSheet(
+        visible = document != null,
+        onDismiss = onDismiss,
+        title = title,
+        palette = palette,
+        footer = footer,
+    ) {
         val body = text
         if (body == null) {
             Text(stringResource(Res.string.common_loading), style = AppType.body.copy(color = palette.inkMuted))

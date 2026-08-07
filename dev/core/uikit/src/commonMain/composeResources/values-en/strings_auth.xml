@@ -250,6 +250,7 @@
     <string name="auth_reset_password_subtitle">Choose a new password — at least 8 characters.</string>
     <string name="legal_terms_title">Terms of Use</string>
     <string name="legal_privacy_title">Privacy Policy</string>
+    <string name="legal_open_full_document">Open the full document (PDF)</string>
 
     <!-- ============ Account details (last sign-up step) ============ -->
     <string name="auth_account_setup_title">Create account</string>

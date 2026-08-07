@@ -31,7 +31,7 @@ android {
         applicationId = "uz.qsbusiness.app"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 1
+        versionCode = 3
         versionName = "1.0"
 
         // Google Sign-In — Google Cloud'даgi **Web** (server) OAuth client ID.

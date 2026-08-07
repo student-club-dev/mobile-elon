@@ -267,6 +267,7 @@
     <string name="auth_reset_password_subtitle">Yangi parol o'ylab toping — kamida 8 belgi.</string>
     <string name="legal_terms_title">Foydalanish shartlari</string>
     <string name="legal_privacy_title">Maxfiylik siyosati</string>
+    <string name="legal_open_full_document">To'liq hujjatni ochish (PDF)</string>
 
     <!-- ============ Hisob yaratish (ro'yxatning oxirgi qadami) ============ -->
     <string name="auth_account_setup_title">Hisob yaratish</string>

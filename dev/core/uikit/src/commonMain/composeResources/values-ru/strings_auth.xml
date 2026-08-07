@@ -250,6 +250,7 @@
     <string name="auth_reset_password_subtitle">Придумайте новый пароль — минимум 8 символов.</string>
     <string name="legal_terms_title">Условия использования</string>
     <string name="legal_privacy_title">Политика конфиденциальности</string>
+    <string name="legal_open_full_document">Открыть полный документ (PDF)</string>
 
     <!-- ============ Данные аккаунта (последний шаг регистрации) ============ -->
     <string name="auth_account_setup_title">Создать аккаунт</string>

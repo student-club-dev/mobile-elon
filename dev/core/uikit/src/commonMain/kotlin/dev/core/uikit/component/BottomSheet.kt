@@ -50,6 +50,10 @@ import dev.core.uikit.theme.appPalette
  *
  * MUHIM: bu komponent o'zi to'liq ekranni egallaydi, shuning uchun uni ekran ildizidagi
  * `Box` ichida, kontentdan KEYIN chaqirish kerak — aks holda u kontent ostida qolib ketadi.
+ *
+ * [footer] berilsa, u aylantiriladigan kontentdan tashqarida — oynaning eng pastida qotib
+ * turadi (masalan huquqiy hujjatdagi "PDF'ni ochish" tugmasi uzun matn oxirigacha
+ * aylantirilishini kutmasin).
  */
 @Composable
 fun AppBottomSheet(
@@ -58,6 +62,7 @@ fun AppBottomSheet(
     title: String,
     modifier: Modifier = Modifier,
     palette: AppPalette = appPalette,
+    footer: (@Composable ColumnScope.() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     AnimatedVisibility(
@@ -116,10 +121,16 @@ fun AppBottomSheet(
                     Text(title, style = AppType.sheetTitle.copy(color = palette.ink))
                     Spacer(Modifier.height(14.dp))
                     Column(
-                        Modifier.verticalScroll(rememberScrollState()),
+                        // `fill = false` — matn kalta bo'lsa oyna bo'sh joyni cho'zmasin,
+                        // uzun bo'lsa footer'ga joy qoldirib qolganini o'zi oladi.
+                        Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()),
                         verticalArrangement = Arrangement.spacedBy(2.dp),
                         content = content,
                     )
+                    if (footer != null) {
+                        Spacer(Modifier.height(AppSpacing.lg))
+                        footer()
+                    }
                 }
             }
         }
