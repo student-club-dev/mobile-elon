@@ -20,16 +20,27 @@ private const val UTI_IMAGE = "public.image"
 
 @Composable
 actual fun rememberImagePicker(onResult: (PickedImage?) -> Unit): ImagePicker {
+    // Bitta rasm — ko'p tanlovli oqimning chegara holati: birinchi natijani olamiz.
+    val multi = rememberMultiImagePicker(maxItems = 1) { picked -> onResult(picked.firstOrNull()) }
+    return multi
+}
+
+@Composable
+actual fun rememberMultiImagePicker(
+    maxItems: Int,
+    onResult: (List<PickedImage>) -> Unit,
+): ImagePicker {
     // Delegate Compose qayta chizilishlari orasida saqlanishi kerak — aks holda
     // PHPicker javob qaytarguncha u yig'ib yuboriladi va callback hech qachon kelmaydi.
     val delegate = remember { PhotoPickerDelegate() }
     delegate.onResult = onResult
 
-    return remember(delegate) {
+    val limit = maxItems.coerceAtLeast(1)
+    return remember(delegate, limit) {
         ImagePicker {
             val config = PHPickerConfiguration().apply {
                 setFilter(PHPickerFilter.imagesFilter())
-                setSelectionLimit(1)
+                setSelectionLimit(limit.toLong())
             }
             val picker = PHPickerViewController(configuration = config)
             picker.delegate = delegate
@@ -42,23 +53,37 @@ actual fun rememberImagePicker(onResult: (PickedImage?) -> Unit): ImagePicker {
 
 private class PhotoPickerDelegate : NSObject(), PHPickerViewControllerDelegateProtocol {
 
-    var onResult: (PickedImage?) -> Unit = {}
+    var onResult: (List<PickedImage>) -> Unit = {}
 
     override fun picker(picker: PHPickerViewController, didFinishPicking: List<*>) {
         picker.dismissViewControllerAnimated(true, completion = null)
 
-        val provider = (didFinishPicking.firstOrNull() as? PHPickerResult)?.itemProvider
-        if (provider == null) {
-            onResult(null) // bekor qilindi
+        val results = didFinishPicking.filterIsInstance<PHPickerResult>()
+        if (results.isEmpty()) {
+            onResult(emptyList()) // bekor qilindi
             return
         }
 
-        provider.loadDataRepresentationForTypeIdentifier(UTI_IMAGE) { data, _ ->
-            // Yuklashdan oldin kichiklashtirib siqamiz (backend chegarasi — 5 MB).
-            // Callback fon oqimida keladi, shuning uchun siqish UI'ni bloklamaydi.
-            val picked = data?.toByteArray()?.let { prepareImageForUpload(it, "image.jpg") }
-            // Callback fon oqimida keladi — UI holatiga faqat asosiy oqimdan tegamiz.
-            dispatch_async(dispatch_get_main_queue()) { onResult(picked) }
+        // Har bir rasm ALOHIDA va parallel yuklanadi, javoblari esa istalgan tartibda keladi.
+        // Shuning uchun natijalar indeks bo'yicha o'z uyachasiga yoziladi — foydalanuvchi
+        // tanlagan tartib saqlanadi (birinchi rasm e'lonning muqovasi bo'ladi).
+        val slots = MutableList<PickedImage?>(results.size) { null }
+        var completed = 0
+
+        results.forEachIndexed { index, result ->
+            result.itemProvider.loadDataRepresentationForTypeIdentifier(UTI_IMAGE) { data, _ ->
+                // Yuklashdan oldin kichiklashtirib siqamiz (backend chegarasi — 5 MB).
+                // Callback fon oqimida keladi, shuning uchun siqish UI'ni bloklamaydi.
+                val picked = data?.toByteArray()?.let { prepareImageForUpload(it, "image$index.jpg") }
+                // Hisoblagich va uyachalar FAQAT asosiy oqimda o'zgaradi — bu ularni
+                // qulfsiz xavfsiz qiladi va UI holatiga ham shu yerdan tegiladi.
+                dispatch_async(dispatch_get_main_queue()) {
+                    slots[index] = picked
+                    completed += 1
+                    // O'qib bo'lmagan fayllar tashlab yuboriladi, qolganlari qabul qilinadi.
+                    if (completed == results.size) onResult(slots.filterNotNull())
+                }
+            }
         }
     }
 }

@@ -22,7 +22,7 @@ import dev.core.uikit.component.PrimaryButton
 import dev.core.uikit.component.ScreenTopBar
 import dev.core.uikit.component.ToastEffect
 import dev.core.uikit.component.screenTopInset
-import dev.core.uikit.media.rememberImagePicker
+import dev.core.uikit.media.rememberMultiImagePicker
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.common_back
 import dev.core.uikit.resources.discounts_draft
@@ -35,6 +35,7 @@ import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.feature.discounts.domain.model.BusinessType
+import dev.feature.discounts.domain.model.ListingValidator
 import dev.feature.discounts.presentation.PostListingUiState
 import dev.feature.discounts.presentation.PostListingViewModel
 import dev.feature.discounts.presentation.components.LimitContext
@@ -82,8 +83,12 @@ private fun ListingFormScaffold(
     vm: PostListingViewModel,
     onBack: () -> Unit,
 ) {
-    val imagePicker = rememberImagePicker { picked ->
-        if (picked != null) vm.addImage(picked.bytes, picked.fileName)
+    // E'longa 5 tagacha rasm qo'yiladi — galereyadan ularni BIR MARTADA tanlash mumkin.
+    // Chegara qolgan bo'sh joyga qarab beriladi, shunda tizim tanlagichining o'zi ortiqcha
+    // tanlashga yo'l qo'ymaydi (foydalanuvchi tanlab bo'lgach "sig'madi" deb aytishdan yaxshiroq).
+    val remainingSlots = (ListingValidator.MAX_IMAGES - state.images.size).coerceAtLeast(1)
+    val imagePicker = rememberMultiImagePicker(maxItems = remainingSlots) { picked ->
+        vm.addImages(picked.map { it.bytes to it.fileName })
     }
 
     // imePadding — klaviatura chiqqanda forma va pastdagi amal paneli uning ustiga ko'chadi;

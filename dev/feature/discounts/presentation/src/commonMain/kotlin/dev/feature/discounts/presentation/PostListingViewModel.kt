@@ -296,21 +296,48 @@ class PostListingViewModel(
     // Rasmlar
     // -----------------------------------------------------------------------
 
-    fun addImage(bytes: ByteArray, fileName: String) {
-        if (_state.value.images.size >= ListingValidator.MAX_IMAGES) {
-            _state.update { it.copy(message = "Maksimal ${ListingValidator.MAX_IMAGES} ta rasm") }
-            return
-        }
+    fun addImage(bytes: ByteArray, fileName: String) = addImages(listOf(bytes to fileName))
+
+    /**
+     * Bir nechta rasmni **ketma-ket** yuklaydi (galereyadan ko'p tanlash).
+     *
+     * Nega ketma-ket, hammasini birdan emas: har bir rasm alohida `POST /media/upload` va
+     * parallel yuborilsa server chegarasiga (`429`) urilib, qaysi rasm o'tmagani bilinmay
+     * qolardi. Ketma-ket yuklashда tartib ham saqlanadi — foydalanuvchi tanlagan birinchi
+     * rasm e'lonning muqovasi bo'ladi.
+     *
+     * Chegaradan ortiqchasi jimgina tashlanmaydi: nechtasi sig'magani xabarда aytiladi.
+     */
+    fun addImages(items: List<Pair<ByteArray, String>>) {
+        if (items.isEmpty()) return
         viewModelScope.launch {
             _state.update { it.copy(uploadingImage = true) }
-            when (val res = uploadImage(bytes, fileName)) {
-                is Resource.Success -> _state.update {
-                    it.copy(images = it.images + res.data, uploadingImage = false)
+            var skipped = 0
+            for ((bytes, fileName) in items) {
+                if (_state.value.images.size >= ListingValidator.MAX_IMAGES) {
+                    skipped += 1
+                    continue
                 }
-                is Resource.Error -> _state.update {
-                    it.copy(uploadingImage = false, message = res.message)
+                when (val res = uploadImage(bytes, fileName)) {
+                    is Resource.Success -> _state.update { it.copy(images = it.images + res.data) }
+                    // Bitta rasm o'tmasa qolganini ham to'xtatamiz: xato odatda umumiy
+                    // (tarmoq yoki chegara) va har biriga alohida xabar berish shovqin.
+                    is Resource.Error -> {
+                        _state.update { it.copy(uploadingImage = false, message = res.message) }
+                        return@launch
+                    }
+                    Resource.Loading -> Unit
                 }
-                Resource.Loading -> Unit
+            }
+            _state.update {
+                it.copy(
+                    uploadingImage = false,
+                    message = if (skipped > 0) {
+                        "Maksimal ${ListingValidator.MAX_IMAGES} ta rasm — $skipped tasi qo'shilmadi"
+                    } else {
+                        it.message
+                    },
+                )
             }
         }
     }
