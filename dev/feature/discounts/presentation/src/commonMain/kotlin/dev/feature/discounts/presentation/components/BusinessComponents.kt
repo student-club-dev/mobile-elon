@@ -154,8 +154,9 @@ fun BusinessCard(
                     shape = AppRadius.sm,
                     onClick = onEdit,
                 )
+                // O'chirish — savat, `✕` emas: `✕` "yopish" degan ma'noni beradi.
                 IconTile(
-                    AppIcons.Close,
+                    AppIcons.Trash,
                     contentDescription = stringResource(Res.string.common_delete),
                     tint = palette.danger,
                     background = palette.dangerBg,
@@ -199,7 +200,7 @@ private fun BusinessModerationRow(
         verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
     ) {
         Text(
-            stringResource(Res.string.discounts_business_status, status.label),
+            stringResource(Res.string.discounts_business_status, status.localizedLabel()),
             style = AppType.caption.copy(color = status.tone(palette)),
         )
         biz.rejectionReason?.let { reason ->

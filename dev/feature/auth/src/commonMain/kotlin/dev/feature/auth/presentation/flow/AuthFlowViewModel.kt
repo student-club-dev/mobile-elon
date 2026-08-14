@@ -509,17 +509,24 @@ class AuthFlowViewModel(
             return
         }
         setSignupStage(SignupStage.PROFILE)
+        // MUHIM — tartib: avval hodisa, keyin formani tozalash.
+        //
+        // Aks holда kirish ekrani bir necha kadr davomida BO'SH parol maydoni bilan qayta
+        // chiziladi (navigatsiya asinxron — hodisa yig'uvchi keyingi kadrда ishlaydi) va
+        // foydalanuvchi "parolim o'chib ketdi, keyin nimadir bo'ldi" degan sakrashni ko'radi.
+        // `isLoading` ham shu paytgacha `true` qoladi: tugma kutish holatida turaveradi.
+        _events.send(AuthEvent.AccountSetupRequired)
         _state.update {
             it.copy(isLoading = false, password = "", confirmPassword = "", otp = "")
         }
-        _events.send(AuthEvent.AccountSetupRequired)
     }
 
     private suspend fun finishAuthenticated(user: User) {
         // Rolni local saqlaymiz — ildiz router keyingi ochilishda shu bo'yicha yo'naltiradi.
         settingsRepository.setValue(SettingsRepository.KEY_SELECTED_ROLE, Role.BUSINESS.name)
-        _state.update { it.copy(isLoading = false, password = "", confirmPassword = "") }
+        // Tozalash navigatsiyadan KEYIN — sababi yuqorida ([finishLogin]).
         _events.send(AuthEvent.Authenticated(user))
+        _state.update { it.copy(isLoading = false, password = "", confirmPassword = "") }
     }
 
     override fun onCleared() {

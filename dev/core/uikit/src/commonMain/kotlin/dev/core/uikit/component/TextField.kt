@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -85,7 +86,14 @@ fun GlassTextField(
         }
         Box(Modifier.weight(1f)) {
             if (value.isEmpty()) {
-                Text(placeholder, style = AppType.body.copy(color = palette.inkFaint))
+                // Bir qatorli: uzun ko'rsatma matni maydonni ikki qatorga cho'zib yuborardi
+                // (xaritadagi qidiruv), kiritilgan matn esa baribir bir qatorda suriladi.
+                Text(
+                    placeholder,
+                    style = AppType.body.copy(color = palette.inkFaint),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
             }
             BasicTextField(
                 value = value,

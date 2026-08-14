@@ -16,9 +16,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dev.core.uikit.component.BannerTone
 import dev.core.uikit.component.OutlineButton
 import dev.core.uikit.component.PrimaryButton
 import dev.core.uikit.component.ScreenTopBar
+import dev.core.uikit.component.ToastEffect
+import dev.core.uikit.component.screenTopInset
 import dev.core.uikit.media.rememberImagePicker
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.common_back
@@ -26,6 +29,7 @@ import dev.core.uikit.resources.discounts_draft
 import dev.core.uikit.resources.discounts_edit_listing_title
 import dev.core.uikit.resources.discounts_form_errors
 import dev.core.uikit.resources.discounts_publish
+import dev.core.uikit.resources.discounts_save_changes
 import dev.core.uikit.resources.discounts_submitting
 import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppSpacing
@@ -34,8 +38,7 @@ import dev.feature.discounts.domain.model.BusinessType
 import dev.feature.discounts.presentation.PostListingUiState
 import dev.feature.discounts.presentation.PostListingViewModel
 import dev.feature.discounts.presentation.components.LimitContext
-import dev.feature.discounts.presentation.components.LimitHint
-import dev.feature.discounts.presentation.components.MessageBar
+import dev.feature.discounts.presentation.components.limitHintText
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -88,8 +91,7 @@ private fun ListingFormScaffold(
     // (`GlassTextField` ichidagi `keyboardAware`).
     Column(Modifier.fillMaxSize().imePadding()) {
         Column(
-            Modifier.weight(1f).verticalScroll(rememberScrollState())
-                .padding(top = 54.dp),
+            Modifier.weight(1f).verticalScroll(rememberScrollState()).screenTopInset(AppSpacing.md),
             // Flat dizayn — bo'limlar orasi kengroq; yon padding har bo'lim ichida.
             verticalArrangement = Arrangement.spacedBy(AppSpacing.xl),
         ) {
@@ -134,40 +136,53 @@ private fun ListingFormScaffold(
             Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg, vertical = 10.dp),
             verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
         ) {
-            // Xabar (publish xatosi, "Qoralama saqlandi", rasm xatosi) — AYNAN tugmalar
-            // ustida. Ilgari u aylanadigan ro'yxatning eng oxirida edi: foydalanuvchi forma
-            // boshida turib "E'lon qilish"ni bosса, server rad etgan xabar ekrandan tashqarida
-            // qolar va bosish umuman javobsizdek ko'rinardi.
-            val message = state.message
-            if (message != null) {
-                MessageBar(message, palette, onDismiss = vm::consumeMessage)
-                // Chegara (429) bo'lsa — serverning xabari ostiga amaliy maslahat qo'shiladi:
-                // "chegara to'ldi" o'zi nima qilish kerakligini aytmaydi.
-                LimitHint(state.limitCode, palette, LimitContext.LISTING)
-            }
-
-            if (state.errors.isNotEmpty()) {
-                Text(
-                    stringResource(Res.string.discounts_form_errors, "${state.errors.size}"),
-                    // Xato rangi palitradan — qorong'i rejimda ham o'qiladi.
-                    style = AppType.hint.copy(fontWeight = AppType.label.fontWeight, color = palette.danger),
-                )
-            }
             Row(horizontalArrangement = Arrangement.spacedBy(9.dp)) {
                 Box(Modifier.weight(1f)) {
                     OutlineButton(stringResource(Res.string.discounts_draft), vm::saveDraft, palette = palette)
                 }
                 Box(Modifier.weight(1.4f)) {
+                    // Tahrirlashда tugma "E'lon qilish" emas: e'lon allaqachon chop etilgan
+                    // va bu forma faqat o'zgarishlarni saqlaydi.
                     PrimaryButton(
                         stringResource(
-                            if (state.submitting) Res.string.discounts_submitting else Res.string.discounts_publish,
+                            when {
+                                state.submitting -> Res.string.discounts_submitting
+                                state.editing -> Res.string.discounts_save_changes
+                                else -> Res.string.discounts_publish
+                            },
                         ),
                         vm::publish,
                         enabled = !state.submitting,
+                        loading = state.submitting,
                         palette = palette,
                     )
                 }
             }
         }
     }
+
+    // Xabar (publish xatosi, "Qoralama saqlandi", rasm xatosi) va to'ldirilmagan maydonlar
+    // haqidagi ogohlantirish — endi toastда, tugmalar ustidagi yozuv emas.
+    //
+    // Sabab: bu yozuvlar formaning pastida turardi va uzun formada foydalanuvchi ularni
+    // umuman ko'rmasdi; "Qoralama saqlandi" esa ekranда qolib, tugmalarni yuqoriga surib
+    // yuborardi. Toast kontent USTIDA chiqadi va o'zi yo'qoladi.
+    ToastEffect(
+        message = state.message,
+        tone = if (state.errors.isEmpty()) BannerTone.SUCCESS else BannerTone.DANGER,
+        hint = limitHintText(state.limitCode, LimitContext.LISTING),
+        onConsumed = vm::consumeMessage,
+    )
+    val errorSummary = if (state.errors.isEmpty()) {
+        null
+    } else {
+        stringResource(Res.string.discounts_form_errors, "${state.errors.size}")
+    }
+    ToastEffect(
+        message = errorSummary,
+        tone = BannerTone.DANGER,
+        // Maydonlar ro'yxati holatда qoladi (ular qizil bo'lib turadi) — toast faqat
+        // e'tiborni tortadi, shuning uchun "iste'mol qilish" kerak emas.
+        onConsumed = {},
+    )
 }

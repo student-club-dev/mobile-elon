@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.GlassRow
+import dev.core.uikit.component.screenTopInset
 import dev.core.uikit.component.GradientHeader
 import dev.core.uikit.component.HeaderIconButton
 import dev.core.uikit.component.IconTile
@@ -99,10 +100,9 @@ fun BusinessAccountScreen(
                 )
             }
             Row(
-                Modifier.padding(
+                Modifier.screenTopInset(AppSpacing.md).padding(
                     start = AppSpacing.screenHorizontal,
                     end = AppSpacing.screenHorizontal,
-                    top = 54.dp,
                     bottom = 30.dp,
                 ),
                 verticalAlignment = Alignment.CenterVertically,
@@ -137,11 +137,14 @@ fun BusinessAccountScreen(
                 .padding(horizontal = AppSpacing.screenHorizontal),
             verticalArrangement = Arrangement.spacedBy(BlockGap),
         ) {
-            // Biznes kartasi
+            // Foydalanuvchi kartasi — o'zi ham bosiladi va tahrirlash ekranini ochadi.
+            // Yuqoridagi qalam ham shu ishni qiladi, lekin u kichik va gradient ustida
+            // ko'zga tashlanmaydi: odam avval kartaning O'ZIGA bosadi.
             GlassRow(
                 shape = AppRadius.card,
                 contentPadding = PaddingValues(RowPaddingHorizontal),
                 horizontalArrangement = Arrangement.spacedBy(14.dp),
+                onClick = onEdit,
                 palette = palette,
             ) {
                 // Bu SHAXSIY profil — biznesniki emas: avatar va ism foydalanuvchiniki.

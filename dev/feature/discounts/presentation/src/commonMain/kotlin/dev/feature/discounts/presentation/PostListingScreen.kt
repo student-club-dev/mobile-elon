@@ -17,9 +17,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.core.uikit.component.PrimaryButton
+import dev.core.uikit.component.ScreenTopBar
+import dev.core.uikit.component.screenTopInset
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.common_back
 import dev.core.uikit.resources.common_retry
+import dev.core.uikit.resources.discounts_add_listing
 import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
@@ -80,13 +83,32 @@ fun PostListingScreen(
                     else -> { { vm.prefillFromBusiness(businessId.orEmpty()) } }
                 },
             )
-        // Biznes turi hali yuklanmoqda — qisqa spinner. "Chegirma e'loni" tur tanlash grid'i YO'Q:
-        // e'lon turi biznesdan meros olinadi.
-        type == null ->
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = palette.primary, strokeWidth = 3.dp)
-            }
+        // Biznes turi hali yuklanmoqda.
+        //
+        // MUHIM — sahifa DARHOL ochiladi va yuklanish uning ICHIDA ko'rsatiladi: sarlavha va
+        // orqaga tugmasi joyida qoladi, faqat kontent maydonida spinner aylanadi. Ilgari bu
+        // yerда butun ekranni egallagan yalang'och spinner turardi — navigatsiya animatsiyasi
+        // bo'sh ekranga o'tib, keyin birdan to'liq formaga sakrardi va o'tish "qotgan"day
+        // ko'rinardi. Orqaga qaytish ham mumkin emas edi.
+        type == null -> FormLoading(palette, onBack = onClose)
         else -> TypeListingForm(type, state, palette, vm, onBack = onClose)
+    }
+}
+
+/** Forma yuklanayotgandagi ko'rinish — sarlavha joyida, spinner kontent maydonida. */
+@Composable
+private fun FormLoading(palette: AppPalette, onBack: () -> Unit) {
+    Column(Modifier.fillMaxSize()) {
+        ScreenTopBar(
+            title = stringResource(Res.string.discounts_add_listing),
+            onBack = onBack,
+            backContentDescription = stringResource(Res.string.common_back),
+            modifier = Modifier.screenTopInset(AppSpacing.md).padding(horizontal = AppSpacing.lg),
+            palette = palette,
+        )
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = palette.primary, strokeWidth = 3.dp)
+        }
     }
 }
 

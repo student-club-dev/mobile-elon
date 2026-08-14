@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.core.common.error.FormError
 import dev.core.uikit.component.AppBottomSheet
+import dev.core.uikit.component.screenTopInset
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.BackButton
 import dev.core.uikit.component.FieldLabel
@@ -168,7 +169,7 @@ fun EditProfileScreen(
         Column(Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState())) {
             // Header
             Row(
-                Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg).padding(top = 54.dp),
+                Modifier.fillMaxWidth().screenTopInset(AppSpacing.md).padding(horizontal = AppSpacing.lg),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(11.dp),
             ) {

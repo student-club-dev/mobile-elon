@@ -105,6 +105,10 @@ class ListingRepositoryImpl(
         }
     }
 
+    // Boshqa holat o'tishlari bilan bir xil yo'l: server javob bergach kesh yangilanadi.
+    override suspend fun submitExisting(id: String): Resource<ListingStatus> =
+        applyStatus(id) { remote.submitExisting(id) }
+
     /**
      * Holat **avval serverda** o'zgaradi, keyin keshga yoziladi.
      *

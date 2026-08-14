@@ -78,7 +78,7 @@
     <!-- ============ Password reset ============ -->
     <string name="auth_forgot_title">Reset password</string>
     <string name="auth_forgot_subtitle">Enter your email address — we'll send a password reset link.</string>
-    <string name="auth_forgot_send">Send reset link</string>
+    <string name="auth_forgot_send">Send reset code</string>
     <string name="auth_back_to_login">Back to sign in</string>
 
     <!-- ============ Registration method ============ -->
@@ -257,4 +257,5 @@
     <string name="auth_account_setup_subtitle">Enter your first and last name — they appear on your business and listings.</string>
     <string name="auth_account_setup_email_hint">Email is optional — used to reach you about your account.</string>
     <string name="auth_account_setup_hint">First and last name are required. Photo and email can be changed later in your profile.</string>
+    <string name="auth_password_updated">Password updated successfully</string>
 </resources>

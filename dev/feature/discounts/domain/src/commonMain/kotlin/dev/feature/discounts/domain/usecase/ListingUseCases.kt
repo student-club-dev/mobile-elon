@@ -79,12 +79,32 @@ class PublishListingUseCase(private val repository: ListingRepository) {
         // moderatsiyaga yuboradi. Ilgari tahrirlashда ham yaratilardi (serverда dublikat).
         val res = if (isEdit) repository.update(listing) else repository.submit(listing)
         return when (res) {
-            is Resource.Success -> Result.Success(res.data)
+            is Resource.Success -> Result.Success(submitIfStillDraft(res.data))
             is Resource.Error -> Result.Failed(
                 message = res.message,
                 limitCode = (res.error as? AppException.LimitReached)?.code,
             )
             Resource.Loading -> Result.Failed("E'lonni yuborib bo'lmadi")
+        }
+    }
+
+    /**
+     * Tahrirlashдан keyin e'lon hamon qoralama bo'lsa — uni moderatsiyaga yuboradi.
+     *
+     * Nega kerak: `PUT /listings/{id}` faqat MAZMUNNI yangilaydi, holatga tegmaydi. Shu
+     * sabab nusxa olingan (yoki qo'lda saqlangan) qoralamani tahrirlab "E'lon qilish"
+     * bosilganда e'lon yangilanardi-yu, DRAFT bo'lib qolaverardi — foydalanuvchi uni faol
+     * qilishning yo'lini topa olmasdi.
+     *
+     * Yuborish muvaffaqiyatsiz bo'lsa ham xato QAYTARILMAYDI: mazmun allaqachon
+     * saqlangan va uni "saqlanmadi" deb ko'rsatish yolg'on bo'lardi. E'lon qoralamada
+     * qoladi va foydalanuvchi qayta urinishi mumkin.
+     */
+    private suspend fun submitIfStillDraft(listing: Listing): Listing {
+        if (listing.status != ListingStatus.DRAFT) return listing
+        return when (val res = repository.submitExisting(listing.id)) {
+            is Resource.Success -> listing.copy(status = res.data)
+            else -> listing
         }
     }
 }

@@ -27,6 +27,7 @@ import dev.core.uikit.theme.appPalette
 import dev.feature.discounts.domain.model.ListingCatalog
 import dev.feature.discounts.domain.model.ListingField
 import dev.feature.discounts.presentation.PostListingUiState
+import dev.feature.discounts.presentation.localizedCategoryLabel
 import dev.feature.discounts.presentation.PostListingViewModel
 import dev.feature.discounts.presentation.categories
 import dev.feature.discounts.presentation.components.FormSection
@@ -108,7 +109,8 @@ fun CategorySection(
         ) {
             items(state.categories()) { category ->
                 SelectChip(
-                    text = category.nameUz,
+                    // Serverdagi nom faqat o'zbekcha — ru/en da kalit bo'yicha tarjima olinadi.
+                    text = localizedCategoryLabel(category.key, category.nameUz),
                     selected = state.categoryKey == category.key,
                     onClick = { vm.onCategory(category.key) },
                 )

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,41 +33,59 @@ import dev.core.uikit.theme.appPalette
 import dev.core.uikit.theme.ctaShadow
 import dev.core.uikit.theme.rowShadow
 
-/** Asosiy harakat tugmasi — ko'k gradient va brend rangli yorug' soya. */
+/**
+ * Asosiy harakat tugmasi — ko'k gradient va brend rangli yorug' soya.
+ *
+ * [loading] — so'rov ketayotganда tugma ichida aylanma ko'rsatiladi va bosish o'chadi.
+ * Busiz foydalanuvchi "Kirish"ni bosgach hech qanday javob ko'rmay, tugmani qayta-qayta
+ * bosardi (har bosish yangi so'rov edi).
+ */
 @Composable
 fun PrimaryButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    loading: Boolean = false,
     trailingIcon: ImageVector? = null,
     leadingIcon: ImageVector? = null,
     shape: RoundedCornerShape = AppRadius.button,
     palette: AppPalette = appPalette,
 ) {
+    val active = enabled && !loading
     Box(
         modifier
             .fillMaxWidth()
             .height(AppSize.buttonHeight)
-            .then(if (enabled) Modifier.ctaShadow(shape) else Modifier)
+            // Yuklanayotganда ham gradient va soya qoladi — tugma "o'chib qolgan" emas,
+            // "ishlayotgan" bo'lib ko'rinishi kerak.
+            .then(if (enabled || loading) Modifier.ctaShadow(shape) else Modifier)
             .clip(shape)
             .background(
-                if (enabled) palette.primaryBrush
+                if (enabled || loading) palette.primaryBrush
                 else SolidColor(palette.primary.copy(alpha = 0.35f)),
             )
-            .clickable(enabled = enabled, onClick = onClick),
+            .clickable(enabled = active, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
-        ) {
-            if (leadingIcon != null) {
-                Icon(leadingIcon, null, tint = palette.onPrimary, modifier = Modifier.size(18.dp))
-            }
-            Text(text, style = AppType.button.copy(color = palette.onPrimary))
-            if (trailingIcon != null) {
-                Icon(trailingIcon, null, tint = palette.onPrimary, modifier = Modifier.size(18.dp))
+        if (loading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(22.dp),
+                color = palette.onPrimary,
+                strokeWidth = 2.dp,
+            )
+        } else {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+            ) {
+                if (leadingIcon != null) {
+                    Icon(leadingIcon, null, tint = palette.onPrimary, modifier = Modifier.size(18.dp))
+                }
+                Text(text, style = AppType.button.copy(color = palette.onPrimary))
+                if (trailingIcon != null) {
+                    Icon(trailingIcon, null, tint = palette.onPrimary, modifier = Modifier.size(18.dp))
+                }
             }
         }
     }

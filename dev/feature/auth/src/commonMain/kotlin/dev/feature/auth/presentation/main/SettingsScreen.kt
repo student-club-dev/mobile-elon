@@ -35,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.core.domain.model.AppLanguage
 import dev.core.domain.model.ThemeMode
 import dev.core.uikit.component.AppIcons
+import dev.core.uikit.component.screenTopInset
 import dev.core.uikit.component.BackButton
 import dev.core.uikit.component.GlassRow
 import dev.core.uikit.component.IconTile
@@ -89,7 +90,7 @@ fun SettingsScreen(
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         // Header
         Row(
-            Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg).padding(top = 54.dp),
+            Modifier.fillMaxWidth().screenTopInset(AppSpacing.md).padding(horizontal = AppSpacing.lg),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(11.dp),
         ) {

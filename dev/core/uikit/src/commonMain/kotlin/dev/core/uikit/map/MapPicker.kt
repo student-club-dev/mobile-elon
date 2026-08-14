@@ -107,7 +107,19 @@ internal fun pickerMapHtml(center: MapPoint, dark: Boolean, hint: String): Strin
             white-space: nowrap; font: 600 12px -apple-system, Roboto, sans-serif;
             transition: opacity .4s; }
     .maplibregl-ctrl-group { border-radius: 11px !important; overflow: hidden; }
-    .maplibregl-ctrl-bottom-right { margin-bottom: 30px; margin-right: 6px; }
+    /* Zoom boshqaruvi — pastdan yuqoriroqda: uning TAGIDA "mening joylashuvim"
+       tugmasi turadi (u Compose tomonida chiziladi). */
+    .maplibregl-ctrl-bottom-right { margin-bottom: 58px; margin-right: 8px; }
+    /* Atribut: matn yig'ilgan, faqat (i) tugmasi ko'rinadi. Yozuvning o'zi ekranning
+       pastki qismini butunlay egallab, "Pick this spot" tugmasi bilan qo'shilib ketardi.
+       Bosilganda matn ochiladi — OpenStreetMap talabi buziladigan joyi yo'q. */
+    .maplibregl-ctrl-attrib { background: transparent !important; }
+    .maplibregl-ctrl-attrib-inner { display: none !important; }
+    .maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-inner {
+      display: block !important; background: rgba(255,255,255,.92); padding: 2px 6px;
+      border-radius: 8px;
+    }
+    .maplibregl-ctrl-bottom-left { margin-bottom: 6px; margin-left: 6px; }
   </style>
 </head>
 <body>

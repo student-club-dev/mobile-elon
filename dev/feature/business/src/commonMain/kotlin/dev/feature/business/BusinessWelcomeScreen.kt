@@ -29,12 +29,12 @@ import androidx.compose.ui.unit.sp
 import dev.core.uikit.component.AppFieldType
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.AppScreenScaffold
-import dev.core.uikit.component.ErrorText
 import dev.core.uikit.component.GlassTextField
 import dev.core.uikit.component.HintText
 import dev.core.uikit.component.PrimaryButton
 import dev.core.uikit.component.ScreenSubtitle
 import dev.core.uikit.component.ScreenTitle
+import dev.core.uikit.component.ToastEffect
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.auth_forgot_password
 import dev.core.uikit.resources.auth_no_account
@@ -80,6 +80,7 @@ fun BusinessWelcomeScreen(
     canSubmit: Boolean,
     isLoading: Boolean,
     error: String?,
+    onErrorShown: () -> Unit,
     onSignIn: () -> Unit,
     onForgot: () -> Unit,
     onRegister: () -> Unit,
@@ -87,7 +88,10 @@ fun BusinessWelcomeScreen(
 ) {
     val palette = appPalette
 
-    AppScreenScaffold(scroll = true, horizontalPadding = 20.dp, topPadding = 54.dp) {
+    // Xato tugma tagidagi qizil yozuv emas, yuqori o'ng burchakdagi toast bo'lib chiqadi.
+    ToastEffect(error, onConsumed = onErrorShown)
+
+    AppScreenScaffold(scroll = true, horizontalPadding = 20.dp, topPadding = AppSpacing.md) {
         ScreenTitle(stringResource(Res.string.business_welcome_title), fontSize = 21.sp)
 
         Spacer(Modifier.height(10.dp))
@@ -151,9 +155,12 @@ fun BusinessWelcomeScreen(
         )
 
         Spacer(Modifier.height(AppSpacing.lg))
-        PrimaryButton(stringResource(Res.string.auth_sign_in), onSignIn, enabled = canSubmit)
-
-        ErrorText(error)
+        PrimaryButton(
+            stringResource(Res.string.auth_sign_in),
+            onSignIn,
+            enabled = canSubmit,
+            loading = isLoading,
+        )
 
         // Muqobil kirish — telefon/parol formasidan keyin, ajratgich bilan.
         if (googleButton != null) {

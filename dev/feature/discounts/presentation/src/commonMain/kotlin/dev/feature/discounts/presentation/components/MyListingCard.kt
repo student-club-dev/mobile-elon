@@ -1,6 +1,7 @@
 package dev.feature.discounts.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,6 +46,8 @@ import dev.feature.discounts.domain.model.ListingStatus
 import dev.feature.discounts.domain.model.formatSum
 import dev.feature.discounts.presentation.catalogAccent
 import dev.feature.discounts.presentation.icon
+import dev.feature.discounts.presentation.localizedCategoryLabel
+import dev.feature.discounts.presentation.localizedLabel
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -76,8 +79,11 @@ fun MyListingCard(
     val cardShape = AppRadius.card
 
     // Karta chegarasiz — uni yumshoq soya ajratadi (yangi dizayn tili).
+    // Karta ustiga bosish tahrirlash ekranini ochadi: ilgari faqat pastdagi mayda qalam
+    // ishlardi va kartaning o'zi bosilmaydigan "rasm" bo'lib turardi.
     Column(
-        Modifier.fillMaxWidth().cardShadow(cardShape).clip(cardShape).background(palette.card),
+        Modifier.fillMaxWidth().cardShadow(cardShape).clip(cardShape).background(palette.card)
+            .clickable(onClick = onEdit),
     ) {
         Row(
             Modifier.fillMaxWidth().padding(AppSpacing.lg),
@@ -93,7 +99,8 @@ fun MyListingCard(
                     overflow = TextOverflow.Ellipsis,
                 )
                 SoftPill(
-                    listing.categoryLabel,
+                    // Kategoriya nomi serverdan faqat o'zbekcha keladi — ru/en da tarjimasi.
+                    localizedCategoryLabel(listing.categoryKey, listing.categoryLabel),
                     accent = accent,
                     backgroundAlpha = 0.12f,
                     shape = AppRadius.sm,
@@ -119,12 +126,14 @@ fun MyListingCard(
                 }
             }
 
-            StatusPill(listing.status.label, listing.status.color(palette))
+            StatusPill(listing.status.localizedLabel(), listing.status.color(palette))
         }
 
         Row(
             Modifier.fillMaxWidth().padding(horizontal = AppSpacing.md).padding(bottom = 11.dp),
-            horizontalArrangement = Arrangement.spacedBy(7.dp),
+            // Tugmalar bitta guruh bo'lib ko'rinishi uchun oraliq kichik — ilgari ular
+            // kartaning yarmiga yoyilib, bir-biriga aloqasiz belgilar bo'lib turardi.
+            horizontalArrangement = Arrangement.spacedBy(AppSpacing.xs),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             val first = listing.branches.firstOrNull()
@@ -144,7 +153,13 @@ fun MyListingCard(
                 Spacer(Modifier.weight(1f))
             }
 
-            CardAction(AppIcons.Pencil, stringResource(Res.string.common_edit), palette, onEdit)
+            CardAction(
+                AppIcons.Pencil,
+                stringResource(Res.string.common_edit),
+                tint = palette.primary,
+                background = palette.accentBg,
+                onClick = onEdit,
+            )
             if (listing.status == ListingStatus.ACTIVE || listing.status == ListingStatus.PAUSED) {
                 val active = listing.status == ListingStatus.ACTIVE
                 CardAction(
@@ -152,14 +167,29 @@ fun MyListingCard(
                     stringResource(
                         if (active) Res.string.discounts_action_pause else Res.string.discounts_action_resume,
                     ),
-                    palette,
-                    onTogglePaused,
+                    tint = palette.warning,
+                    background = palette.warningBg,
+                    onClick = onTogglePaused,
                 )
             }
             if (onMore != null) {
-                CardAction(AppIcons.More, stringResource(Res.string.discounts_action_more), palette, onMore)
+                CardAction(
+                    AppIcons.More,
+                    stringResource(Res.string.discounts_action_more),
+                    tint = palette.inkMuted,
+                    background = palette.fieldBg,
+                    onClick = onMore,
+                )
             }
-            CardAction(AppIcons.Close, stringResource(Res.string.common_delete), palette, onDelete)
+            // O'chirish — savat, `✕` emas: `✕` "yopish" degan ma'noni beradi va odamlar
+            // uni bosib e'lonini bilmasdan o'chirib yuborardi.
+            CardAction(
+                AppIcons.Trash,
+                stringResource(Res.string.common_delete),
+                tint = palette.danger,
+                background = palette.dangerBg,
+                onClick = onDelete,
+            )
         }
     }
 }
@@ -208,21 +238,28 @@ private fun ListingCover(
     }
 }
 
-/** Karta ostidagi mayda harakat tugmasi. */
+/**
+ * Karta ostidagi mayda harakat tugmasi.
+ *
+ * Har bir amal o'z past to'yinganlikdagi foniga ega (tahrirlash — ko'k, to'xtatish — sariq,
+ * o'chirish — qizil): ilgari hammasi bir xil, oq kartada deyarli ko'rinmaydigan `fieldBg`
+ * bilan chizilardi va tugmalar "ramkasiz" belgilar bo'lib turardi.
+ */
 @Composable
 private fun CardAction(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     description: String,
-    palette: AppPalette,
+    tint: Color,
+    background: Color,
     onClick: () -> Unit,
 ) {
     IconTile(
         icon = icon,
         contentDescription = description,
-        tint = palette.inkMuted,
-        background = palette.fieldBg,
+        tint = tint,
+        background = background,
         size = 32.dp,
-        iconSize = 15.dp,
+        iconSize = 16.dp,
         shape = AppRadius.sm,
         onClick = onClick,
     )

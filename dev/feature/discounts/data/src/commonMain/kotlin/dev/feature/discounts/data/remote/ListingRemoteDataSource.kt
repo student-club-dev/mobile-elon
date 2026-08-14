@@ -37,6 +37,15 @@ interface ListingRemoteDataSource {
     /** Mavjud e'lonni tahrirlaydi (`PUT /listings/{id}`). Server yangi status qaytaradi. */
     suspend fun update(listing: Listing): Resource<Listing>
 
+    /**
+     * MAVJUD e'lonni moderatsiyaga yuboradi (`POST /listings/{id}/submit`).
+     *
+     * [publish] dan farqi: u avval e'lonni YARATADI. Qoralamani tahrirlab "E'lon qilish"
+     * bosilganда esa e'lon allaqachon bor — uni faqat yuborish kerak. Busiz qoralama
+     * `PUT` bilan yangilanardi-yu, holati DRAFT bo'lib qolaverardi.
+     */
+    suspend fun submitExisting(id: String): Resource<ListingStatus>
+
     /** E'lonni arxivlaydi — soft-delete (`DELETE /listings/{id}`). */
     suspend fun archive(id: String): Resource<Unit>
 

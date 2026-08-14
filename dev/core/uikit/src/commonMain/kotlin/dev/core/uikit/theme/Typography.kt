@@ -22,15 +22,38 @@ import org.jetbrains.compose.resources.Font
  * Shrift ilova ichiga joylangan (`composeResources/font/`), tizimdan olinmaydi: na Android'da,
  * na iOS'da bu shrift oldindan mavjud emas. Fayllar variable shriftdan ajratib olingan statik
  * og'irliklar — variable o'q Compose iOS'da ishonchli ishlamaydi.
+ *
+ * ⚠️ MUHIM — Plus Jakarta Sans'da **kirill glifi YO'Q** (u faqat `latin`, `latin-ext` va
+ * `vietnamese` ni qamraydi). Shu sabab ruscha matn har bir HARF uchun alohida tizim shriftiga
+ * tushib ketardi: og'irliklar mos kelmasdi, qatorlar balandligi sakrar va "shrift ishlamayapti"
+ * degan taassurot tug'ilardi — ayni shu holat xatolar ro'yxatida qayd etilgan.
+ *
+ * Yechim: kirill matni uchun **butunlay** tizim sans-serif oilasi olinadi ([cyrillicFontFamily]).
+ * U ikkala platformada ham kirillni to'liq qamraydi va barcha og'irliklarga ega, shuning uchun
+ * matn ichida oila almashib ketmaydi.
+ *
+ * Brend shrifti ruschada ham saqlanishi kerak bo'lsa — kirillni qo'llaydigan variant
+ * (masalan Manrope yoki Golos Text) `composeResources/font/` ga qo'shilishi kerak; shundan
+ * keyin bu yerda faqat shu fayllar ko'rsatiladi.
  */
 @Composable
-fun appFontFamily(): FontFamily = FontFamily(
+fun appFontFamily(cyrillic: Boolean = false): FontFamily =
+    if (cyrillic) cyrillicFontFamily else latinFontFamily()
+
+@Composable
+private fun latinFontFamily(): FontFamily = FontFamily(
     Font(Res.font.plusjakartasans_400, weight = FontWeight.Normal),
     Font(Res.font.plusjakartasans_500, weight = FontWeight.Medium),
     Font(Res.font.plusjakartasans_600, weight = FontWeight.SemiBold),
     Font(Res.font.plusjakartasans_700, weight = FontWeight.Bold),
     Font(Res.font.plusjakartasans_800, weight = FontWeight.ExtraBold),
 )
+
+/**
+ * Kirill uchun oila — platformaning o'z sans-serifi (Android: Roboto, iOS: SF Pro).
+ * Ikkalasi ham kirillni to'liq qamraydi va Normal…ExtraBold og'irliklarini beradi.
+ */
+private val cyrillicFontFamily: FontFamily = FontFamily.SansSerif
 
 /**
  * Matn uslublari — bitta manba (handoff "Tipografiya" bo'limi).

@@ -35,6 +35,8 @@ internal abstract class FakeListingRemoteDataSource : ListingRemoteDataSource {
 
     override suspend fun update(listing: Listing): Resource<Listing> = unused()
 
+    override suspend fun submitExisting(id: String): Resource<ListingStatus> = unused()
+
     override suspend fun archive(id: String): Resource<Unit> = unused()
 
     override suspend fun changeStatus(

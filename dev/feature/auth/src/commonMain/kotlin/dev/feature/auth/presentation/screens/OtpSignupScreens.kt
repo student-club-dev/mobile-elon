@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.AppScreenScaffold
 import dev.core.uikit.component.BackButton
-import dev.core.uikit.component.ErrorText
+import dev.core.uikit.component.ToastEffect
 import dev.core.uikit.component.PrimaryButton
 import dev.core.uikit.component.ScreenTitle
 import dev.core.uikit.resources.Res
@@ -58,6 +58,9 @@ fun OtpScreen(
     onResend: () -> Unit,
     palette: AppPalette = appPalette,
 ) {
+    // Xato tugma tagidagi qizil yozuv emas, yuqori o'ng burchakdagi toast bo'lib chiqadi.
+    ToastEffect(state.error, onConsumed = vm::clearError)
+
     AppScreenScaffold(scroll = false) {
         BackButton(onBack, contentDescription = stringResource(Res.string.common_back))
         Spacer(Modifier.height(AppSpacing.xl))
@@ -101,7 +104,6 @@ fun OtpScreen(
             trailingIcon = AppIcons.Check,
         )
 
-        ErrorText(state.error)
 
         Spacer(Modifier.height(AppSpacing.md))
         // Oqimni tashlab ketish yo'li — "keyinroq tasdiqlayman" emas: raqam tasdiqlanmasa

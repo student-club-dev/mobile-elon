@@ -49,14 +49,18 @@ fun Modifier.rowShadow(shape: RoundedCornerShape = AppRadius.row): Modifier {
 /**
  * CTA soyasi — brend rangida yorqin "yorug'lik". Qorong'ida ham qoladi, chunki bu
  * dekorativ emas: tugmani fondan ajratib turadi.
+ *
+ * Elevatsiya karta soyasidan sezilarli katta: tugma balandligi 52-56dp va 16dp soya uning
+ * ostida deyarli ko'rinmasdi — tugma fonga "yopishib qolgan"day tuyulardi. 24dp da yorug'lik
+ * tugmadan tashqariga chiqadi va u yuza USTIDA turgandek ko'rinadi.
  */
 @Composable
 fun Modifier.ctaShadow(shape: RoundedCornerShape = AppRadius.button): Modifier {
     val palette = appPalette
     return shadow(
-        elevation = 16.dp,
+        elevation = 24.dp,
         shape = shape,
-        spotColor = palette.primary.copy(alpha = 0.65f),
-        ambientColor = palette.primary.copy(alpha = 0.40f),
+        spotColor = palette.primary.copy(alpha = 0.75f),
+        ambientColor = palette.primary.copy(alpha = 0.50f),
     )
 }

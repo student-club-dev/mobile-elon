@@ -1,6 +1,7 @@
 package dev.feature.discounts.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -134,25 +135,26 @@ fun BoxScope.MyLocationButton(
     modifier: Modifier = Modifier,
     bottomPadding: Dp = AppSpacing.lg,
 ) {
-    Row(
+    // Matn olib tashlandi: ikonka o'zi tushunarli va yozuv xaritaning pastki chap
+    // burchagini egallab, atribut yozuvi bilan ustma-ust tushardi. Endi bu — xaritaning
+    // o'ng tomonida, MapLibre zoom boshqaruvi TAGIDA turgan yumaloq tugma; ikonka qizil,
+    // shunda u kulrang xarita ustida darrov ko'zga tashlanadi.
+    Box(
         modifier
-            .align(Alignment.BottomStart)
-            .padding(start = AppSpacing.md, bottom = bottomPadding)
-            .rowShadow(AppRadius.md)
-            .clip(AppRadius.md)
+            .align(Alignment.BottomEnd)
+            .padding(end = AppSpacing.sm, bottom = bottomPadding)
+            .size(40.dp)
+            .rowShadow(AppRadius.pill)
+            .clip(CircleShape)
             .background(palette.card)
-            .clickable(onClick = onClick)
-            .padding(horizontal = AppSpacing.md, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
     ) {
-        Icon(AppIcons.Locate, null, tint = palette.primary, modifier = Modifier.size(16.dp))
-        Text(
+        Icon(
+            AppIcons.Locate,
             stringResource(Res.string.discounts_map_my_location),
-            style = AppType.fieldLabel.copy(
-                fontWeight = AppType.buttonSecondary.fontWeight,
-                color = palette.ink,
-            ),
+            tint = palette.danger,
+            modifier = Modifier.size(20.dp),
         )
     }
 }

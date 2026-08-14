@@ -52,7 +52,7 @@ fun OnboardingScreen(
     onSkip: () -> Unit,
     palette: AppPalette = appPalette,
 ) {
-    AppScreenScaffold(topPadding = 52.dp) {
+    AppScreenScaffold(topPadding = AppSpacing.md) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             Text(
                 stringResource(Res.string.auth_onboarding_skip),

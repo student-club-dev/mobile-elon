@@ -78,7 +78,7 @@
     <!-- ============ Восстановление пароля ============ -->
     <string name="auth_forgot_title">Восстановление пароля</string>
     <string name="auth_forgot_subtitle">Введите адрес почты — отправим ссылку для восстановления пароля.</string>
-    <string name="auth_forgot_send">Отправить ссылку</string>
+    <string name="auth_forgot_send">Отправить код</string>
     <string name="auth_back_to_login">Вернуться ко входу</string>
 
     <!-- ============ Способ регистрации ============ -->
@@ -257,4 +257,5 @@
     <string name="auth_account_setup_subtitle">Укажите имя и фамилию — они видны в вашем бизнесе и объявлениях.</string>
     <string name="auth_account_setup_email_hint">Email не обязателен — для связи по вашему аккаунту.</string>
     <string name="auth_account_setup_hint">Имя и фамилия обязательны. Фото и email можно изменить позже в профиле.</string>
+    <string name="auth_password_updated">Пароль успешно обновлён</string>
 </resources>

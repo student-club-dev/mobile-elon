@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -26,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -37,14 +39,22 @@ import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.BottomSheetOption
 import dev.core.uikit.component.BackButton
 import dev.core.uikit.component.BannerTone
+import dev.core.uikit.component.ConfirmDialog
 import dev.core.uikit.component.EmptyState
 import dev.core.uikit.component.ErrorState
+import dev.core.uikit.component.IconTile
+import dev.core.uikit.component.PrimaryButton
 import dev.core.uikit.component.ScreenTopBar
+import dev.core.uikit.component.screenTopInset
 import dev.core.uikit.component.SoftPill
 import dev.core.uikit.component.StatusBanner
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.common_back
+import dev.core.uikit.resources.common_delete
+import dev.core.uikit.resources.common_edit
 import dev.core.uikit.resources.common_retry
+import dev.core.uikit.resources.discounts_listing_delete_confirm
+import dev.core.uikit.resources.discounts_listing_delete_title
 import dev.core.uikit.resources.discounts_action_duplicate
 import dev.core.uikit.resources.discounts_action_more
 import dev.core.uikit.resources.discounts_action_stats
@@ -80,6 +90,7 @@ import dev.feature.discounts.domain.model.BusinessStatus
 import dev.feature.discounts.domain.model.Listing
 import dev.feature.discounts.domain.model.ListingStatus
 import dev.feature.discounts.domain.model.formatSum
+import dev.feature.discounts.presentation.components.ListingImage
 import dev.feature.discounts.presentation.components.MyListingCard
 import dev.feature.discounts.presentation.components.RedeemSheet
 import org.jetbrains.compose.resources.stringResource
@@ -94,10 +105,17 @@ fun MyListingsScreen(
     onCreate: () -> Unit,
     onEdit: (String) -> Unit,
     onBack: (() -> Unit)? = null,
-    // Biznes shell'ida header "+" yashiriladi — u yerda o'ng-past burchakda aylana FAB bor.
+    // Biznes shell'ida header "+" yashiriladi — u yerda biznes sarlavhasi ostida to'liq
+    // kenglikdagi "E'lon qo'shish" tugmasi bor.
     showHeaderCreate: Boolean = true,
-    // Sarlavha (biznes shell'da segment selektor bilan almashtiriladi).
+    // Umumiy sarlavha ("E'lonlarim"). Biznes ochilganда uning o'rniga biznes sarlavhasi
+    // (logo + nom + holat + tahrirlash) chiziladi.
     showHeader: Boolean = true,
+    /**
+     * Biznesni tahrirlash — sarlavhadagi qalam. `null` bo'lsa tugma umuman chizilmaydi
+     * (masalan umumiy e'lonlar ro'yxatida ochilgan biznes yo'q).
+     */
+    onEditBusiness: (() -> Unit)? = null,
     // `true` — faqat chegirma, `false` — faqat oddiy e'lon, `null` — hammasi.
     filterDiscount: Boolean? = null,
     // Faqat shu biznesning e'lonlari (`null` — barcha e'lonlar).
@@ -126,6 +144,9 @@ fun MyListingsScreen(
     /** "Boshqa amallar" menyusi ochilgan e'lon (`null` — yopiq). */
     var moreFor by remember { mutableStateOf<Listing?>(null) }
 
+    /** O'chirish tasdig'i kutayotgan e'lon — savat bosilishi darhol o'chirmaydi. */
+    var toDelete by remember { mutableStateOf<Listing?>(null) }
+
     // Sheet'lar butun ekranni egallaydi, shuning uchun ular ildizdagi `Box` ichida, ro'yxatdan
     // KEYIN chaqiriladi — aks holda ro'yxat ustidan chiqmaydi (`AddBusinessScreen` bilan bir xil).
     Box(Modifier.fillMaxSize()) {
@@ -136,7 +157,7 @@ fun MyListingsScreen(
                 subtitle = stringResource(Res.string.discounts_listings_count, "${listings.size}"),
                 onBack = onBack,
                 backContentDescription = stringResource(Res.string.common_back),
-                modifier = Modifier.padding(horizontal = AppSpacing.lg).padding(top = 54.dp),
+                modifier = Modifier.screenTopInset().padding(horizontal = AppSpacing.lg),
                 palette = palette,
                 trailing = if (!showHeaderCreate) null else {
                     {
@@ -153,10 +174,32 @@ fun MyListingsScreen(
             Spacer(Modifier.height(14.dp))
         }
 
-        // Ochilgan biznes ma'lumoti — nomi, serverdagi e'lonlar soni va moderatsiya holati.
-        // Biznes shell'ida header yashirin (`showHeader = false`), shu sarlavha biznesni bildiradi.
-        state.business?.let { business ->
-            BusinessHeader(business, palette)
+        // Ochilgan biznes sarlavhasi — logo, nomi va moderatsiya holati.
+        // Biznes shell'ida umumiy header yashirin (`showHeader = false`), shu qator uning
+        // o'rnini bosadi va orqaga/tahrirlash tugmalarini o'zi ko'taradi.
+        if (!showHeader) {
+            BusinessHeaderBar(
+                business = state.business,
+                palette = palette,
+                onBack = onBack,
+                onEdit = onEditBusiness,
+            )
+            // "E'lon qo'shish" — sarlavha ostida, chapdan "+" bilan. Ilgari bu tugma
+            // o'ng-past burchakdagi suzuvchi FAB edi va bo'sh holatдаgi "Add listing"
+            // bilan ikkilanardi; bundan tashqari u modal oyna USTIDA chizilib qolardi.
+            if (listings.isNotEmpty()) {
+                PrimaryButton(
+                    text = stringResource(Res.string.discounts_add_listing),
+                    onClick = onCreate,
+                    modifier = Modifier.padding(horizontal = AppSpacing.lg, vertical = AppSpacing.sm),
+                    leadingIcon = AppIcons.Plus,
+                    palette = palette,
+                )
+            }
+        } else {
+            state.business?.let { business ->
+                BusinessHeaderBar(business, palette, onBack = null, onEdit = null, topInset = false)
+            }
         }
 
         // Internet yo'q — ustki banner (offline'да e'lonlar local bazadan ko'rsatiladi).
@@ -227,7 +270,8 @@ fun MyListingsScreen(
                             palette = palette,
                             onEdit = { onEdit(listing.id) },
                             onTogglePaused = { vm.togglePaused(listing) },
-                            onDelete = { vm.delete(listing) },
+                            // O'chirish darrov bajarilmaydi — tasdiq oynasi ochiladi.
+                            onDelete = { toDelete = listing },
                             // Qo'shimcha amallar faqat biznes ochilganda mazmunli: ular
                             // serverdagi e'lon ustida ishlaydi, umumiy (local) ro'yxatда esa
                             // e'lon hali serverга yetib bormagan bo'lishi mumkin.
@@ -269,6 +313,18 @@ fun MyListingsScreen(
             onConfirm = redeemVm::confirm,
             onDismiss = redeemVm::close,
         )
+
+        toDelete?.let { listing ->
+            ConfirmDialog(
+                visible = true,
+                title = stringResource(Res.string.discounts_listing_delete_title),
+                message = stringResource(Res.string.discounts_listing_delete_confirm, listing.title),
+                confirmText = stringResource(Res.string.common_delete),
+                onConfirm = { vm.delete(listing); toDelete = null },
+                onDismiss = { toDelete = null },
+                palette = palette,
+            )
+        }
     }
 }
 
@@ -428,29 +484,73 @@ private fun StatRow(label: String, value: String, palette: AppPalette) {
 }
 
 /**
- * Ochilgan biznes sarlavhasi — nomi, serverdagi e'lonlar soni (`business.listingsCount`) va
- * moderatsiya holati (pill). `GET /business/{id}` javobidan to'ldiriladi.
+ * Ochilgan biznesning sarlavha qatori: orqaga, **logo**, nomi + holati, tahrirlash.
+ *
+ * Ilgari bu yerда ikki qavatli "BUSINESS CENTER / My listings" yozuvi va o'ng tepada profilga
+ * olib boradigan tugma turardi. Ikkalasi ham foydali emas edi: sarlavha qaysi biznes ochilganini
+ * aytmasdi (nom pastda alohida qatorда edi), profil tugmasi esa e'lonlarga aloqasiz. Endi
+ * sarlavha aynan biznesni ko'rsatadi va o'ngdagi qalam o'sha biznesni tahrirlaydi.
+ *
+ * MUHIM — bu qator [MyListingsScreen] ning O'ZIDA chiziladi, karkasda emas: statistika/amallar
+ * oynalari shu ekranning ildiz `Box` ida turadi va faqat shundagina sarlavha ustidan
+ * qoplanadi. Karkasда bo'lganда oyna ochilsa header uning ustiga chiqib qolardi.
  */
 @Composable
-private fun BusinessHeader(business: Business, palette: AppPalette) {
+private fun BusinessHeaderBar(
+    business: Business?,
+    palette: AppPalette,
+    onBack: (() -> Unit)?,
+    onEdit: (() -> Unit)?,
+    /**
+     * Status bar paddingini shu qator olsinmi. Umumiy sarlavha ([ScreenTopBar]) ko'rsatilganda
+     * `false`: inset u yerда allaqachon qo'llangan va ikki marta qo'shilsa qator pastga tushib
+     * ketardi.
+     */
+    topInset: Boolean = true,
+) {
     Row(
-        Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg, vertical = 6.dp),
-        horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+        Modifier.fillMaxWidth()
+            .then(if (topInset) Modifier.screenTopInset() else Modifier)
+            .padding(horizontal = AppSpacing.lg)
+            .padding(bottom = AppSpacing.sm),
+        horizontalArrangement = Arrangement.spacedBy(AppSpacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        if (onBack != null) {
+            BackButton(
+                onClick = onBack,
+                contentDescription = stringResource(Res.string.common_back),
+                palette = palette,
+            )
+        }
+
+        // Biznes logotipi — yo'q bo'lsa tur ikonkasi. Nom bilan bitta qatorда turadi.
+        val logo = business?.logoUrl
+        if (logo != null) {
+            ListingImage(logo, Modifier.size(BusinessLogoSize).clip(AppRadius.md))
+        } else {
+            IconTile(
+                icon = business?.businessType?.icon ?: AppIcons.Store,
+                tint = palette.primary,
+                background = palette.accentBg,
+                size = BusinessLogoSize,
+                iconSize = 22.dp,
+                shape = AppRadius.md,
+            )
+        }
+
         Text(
-            business.name,
+            business?.name.orEmpty(),
             modifier = Modifier.weight(1f),
-            style = AppType.cardTitle.copy(
-                color = palette.ink,
-                fontWeight = AppType.screenTitle.fontWeight,
-            ),
+            style = AppType.topBarTitle.copy(color = palette.ink),
+            // Uzun nom sarlavhani ikki qatorga bo'lib yubormaydi — kesiladi.
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        business.status?.let { status ->
+
+        business?.status?.let { status ->
             SoftPill(
-                status.label,
+                status.localizedLabel(),
                 accent = status.color(palette),
                 backgroundAlpha = 0.14f,
                 shape = AppRadius.sm,
@@ -458,8 +558,24 @@ private fun BusinessHeader(business: Business, palette: AppPalette) {
                 contentPadding = PaddingValues(horizontal = AppSpacing.sm, vertical = 3.dp),
             )
         }
+
+        if (onEdit != null) {
+            IconTile(
+                icon = AppIcons.Pencil,
+                contentDescription = stringResource(Res.string.common_edit),
+                tint = palette.primary,
+                background = palette.accentBg,
+                size = 40.dp,
+                iconSize = 18.dp,
+                shape = AppRadius.sm,
+                onClick = onEdit,
+            )
+        }
     }
 }
+
+/** Sarlavhadagi logo o'lchami — orqaga tugmasi bilan bir balandlikda. */
+private val BusinessLogoSize = 42.dp
 
 /** Biznes holati rangi — palitradan (qorong'i rejimda ham o'qiladi). */
 private fun BusinessStatus.color(palette: AppPalette): Color = when (this) {
@@ -508,6 +624,8 @@ private fun ListingsEmptyState(palette: AppPalette, onCreate: () -> Unit, discou
         actionText = stringResource(
             if (isDiscount) Res.string.discounts_add_discount else Res.string.discounts_add_listing,
         ),
+        // Chapdan "+" — ro'yxat to'lganda ko'rinadigan tugma bilan bir xil.
+        actionIcon = AppIcons.Plus,
         onAction = onCreate,
         palette = palette,
     )

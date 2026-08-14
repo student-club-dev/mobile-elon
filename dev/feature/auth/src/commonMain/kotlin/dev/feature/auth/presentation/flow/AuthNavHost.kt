@@ -14,7 +14,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dev.core.uikit.component.AppScreenScaffold
+import dev.core.uikit.component.LocalToastController
 import dev.core.uikit.component.LogoTile
+import dev.core.uikit.resources.Res
+import dev.core.uikit.resources.auth_password_updated
 import dev.feature.auth.presentation.main.SettingsScreen
 import dev.feature.auth.presentation.screens.AccountSetupScreen
 import dev.feature.auth.presentation.screens.ForgotPasswordScreen
@@ -25,6 +28,7 @@ import dev.feature.auth.presentation.screens.ResetCodeScreen
 import dev.feature.auth.presentation.screens.ResetPasswordScreen
 import dev.feature.business.BusinessShell
 import dev.feature.business.BusinessWelcomeScreen
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 private object Route {
@@ -85,6 +89,10 @@ fun AuthNavHost(
 
     val nav = rememberNavController()
     val state by vm.state.collectAsStateWithLifecycle()
+    val toasts = LocalToastController.current
+    // Bir martalik hodisalar tarjimasi kompozitsiyada oldindan olinadi — `collect` bloki
+    // suspend kontekstda ishlaydi va u yerda `stringResource` ni chaqirib bo'lmaydi.
+    val passwordUpdatedMessage = stringResource(Res.string.auth_password_updated)
 
     // MUHIM — boshlang'ich yo'nalish FAQAT birinchi qiymatdan olinadi va keyin o'zgarmaydi.
     // `NavHost` grafni `startDestination` bo'yicha eslab qoladi: qiymat oqim o'rtasida
@@ -115,9 +123,14 @@ fun AuthNavHost(
                 }
                 AuthEvent.ResetCodeSent -> nav.navigate(Route.RESET_CODE) { launchSingleTop = true }
                 // Parol yangilandi — kirish ekraniga qaytamiz (yangi parol bilan kiradi).
-                AuthEvent.PasswordReset -> nav.navigate(Route.LOGIN) {
-                    popUpTo(Route.LOGIN) { inclusive = true }
-                    launchSingleTop = true
+                // Toast SHART: busiz ekran hech qanday xabarsiz login sahifasiga sakrardi
+                // va foydalanuvchi parol almashdimi yoki xato bo'ldimi — bilmasdi.
+                AuthEvent.PasswordReset -> {
+                    toasts.success(passwordUpdatedMessage)
+                    nav.navigate(Route.LOGIN) {
+                        popUpTo(Route.LOGIN) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 }
                 // Ro'yxat bekor qilindi — butun oqimni stackdan olib tashlaymiz.
                 AuthEvent.SignupCancelled -> nav.navigate(Route.LOGIN) {
@@ -146,6 +159,7 @@ fun AuthNavHost(
                 canSubmit = state.phoneLoginReady,
                 isLoading = state.isLoading,
                 error = state.error,
+                onErrorShown = vm::clearError,
                 onSignIn = vm::loginWithPhone,
                 onForgot = { nav.navigate(Route.FORGOT) { launchSingleTop = true } },
                 onRegister = { nav.navigate(Route.REGISTER) { launchSingleTop = true } },

@@ -33,7 +33,7 @@ import dev.core.uikit.component.AppFieldType
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.AppScreenScaffold
 import dev.core.uikit.component.BackButton
-import dev.core.uikit.component.ErrorText
+import dev.core.uikit.component.ToastEffect
 import dev.core.uikit.component.FieldLabel
 import dev.core.uikit.component.FooterLink
 import dev.core.uikit.component.GlassTextField
@@ -101,6 +101,9 @@ fun RegisterScreen(
     var legalDocument by remember { mutableStateOf<LegalDocument?>(null) }
 
     Box(Modifier.fillMaxSize()) {
+    // Xato tugma tagidagi qizil yozuv emas, yuqori o'ng burchakdagi toast bo'lib chiqadi.
+    ToastEffect(state.error, onConsumed = vm::clearError)
+
         AppScreenScaffold(scroll = true) {
             BackButton(onBack, contentDescription = stringResource(Res.string.common_back))
             Spacer(Modifier.height(AppSpacing.xl))
@@ -172,7 +175,6 @@ fun RegisterScreen(
                 trailingIcon = AppIcons.ArrowRight,
             )
 
-            ErrorText(state.error)
 
             Spacer(Modifier.height(20.dp))
             FooterLink(

@@ -54,6 +54,7 @@ class ListingRepositoryFlowTest {
             listing.copy(id = "srv-${listing.id}", status = ListingStatus.PENDING_REVIEW),
         )
         override suspend fun update(listing: Listing) = Resource.Success(listing)
+        override suspend fun submitExisting(id: String) = statusResult
         override suspend fun archive(id: String): Resource<Unit> = Resource.Success(Unit)
         override suspend fun changeStatus(id: String, transition: ListingTransition) = statusResult
         override suspend fun uploadImage(bytes: ByteArray, fileName: String) =

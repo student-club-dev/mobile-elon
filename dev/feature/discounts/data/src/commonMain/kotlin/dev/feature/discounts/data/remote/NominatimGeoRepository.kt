@@ -86,6 +86,8 @@ class NominatimGeoRepository(
                 parameter("lon", lng)
                 parameter("format", "jsonv2")
                 parameter("zoom", 18) // ko'cha/uy darajasi
+                // Aniq talab qilamiz: tuman aynan `address` bo'laklaridan olinadi.
+                parameter("addressdetails", 1)
                 parameter("accept-language", ACCEPT_LANGUAGE)
                 header("User-Agent", USER_AGENT)
             }.body()
@@ -179,15 +181,30 @@ private fun NominatimSearchResult.toSuggestion(): PlaceSuggestion? {
     return PlaceSuggestion(title = title, subtitle = subtitle, lat = latitude, lng = longitude)
 }
 
+/**
+ * Nominatim manzil bo'laklari.
+ *
+ * MUHIM — `city_district` va `state_district`: O'zbekiston tumanlari Nominatim'da aynan shu
+ * maydonlarda keladi (Toshkent tumanlari — `city_district`, viloyat tumanlari —
+ * `state_district`/`county`). Ilgari ular umuman o'qilmasdi, shuning uchun xaritadan joy
+ * tanlanganда tuman deyarli hech qachon aniqlanmas va foydalanuvchi uni har safar qo'lda
+ * tanlashga majbur bo'lardi.
+ */
 @Serializable
 private data class NominatimAddress(
     val road: String? = null,
     @SerialName("house_number") val houseNumber: String? = null,
     val neighbourhood: String? = null,
     val suburb: String? = null,
+    @SerialName("city_district") val cityDistrict: String? = null,
+    @SerialName("state_district") val stateDistrict: String? = null,
+    val district: String? = null,
+    val municipality: String? = null,
     val city: String? = null,
     val town: String? = null,
+    val village: String? = null,
     val county: String? = null,
+    val region: String? = null,
     val state: String? = null,
 )
 
@@ -211,20 +228,72 @@ private fun NominatimResponse.toResolved(): ResolvedAddress {
  * Topilmasa `null` — bu xato emas: koordinata baribir bor, viloyat faqat filtr uchun.
  */
 private fun matchRegion(address: NominatimAddress?): String? {
-    val candidates = listOfNotNull(address?.state, address?.city)
+    val candidates = listOfNotNull(
+        address?.state,
+        address?.region,
+        address?.city,
+    )
     return GeoCatalog.regions().firstOrNull { region ->
-        candidates.any { it.normalize().contains(region.name.take(6).normalize()) }
+        candidates.any { it.matchesPlace(region.name) }
     }?.id
 }
 
+/**
+ * Tumanni topadi. Nomzodlar tartibi muhim: eng aniq maydon (`city_district`) birinchi,
+ * eng umumiysi (`suburb` — mahalla nomi bo'lishi mumkin) oxirida.
+ */
 private fun matchDistrict(address: NominatimAddress?, regionId: String?): String? {
     if (regionId == null) return null
-    val candidates = listOfNotNull(address?.county, address?.suburb, address?.town, address?.city)
-    return GeoCatalog.districts(regionId).firstOrNull { district ->
-        candidates.any { it.normalize().contains(district.name.take(5).normalize()) }
-    }?.id
+    val candidates = listOfNotNull(
+        address?.cityDistrict,
+        address?.stateDistrict,
+        address?.district,
+        address?.county,
+        address?.municipality,
+        address?.town,
+        address?.village,
+        address?.suburb,
+    )
+    val districts = GeoCatalog.districts(regionId)
+    // Nomzodlar bo'yicha yuramiz (ro'yxat bo'yicha emas): birinchi, eng ishonchli maydon
+    // mos kelsa o'shani olamiz. Aks holда `suburb` dagi mahalla nomi tasodifan boshqa
+    // tumanga tushib qolishi mumkin edi.
+    for (candidate in candidates) {
+        districts.firstOrNull { candidate.matchesPlace(it.name) }?.let { return it.id }
+    }
+    return null
 }
 
-/** Taqqoslash uchun: kichik harf, apostroflarsiz ("Qo'qon" ≈ "Qoqon" ≈ "qo`qon"). */
-private fun String.normalize(): String =
-    lowercase().filter { it.isLetterOrDigit() }
+/**
+ * Joy nomlarini taqqoslaydi.
+ *
+ * Bir xil tuman uch xil yozilishi mumkin: "Yunusobod tumani" (katalog), "Yunusabad District"
+ * (Nominatim inglizchasi), "Юнусабадский район" (ruschasi). Shu sabab avval umumiy
+ * qo'shimchalar ("tumani", "district", "shahri", "район"…) olib tashlanadi, keyin qolgan
+ * o'zak **ikki tomonlama** solishtiriladi — qaysi nom uzunroq ekani oldindan noma'lum.
+ */
+private fun String.matchesPlace(catalogName: String): Boolean {
+    val a = placeStem()
+    val b = catalogName.placeStem()
+    if (a.isEmpty() || b.isEmpty()) return false
+    // Juda qisqa o'zak (masalan "olot") tasodifiy mos kelmasin.
+    if (a.length < MIN_STEM || b.length < MIN_STEM) return a == b
+    return a.contains(b) || b.contains(a)
+}
+
+/** Qo'shimchalarsiz, kichik harfli, apostroflarsiz o'zak ("Qo'qon" ≈ "Qoqon" ≈ "qo`qon"). */
+private fun String.placeStem(): String {
+    var value = lowercase()
+    PLACE_SUFFIXES.forEach { value = value.replace(it, " ") }
+    return value.filter { it.isLetterOrDigit() }
+}
+
+/** Nomdagi ma'no tashimaydigan qo'shimchalar — uch tilda ham. */
+private val PLACE_SUFFIXES = listOf(
+    "tumani", "tuman", "shahri", "shahar", "viloyati", "viloyat",
+    "district", "region", "city", "province",
+    "район", "районы", "область", "город", "городской",
+)
+
+/** Shundan qisqa o'zaklar faqat to'liq tengligida hisoblanadi. */
+private const val MIN_STEM = 4

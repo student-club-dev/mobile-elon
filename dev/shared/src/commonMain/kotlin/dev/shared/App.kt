@@ -13,10 +13,14 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.network.ktor3.KtorNetworkFetcherFactory
+import dev.core.uikit.component.AppToastHost
+import dev.core.uikit.locale.LocaleRestore
 import dev.core.uikit.locale.applyAppLanguage
 import dev.core.uikit.theme.AppTheme
 import dev.core.domain.model.AppLanguage
@@ -75,15 +79,29 @@ private fun AppScaffold(content: @Composable () -> Unit) {
     // subtree yaratilishidan oldin yoziladi. Qaytgan qiymat faqat remember kalitini ushlaydi.
     remember(language) { applyAppLanguage(language.tag); language }
 
-    AppTheme(darkTheme = isDark) {
+    // Til ALMASHGANINI belgilaymiz (birinchi ochilish emas): karkas qayta yaratilganда
+    // foydalanuvchini o'zi turgan ekranga qaytarishi uchun. Busiz Sozlamalarda tilni
+    // o'zgartirish har safar bosh ekranga tashlab yuborardi.
+    var previousLanguage by remember { mutableStateOf(language) }
+    if (previousLanguage != language) {
+        previousLanguage = language
+        LocaleRestore.armForLanguageChange()
+    }
+
+    // Ruscha — kirill yozuvi: brend shriftida kirill glifi yo'q (qarang `appFontFamily`).
+    AppTheme(darkTheme = isDark, cyrillic = language == AppLanguage.RU) {
         // Butun ilova pastki tizim navigatsiya paneli (3 tugma) / iOS home indikatori
         // ortida qolmasligi uchun global inset. Fon gradienti panel ostida ham to'liq chiziladi.
         Box(Modifier.fillMaxSize().background(appPalette.bgBrush)) {
             Box(Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.navigationBars)) {
-                // `key(language)` — til o'zgarganda butun daraxt qaytadan yaratiladi.
-                // `stringResource` tanlangan tilni `remember` ichida keshlaydi, shuning uchun
-                // faqat platforma tilini yozish yetarli emas: kesh bekor qilinishi kerak.
-                key(language) { content() }
+                // Toast qatlami `key(language)` dan TASHQARIDA — til almashganda navbat
+                // (va shu ondagi xabar) yo'qolib ketmasin.
+                AppToastHost {
+                    // `key(language)` — til o'zgarganda butun daraxt qaytadan yaratiladi.
+                    // `stringResource` tanlangan tilni `remember` ichida keshlaydi, shuning uchun
+                    // faqat platforma tilini yozish yetarli emas: kesh bekor qilinishi kerak.
+                    key(language) { content() }
+                }
             }
         }
     }

@@ -16,11 +16,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.core.uikit.component.AppBottomSheet
-import dev.core.uikit.component.AppToast
+import dev.core.uikit.component.ToastEffect
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.AppScreenScaffold
 import dev.core.uikit.component.BottomSheetOption
@@ -28,8 +31,10 @@ import dev.core.uikit.component.GlassTextField
 import dev.core.uikit.media.rememberImagePicker
 import dev.core.uikit.component.PrimaryButton
 import dev.core.uikit.component.ScreenTopBar
+import dev.core.uikit.component.screenTopInset
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.common_back
+import dev.core.uikit.resources.common_search
 import dev.core.uikit.resources.discounts_branch_name_label
 import dev.core.uikit.resources.discounts_branch_name_note
 import dev.core.uikit.resources.discounts_branch_name_placeholder
@@ -39,6 +44,7 @@ import dev.core.uikit.resources.discounts_business_name_hint
 import dev.core.uikit.resources.discounts_business_logo_hint
 import dev.core.uikit.resources.discounts_business_logo_label
 import dev.core.uikit.resources.discounts_business_name_label
+import dev.core.uikit.resources.discounts_business_create
 import dev.core.uikit.resources.discounts_business_save
 import dev.core.uikit.resources.discounts_business_type_label
 import dev.core.uikit.resources.discounts_business_type_select
@@ -75,6 +81,7 @@ import dev.feature.discounts.presentation.components.limitHintText
 import dev.feature.discounts.presentation.components.MapSearchResults
 import dev.feature.discounts.presentation.components.RegionSheet
 import dev.feature.discounts.presentation.components.SelectorField
+import dev.feature.discounts.presentation.components.SheetEmptyHint
 import dev.feature.discounts.presentation.components.MyLocationButton
 import dev.feature.discounts.presentation.components.WorkingHoursSection
 import dev.core.uikit.map.MapCenterRequest
@@ -138,7 +145,7 @@ fun AddBusinessScreen(
     // Sheet'lar butun ekranni egallaydi, shuning uchun ular ildizdagi `Box` ichida, formadan
     // KEYIN chaqiriladi — aks holda forma ustidan chiqmaydi.
     Box(Modifier.fillMaxSize()) {
-        AppScreenScaffold(scroll = true, topPadding = 54.dp, palette = palette) {
+        AppScreenScaffold(scroll = true, topPadding = AppSpacing.md, palette = palette) {
             ScreenTopBar(
                 title = stringResource(
                     if (state.editing) Res.string.discounts_business_edit else Res.string.discounts_business_add,
@@ -151,7 +158,7 @@ fun AddBusinessScreen(
             Spacer(Modifier.height(AppSpacing.xl))
 
             // --- Biznes turi: bosiladigan qator + sheet (ilgari gorizontal chip qatori edi) ---
-            FieldLabel(stringResource(Res.string.discounts_business_type_label), palette)
+            FieldLabel(stringResource(Res.string.discounts_business_type_label), palette, required = true)
             Spacer(Modifier.height(FieldLabelGap))
             SelectorField(
                 icon = state.businessType?.icon ?: AppIcons.Building,
@@ -176,7 +183,7 @@ fun AddBusinessScreen(
             HintText(stringResource(Res.string.discounts_business_logo_hint), palette = palette)
 
             Spacer(Modifier.height(FieldGap))
-            FieldLabel(stringResource(Res.string.discounts_business_name_label), palette)
+            FieldLabel(stringResource(Res.string.discounts_business_name_label), palette, required = true)
             Spacer(Modifier.height(FieldLabelGap))
             GlassTextField(
                 state.name,
@@ -193,7 +200,7 @@ fun AddBusinessScreen(
             HintText(stringResource(Res.string.discounts_name_latin_only), palette = palette)
 
             Spacer(Modifier.height(FieldGap))
-            FieldLabel(stringResource(Res.string.discounts_phone_label), palette)
+            FieldLabel(stringResource(Res.string.discounts_phone_label), palette, required = true)
             Spacer(Modifier.height(FieldLabelGap))
             GlassTextField(
                 value = state.phone,
@@ -212,7 +219,7 @@ fun AddBusinessScreen(
 
             // --- Viloyat: xuddi shu naqsh (ilgari ochilib-yopiladigan inline ro'yxat edi) ---
             Spacer(Modifier.height(FieldGap))
-            FieldLabel(stringResource(Res.string.discounts_region_label), palette)
+            FieldLabel(stringResource(Res.string.discounts_region_label), palette, required = true)
             Spacer(Modifier.height(FieldLabelGap))
             SelectorField(
                 icon = AppIcons.Building,
@@ -223,7 +230,7 @@ fun AddBusinessScreen(
             )
 
             Spacer(Modifier.height(FieldGap))
-            FieldLabel(stringResource(Res.string.discounts_location_label), palette)
+            FieldLabel(stringResource(Res.string.discounts_location_label), palette, required = true)
             Spacer(Modifier.height(FieldLabelGap))
             SelectorField(
                 icon = AppIcons.Pin,
@@ -242,7 +249,7 @@ fun AddBusinessScreen(
             // Viloyat qo'lda almashtirilganda ham shu yerga tushadi (eski tuman bekor bo'ladi).
             if (state.needsDistrictChoice) {
                 Spacer(Modifier.height(FieldGap))
-                FieldLabel(stringResource(Res.string.discounts_district_label), palette)
+                FieldLabel(stringResource(Res.string.discounts_district_label), palette, required = true)
                 Spacer(Modifier.height(FieldLabelGap))
                 SelectorField(
                     icon = AppIcons.Pin,
@@ -290,33 +297,52 @@ fun AddBusinessScreen(
 
             // Xato matni bu yerда emas — u ekran ostidagi toastда chiqadi (pastga qarang).
             Spacer(Modifier.height(FieldGap))
+            // Yangi biznesda tugma "Yaratish" deydi, "Saqlash" emas: bu forma hech narsani
+            // saqlamaydi — u biznesni birinchi marta yaratadi.
             PrimaryButton(
                 stringResource(
-                    if (state.saving) Res.string.discounts_saving else Res.string.discounts_business_save,
+                    when {
+                        state.saving -> Res.string.discounts_saving
+                        state.editing -> Res.string.discounts_business_save
+                        else -> Res.string.discounts_business_create
+                    },
                 ),
                 onClick = vm::save,
                 enabled = state.canSave,
+                loading = state.saving,
                 palette = palette,
             )
             Spacer(Modifier.height(AppSpacing.xl))
         }
 
+        // Serverда 27 dan ortiq tur bor va ro'yxat o'sib boradi — qidiruvsiz kerakligini
+        // topish uchun butun ro'yxatni aylantirish kerak edi. API'да qidiruv yo'q, shuning
+        // uchun filtr mobil tomonda va TARJIMA QILINGAN nom bo'yicha ishlaydi (foydalanuvchi
+        // ekranда ko'rgan matnni yozadi, serverdagi `nameUz` ni emas).
+        var typeQuery by remember { mutableStateOf("") }
+        val typeLabels = state.availableTypes.associateWith { it.type.localizedLabel() }
+        val visibleTypes = typeLabels.entries
+            .filter { (_, label) -> label.contains(typeQuery.trim(), ignoreCase = true) }
+
         AppBottomSheet(
             visible = state.typePickerOpen,
-            onDismiss = vm::closeTypePicker,
+            onDismiss = { typeQuery = ""; vm.closeTypePicker() },
             title = stringResource(Res.string.discounts_business_type_select),
             palette = palette,
+            searchQuery = typeQuery,
+            onSearchQueryChange = { typeQuery = it },
+            searchPlaceholder = stringResource(Res.string.common_search),
         ) {
-            state.availableTypes.forEach { info ->
+            visibleTypes.forEach { (info, label) ->
                 BottomSheetOption(
-                    // `nameUz` backenddan keladi va faqat o'zbekcha — tarjima uchun enum'dan olamiz.
-                    label = info.type.localizedLabel(),
+                    label = label,
                     selected = state.businessType == info.type,
-                    onClick = { vm.onType(info.type) },
+                    onClick = { typeQuery = ""; vm.onType(info.type) },
                     icon = info.type.icon,
                     palette = palette,
                 )
             }
+            if (visibleTypes.isEmpty()) SheetEmptyHint(palette)
         }
 
         RegionSheet(
@@ -343,22 +369,38 @@ fun AddBusinessScreen(
             phoneGate(vm::onPhoneVerified, vm::dismissPhoneGate)
         }
 
-        // Xato — ekran ostida qalqib chiqadigan toast. Sheet'lardan KEYIN chaqiriladi,
-        // shunda u ochiq oyna ustida ham ko'rinadi. Chegara (429) bo'lsa serverning
-        // xabariga amaliy maslahat ikkinchi qator bo'lib qo'shiladi.
-        AppToast(
+        // Xato — ilova ildizidagi toast navbatiga uzatiladi va yuqori o'ng burchakda
+        // qalqib chiqadi (ochiq sheet ustida ham ko'rinadi). Chegara (429) bo'lsa
+        // serverning xabariga amaliy maslahat ikkinchi qator bo'lib qo'shiladi.
+        ToastEffect(
             message = state.error,
-            onDismiss = vm::consumeError,
             hint = limitHintText(state.limitCode, LimitContext.BUSINESS),
-            palette = palette,
+            onConsumed = vm::consumeError,
         )
     }
 }
 
-/** Maydon ustidagi yorliq — handoff: 14sp, qalin, asosiy matn rangi. */
+/**
+ * Maydon ustidagi yorliq — handoff: 14sp, qalin, asosiy matn rangi.
+ *
+ * [required] — majburiy maydon, yorliq oldiga qizil `*` qo'yiladi. Busiz "Saqlash" tugmasi
+ * nega o'chiq turgani ko'rinmasdi: forma to'lgandek tuyulardi, lekin masalan tuman tanlanmagan
+ * bo'lardi va foydalanuvchi qaysi maydon yetishmayotganini topa olmasdi.
+ */
 @Composable
-private fun FieldLabel(text: String, palette: AppPalette) {
-    Text(text, style = AppType.fieldLabel.copy(color = palette.ink))
+private fun FieldLabel(text: String, palette: AppPalette, required: Boolean = false) {
+    val style = AppType.fieldLabel.copy(color = palette.ink)
+    if (!required) {
+        Text(text, style = style)
+        return
+    }
+    Text(
+        buildAnnotatedString {
+            withStyle(SpanStyle(color = palette.danger)) { append("* ") }
+            append(text)
+        },
+        style = style,
+    )
 }
 
 /** Yorliq bilan maydon orasi (handoff: 10px). */
@@ -407,7 +449,7 @@ private fun BusinessMapScreen(state: AddBusinessUiState, palette: AppPalette, vm
             ),
             onBack = vm::closeMap,
             backContentDescription = stringResource(Res.string.common_back),
-            modifier = Modifier.padding(horizontal = AppSpacing.lg).padding(top = 54.dp, bottom = AppSpacing.md),
+            modifier = Modifier.screenTopInset().padding(horizontal = AppSpacing.lg).padding(bottom = AppSpacing.md),
             palette = palette,
         )
         Column(Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg)) {

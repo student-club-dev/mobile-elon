@@ -4,6 +4,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import dev.core.common.text.TextScript
+import dev.core.uikit.util.MoneyVisualTransformation
 import dev.core.uikit.util.PhoneVisualTransformation
 
 /**
@@ -53,11 +54,29 @@ sealed class AppFieldType {
             input.filter { it.isDigit() }.take(DIGITS)
     }
 
-    /** Faqat butun son — narx, muddat, miqdor. */
+    /** Faqat butun son — muddat, miqdor, foiz. */
     data object Number : AppFieldType() {
         override val keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
 
         override fun sanitize(input: String): String = input.filter { it.isDigit() }
+    }
+
+    /**
+     * Pul summasi — holatда xom raqamlar, ekranда `50 000` ko'rinishida.
+     *
+     * [Number] dan farqi faqat niqobда: summani o'qish uchun guruhlash SHART, chunki
+     * `48484848848` kabi uzun raqamni foydalanuvchi tekshira olmaydi. Formatlash kiritish
+     * paytining o'zida ishlaydi (`blur` kutilmaydi).
+     */
+    data object Money : AppFieldType() {
+        /** Amaliy chegara — bundan uzun summa kiritilmaydi (xato yozuvdan himoya). */
+        const val MAX_DIGITS = 12
+
+        override val keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        override val visualTransformation = MoneyVisualTransformation
+
+        override fun sanitize(input: String): String =
+            input.filter { it.isDigit() }.take(MAX_DIGITS)
     }
 
     /** Email — klaviatura mos, matn o'zgarmaydi. */

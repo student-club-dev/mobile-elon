@@ -23,6 +23,8 @@ import dev.core.uikit.component.AppFieldType
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.AppScreenScaffold
 import dev.core.uikit.component.BackButton
+import dev.core.uikit.component.BannerTone
+import dev.core.uikit.component.ToastEffect
 import dev.core.uikit.component.FieldLabel
 import dev.core.uikit.component.GlassTextField
 import dev.core.uikit.component.PrimaryButton
@@ -61,6 +63,10 @@ fun ForgotPasswordScreen(
     onBackToLogin: () -> Unit,
     palette: AppPalette = appPalette,
 ) {
+    // Xato va "kod yuborildi" xabari — ekran ichidagi yozuv emas, yuqori o'ng burchakdagi toast.
+    ToastEffect(state.error, onConsumed = vm::clearError)
+    ToastEffect(state.info, tone = BannerTone.SUCCESS, onConsumed = vm::clearError)
+
     AppScreenScaffold(scroll = false) {
         BackButton(onBack, contentDescription = stringResource(Res.string.common_back))
         Spacer(Modifier.height(40.dp))
@@ -103,16 +109,8 @@ fun ForgotPasswordScreen(
             stringResource(Res.string.auth_forgot_send),
             onSend,
             enabled = state.phoneValid && !state.isLoading,
+            loading = state.isLoading,
         )
-
-        state.info?.let {
-            Spacer(Modifier.height(AppSpacing.md))
-            Text(it, style = AppType.error.copy(fontWeight = AppType.bodyStrong.fontWeight, color = palette.success))
-        }
-        state.error?.let {
-            Spacer(Modifier.height(AppSpacing.md))
-            Text(it, style = AppType.error.copy(color = palette.danger))
-        }
 
         Spacer(Modifier.weight(1f))
         Row(

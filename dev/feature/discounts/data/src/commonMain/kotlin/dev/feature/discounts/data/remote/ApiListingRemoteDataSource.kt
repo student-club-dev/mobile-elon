@@ -125,6 +125,10 @@ class ApiListingRemoteDataSource(
         }
     }
 
+    override suspend fun submitExisting(id: String): Resource<ListingStatus> =
+        // Faqat serverdagi YANGI holat kerak — e'lonning qolgan maydonlari chaqiruvchida bor.
+        safeCall(connectivity) { listingsApi.submit(id).body().status.toDomain() }
+
     override suspend fun archive(id: String): Resource<Unit> =
         safeCall(connectivity) { listingsApi.listingArchive(id).body() }
 

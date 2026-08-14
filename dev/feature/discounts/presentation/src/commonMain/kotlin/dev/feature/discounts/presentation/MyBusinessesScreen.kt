@@ -11,10 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,10 +25,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.CompactPrimaryButton
 import dev.core.uikit.component.BannerTone
+import dev.core.uikit.component.ConfirmDialog
 import dev.core.uikit.component.EmptyState
 import dev.core.uikit.component.StatusBanner
 import dev.core.uikit.component.GradientIconButton
 import dev.core.uikit.component.IconActionButton
+import dev.core.uikit.component.screenTopInset
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.common_cancel
 import dev.core.uikit.resources.common_delete
@@ -104,8 +104,9 @@ fun MyBusinessesScreen(
         Column(Modifier.fillMaxSize()) {
             Row(
                 Modifier.fillMaxWidth()
+                    .screenTopInset()
                     .padding(horizontal = AppSpacing.screenHorizontal)
-                    .padding(top = 54.dp, bottom = AppSpacing.sm),
+                    .padding(bottom = AppSpacing.sm),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(AppSpacing.md),
             ) {
@@ -237,38 +238,16 @@ fun MyBusinessesScreen(
             palette = palette,
         )
 
-        // O'chirishни tasdiqlash dialogи.
+        // O'chirish DARROV bajarilmaydi — avval biznes nomi bilan tasdiq so'raladi.
         toDelete?.let { biz ->
-            AlertDialog(
-                onDismissRequest = { toDelete = null },
-                title = {
-                    Text(
-                        stringResource(Res.string.discounts_business_delete_title),
-                        style = AppType.sectionTitle.copy(color = palette.ink),
-                    )
-                },
-                text = {
-                    Text(
-                        stringResource(Res.string.discounts_business_delete_confirm, biz.name),
-                        style = AppType.body.copy(color = palette.inkMuted),
-                    )
-                },
-                confirmButton = {
-                    TextButton(onClick = { vm.delete(biz.id); toDelete = null }) {
-                        Text(
-                            stringResource(Res.string.common_delete),
-                            style = AppType.label.copy(color = palette.danger),
-                        )
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { toDelete = null }) {
-                        Text(
-                            stringResource(Res.string.common_cancel),
-                            style = AppType.body.copy(color = palette.inkMuted),
-                        )
-                    }
-                },
+            ConfirmDialog(
+                visible = true,
+                title = stringResource(Res.string.discounts_business_delete_title),
+                message = stringResource(Res.string.discounts_business_delete_confirm, biz.name),
+                confirmText = stringResource(Res.string.common_delete),
+                onConfirm = { vm.delete(biz.id); toDelete = null },
+                onDismiss = { toDelete = null },
+                palette = palette,
             )
         }
     }

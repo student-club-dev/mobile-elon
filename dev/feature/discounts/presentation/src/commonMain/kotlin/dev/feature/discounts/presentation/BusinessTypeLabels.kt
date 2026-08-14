@@ -69,23 +69,29 @@ fun BusinessTypeInfo.localizedLabel(): String =
  * Nima uchun emoji emas: emoji iOS'da Compose bilan chizilmaydi va `?` kvadratcha bo'lib
  * ko'rinadi. Backend `emoji` maydonini beradi, lekin u faqat ma'lumot uchun.
  *
- * Yaqin turlar bitta ikonkani baham ko'radi (barcha sport maydonlari — koptok), noma'lum
- * tur esa neytral "do'kon" ikonkasini oladi.
+ * Har bir tur **o'z** ikonkasini oladi. Ilgari 12 ta sport turi bitta koptokni, sartaroshxona
+ * esa "usta" gaechnigini baham ko'rardi — 27 turli ro'yxatda ikonka hech qanday ma'lumot
+ * bermay, tanlash faqat matnga qolar edi. Noma'lum tur esa neytral "do'kon" ikonkasini oladi.
  */
 val BusinessType.icon: ImageVector
     get() = when (key) {
-        // Sport maydonlari va zallari
-        "TENNIS", "TABLE_TENNIS", "FOOTBALL_FIELD", "FOOTBALL_TRAINING", "BASKETBALL",
-        "VOLLEYBALL", "BOWLING", "BILLIARDS", "SWIMMING_POOL", "FITNESS", "BOXING",
-        "WRESTLING_MMA",
-        -> AppIcons.Ball
+        // Sport — raketkali, koptokli va zal turlari bir-biridan ajralib turadi
+        "TENNIS", "TABLE_TENNIS" -> AppIcons.Racket
+        "FOOTBALL_FIELD", "FOOTBALL_TRAINING" -> AppIcons.Ball
+        "BASKETBALL" -> AppIcons.Basketball
+        "VOLLEYBALL" -> AppIcons.Volleyball
+        "BOWLING" -> AppIcons.BowlingPin
+        "BILLIARDS" -> AppIcons.Billiards
+        "SWIMMING_POOL" -> AppIcons.Swim
+        "FITNESS" -> AppIcons.Dumbbell
+        "BOXING", "WRESTLING_MMA" -> AppIcons.BoxingGlove
 
         // O'yin zallari
         "PLAYSTATION" -> AppIcons.Gamepad
         "CYBER_CLUB" -> AppIcons.Laptop
 
         // Ko'ngilochar
-        "CINEMA" -> AppIcons.Camera
+        "CINEMA" -> AppIcons.Film
         "KARAOKE" -> AppIcons.Mic
 
         // Ta'lim
@@ -93,14 +99,16 @@ val BusinessType.icon: ImageVector
         "TUTOR" -> AppIcons.GraduationCap
 
         // Ovqatlanish
-        "NATIONAL_FOOD", "FAST_FOOD", "SOMSA" -> AppIcons.Cafe
+        "NATIONAL_FOOD" -> AppIcons.Bowl
+        "FAST_FOOD" -> AppIcons.Burger
+        "SOMSA" -> AppIcons.Pastry
 
         // Xizmatlar va savdo
-        "BARBERSHOP" -> AppIcons.Tools
-        "BEAUTY_SALON" -> AppIcons.Star
-        "PRINTING" -> AppIcons.FileText
-        "RENTAL_HOUSE" -> AppIcons.Home
-        "CLOTHING" -> AppIcons.Cart
+        "BARBERSHOP" -> AppIcons.Scissors
+        "BEAUTY_SALON" -> AppIcons.Sparkles
+        "PRINTING" -> AppIcons.Printer
+        "RENTAL_HOUSE" -> AppIcons.Key
+        "CLOTHING" -> AppIcons.Shirt
 
         else -> AppIcons.Store
     }

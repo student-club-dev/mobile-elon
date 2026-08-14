@@ -5,8 +5,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -15,6 +18,14 @@ import androidx.compose.ui.unit.Dp
 import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.appPalette
+
+/**
+ * [AppScreenScaffold] dan foydalanmaydigan ekranlar uchun ustki padding — status bar
+ * balandligi + [extra]. Qattiq 52-54dp o'rniga shu ishlatiladi.
+ */
+@Composable
+fun Modifier.screenTopInset(extra: Dp = AppSpacing.sm): Modifier =
+    this.windowInsetsPadding(WindowInsets.statusBars).padding(top = extra)
 
 /**
  * Ekran foni va standart paddingi.
@@ -35,6 +46,11 @@ fun AppScreenScaffold(
     Box(modifier = modifier.fillMaxSize().background(palette.bgBrush)) {
         val col = Modifier
             .fillMaxSize()
+            // Ilova `enableEdgeToEdge()` bilan ishlaydi — kontent status bar ORTIDAN
+            // boshlanadi. Busiz orqaga qaytish tugmasi soat va batareya belgilariga
+            // urilib turardi; ekranlar buni har biri o'z 52-54dp "sehrli" paddingi bilan
+            // taxminlab yopardi va turli qurilmalarda turlicha chiqardi.
+            .windowInsetsPadding(WindowInsets.statusBars)
             // Klaviatura ochilganda kontent maydoni qisqaradi. Ilova `enableEdgeToEdge()` bilan
             // ishlaydi — oyna o'zi kichraymaydi, faqat insets yuboradi; busiz pastdagi maydonlar
             // klaviatura ostida ko'rinmay qolardi (`keyboardAware` ham suradigan joy topolmasdi).

@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import dev.core.domain.model.Ad
 import dev.core.uikit.component.AppIcons
+import dev.core.uikit.component.screenTopInset
 import dev.core.uikit.component.GlassRow
 import dev.core.uikit.component.IconTile
 import dev.core.uikit.resources.Res
@@ -77,7 +78,7 @@ fun SectionList(
 
     Column(Modifier.fillMaxSize()) {
         Row(
-            Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg).padding(top = 54.dp),
+            Modifier.fillMaxWidth().screenTopInset(AppSpacing.md).padding(horizontal = AppSpacing.lg),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(11.dp),
         ) {

@@ -57,6 +57,17 @@ interface ListingRepository {
     suspend fun update(listing: Listing): Resource<Listing>
 
     /**
+     * MAVJUD e'lonni moderatsiyaga yuboradi (`POST /listings/{id}/submit`) va serverdagi
+     * yangi holatni qaytaradi.
+     *
+     * [submit] dan farqi: u e'lonni avval YARATADI. Qoralamani (masalan nusxa olingan
+     * e'lonni) tahrirlab "E'lon qilish" bosilganда esa e'lon allaqachon serverда bor —
+     * uni faqat yuborish kerak edi. Busiz `PUT` dan keyin e'lon DRAFT bo'lib qolaverardi
+     * va uni faol qilishning umuman yo'li yo'q edi.
+     */
+    suspend fun submitExisting(id: String): Resource<ListingStatus>
+
+    /**
      * E'lonni to'xtatadi / qayta yoqadi (`POST /listings/{id}/pause` · `/activate`) va
      * **serverdagi yangi holatni** qaytaradi.
      *

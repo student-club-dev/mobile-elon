@@ -10,6 +10,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,7 +25,9 @@ import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.BottomSheetOption
 import dev.core.uikit.component.rememberKeyboardDismiss
 import dev.core.uikit.resources.Res
+import dev.core.uikit.resources.common_search
 import dev.core.uikit.resources.discounts_district_select
+import dev.core.uikit.resources.discounts_search_empty
 import dev.core.uikit.resources.discounts_region_select
 import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
@@ -105,20 +111,29 @@ fun RegionSheet(
     onDismiss: () -> Unit,
     palette: AppPalette,
 ) {
+    // Qidiruv holati sheet ichida yashaydi va yopilganда tozalanadi — keyingi safar
+    // ro'yxat to'liq ochiladi, oldingi filtr bilan emas.
+    var query by remember { mutableStateOf("") }
+    val visibleRegions = remember(regions, query) { regions.filterByName(query) { it.name } }
+
     AppBottomSheet(
         visible = visible,
-        onDismiss = onDismiss,
+        onDismiss = { query = ""; onDismiss() },
         title = stringResource(Res.string.discounts_region_select),
         palette = palette,
+        searchQuery = query,
+        onSearchQueryChange = { query = it },
+        searchPlaceholder = stringResource(Res.string.common_search),
     ) {
-        regions.forEach { region ->
+        visibleRegions.forEach { region ->
             BottomSheetOption(
                 label = region.name,
                 selected = region.id == regionId,
-                onClick = { onSelect(region.id) },
+                onClick = { query = ""; onSelect(region.id) },
                 palette = palette,
             )
         }
+        if (visibleRegions.isEmpty()) SheetEmptyHint(palette)
     }
 }
 
@@ -141,20 +156,51 @@ fun DistrictSheet(
     onDismiss: () -> Unit,
     palette: AppPalette,
 ) {
+    // Toshkent shahrida 11 ta, ba'zi viloyatlarда 20 tagacha tuman bor — qidiruvsiz
+    // kerakligini topish uzoq aylantirishni talab qilardi.
+    var query by remember { mutableStateOf("") }
+    val visibleDistricts = remember(districts, query) { districts.filterByName(query) { it.name } }
+
     AppBottomSheet(
         visible = visible,
-        onDismiss = onDismiss,
+        onDismiss = { query = ""; onDismiss() },
         title = stringResource(Res.string.discounts_district_select),
         palette = palette,
+        searchQuery = query,
+        onSearchQueryChange = { query = it },
+        searchPlaceholder = stringResource(Res.string.common_search),
     ) {
-        districts.forEach { district ->
+        visibleDistricts.forEach { district ->
             BottomSheetOption(
                 label = district.name,
                 selected = district.id == districtId,
-                onClick = { onSelect(district.id) },
+                onClick = { query = ""; onSelect(district.id) },
                 palette = palette,
             )
         }
+        if (visibleDistricts.isEmpty()) SheetEmptyHint(palette)
     }
+}
+
+/**
+ * Ro'yxatni nomi bo'yicha filtrlaydi — registrga sezgir emas va so'z ichidan ham topadi.
+ *
+ * API'da qidiruv yo'q (viloyat/tuman ro'yxati to'liq keladi), shuning uchun filtr mobil
+ * tomonda.
+ */
+private inline fun <T> List<T>.filterByName(query: String, name: (T) -> String): List<T> {
+    val q = query.trim()
+    if (q.isEmpty()) return this
+    return filter { name(it).contains(q, ignoreCase = true) }
+}
+
+/** Qidiruv hech narsa topmaganda — bo'sh oyna o'rniga tushuntirish. */
+@Composable
+internal fun SheetEmptyHint(palette: AppPalette) {
+    Text(
+        stringResource(Res.string.discounts_search_empty),
+        style = AppType.body.copy(color = palette.inkFaint),
+        modifier = Modifier.fillMaxWidth().padding(vertical = AppSpacing.lg),
+    )
 }
 

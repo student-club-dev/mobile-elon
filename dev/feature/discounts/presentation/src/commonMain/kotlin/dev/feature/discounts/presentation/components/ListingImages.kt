@@ -13,9 +13,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -65,15 +73,21 @@ private fun String.decodeDataUri(): ByteArray? {
     return runCatching { Base64.decode(payload) }.getOrNull()
 }
 
-/** Rasm qo'shish katakchasi (bo'sh joy) — bosilganda galereya ochiladi. */
+/**
+ * Rasm qo'shish katakchasi (bo'sh joy) — bosilganda galereya ochiladi.
+ *
+ * Chegara **uzuq chiziqli**: chegarasiz katakning ochiq ko'k foni sahifa foniga qo'shilib
+ * ketardi va u umuman bosiladigan joyга o'xshamasdi ("rasm yuklash borderi yo'q").
+ * Uzuq chiziq esa "bu yerga qo'shing" degan universal belgi.
+ */
 @Composable
 fun AddImageTile(onClick: () -> Unit, loading: Boolean, palette: AppPalette = appPalette) {
     val shape = AppRadius.sm
-    // Bo'sh katak — ochiq ko'k aksent yuzasi, chegara yo'q.
     Box(
         Modifier.size(84.dp)
             .clip(shape)
             .background(palette.accentBg)
+            .dashedBorder(palette.primary.copy(alpha = 0.55f), shape)
             .clickable(enabled = !loading, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
@@ -96,6 +110,29 @@ fun AddImageTile(onClick: () -> Unit, loading: Boolean, palette: AppPalette = ap
         }
     }
 }
+
+/**
+ * Uzuq chiziqli chegara.
+ *
+ * Compose'da `Modifier.border` uzuq chiziqni qo'llab-quvvatlamaydi, shuning uchun kontur
+ * qo'lda chiziladi. Radius [shape] dan olinadi — chegara katakning yumaloq burchaklariga
+ * aynan tushishi kerak.
+ */
+private fun Modifier.dashedBorder(color: Color, shape: RoundedCornerShape): Modifier =
+    drawBehind {
+        val radius = shape.topStart.toPx(size, this)
+        val stroke = 1.5.dp.toPx()
+        drawRoundRect(
+            color = color,
+            topLeft = Offset(stroke / 2, stroke / 2),
+            size = Size(size.width - stroke, size.height - stroke),
+            cornerRadius = CornerRadius(radius, radius),
+            style = Stroke(
+                width = stroke,
+                pathEffect = PathEffect.dashPathEffect(floatArrayOf(6.dp.toPx(), 4.dp.toPx())),
+            ),
+        )
+    }
 
 /** Qo'shilgan rasm — burchagida o'chirish tugmasi. */
 @Composable

@@ -27,6 +27,7 @@ import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppRadius
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
+import dev.core.uikit.theme.ctaShadow
 import dev.core.uikit.theme.rowShadow
 import dev.core.uikit.util.UZ_DIALING_CODE
 
@@ -74,8 +75,13 @@ internal fun formatTimer(seconds: Int): String {
 }
 
 /**
- * Sarlavha ustidagi yumshoq aksentli katta ikonka — OTP, email tasdiqlash va parol
- * tiklash ekranlarida bir xil naqsh.
+ * Sarlavha ustidagi katta ikonka nishoni — OTP, tasdiqlash va parol tiklash ekranlarida
+ * bir xil naqsh.
+ *
+ * Fon **gradient**, ilgarigi ochiq `accentBg` emas: sahifa foni ham ochiq ko'k-kulrang va
+ * nishon unga qo'shilib ketardi — ekranda ramkasiz, "osilib qolgan" ikonka ko'rinardi.
+ * Gradient + soya bilan nishon aniq blok bo'lib turadi va uning chap qirrasi sarlavha
+ * matnining chap qirrasi bilan bitta vertikal chiziqда bo'ladi.
  */
 @Composable
 fun AccentIconTile(
@@ -86,11 +92,11 @@ fun AccentIconTile(
     iconSize: Dp = 30.dp,
 ) {
     Box(
-        // Yangi dizaynda nishon foni — ochiq ko'k `accentBg`, shaffof qatlam emas.
-        Modifier.size(size).background(palette.accentBg, shape),
+        Modifier.size(size).ctaShadow(shape).clip(shape).background(palette.primaryBrush),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(icon, null, tint = palette.primary, modifier = Modifier.size(iconSize))
+        // Gradient USTIDAGI ikonka — har ikkala rejimda oq bo'lib qoladi.
+        Icon(icon, null, tint = palette.onPrimary, modifier = Modifier.size(iconSize))
     }
 }
 

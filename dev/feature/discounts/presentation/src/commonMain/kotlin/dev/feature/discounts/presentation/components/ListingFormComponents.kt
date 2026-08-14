@@ -87,8 +87,12 @@ fun SectionHeader(title: String, subtitle: String?, palette: AppPalette = appPal
 }
 
 /**
- * Tanlanadigan chip — 36dp balandlik, yumshoq squircle shakl, tanlanганда SOLID brand fon
- * (gradient emas), tanlanmaganда nozik chegara.
+ * Tanlanadigan chip — 36dp balandlik, yumshoq squircle shakl.
+ *
+ * Tanlangan chip — SOLID brend fon. Tanlanmagani esa **oq karta + yumshoq soya**, ilgarigi
+ * `accentBg` (#EAF7FD) emas: sahifa foni ham xuddi shunday ochiq ko'k-kulrang va chiplar
+ * unga qo'shilib ketardi — ro'yxatда nechta variant borligi ham bilinmasdi. Matn ham
+ * `inkMuted` dan `ink` ga ko'chdi (kontrast yetarli bo'lsin).
  */
 @Composable
 fun SelectChip(
@@ -100,12 +104,12 @@ fun SelectChip(
     // Chip bosilganda klaviatura yopiladi — u ochiq bo'lsa variantlar ostida qolib ketadi.
     val dismissKeyboard = rememberKeyboardDismiss()
     val shape = AppRadius.sm
-    // Tanlanmagan chip — ochiq ko'k aksent yuzasi (chegara emas).
     Row(
         Modifier
             .height(36.dp)
+            .then(if (selected) Modifier else Modifier.rowShadow(shape))
             .clip(shape)
-            .background(if (selected) palette.primary else palette.accentBg)
+            .background(if (selected) palette.primary else palette.card)
             .clickable { dismissKeyboard(); onClick() }
             .padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -118,8 +122,9 @@ fun SelectChip(
             text,
             style = AppType.label.copy(
                 fontWeight = if (selected) AppType.label.fontWeight else FontWeight.SemiBold,
-                color = if (selected) palette.onPrimary else palette.inkMuted,
+                color = if (selected) palette.onPrimary else palette.ink,
             ),
+            maxLines = 1,
         )
     }
 }

@@ -62,6 +62,16 @@ fun AppBottomSheet(
     title: String,
     modifier: Modifier = Modifier,
     palette: AppPalette = appPalette,
+    /**
+     * Qidiruv maydonining joriy qiymati. `null` — maydon umuman chizilmaydi.
+     *
+     * Uzun ro'yxatlar (27 biznes turi, 20 tagacha tuman) uchun kerak: ilgari kerakli
+     * variantni topish uchun butun ro'yxatni aylantirish shart edi. Filtr chaqiruvchi
+     * tomonda — ro'yxat manbasini faqat u biladi (API'da qidiruv bo'lmasa mahalliy filtr).
+     */
+    searchQuery: String? = null,
+    onSearchQueryChange: (String) -> Unit = {},
+    searchPlaceholder: String = "",
     footer: (@Composable ColumnScope.() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -119,6 +129,19 @@ fun AppBottomSheet(
                     )
                     Spacer(Modifier.height(AppSpacing.lg))
                     Text(title, style = AppType.sheetTitle.copy(color = palette.ink))
+                    // Qidiruv — sarlavhadan KEYIN, ro'yxatdan OLDIN va aylantirilmaydigan
+                    // qismda: ro'yxatni surganda ham maydon ko'z oldida qoladi.
+                    if (searchQuery != null) {
+                        Spacer(Modifier.height(AppSpacing.md))
+                        GlassTextField(
+                            value = searchQuery,
+                            onValueChange = onSearchQueryChange,
+                            placeholder = searchPlaceholder,
+                            leading = AppIcons.Search,
+                            height = 46.dp,
+                            palette = palette,
+                        )
+                    }
                     Spacer(Modifier.height(14.dp))
                     Column(
                         // `fill = false` — matn kalta bo'lsa oyna bo'sh joyni cho'zmasin,

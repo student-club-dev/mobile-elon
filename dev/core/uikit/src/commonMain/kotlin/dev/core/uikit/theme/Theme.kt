@@ -52,10 +52,15 @@ private val DarkColors = darkColorScheme(
 @Composable
 fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    /**
+     * Joriy til kirill yozuvidami (ruscha). Brend shriftida kirill glifi yo'q, shuning uchun
+     * bunda butun ilova tizim sans-serifiga o'tadi — qarang [appFontFamily].
+     */
+    cyrillic: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val colors = if (darkTheme) DarkColors else LightColors
-    val fontFamily = appFontFamily()
+    val fontFamily = appFontFamily(cyrillic)
     val typography = remember(fontFamily) { AppTypography(fontFamily) }
 
     CompositionLocalProvider(

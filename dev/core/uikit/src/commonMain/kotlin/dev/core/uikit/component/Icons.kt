@@ -434,6 +434,169 @@ object AppIcons {
     )
 
     /**
+     * `ic_trash` — o'chirish. Handoff qoidasi: **o'chirish doim savat**, hech qachon `✕`.
+     * `✕` faqat yopish uchun ([Close]) — ikkalasi bir xil ikonka bo'lganda foydalanuvchi
+     * "yopaman" deb bosib, e'lonini o'chirib yuborardi.
+     */
+    val Trash = strokeIcon(
+        "Trash",
+        "M 4 7 h 16",
+        "M 9 7 V 5 a 1 1 0 0 1 1 -1 h 4 a 1 1 0 0 1 1 1 v 2",
+        "M 6 7 l 1 12 a 2 2 0 0 0 2 2 h 6 a 2 2 0 0 0 2 -2 l 1 -12",
+        "M 10 11 v 6",
+        "M 14 11 v 6",
+    )
+
+    // ------------------------------------------------------------------
+    // Biznes turlari — har bir tur o'z ikonkasini oladi.
+    //
+    // Ilgari yaqin turlar bitta ikonkani baham ko'rardi: barcha 12 ta sport turi bitta
+    // koptok, sartaroshxona esa gaechniy kalit ("usta") edi. Ro'yxatda 27 tur bir-biriga
+    // o'xshab ketardi va tanlash faqat matnga qolardi — ikonka umuman ma'lumot bermasdi.
+    // ------------------------------------------------------------------
+
+    /** Sartaroshxona — qaychi. */
+    val Scissors = strokeIcon(
+        "Scissors",
+        "M 5 5 l 11 13",
+        "M 19 5 L 8 18",
+        "M 4 18.5 a 2.5 2.5 0 1 0 5 0 a 2.5 2.5 0 1 0 -5 0",
+        "M 15 18.5 a 2.5 2.5 0 1 0 5 0 a 2.5 2.5 0 1 0 -5 0",
+    )
+
+    /** Go'zallik saloni — yaltiroq (uchqun). */
+    val Sparkles = strokeIcon(
+        "Sparkles",
+        "M 11 3 l 1.7 4.3 L 17 9 l -4.3 1.7 L 11 15 l -1.7 -4.3 L 5 9 l 4.3 -1.7 L 11 3 z",
+        "M 17.5 14 l 0.9 2.1 l 2.1 0.9 l -2.1 0.9 l -0.9 2.1 l -0.9 -2.1 l -2.1 -0.9 l 2.1 -0.9 l 0.9 -2.1 z",
+    )
+
+    /** Kinoteatr — kinolenta (ilgari fotoapparat edi, bu esa "rasm yuklash" bilan chalkashardi). */
+    val Film = strokeIcon(
+        "Film",
+        "M 3 5 a 1 1 0 0 1 1 -1 h 16 a 1 1 0 0 1 1 1 v 14 a 1 1 0 0 1 -1 1 H 4 a 1 1 0 0 1 -1 -1 z",
+        "M 7 4 v 16",
+        "M 17 4 v 16",
+        "M 3 9 h 4 M 3 15 h 4 M 17 9 h 4 M 17 15 h 4",
+    )
+
+    /** Fitnes / trenajyor zali — gantel. */
+    val Dumbbell = strokeIcon(
+        "Dumbbell",
+        "M 3 9 h 2 v 6 H 3 z",
+        "M 19 9 h 2 v 6 h -2 z",
+        "M 5 7.5 h 3 v 9 H 5 z",
+        "M 16 7.5 h 3 v 9 h -3 z",
+        "M 8 12 h 8",
+    )
+
+    /** Tennis va stol tennisi — raketka. */
+    val Racket = strokeIcon(
+        "Racket",
+        "M 9.5 3 a 6.5 6.5 0 0 1 5 11 l -2 -2 a 6.5 6.5 0 0 1 -3 -9 z",
+        "M 4 8.5 a 6.5 6.5 0 0 0 8.5 8.5",
+        "M 11.5 15.5 l 6 6",
+        "M 17.5 19 l 2 -2",
+    )
+
+    /** Bouling — kegli va shar. */
+    val BowlingPin = strokeIcon(
+        "BowlingPin",
+        "M 10 3 c 3 0 4 3 3 6 c -0.6 1.8 -0.6 3.2 0 5 c 1 3 0 6 -3 6 s -4 -3 -3 -6 c 0.6 -1.8 0.6 -3.2 0 -5 c -1 -3 0 -6 3 -6 z",
+        "M 16 16 a 3 3 0 1 0 6 0 a 3 3 0 1 0 -6 0",
+    )
+
+    /** Bilyard — shar va kiy. */
+    val Billiards = strokeIcon(
+        "Billiards",
+        "M 3 16 a 4.5 4.5 0 1 0 9 0 a 4.5 4.5 0 1 0 -9 0",
+        "M 6.4 16 a 1.1 1.1 0 1 0 2.2 0 a 1.1 1.1 0 1 0 -2.2 0",
+        "M 11 13 L 21 3",
+    )
+
+    /** Suzish havzasi — to'lqinlar. */
+    val Swim = strokeIcon(
+        "Swim",
+        "M 2 16 c 2 -1.5 3.3 -1.5 5 0 s 3 1.5 5 0 s 3.3 -1.5 5 0 s 3 1.5 5 0",
+        "M 2 20 c 2 -1.5 3.3 -1.5 5 0 s 3 1.5 5 0 s 3.3 -1.5 5 0 s 3 1.5 5 0",
+        "M 7 12 l 6 -4",
+        "M 14.5 5.5 a 1.5 1.5 0 1 0 3 0 a 1.5 1.5 0 1 0 -3 0",
+        "M 13 8 l 4 3",
+    )
+
+    /** Boks va kurash / MMA — qo'lqop. */
+    val BoxingGlove = strokeIcon(
+        "BoxingGlove",
+        "M 6 5 a 3 3 0 0 1 3 -3 h 5 a 5 5 0 0 1 5 5 v 4 a 4 4 0 0 1 -4 4 H 6 z",
+        "M 6 15 h 9 v 3 a 2 2 0 0 1 -2 2 H 8 a 2 2 0 0 1 -2 -2 z",
+        "M 6 9 h 3",
+    )
+
+    /** Kiyim-kechak — futbolka (savat "xarid"ni bildirardi, turni emas). */
+    val Shirt = strokeIcon(
+        "Shirt",
+        "M 9 3 L 4 5.5 L 6 10 l 2 -1 v 12 h 8 V 9 l 2 1 l 2 -4.5 L 15 3",
+        "M 9 3 a 3 3 0 0 0 6 0",
+    )
+
+    /** Fast food — burger. */
+    val Burger = strokeIcon(
+        "Burger",
+        "M 4 9 a 8 5 0 0 1 16 0 z",
+        "M 3.5 13 h 17",
+        "M 4 16.5 h 16 a 3 3 0 0 1 -3 3 H 7 a 3 3 0 0 1 -3 -3 z",
+    )
+
+    /** Milliy taomlar — kosa. */
+    val Bowl = strokeIcon(
+        "Bowl",
+        "M 3 11 h 18 a 9 9 0 0 1 -18 0 z",
+        "M 9 7 c 0 -1.5 1.5 -1.5 1.5 -3",
+        "M 13 7 c 0 -1.5 1.5 -1.5 1.5 -3",
+        "M 5 20 h 14",
+    )
+
+    /** Somsa / nonvoyxona — uchburchak somsa. */
+    val Pastry = strokeIcon(
+        "Pastry",
+        "M 12 4 l 8 15 H 4 z",
+        "M 12 4 v 15",
+        "M 8 12 h 8",
+    )
+
+    /** Bosmaxona / tipografiya — printer. */
+    val Printer = strokeIcon(
+        "Printer",
+        "M 7 8 V 4 h 10 v 4",
+        "M 5 8 h 14 a 2 2 0 0 1 2 2 v 5 a 2 2 0 0 1 -2 2 h -2 M 7 17 H 5 a 2 2 0 0 1 -2 -2 v -5 a 2 2 0 0 1 2 -2 z",
+        "M 7 14 h 10 v 6 H 7 z",
+    )
+
+    /** Ijara uy-joy — kalit. */
+    val Key = strokeIcon(
+        "Key",
+        "M 13.5 3 a 5.5 5.5 0 1 1 -4 9.3 L 3 19 v 2 h 3 v -2 h 2 v -2 h 2 l 1.5 -1.5 A 5.5 5.5 0 0 1 13.5 3 z",
+        "M 15.5 7.5 a 1 1 0 1 0 2 0 a 1 1 0 1 0 -2 0",
+    )
+
+    /** Basketbol maydoni — chiziqli koptok. */
+    val Basketball = strokeIcon(
+        "Basketball",
+        "M 3 12 a 9 9 0 1 0 18 0 a 9 9 0 1 0 -18 0",
+        "M 12 3 v 18",
+        "M 3.6 9 h 16.8 M 3.6 15 h 16.8",
+    )
+
+    /** Voleybol maydoni — egri chiziqli koptok. */
+    val Volleyball = strokeIcon(
+        "Volleyball",
+        "M 3 12 a 9 9 0 1 0 18 0 a 9 9 0 1 0 -18 0",
+        "M 12 3 a 12 12 0 0 0 0 18",
+        "M 4 7.5 a 12 12 0 0 1 15.5 4",
+        "M 4.5 16.5 a 12 12 0 0 0 15 -4",
+    )
+
+    /**
      * Erkak belgisi (Mars). Handoff to'plamida jins ikonkalari yo'q — Lucide'dan olindi,
      * chunki kiyim-kechak e'lonida jins tanlash 👨/👩 emojisidan xoli bo'lishi kerak.
      */

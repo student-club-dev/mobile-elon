@@ -27,7 +27,7 @@ import dev.core.uikit.component.AppFieldType
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.AppScreenScaffold
 import dev.core.uikit.component.BackButton
-import dev.core.uikit.component.ErrorText
+import dev.core.uikit.component.ToastEffect
 import dev.core.uikit.component.FieldLabel
 import dev.core.uikit.component.GlassTextField
 import dev.core.uikit.component.HintText
@@ -87,6 +87,9 @@ fun AccountSetupScreen(
             vm.uploadAvatar(picked.bytes, picked.fileName)
         }
     }
+
+    // Xato tugma tagidagi qizil yozuv emas, yuqori o'ng burchakdagi toast bo'lib chiqadi.
+    ToastEffect(state.error, onConsumed = vm::clearError)
 
     AppScreenScaffold(scroll = true) {
         BackButton(onBack, contentDescription = stringResource(Res.string.common_back))
@@ -188,7 +191,6 @@ fun AccountSetupScreen(
             trailingIcon = AppIcons.ArrowRight,
         )
 
-        ErrorText(state.error)
 
         Spacer(Modifier.height(AppSpacing.md))
         HintText(stringResource(Res.string.auth_account_setup_hint))

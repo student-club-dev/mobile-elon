@@ -2,10 +2,14 @@ package dev.core.uikit.component
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
 import dev.core.uikit.theme.AppPalette
 import dev.core.uikit.theme.AppSpacing
@@ -32,9 +36,35 @@ fun ScreenSubtitle(text: String, modifier: Modifier = Modifier, palette: AppPale
     Text(text, modifier, style = AppType.subtitle.copy(color = palette.inkMuted))
 }
 
+/**
+ * Maydon ustidagi yorliq.
+ *
+ * `fillMaxWidth` ataylab: yorliq blok elementi va **hech qachon o'ralmasligi** kerak.
+ * Busiz "Your phone number" ba'zi ekranlarda ikki qatorga siqilib qolardi.
+ *
+ * [required] — majburiy maydon: yorliq oldiga qizil `*` qo'yiladi. Ilgari majburiy maydon
+ * hech nima bilan belgilanmasdi va foydalanuvchi tugma nega o'chiq turganini bilmasdi.
+ */
 @Composable
-fun FieldLabel(text: String, modifier: Modifier = Modifier, palette: AppPalette = appPalette) {
-    Text(text, modifier, style = AppType.fieldLabel.copy(color = palette.ink))
+fun FieldLabel(
+    text: String,
+    modifier: Modifier = Modifier,
+    required: Boolean = false,
+    palette: AppPalette = appPalette,
+) {
+    val style = AppType.fieldLabel.copy(color = palette.ink)
+    if (!required) {
+        Text(text, modifier.fillMaxWidth(), style = style)
+        return
+    }
+    Text(
+        buildAnnotatedString {
+            withStyle(SpanStyle(color = palette.danger)) { append("* ") }
+            append(text)
+        },
+        modifier.fillMaxWidth(),
+        style = style,
+    )
 }
 
 @Composable

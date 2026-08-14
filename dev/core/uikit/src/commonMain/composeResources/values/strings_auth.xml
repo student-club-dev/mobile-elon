@@ -86,7 +86,7 @@
     <!-- ============ Parolni tiklash ============ -->
     <string name="auth_forgot_title">Parolni tiklash</string>
     <string name="auth_forgot_subtitle">Email manzilingizni kiriting — parolni tiklash havolasini yuboramiz.</string>
-    <string name="auth_forgot_send">Tiklash havolasini yuborish</string>
+    <string name="auth_forgot_send">Kod yuborish</string>
     <string name="auth_back_to_login">Kirishga qaytish</string>
 
     <!-- ============ Ro'yxatdan o'tish usuli ============ -->
@@ -274,4 +274,5 @@
     <string name="auth_account_setup_subtitle">Ism va familiyangizni kiriting — ular biznes va e'lonlaringizda ko'rinadi.</string>
     <string name="auth_account_setup_email_hint">Email ixtiyoriy — hisobingiz bilan bog'lanish uchun.</string>
     <string name="auth_account_setup_hint">Ism va familiya majburiy. Rasm va emailni keyinroq profildan o'zgartirasiz.</string>
+    <string name="auth_password_updated">Parol muvaffaqiyatli yangilandi</string>
 </resources>

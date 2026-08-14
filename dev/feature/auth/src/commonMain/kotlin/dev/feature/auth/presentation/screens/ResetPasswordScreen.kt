@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.sp
 import dev.core.uikit.component.AppIcons
 import dev.core.uikit.component.AppScreenScaffold
 import dev.core.uikit.component.BackButton
-import dev.core.uikit.component.ErrorText
+import dev.core.uikit.component.ToastEffect
 import dev.core.uikit.component.FieldLabel
 import dev.core.uikit.component.GlassTextField
 import dev.core.uikit.component.PrimaryButton
@@ -78,6 +78,9 @@ fun ResetCodeScreen(
     onResend: () -> Unit,
     palette: AppPalette = appPalette,
 ) {
+    // Xato tugma tagidagi qizil yozuv emas, yuqori o'ng burchakdagi toast bo'lib chiqadi.
+    ToastEffect(state.error, onConsumed = vm::clearError)
+
     AppScreenScaffold(scroll = true) {
         BackButton(onBack, contentDescription = stringResource(Res.string.common_back))
         Spacer(Modifier.height(AppSpacing.xl))
@@ -120,7 +123,6 @@ fun ResetCodeScreen(
             enabled = state.otpValid && !state.isLoading,
         )
 
-        ErrorText(state.error)
         Spacer(Modifier.height(AppSpacing.lg))
     }
 }
@@ -141,6 +143,9 @@ fun ResetPasswordScreen(
     palette: AppPalette = appPalette,
 ) {
     val pwVisual = if (state.passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
+    // Xato tugma tagidagi qizil yozuv emas, yuqori o'ng burchakdagi toast bo'lib chiqadi.
+    ToastEffect(state.error, onConsumed = vm::clearError)
+
     AppScreenScaffold(scroll = true) {
         BackButton(onBack, contentDescription = stringResource(Res.string.common_back))
         Spacer(Modifier.height(AppSpacing.xl))
@@ -191,7 +196,6 @@ fun ResetPasswordScreen(
             trailingIcon = AppIcons.Check,
         )
 
-        ErrorText(state.error)
         Spacer(Modifier.height(AppSpacing.lg))
     }
 }

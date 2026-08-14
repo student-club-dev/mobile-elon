@@ -137,10 +137,12 @@ fun PriceAndDiscountSection(
             ),
             palette,
         )
+        // `AppFieldType.Money` — holatда xom raqamlar qoladi, ekranда esa summa kiritish
+        // paytining O'ZIDA bo'sh joy bilan guruhlanadi ("50 000").
         GlassTextField(
             state.originalPrice, vm::onPrice, stringResource(Res.string.discounts_price_old_hint),
             height = AppSize.fieldHeight,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            type = AppFieldType.Money,
             trailing = { Suffix(stringResource(Res.string.discounts_sum_suffix), palette) },
             palette = palette,
         )
@@ -154,7 +156,7 @@ fun PriceAndDiscountSection(
                 state.discountValue, vm::onDiscountValue,
                 stringResource(Res.string.discounts_price_new_hint),
                 height = AppSize.fieldHeight,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                type = AppFieldType.Money,
                 trailing = { Suffix(stringResource(Res.string.discounts_sum_suffix), palette) },
                 palette = palette,
             )
