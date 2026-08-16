@@ -471,4 +471,29 @@
     <string name="discounts_cat_greens_somsa">Greens samsa</string>
     <string name="discounts_cat_tandir_non">Tandoor bread</string>
     <string name="discounts_cat_patir">Patir bread</string>
+
+    <!-- ============ Week days (branch working hours) ============ -->
+    <string name="discounts_day_mon">Monday</string>
+    <string name="discounts_day_tue">Tuesday</string>
+    <string name="discounts_day_wed">Wednesday</string>
+    <string name="discounts_day_thu">Thursday</string>
+    <string name="discounts_day_fri">Friday</string>
+    <string name="discounts_day_sat">Saturday</string>
+    <string name="discounts_day_sun">Sunday</string>
+
+    <!-- ============ Regions ============ -->
+    <string name="discounts_region_toshkent_shahri">Tashkent city</string>
+    <string name="discounts_region_toshkent_viloyati">Tashkent region</string>
+    <string name="discounts_region_andijon">Andijan region</string>
+    <string name="discounts_region_buxoro">Bukhara region</string>
+    <string name="discounts_region_fargona">Fergana region</string>
+    <string name="discounts_region_jizzax">Jizzakh region</string>
+    <string name="discounts_region_namangan">Namangan region</string>
+    <string name="discounts_region_navoiy">Navoiy region</string>
+    <string name="discounts_region_qashqadaryo">Kashkadarya region</string>
+    <string name="discounts_region_qoraqalpogiston">Republic of Karakalpakstan</string>
+    <string name="discounts_region_samarqand">Samarkand region</string>
+    <string name="discounts_region_sirdaryo">Sirdaryo region</string>
+    <string name="discounts_region_surxondaryo">Surkhandarya region</string>
+    <string name="discounts_region_xorazm">Khorezm region</string>
 </resources>

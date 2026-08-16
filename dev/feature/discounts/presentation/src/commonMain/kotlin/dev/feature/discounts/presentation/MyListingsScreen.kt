@@ -42,8 +42,8 @@ import dev.core.uikit.component.BannerTone
 import dev.core.uikit.component.ConfirmDialog
 import dev.core.uikit.component.EmptyState
 import dev.core.uikit.component.ErrorState
+import dev.core.uikit.component.CompactPrimaryButton
 import dev.core.uikit.component.IconTile
-import dev.core.uikit.component.PrimaryButton
 import dev.core.uikit.component.ScreenTopBar
 import dev.core.uikit.component.screenTopInset
 import dev.core.uikit.component.SoftPill
@@ -61,7 +61,6 @@ import dev.core.uikit.resources.discounts_action_stats
 import dev.core.uikit.resources.discounts_action_withdraw
 import dev.core.uikit.resources.discounts_add_discount
 import dev.core.uikit.resources.discounts_add_listing
-import dev.core.uikit.resources.discounts_create_cd
 import dev.core.uikit.resources.discounts_empty_discount_message
 import dev.core.uikit.resources.discounts_empty_discount_title
 import dev.core.uikit.resources.discounts_empty_listing_message
@@ -105,9 +104,6 @@ fun MyListingsScreen(
     onCreate: () -> Unit,
     onEdit: (String) -> Unit,
     onBack: (() -> Unit)? = null,
-    // Biznes shell'ida header "+" yashiriladi — u yerda biznes sarlavhasi ostida to'liq
-    // kenglikdagi "E'lon qo'shish" tugmasi bor.
-    showHeaderCreate: Boolean = true,
     // Umumiy sarlavha ("E'lonlarim"). Biznes ochilganда uning o'rniga biznes sarlavhasi
     // (logo + nom + holat + tahrirlash) chiziladi.
     showHeader: Boolean = true,
@@ -159,17 +155,6 @@ fun MyListingsScreen(
                 backContentDescription = stringResource(Res.string.common_back),
                 modifier = Modifier.screenTopInset().padding(horizontal = AppSpacing.lg),
                 palette = palette,
-                trailing = if (!showHeaderCreate) null else {
-                    {
-                        BackButton(
-                            onClick = onCreate,
-                            icon = AppIcons.Plus,
-                            contentDescription = stringResource(Res.string.discounts_create_cd),
-                            iconSize = 18.dp,
-                            palette = palette,
-                        )
-                    }
-                },
             )
             Spacer(Modifier.height(14.dp))
         }
@@ -184,18 +169,6 @@ fun MyListingsScreen(
                 onBack = onBack,
                 onEdit = onEditBusiness,
             )
-            // "E'lon qo'shish" — sarlavha ostida, chapdan "+" bilan. Ilgari bu tugma
-            // o'ng-past burchakdagi suzuvchi FAB edi va bo'sh holatдаgi "Add listing"
-            // bilan ikkilanardi; bundan tashqari u modal oyna USTIDA chizilib qolardi.
-            if (listings.isNotEmpty()) {
-                PrimaryButton(
-                    text = stringResource(Res.string.discounts_add_listing),
-                    onClick = onCreate,
-                    modifier = Modifier.padding(horizontal = AppSpacing.lg, vertical = AppSpacing.sm),
-                    leadingIcon = AppIcons.Plus,
-                    palette = palette,
-                )
-            }
         } else {
             state.business?.let { business ->
                 BusinessHeaderBar(business, palette, onBack = null, onEdit = null, topInset = false)
@@ -290,6 +263,25 @@ fun MyListingsScreen(
             }
         }
     }
+
+        // "+ E'lon" — o'ng-past burchakda suzuvchi CTA, "Bizneslarim" ekranidagi "+ Biznes"
+        // bilan bir xil naqsh. Ilgari u sarlavha ostidagi to'liq kenglikdagi tugma edi va
+        // ro'yxatning eng qimmatli joyini — birinchi ekranni — egallab turardi.
+        //
+        // Modal oynalardan (amallar, statistika, kassir, o'chirish tasdig'i) OLDIN chiziladi,
+        // shu sabab ular ochilganда tugma ularning ostida qoladi.
+        if (listings.isNotEmpty()) {
+            CompactPrimaryButton(
+                text = stringResource(
+                    if (filterDiscount == true) Res.string.discounts_add_discount
+                    else Res.string.discounts_add_listing,
+                ),
+                onClick = onCreate,
+                modifier = Modifier.align(Alignment.BottomEnd)
+                    .padding(end = AppSpacing.screenHorizontal, bottom = AppSpacing.screenBottom),
+                palette = palette,
+            )
+        }
 
         ListingActionsSheet(
             listing = moreFor,

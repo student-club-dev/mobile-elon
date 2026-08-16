@@ -26,7 +26,6 @@ import dev.core.uikit.component.BottomSheetOption
 import dev.core.uikit.component.rememberKeyboardDismiss
 import dev.core.uikit.resources.Res
 import dev.core.uikit.resources.common_search
-import dev.core.uikit.resources.discounts_district_select
 import dev.core.uikit.resources.discounts_search_empty
 import dev.core.uikit.resources.discounts_region_select
 import dev.core.uikit.theme.AppPalette
@@ -35,8 +34,8 @@ import dev.core.uikit.theme.AppSize
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.rowShadow
-import dev.feature.discounts.domain.model.District
 import dev.feature.discounts.domain.model.Region
+import dev.feature.discounts.presentation.localizedName
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -114,7 +113,11 @@ fun RegionSheet(
     // Qidiruv holati sheet ichida yashaydi va yopilganда tozalanadi — keyingi safar
     // ro'yxat to'liq ochiladi, oldingi filtr bilan emas.
     var query by remember { mutableStateOf("") }
-    val visibleRegions = remember(regions, query) { regions.filterByName(query) { it.name } }
+    // Ro'yxat TARJIMA QILINGAN nom bilan chiziladi va filtr ham shu nom bo'yicha ishlaydi:
+    // ilova ruscha bo'lsa foydalanuvchi "Ташкент" deb yozadi, serverdagi "Toshkent" deb emas.
+    // Zaxira sifatida o'zbekcha nom ham tekshiriladi — lotin harflar bilan yozgan ham topsin.
+    val localized = regions.map { region -> region to region.localizedName() }
+    val visibleRegions = localized.filterByName(query) { (region, label) -> "$label ${region.name}" }
 
     AppBottomSheet(
         visible = visible,
@@ -125,9 +128,9 @@ fun RegionSheet(
         onSearchQueryChange = { query = it },
         searchPlaceholder = stringResource(Res.string.common_search),
     ) {
-        visibleRegions.forEach { region ->
+        visibleRegions.forEach { (region, label) ->
             BottomSheetOption(
-                label = region.name,
+                label = label,
                 selected = region.id == regionId,
                 onClick = { query = ""; onSelect(region.id) },
                 palette = palette,
@@ -137,50 +140,10 @@ fun RegionSheet(
     }
 }
 
-/**
- * Tuman tanlash sheet'i.
- *
- * Nega alohida maydon: `LocationDto.districtId` **majburiy** va tanlangan viloyatga tegishli
- * bo'lishi shart (`422 DISTRICT_REGION_MISMATCH`). Teskari geokodlash tumanni har doim ham
- * topa olmaydi, shuning uchun uni qo'lda ko'rsatish yo'li bo'lishi kerak.
- *
- * [districts] — tanlangan viloyatning tumanlari (`GET /v1/districts?regionId=`, xato bo'lsa
- * klient katalogi).
- */
-@Composable
-fun DistrictSheet(
-    visible: Boolean,
-    districts: List<District>,
-    districtId: String?,
-    onSelect: (String) -> Unit,
-    onDismiss: () -> Unit,
-    palette: AppPalette,
-) {
-    // Toshkent shahrida 11 ta, ba'zi viloyatlarда 20 tagacha tuman bor — qidiruvsiz
-    // kerakligini topish uzoq aylantirishni talab qilardi.
-    var query by remember { mutableStateOf("") }
-    val visibleDistricts = remember(districts, query) { districts.filterByName(query) { it.name } }
-
-    AppBottomSheet(
-        visible = visible,
-        onDismiss = { query = ""; onDismiss() },
-        title = stringResource(Res.string.discounts_district_select),
-        palette = palette,
-        searchQuery = query,
-        onSearchQueryChange = { query = it },
-        searchPlaceholder = stringResource(Res.string.common_search),
-    ) {
-        visibleDistricts.forEach { district ->
-            BottomSheetOption(
-                label = district.name,
-                selected = district.id == districtId,
-                onClick = { query = ""; onSelect(district.id) },
-                palette = palette,
-            )
-        }
-        if (visibleDistricts.isEmpty()) SheetEmptyHint(palette)
-    }
-}
+// Tuman tanlash sheet'i BOR EDI — olib tashlandi. Biznes formasi endi faqat viloyatni
+// so'raydi: `LocationDto.districtId` backendда majburiy bo'lsa ham, ilovada hech qayerda
+// ishlatilmaydi (e'lon filtrlari viloyat darajasida) va uni qiymatini
+// `AddBusinessViewModel.fillDistrict` avtomatik qo'yadi.
 
 /**
  * Ro'yxatni nomi bo'yicha filtrlaydi — registrga sezgir emas va so'z ichidan ham topadi.

@@ -18,7 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import dev.core.uikit.component.AppFieldType
 import dev.core.uikit.component.keyboardAware
 import dev.core.uikit.resources.Res
@@ -32,6 +34,7 @@ import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.rowShadow
 import dev.feature.discounts.domain.model.BranchWorkingHours
 import dev.feature.discounts.domain.model.WeekDay
+import dev.feature.discounts.presentation.localizedLabel
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -64,10 +67,13 @@ fun WorkingHoursSection(
                 horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
             ) {
                 Text(
-                    day.day.label,
-                    style = AppType.fieldLabel.copy(color = palette.ink),
+                    // `WeekDay.label` EMAS: u domain'da qattiq o'zbekcha yozilgan va rus/ingliz
+                    // tilida ham "Dushanba" bo'lib chiqardi.
+                    day.day.localizedLabel(),
+                    style = AppType.fieldLabel.copy(fontSize = 13.sp, color = palette.ink),
                     modifier = Modifier.width(DayLabelWidth),
                     maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
 
                 if (day.isClosed) {
@@ -98,8 +104,14 @@ fun WorkingHoursSection(
     }
 }
 
-/** Kun nomi ustuni — "Chorshanba" eng uzuni, shunga qarab o'lchandi. */
-private val DayLabelWidth = 76.dp
+/**
+ * Kun nomi ustuni — eng uzun variantga qarab o'lchandi.
+ *
+ * O'lchov ruscha bo'yicha: "Понедельник"/"Воскресенье" (11 belgi) o'zbekcha "Chorshanba" va
+ * inglizcha "Wednesday" dan uzun. Ustun hamma tilда bir xil kenglikdа qoladi, aks holda
+ * jadval qatorlari til almashganda siljib turardi.
+ */
+private val DayLabelWidth = 86.dp
 
 /** Qator balandligi — vaqt kartasi va holat chipi bir xil balandlikда. */
 private val RowHeight = 42.dp

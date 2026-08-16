@@ -471,4 +471,29 @@
     <string name="discounts_cat_greens_somsa">Самса с зеленью</string>
     <string name="discounts_cat_tandir_non">Тандырная лепёшка</string>
     <string name="discounts_cat_patir">Патыр / лепёшка</string>
+
+    <!-- ============ Дни недели (график работы филиала) ============ -->
+    <string name="discounts_day_mon">Понедельник</string>
+    <string name="discounts_day_tue">Вторник</string>
+    <string name="discounts_day_wed">Среда</string>
+    <string name="discounts_day_thu">Четверг</string>
+    <string name="discounts_day_fri">Пятница</string>
+    <string name="discounts_day_sat">Суббота</string>
+    <string name="discounts_day_sun">Воскресенье</string>
+
+    <!-- ============ Регионы ============ -->
+    <string name="discounts_region_toshkent_shahri">город Ташкент</string>
+    <string name="discounts_region_toshkent_viloyati">Ташкентская область</string>
+    <string name="discounts_region_andijon">Андижанская область</string>
+    <string name="discounts_region_buxoro">Бухарская область</string>
+    <string name="discounts_region_fargona">Ферганская область</string>
+    <string name="discounts_region_jizzax">Джизакская область</string>
+    <string name="discounts_region_namangan">Наманганская область</string>
+    <string name="discounts_region_navoiy">Навоийская область</string>
+    <string name="discounts_region_qashqadaryo">Кашкадарьинская область</string>
+    <string name="discounts_region_qoraqalpogiston">Республика Каракалпакстан</string>
+    <string name="discounts_region_samarqand">Самаркандская область</string>
+    <string name="discounts_region_sirdaryo">Сырдарьинская область</string>
+    <string name="discounts_region_surxondaryo">Сурхандарьинская область</string>
+    <string name="discounts_region_xorazm">Хорезмская область</string>
 </resources>

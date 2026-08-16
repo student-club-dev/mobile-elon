@@ -219,14 +219,17 @@ data class AddBusinessUiState(
     val regionId: String? = null,
     /**
      * Tuman — `LocationDto.districtId` **majburiy** va tanlangan viloyatga tegishli bo'lishi
-     * shart (aks holda `422 DISTRICT_REGION_MISMATCH`). Teskari geokodlash topsa avtomatik
-     * to'ladi, topa olmasa foydalanuvchi o'zi tanlaydi.
+     * shart (aks holda `422 DISTRICT_REGION_MISMATCH`).
+     *
+     * Forma buni SO'RAMAYDI: foydalanuvchi faqat viloyatni tanlaydi, tuman esa
+     * [AddBusinessViewModel.fillDistrict] tomonidan avtomatik qo'yiladi (teskari geokodlash →
+     * manzil matni → viloyatning birinchi tumani). Ilgari bu alohida maydon edi va odatda
+     * ortiqcha qadam bo'lardi: e'lon filtrlari viloyat darajasida ishlaydi, tuman esa faqat
+     * backend talabi.
      */
     val districtId: String? = null,
     /** Viloyat tanlash sheet'i ochiqmi (`AppBottomSheet`). */
     val regionPickerOpen: Boolean = false,
-    /** Tuman tanlash sheet'i ochiqmi. */
-    val districtPickerOpen: Boolean = false,
     /**
      * Filial ish vaqti — backend yetti kunni ham kutadi (`BranchRequestDto.workingHours`),
      * shuning uchun forma odatiy jadval bilan ochiladi.
@@ -272,29 +275,39 @@ data class AddBusinessUiState(
 ) {
     val editing: Boolean get() = editId != null
     val phoneDigits: String get() = phone.filter { it.isDigit() }.take(9)
-    /** Tanlangan viloyat nomi — ko'rsatish uchun. */
-    val regionName: String? get() = regions.firstOrNull { it.id == regionId }?.name
+    /** Tanlangan viloyat — ekran uning nomini joriy tilda ko'rsatadi (`localizedName`). */
+    val selectedRegion: Region? get() = regions.firstOrNull { it.id == regionId }
 
-    /** Tanlangan viloyatning tumanlari — tuman sheet'i shu ro'yxatdan to'ladi. */
-    val districts: List<District> get() = regions.firstOrNull { it.id == regionId }?.districts.orEmpty()
-
-    val districtName: String? get() = districts.firstOrNull { it.id == districtId }?.name
+    /** Viloyatning tumanlari — tumanni avtomatik tanlash shu ro'yxatdan boradi. */
+    fun districtsOf(regionId: String?): List<District> =
+        regions.firstOrNull { it.id == regionId }?.districts.orEmpty()
 
     /**
-     * Tuman maydonini KO'RSATISH kerakmi.
+     * Filial manzilidan tumanni topadi, topilmasa ro'yxatning birinchisini beradi.
      *
-     * Odatda tuman so'ralmaydi — uni xaritadagi nuqta beradi. Lekin `LocationDto.districtId`
-     * backendда majburiy: geokoder tumanni topa olmasa yoki viloyat qo'lda almashtirilib eski
-     * tuman bekor bo'lsa, foydalanuvchi uni o'zi ko'rsatishi kerak. Aks holda saqlash
-     * `422 DISTRICT_REGION_MISMATCH` bilan yiqilar va formada tuzatadigan joy bo'lmasdi.
-     *
-     * Joy tanlanmaguncha maydon umuman chiqmaydi: avval xarita, keyin — agar kerak bo'lsa — tuman.
+     * Manzil bo'yicha moslash geokoder `districtId` bermaganда ham ko'p hollarда to'g'ri
+     * javob beradi: Nominatim manzil satrida tuman nomini qaytaradi ("Chilonzor tumani,
+     * Toshkent"). Zaxira sifatidagi "birinchi tuman" — backend talabini qondirish uchun;
+     * u ilovadagi hech qanday ko'rinishga ta'sir qilmaydi.
      */
-    val needsDistrictChoice: Boolean get() = branch != null && districtId == null
+    fun matchDistrict(candidates: List<District>): String? {
+        val address = branch?.address.orEmpty()
+        val matched = candidates.firstOrNull { it.name.isNotBlank() && address.contains(it.name, ignoreCase = true) }
+        return (matched ?: candidates.firstOrNull())?.id
+    }
 
+    /**
+     * Tuman [districtId] bu yerда TEKSHIRILMAYDI, garchi backend uni talab qilsa ham.
+     *
+     * Sabab: forma tumanni so'ramaydi (u avtomatik qo'yiladi), ya'ni foydalanuvchi uni
+     * to'ldira olmaydi. Agar viloyat ro'yxati tumansiz kelib qolsa, shart bu yerда tursa
+     * "Yaratish" tugmasi abadiy o'chiq qolar va sababi ekranда hech qayerda ko'rinmasdi.
+     * Bu holatda so'rov serverga ketadi va uning javobi toast bo'lib chiqadi — hech
+     * bo'lmasa o'qiladigan xato.
+     */
     val canSave: Boolean
         get() = name.isNotBlank() && phoneDigits.length == 9 && businessType != null &&
-            branch != null && regionId != null && districtId != null &&
+            branch != null && regionId != null &&
             workingHours.all { it.isValid } && !saving
 }
 
@@ -343,6 +356,8 @@ class AddBusinessViewModel(
                     workingHours = BranchWorkingHours.fullWeek(branch?.workingHours.orEmpty()),
                 )
             }
+            // Eski biznes tumansiz saqlangan bo'lishi mumkin — saqlash `422` bermasin.
+            fillDistrict()
         }
     }
 
@@ -351,6 +366,8 @@ class AddBusinessViewModel(
         viewModelScope.launch {
             val regions = regionRepository.regions()
             if (regions.isNotEmpty()) _state.update { it.copy(regions = regions) }
+            // Ro'yxat kech kelishi mumkin — tuman shu paytgacha tanlanmagan bo'lsa hozir tanlanadi.
+            fillDistrict()
         }
         viewModelScope.launch {
             settings.observeValue(SettingsRepository.KEY_GENDER).collect { code ->
@@ -472,19 +489,17 @@ class AddBusinessViewModel(
                 val regionId = branch.regionId ?: state.regionId
                 // Tuman viloyatga tegishli bo'lishi shart (`422 DISTRICT_REGION_MISMATCH`):
                 // geokoder bergan tuman boshqa viloyatniki bo'lsa yoki viloyat almashgan bo'lsa —
-                // tanlov tozalanadi va foydalanuvchi tumanni o'zi ko'rsatadi.
+                // tanlov tozalanadi va uning o'rnini `fillDistrict` to'ldiradi.
                 val districtId = branch.districtId ?: state.districtId
                 state.copy(
                     branch = branch,
                     regionId = regionId,
-                    districtId = districtId.takeIf { id ->
-                        state.regions.firstOrNull { it.id == regionId }?.districts.orEmpty()
-                            .any { it.id == id }
-                    },
+                    districtId = districtId.takeIf { id -> state.districtsOf(regionId).any { it.id == id } },
                     resolvingAddress = false,
                     pickingOnMap = false,
                 )
             }
+            fillDistrict()
         }
     }
 
@@ -493,21 +508,54 @@ class AddBusinessViewModel(
     fun closeRegionPicker() = _state.update { it.copy(regionPickerOpen = false) }
 
     // Viloyat almashsa tuman ham almashadi — eski tanlov yangi viloyatga tegishli emas.
-    fun onRegion(regionId: String) = _state.update {
-        it.copy(
-            regionId = regionId,
-            districtId = it.districtId?.takeIf { _ -> regionId == it.regionId },
-            regionPickerOpen = false,
-            error = null,
-        )
+    fun onRegion(regionId: String) {
+        _state.update {
+            it.copy(
+                regionId = regionId,
+                districtId = it.districtId?.takeIf { _ -> regionId == it.regionId },
+                regionPickerOpen = false,
+                error = null,
+            )
+        }
+        fillDistrict()
     }
 
-    fun openDistrictPicker() = _state.update { it.copy(districtPickerOpen = true) }
+    /**
+     * Tumanni **avtomatik** tanlaydi — forma buni foydalanuvchidan so'ramaydi.
+     *
+     * `LocationDto.districtId` backendда majburiy va tanlangan viloyatga tegishli bo'lishi
+     * shart (`422 DISTRICT_REGION_MISMATCH`), lekin ilovada tuman hech qayerda ishlatilmaydi:
+     * e'lon filtrlari viloyat darajasida. Shu sabab tuman maydoni olib tashlandi va qiymat
+     * shu yerda hosil qilinadi.
+     *
+     * Tartib: (1) allaqachon tanlangan/geokoder bergan tuman — tegilmaydi; (2) filial manzili
+     * matnida tuman nomi uchrasa — o'sha (Nominatim `districtId` ni bermaganda ham manzil
+     * satrida "Chilonzor tumani" yozilgan bo'ladi); (3) aks holda viloyatning birinchi tumani.
+     *
+     * Viloyat tumansiz kelgan bo'lsa (umumiy `GET /districts` uzilgan) — kontrakt yo'li orqali
+     * bitta viloyatniki alohida so'raladi, aks holda "Saqlash" sababsiz o'chiq qolardi.
+     */
+    private fun fillDistrict() {
+        val state = _state.value
+        val regionId = state.regionId ?: return
+        if (state.districtId != null) return
 
-    fun closeDistrictPicker() = _state.update { it.copy(districtPickerOpen = false) }
-
-    fun onDistrict(districtId: String) = _state.update {
-        it.copy(districtId = districtId, districtPickerOpen = false, error = null)
+        val local = state.districtsOf(regionId)
+        if (local.isNotEmpty()) {
+            _state.update { it.copy(districtId = it.matchDistrict(local)) }
+            return
+        }
+        viewModelScope.launch {
+            val loaded = regionRepository.districts(regionId)
+            if (loaded.isEmpty()) return@launch
+            _state.update {
+                // Ro'yxatni keshga ham yozamiz — keyingi urinishda so'rov ketmasin.
+                it.copy(
+                    regions = it.regions.map { r -> if (r.id == regionId) r.copy(districts = loaded) else r },
+                    districtId = it.districtId ?: it.matchDistrict(loaded),
+                )
+            }
+        }
     }
 
     // -----------------------------------------------------------------------

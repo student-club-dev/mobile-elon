@@ -85,6 +85,17 @@ fun BusinessWelcomeScreen(
     onForgot: () -> Unit,
     onRegister: () -> Unit,
     googleButton: (@Composable () -> Unit)? = null,
+    /**
+     * Mavzu va til tanlagich — ekranning eng tepasida, o'ng tomonda.
+     *
+     * Sozlamalar faqat hisobga KIRGANDAN keyin ochilardi, ya'ni ruscha yoki o'zbekcha
+     * so'zlashuvchi foydalanuvchi butun kirish oqimini (ro'yxat, SMS kod, parol tiklash)
+     * inglizchada o'tishga majbur edi — standart til inglizcha.
+     *
+     * Slot sifatida beriladi, chunki tanlov `SettingsViewModel` da (auth moduli), bu modul
+     * esa unga bog'lana olmaydi — [googleButton] bilan bir xil sabab.
+     */
+    preferences: (@Composable () -> Unit)? = null,
 ) {
     val palette = appPalette
 
@@ -92,6 +103,11 @@ fun BusinessWelcomeScreen(
     ToastEffect(error, onConsumed = onErrorShown)
 
     AppScreenScaffold(scroll = true, horizontalPadding = 20.dp, topPadding = AppSpacing.md) {
+        if (preferences != null) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) { preferences() }
+            Spacer(Modifier.height(AppSpacing.md))
+        }
+
         ScreenTitle(stringResource(Res.string.business_welcome_title), fontSize = 21.sp)
 
         Spacer(Modifier.height(10.dp))

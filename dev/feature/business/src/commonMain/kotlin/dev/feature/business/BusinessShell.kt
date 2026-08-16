@@ -171,7 +171,6 @@ fun BusinessShell(
                         onEditBusiness = {
                             nav.navigate("$ADD_BUSINESS?businessId=$businessId") { launchSingleTop = true }
                         },
-                        showHeaderCreate = false,
                         showHeader = false,
                         // Chegirma + oddiy e'lonlar — hammasi bitta ro'yxatda.
                         filterDiscount = null,

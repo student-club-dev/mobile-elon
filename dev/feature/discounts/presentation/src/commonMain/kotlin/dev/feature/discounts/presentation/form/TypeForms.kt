@@ -32,6 +32,8 @@ import dev.core.uikit.resources.discounts_publish
 import dev.core.uikit.resources.discounts_save_changes
 import dev.core.uikit.resources.discounts_submitting
 import dev.core.uikit.theme.AppPalette
+import dev.core.uikit.theme.AppRadius
+import dev.core.uikit.theme.AppSize
 import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.feature.discounts.domain.model.BusinessType
@@ -141,11 +143,22 @@ private fun ListingFormScaffold(
             Modifier.fillMaxWidth().padding(horizontal = AppSpacing.lg, vertical = 10.dp),
             verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
         ) {
+            // Ikkala tugma ham teng kenglikda (`weight(1f)`), bir xil balandlik va radiusда:
+            // ilgari "E'lon qilish" 1.4 barobar keng, "Qoralama" esa pastroq va boshqa
+            // burchakli edi — juftlik nomutanosib ko'rinar, qoralama esa ikkinchi darajali
+            // emas, o'chirilgandek tuyulardi. Soya ham ikkalasida (qorong'i rejimda ham).
             Row(horizontalArrangement = Arrangement.spacedBy(9.dp)) {
                 Box(Modifier.weight(1f)) {
-                    OutlineButton(stringResource(Res.string.discounts_draft), vm::saveDraft, palette = palette)
+                    OutlineButton(
+                        stringResource(Res.string.discounts_draft),
+                        vm::saveDraft,
+                        height = AppSize.buttonHeight,
+                        shape = AppRadius.button,
+                        elevated = true,
+                        palette = palette,
+                    )
                 }
-                Box(Modifier.weight(1.4f)) {
+                Box(Modifier.weight(1f)) {
                     // Tahrirlashда tugma "E'lon qilish" emas: e'lon allaqachon chop etilgan
                     // va bu forma faqat o'zgarishlarni saqlaydi.
                     PrimaryButton(

@@ -31,7 +31,9 @@ import dev.core.uikit.theme.AppSpacing
 import dev.core.uikit.theme.AppType
 import dev.core.uikit.theme.appPalette
 import dev.core.uikit.theme.ctaShadow
+import dev.core.uikit.theme.floatingCtaShadow
 import dev.core.uikit.theme.rowShadow
+import dev.core.uikit.theme.secondaryCtaShadow
 
 /**
  * Asosiy harakat tugmasi — ko'k gradient va brend rangli yorug' soya.
@@ -91,7 +93,13 @@ fun PrimaryButton(
     }
 }
 
-/** Ikkilamchi tugma — oq karta yuzasi, chegarasiz. */
+/**
+ * Ikkilamchi tugma — oq karta yuzasi, chegarasiz.
+ *
+ * [height]/[shape] — asosiy CTA bilan **yonma-yon** turganda ular bir xil bo'lishi kerak
+ * (`AppSize.buttonHeight` + `AppRadius.button`), aks holda juftlik "sinngan" ko'rinadi.
+ * [elevated] esa soyani qorong'i rejimda ham saqlaydi (qarang [secondaryCtaShadow]).
+ */
 @Composable
 fun OutlineButton(
     text: String,
@@ -99,15 +107,17 @@ fun OutlineButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     leadingIcon: ImageVector? = null,
+    height: Dp = AppSize.buttonSecondaryHeight,
+    shape: RoundedCornerShape = AppRadius.lg,
+    elevated: Boolean = false,
     palette: AppPalette = appPalette,
 ) {
-    val shape = AppRadius.lg
     val alpha = if (enabled) 1f else 0.4f
     Row(
         modifier
             .fillMaxWidth()
-            .height(AppSize.buttonSecondaryHeight)
-            .rowShadow(shape)
+            .height(height)
+            .then(if (elevated) Modifier.secondaryCtaShadow(shape) else Modifier.rowShadow(shape))
             .clip(shape)
             .background(palette.card)
             .clickable(enabled = enabled, onClick = onClick),
@@ -203,7 +213,12 @@ fun GradientIconButton(
     }
 }
 
-/** Kengligi kontentga mos CTA — "+ Biznes" kabi suzuvchi tugma. */
+/**
+ * Kengligi kontentga mos CTA — "+ Biznes", "+ E'lon" kabi ro'yxat USTIDA suzuvchi tugma.
+ *
+ * Soya [floatingCtaShadow]: neytral quyuq qatlam + brend yorug'ligi. Faqat brend glow bilan
+ * tugma och ko'k fonga singib ketardi.
+ */
 @Composable
 fun CompactPrimaryButton(
     text: String,
@@ -215,7 +230,7 @@ fun CompactPrimaryButton(
     val shape = AppRadius.button
     Row(
         modifier
-            .ctaShadow(shape)
+            .floatingCtaShadow(shape)
             .clip(shape)
             .background(palette.primaryBrush)
             .clickable(onClick = onClick)

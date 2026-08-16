@@ -26,6 +26,7 @@ import dev.feature.auth.presentation.screens.OtpScreen
 import dev.feature.auth.presentation.screens.RegisterScreen
 import dev.feature.auth.presentation.screens.ResetCodeScreen
 import dev.feature.auth.presentation.screens.ResetPasswordScreen
+import dev.feature.auth.presentation.screens.components.LoginPreferences
 import dev.feature.business.BusinessShell
 import dev.feature.business.BusinessWelcomeScreen
 import org.jetbrains.compose.resources.stringResource
@@ -166,6 +167,9 @@ fun AuthNavHost(
                 // Google oqimi auth modulida (`rememberGoogleSignIn`), ekran esa business
                 // modulida — shu sabab tugma slot sifatida uzatiladi.
                 googleButton = { GoogleSignInButton(vm) },
+                // Til va mavzu — hisobga kirishдан OLDIN ham almashtirilishi kerak
+                // (standart til inglizcha, sozlamalar esa faqat kirgandan keyin ochiladi).
+                preferences = { LoginPreferences() },
             )
         }
 

@@ -64,3 +64,50 @@ fun Modifier.ctaShadow(shape: RoundedCornerShape = AppRadius.button): Modifier {
         ambientColor = palette.primary.copy(alpha = 0.50f),
     )
 }
+
+/**
+ * Kontent USTIDA suzib turadigan CTA soyasi — "+ Biznes", "+ E'lon" kabi tugmalar uchun.
+ *
+ * Nega [ctaShadow] ning o'zi yetmaydi: uning yorug'ligi brend KO'KIDA, tugma ham ko'k va fon
+ * ham och ko'k — natijada glow fonga singib ketardi va tugma ro'yxatning ustida emas, uning
+ * ichida yotgandek ko'rinardi. Shu sabab avval neytral quyuq soya chiziladi (tugmani yuzadan
+ * ajratadi), uning ustiga brend yorug'ligi qo'yiladi.
+ *
+ * Ikkita `shadow` ketma-ket: har biri o'z qatlamini chizadi, ya'ni soyalar bir-birining
+ * ustiga tushadi. Qorong'i rejimda neytral qism ko'rinmaydi (fon allaqachon quyuq), lekin
+ * brend yorug'ligi qoladi — u yerda tugmani aynan o'sha ajratib turadi.
+ */
+@Composable
+fun Modifier.floatingCtaShadow(shape: RoundedCornerShape = AppRadius.button): Modifier {
+    val palette = appPalette
+    val base = if (palette.dark) {
+        this
+    } else {
+        shadow(
+            elevation = 16.dp,
+            shape = shape,
+            spotColor = ShadowTint.copy(alpha = 0.55f),
+            ambientColor = ShadowTint.copy(alpha = 0.30f),
+        )
+    }
+    return base.ctaShadow(shape)
+}
+
+/**
+ * Ikkilamchi (oq) tugmaning soyasi — asosiy CTA bilan **yonma-yon** turganда.
+ *
+ * [rowShadow] dan farqi: qorong'i rejimda ham chiziladi. Juftlikda bitta tugma ko'tarilgan,
+ * ikkinchisi fonga yopishgan bo'lib turishi kerak emas — ular bir xil balandlikda ko'rinishi
+ * kerak, aks holda "Qoralama" o'chirilgandek tuyulardi.
+ */
+@Composable
+fun Modifier.secondaryCtaShadow(shape: RoundedCornerShape = AppRadius.button): Modifier {
+    val palette = appPalette
+    val tint = if (palette.dark) Color.Black else ShadowTint
+    return shadow(
+        elevation = 14.dp,
+        shape = shape,
+        spotColor = tint.copy(alpha = if (palette.dark) 0.75f else 0.35f),
+        ambientColor = tint.copy(alpha = if (palette.dark) 0.55f else 0.20f),
+    )
+}

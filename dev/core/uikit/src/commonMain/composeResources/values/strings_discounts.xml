@@ -484,4 +484,31 @@
     <string name="discounts_cat_greens_somsa">Ko\'k somsa</string>
     <string name="discounts_cat_tandir_non">Tandir non</string>
     <string name="discounts_cat_patir">Patir / Non</string>
+
+    <!-- ============ Hafta kunlari (filial ish vaqti) ============ -->
+    <string name="discounts_day_mon">Dushanba</string>
+    <string name="discounts_day_tue">Seshanba</string>
+    <string name="discounts_day_wed">Chorshanba</string>
+    <string name="discounts_day_thu">Payshanba</string>
+    <string name="discounts_day_fri">Juma</string>
+    <string name="discounts_day_sat">Shanba</string>
+    <string name="discounts_day_sun">Yakshanba</string>
+
+    <!-- ============ Viloyatlar ============
+         Kalit = viloyat nomining ASCII "slug"i (`GeoCatalog` id formati). Backend ham shu
+         formatda id qaytaradi; mos kelmasa serverdagi o'zbekcha nom ko'rsatiladi. -->
+    <string name="discounts_region_toshkent_shahri">Toshkent shahri</string>
+    <string name="discounts_region_toshkent_viloyati">Toshkent viloyati</string>
+    <string name="discounts_region_andijon">Andijon viloyati</string>
+    <string name="discounts_region_buxoro">Buxoro viloyati</string>
+    <string name="discounts_region_fargona">Farg\'ona viloyati</string>
+    <string name="discounts_region_jizzax">Jizzax viloyati</string>
+    <string name="discounts_region_namangan">Namangan viloyati</string>
+    <string name="discounts_region_navoiy">Navoiy viloyati</string>
+    <string name="discounts_region_qashqadaryo">Qashqadaryo viloyati</string>
+    <string name="discounts_region_qoraqalpogiston">Qoraqalpog\'iston Respublikasi</string>
+    <string name="discounts_region_samarqand">Samarqand viloyati</string>
+    <string name="discounts_region_sirdaryo">Sirdaryo viloyati</string>
+    <string name="discounts_region_surxondaryo">Surxondaryo viloyati</string>
+    <string name="discounts_region_xorazm">Xorazm viloyati</string>
 </resources>

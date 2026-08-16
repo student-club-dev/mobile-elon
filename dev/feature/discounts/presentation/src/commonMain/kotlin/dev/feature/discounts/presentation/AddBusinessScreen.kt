@@ -48,10 +48,6 @@ import dev.core.uikit.resources.discounts_business_create
 import dev.core.uikit.resources.discounts_business_save
 import dev.core.uikit.resources.discounts_business_type_label
 import dev.core.uikit.resources.discounts_business_type_select
-import dev.core.uikit.resources.discounts_district_label
-import dev.core.uikit.resources.discounts_district_needs_region
-import dev.core.uikit.resources.discounts_district_select
-import dev.core.uikit.resources.discounts_district_unresolved
 import dev.core.uikit.resources.discounts_location_hint
 import dev.core.uikit.resources.discounts_location_label
 import dev.core.uikit.resources.discounts_map_business_title
@@ -75,7 +71,6 @@ import dev.core.uikit.theme.appPalette
 import dev.core.uikit.theme.rowShadow
 import dev.feature.discounts.presentation.components.AddImageTile
 import dev.feature.discounts.presentation.components.ImageThumb
-import dev.feature.discounts.presentation.components.DistrictSheet
 import dev.feature.discounts.presentation.components.LimitContext
 import dev.feature.discounts.presentation.components.limitHintText
 import dev.feature.discounts.presentation.components.MapSearchResults
@@ -130,11 +125,7 @@ fun AddBusinessScreen(
     AppBackHandler(enabled = state.typePickerOpen) { vm.closeTypePicker() }
     AppBackHandler(enabled = !state.typePickerOpen && state.regionPickerOpen) { vm.closeRegionPicker() }
     AppBackHandler(
-        enabled = !state.typePickerOpen && !state.regionPickerOpen && state.districtPickerOpen,
-    ) { vm.closeDistrictPicker() }
-    AppBackHandler(
-        enabled = !state.typePickerOpen && !state.regionPickerOpen && !state.districtPickerOpen &&
-            state.pickingOnMap,
+        enabled = !state.typePickerOpen && !state.regionPickerOpen && state.pickingOnMap,
     ) { vm.closeMap() }
 
     if (state.pickingOnMap) {
@@ -223,7 +214,9 @@ fun AddBusinessScreen(
             Spacer(Modifier.height(FieldLabelGap))
             SelectorField(
                 icon = AppIcons.Building,
-                value = state.regionName,
+                // Serverdagi nom emas, tarjimasi: `RegionDto` faqat `nameUz` ni kafolatlaydi
+                // va maydonда rus/ingliz tilida ham "Toshkent shahri" turardi.
+                value = state.selectedRegion?.localizedName(),
                 placeholder = stringResource(Res.string.discounts_region_select),
                 onClick = vm::openRegionPicker,
                 palette = palette,
@@ -240,34 +233,10 @@ fun AddBusinessScreen(
                 palette = palette,
             )
 
-            // --- Tuman: odatda SO'RALMAYDI — uni xaritadagi nuqta beradi (teskari geokodlash).
-            //
-            // Maydon faqat zaxira sifatida, geokoder tumanni aniqlay olmaganda chiqadi. Uni
-            // butunlay olib tashlab bo'lmaydi: `LocationDto.districtId` backendда majburiy va
-            // viloyatga tegishli bo'lishi shart (`422 DISTRICT_REGION_MISMATCH`) — aks holda
-            // foydalanuvchi sababini ko'rmaydigan xatoga tushib, formadan chiqolmay qolardi.
-            // Viloyat qo'lda almashtirilganda ham shu yerga tushadi (eski tuman bekor bo'ladi).
-            if (state.needsDistrictChoice) {
-                Spacer(Modifier.height(FieldGap))
-                FieldLabel(stringResource(Res.string.discounts_district_label), palette, required = true)
-                Spacer(Modifier.height(FieldLabelGap))
-                SelectorField(
-                    icon = AppIcons.Pin,
-                    value = state.districtName,
-                    placeholder = stringResource(
-                        // Viloyat tanlanmaguncha tuman ro'yxati bo'sh — buni maydonning o'zi aytadi.
-                        if (state.regionId == null) {
-                            Res.string.discounts_district_needs_region
-                        } else {
-                            Res.string.discounts_district_select
-                        },
-                    ),
-                    onClick = { if (state.regionId != null) vm.openDistrictPicker() },
-                    palette = palette,
-                )
-                Spacer(Modifier.height(AppSpacing.sm))
-                HintText(stringResource(Res.string.discounts_district_unresolved), palette = palette)
-            }
+            // --- Tuman: forma uni SO'RAMAYDI. `LocationDto.districtId` backendда majburiy,
+            // lekin ilovada hech qayerda ishlatilmaydi (e'lon filtrlari viloyat darajasida),
+            // shuning uchun qiymatni `AddBusinessViewModel.fillDistrict` o'zi qo'yadi:
+            // xaritadagi nuqta → manzil matni → viloyatning birinchi tumani.
 
             // --- Filial nomi: `BranchRequestDto.name` majburiy ---
             Spacer(Modifier.height(FieldGap))
@@ -351,15 +320,6 @@ fun AddBusinessScreen(
             regionId = state.regionId,
             onSelect = vm::onRegion,
             onDismiss = vm::closeRegionPicker,
-            palette = palette,
-        )
-
-        DistrictSheet(
-            visible = state.districtPickerOpen,
-            districts = state.districts,
-            districtId = state.districtId,
-            onSelect = vm::onDistrict,
-            onDismiss = vm::closeDistrictPicker,
             palette = palette,
         )
 
